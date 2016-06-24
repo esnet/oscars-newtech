@@ -14,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode(exclude="urn")
 public class ReservableVlanE {
     @Id
     @GeneratedValue

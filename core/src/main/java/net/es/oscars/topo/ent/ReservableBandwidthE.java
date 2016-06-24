@@ -11,7 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity
-
+@EqualsAndHashCode(exclude="urn")
 public class ReservableBandwidthE {
     @Id
     @GeneratedValue
