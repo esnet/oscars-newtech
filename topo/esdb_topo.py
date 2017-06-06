@@ -15,7 +15,8 @@
 import json
 import pprint
 import argparse
-import topo_util
+import os
+import sys
 import requests
 from esnet.topology.today_to_devices import get_devices
 from esnet.topology.today_to_isis_graph import get_isis_neighbors, make_isis_graph
@@ -27,6 +28,7 @@ ESDB_URL = "https://esdb.es.net/esdb_api/v1"
 OUTPUT_DEVICES = "output/devices.json"
 OUTPUT_ADJCIES = "output/adjacencies.json"
 OUTPUT_ADDRS = "output/addrs.json"
+
 
 def get_token(opts):
     """Gets the API token from a source.
@@ -56,6 +58,7 @@ def get_token(opts):
         raise Exception("{}: unable to get token: {}".format(sys.argv[0], e))
 
     return token
+
 
 def main():
     pp = pprint.PrettyPrinter(indent=4)
@@ -89,7 +92,6 @@ def main():
     # in particular, we should have gotten only the current snapshot.
     snapshot = r.json()['topology_snapshots'][0]['data']
     today = snapshot['today']
-
 
     # Post-processing of today.json.
     # Get information about routers, ISIS adjacencies, router ports, and IPv4 addresses.
@@ -140,7 +142,7 @@ def make_urn_addrs(addrs=None, isis_adjcies=None):
         address = isis_adjcy["a_addr"]
         router = isis_adjcy["a"]
         port = isis_adjcy["a_port"]
-        urn = router+":"+port
+        urn = router + ":" + port
         urn_addrs_dict[urn] = address
 
     urn_addrs = []
@@ -150,7 +152,6 @@ def make_urn_addrs(addrs=None, isis_adjcies=None):
             "ipv4Address": urn_addrs_dict[urn]
         }
         urn_addrs.append(entry)
-
 
     return urn_addrs
 
@@ -289,8 +290,8 @@ def transform_isis(isis_adjcies=None):
             igp_portmap[a_router][a_port] = {
                 "mbps": isis_adjcy["mbps"]
             }
-        # else:
-        #   print "skipping " + a_addr
+            # else:
+            #   print "skipping " + a_addr
 
     return oscars_adjcies, igp_portmap
 
@@ -310,19 +311,19 @@ def best_urns_by_addr(isis_adjcies=None):
         ifce_urn_a = None
         if "a_ifce" in isis_adjcy.keys():
             ifce_a = isis_adjcy["a_ifce"]
-            ifce_urn_a = router_a + ":" +ifce_a
+            ifce_urn_a = router_a + ":" + ifce_a
             if ifce_urn_a in all_ifce_urns:
                 dupe_ifce_urns.append(ifce_urn_a)
             else:
                 all_ifce_urns.append(ifce_urn_a)
 
-        port_urn_a = router_a + ":" +port_a
+        port_urn_a = router_a + ":" + port_a
         if port_urn_a in all_port_urns:
             dupe_port_urns.append(port_urn_a)
         else:
             all_port_urns.append(port_urn_a)
 
-        addr_urn_a = router_a + ":" +addr_a
+        addr_urn_a = router_a + ":" + addr_a
 
         entry = {
             "port_urn": port_urn_a,
@@ -339,12 +340,12 @@ def best_urns_by_addr(isis_adjcies=None):
             best_urns[addr] = entry["port_urn"]
         elif entry["ifce_urn"] is not None:
             best_urns[addr] = None
-        #   best_urns[addr] = entry["ifce_urn"]
+        # best_urns[addr] = entry["ifce_urn"]
         #   print "dupe urn! " + entry["ifce_urn"]
         else:
             best_urns[addr] = None
-        #   best_urns[addr] = entry["addr_urn"]
-        #   print "dupe urn! " + entry["addr_urn"]
+            #   best_urns[addr] = entry["addr_urn"]
+            #   print "dupe urn! " + entry["addr_urn"]
     return best_urns
 
 
