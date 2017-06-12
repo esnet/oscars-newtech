@@ -1,28 +1,34 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars CoreUnitTestConfiguration
+.. java:import:: net.es.oscars AbstractCoreTest
 
 .. java:import:: net.es.oscars.dto.spec PalindromicType
 
 .. java:import:: net.es.oscars.dto.spec SurvivabilityType
 
+.. java:import:: net.es.oscars.dto.topo.enums Layer
+
+.. java:import:: net.es.oscars.dto.topo.enums PortLayer
+
+.. java:import:: net.es.oscars.dto.topo.enums VertexType
+
 .. java:import:: net.es.oscars.helpers RequestedEntityBuilder
+
+.. java:import:: net.es.oscars.pce.exc PCEException
 
 .. java:import:: net.es.oscars.pss PSSException
 
-.. java:import:: net.es.oscars.helpers.test AsymmTopologyBuilder
+.. java:import:: net.es.oscars.pce.helpers AsymmTopologyBuilder
 
-.. java:import:: net.es.oscars.helpers.test TopologyBuilder
+.. java:import:: net.es.oscars.pce.helpers TopologyBuilder
+
+.. java:import:: net.es.oscars.topo.ent BidirectionalPathE
+
+.. java:import:: net.es.oscars.topo.svc TopoService
 
 .. java:import:: org.junit Test
 
-.. java:import:: org.junit.runner RunWith
-
 .. java:import:: org.springframework.beans.factory.annotation Autowired
-
-.. java:import:: org.springframework.boot.test SpringApplicationConfiguration
-
-.. java:import:: org.springframework.test.context.junit4 SpringJUnit4ClassRunner
 
 .. java:import:: org.springframework.transaction.annotation Transactional
 
@@ -36,10 +42,106 @@ TopPceTestSurvivablePartial
 .. java:package:: net.es.oscars.pce
    :noindex:
 
-.. java:type:: @Slf4j @RunWith @SpringApplicationConfiguration @Transactional public class TopPceTestSurvivablePartial
+.. java:type:: @Slf4j @Transactional public class TopPceTestSurvivablePartial extends AbstractCoreTest
 
 Methods
 -------
+survPartialThreeDisjointAllMPLSK2Fail
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointAllMPLSK2Fail()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointAllMPLSK2Pass
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointAllMPLSK2Pass()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointAllMPLSK3Fail
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointAllMPLSK3Fail()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointAllMPLSK3Pass
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointAllMPLSK3Pass()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointEdgeAsymmK2Pass
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointEdgeAsymmK2Pass()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointEdgeAsymmK3Fail
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointEdgeAsymmK3Fail()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointEdgeEthInternalEthK2Pass
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointEdgeEthInternalEthK2Pass()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointEdgeEthInternalEthK3Fail
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointEdgeEthInternalEthK3Fail()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointEdgeEthK2Pass
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointEdgeEthK2Pass()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointEdgeEthK3Pass
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointEdgeEthK3Pass()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointEdgeEthK4Fail
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointEdgeEthK4Fail()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialThreeDisjointEdgeEthPortOnRoutersK3Pass
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialThreeDisjointEdgeEthPortOnRoutersK3Pass()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialWithEthPortsOnRoutersTest1
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialWithEthPortsOnRoutersTest1()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialWithEthPortsOnRoutersTest2
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialWithEthPortsOnRoutersTest2()
+   :outertype: TopPceTestSurvivablePartial
+
+survPartialWithEthPortsOnRoutersTest3
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survPartialWithEthPortsOnRoutersTest3()
+   :outertype: TopPceTestSurvivablePartial
+
+survivablePartialPceTestESnet
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survivablePartialPceTestESnet()
+   :outertype: TopPceTestSurvivablePartial
+
 survivablePceTest1
 ^^^^^^^^^^^^^^^^^^
 

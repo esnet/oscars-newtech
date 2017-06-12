@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Survivable Routing Services &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Survivable Routing Services &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Service Enhancements" href="../advanced_service_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Service-Layer Topology with Survivable MPLS-Layer" href="virtual_surv_topo_doc.html" />
     <link rel="prev" title="Explicit Routing Services" href="ero_service_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,12 +45,12 @@
         <li class="right" >
           <a href="ero_service_doc.html" title="Explicit Routing Services"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" accesskey="U">Path Computation Service Enhancements</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" accesskey="U">Path Computation Service Enhancements</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -94,17 +95,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="virtual_surv_topo_doc.html"
                         title="next chapter">Service-Layer Topology with Survivable MPLS-Layer</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -113,71 +111,71 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="survivable-routing-services">
 <span id="surv-pce-services"></span><h1>Survivable Routing Services<a class="headerlink" href="#survivable-routing-services" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="complete-path-survivability">
 <span id="surv-pce-complete"></span><h2>Complete Path Survivability<a class="headerlink" href="#complete-path-survivability" title="Permalink to this headline">¶</a></h2>
-<p>Network elements, particularly links, experience failures almost regularly. Any traffic traversing a link at the time of failure can be lost, and service may be interrupted. To mitigate this loss, a backup path can be established alongside the primary path requested by a user. If the user indicates that a pipe must be provisioned using complete end-to-end survivability, a link-disjoint path pair will be found via <a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><em>Bhandari PCE Module</em></a> between the requested pipe’s end-points junctions. No links will be shared between these primary and backup paths. Each path in the pair will be palindromic; in other words, each will have both a forward- and reverse-direction flow. If a disjoint path pair through the network cannot be found, then the request fails.</p>
+<p>Network elements, particularly links, experience failures almost regularly. Any traffic traversing a link at the time of failure can be lost, and service may be interrupted. To mitigate this loss, a backup path can be established alongside the primary path requested by a user. If the user indicates that a pipe must be provisioned using complete end-to-end survivability, a link-disjoint path pair will be found via <a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><span class="std std-ref">Bhandari PCE Module</span></a> between the requested pipe’s end-points junctions. No links will be shared between these primary and backup paths. Each path in the pair will be palindromic; in other words, each will have both a forward- and reverse-direction flow. If a disjoint path pair through the network cannot be found, then the request fails.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The end-point ports and devices will necessarily be shared among both paths in a survivable pair. As such, twice as much bandwidth will be consumed at these shared points.</p>
 </div>
-<div class="figure align-center">
+<div class="figure align-center" id="id3">
 <a class="reference internal image-reference" href="../../_images/surv_complete.png"><img alt="Complete Survivability" src="../../_images/surv_complete.png" style="width: 573.95px; height: 248.3px;" /></a>
-<p class="caption"><em>Complete link-disjoint path survivability from end-to-end.</em></p>
+<p class="caption"><span class="caption-text"><em>Complete link-disjoint path survivability from end-to-end.</em></span></p>
 </div>
 <div class="section" id="service-details">
 <h3>Service Details<a class="headerlink" href="#service-details" title="Permalink to this headline">¶</a></h3>
 <p><strong>Can be combined with:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></li>
+<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></li>
 </ul>
 <p><strong>Relevant PCE Module(s)</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><em>Survivability PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><em>Bhandari PCE Module</em></a></li>
+<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><span class="std std-ref">Survivability PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><span class="std std-ref">Bhandari PCE Module</span></a></li>
 </ul>
 </div>
 </div>
 <div class="section" id="mpls-layer-survivability">
 <span id="surv-pce-mpls"></span><h2>MPLS-Layer Survivability<a class="headerlink" href="#mpls-layer-survivability" title="Permalink to this headline">¶</a></h2>
-<p>Alternatively the user may desire a singular service path, but may still make use of additional routing flexibility through MPLS routers in order to incorporate partial circuit survivability. Paths through routers will be survivable, but Ethernet devices will support a single connection. In other terms, a <a class="reference internal" href="virtual_surv_topo_doc.html#virtual-surv-topo"><em>Service-Layer Topology with Survivable MPLS-Layer</em></a> is created for each <em>MPLS-Layer Survivable</em> request. This Service-Layer topology abstracts out the MPLS-Layer devices, and replaces them with a pair of abstract links between each pair of Service-Layer elements adjacent to the MPLS-Layer. These abstract links are computed independently such they they each correspond to the least-cost pair of link-disjoint MPLS-Layer paths between the end-points. Therefore, the forward and return paths <em>may</em> contain different routing elements and may not produce the same survivable solutions as one another. If no link-disjoint path pairs through the MPLS layer can be found when requested, and it is not possible to establish a route without circumventing the MPLS-layer entirely, then circuit reservation fails. The figure below shows a possible circuit reservation with <em>MPLS-Layer Survivability</em>.</p>
-<div class="figure align-center">
+<p>Alternatively the user may desire a singular service path, but may still make use of additional routing flexibility through MPLS routers in order to incorporate partial circuit survivability. Paths through routers will be survivable, but Ethernet devices will support a single connection. In other terms, a <a class="reference internal" href="virtual_surv_topo_doc.html#virtual-surv-topo"><span class="std std-ref">Service-Layer Topology with Survivable MPLS-Layer</span></a> is created for each <em>MPLS-Layer Survivable</em> request. This Service-Layer topology abstracts out the MPLS-Layer devices, and replaces them with a pair of abstract links between each pair of Service-Layer elements adjacent to the MPLS-Layer. These abstract links are computed independently such they they each correspond to the least-cost pair of link-disjoint MPLS-Layer paths between the end-points. Therefore, the forward and return paths <em>may</em> contain different routing elements and may not produce the same survivable solutions as one another. If no link-disjoint path pairs through the MPLS layer can be found when requested, and it is not possible to establish a route without circumventing the MPLS-layer entirely, then circuit reservation fails. The figure below shows a possible circuit reservation with <em>MPLS-Layer Survivability</em>.</p>
+<div class="figure align-center" id="id4">
 <a class="reference internal image-reference" href="../../_images/surv_partial.gif"><img alt="Partial Survivability" src="../../_images/surv_partial.gif" style="width: 618.8px; height: 279.3px;" /></a>
-<p class="caption"><em>MPLS-Layer survivability.</em></p>
+<p class="caption"><span class="caption-text"><em>MPLS-Layer survivability.</em></span></p>
 </div>
 <div class="section" id="id1">
 <h3>Service Details<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p><strong>Can be combined with:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></li>
+<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></li>
 </ul>
 <p><strong>Relevant PCE Module(s)</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><em>Survivability PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><em>Bhandari PCE Module</em></a></li>
+<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><span class="std std-ref">Survivability PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><span class="std std-ref">Bhandari PCE Module</span></a></li>
 </ul>
 </div>
 </div>
 <div class="section" id="k-disjoint-path-survivability">
 <span id="surv-pce-kpath"></span><h2>K-Disjoint Path Survivability<a class="headerlink" href="#k-disjoint-path-survivability" title="Permalink to this headline">¶</a></h2>
 <p>The user can request any number of link-disjoint paths for either Complet or Partial survivability. This is implemented through an iterative version of Bhandari’s Algorithm, which will find the specified number of link-disjoint paths K (or the maximum number of disjoint paths less than K if the physical network restricts the ability to establish so many link-disjoint routes). A simple illustration where <em>K = 3</em> is shown below:</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id5">
 <a class="reference internal image-reference" href="../../_images/surv_kpath.png"><img alt="K-Path Survivability" src="../../_images/surv_kpath.png" style="width: 533.4px; height: 400.4px;" /></a>
-<p class="caption"><em>K-Path link-disjoint survivability, for a value of K=3.</em></p>
+<p class="caption"><span class="caption-text"><em>K-Path link-disjoint survivability, for a value of K=3.</em></span></p>
 </div>
 <div class="section" id="id2">
 <h3>Service Details<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p><strong>Can be combined with:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></li>
+<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></li>
 </ul>
 <p><strong>Relevant PCE Module(s)</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><em>Survivability PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><em>Bhandari PCE Module</em></a></li>
+<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><span class="std std-ref">Survivability PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><span class="std std-ref">Bhandari PCE Module</span></a></li>
 </ul>
 <div class="toctree-wrapper compound">
 </div>
@@ -191,7 +189,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -203,14 +201,14 @@
         <li class="right" >
           <a href="ero_service_doc.html" title="Explicit Routing Services"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

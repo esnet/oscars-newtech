@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Topology Pruning Service &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Topology Pruning Service &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Engine (PCE)" href="../pce_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Reserved Bandwidth Service" href="service_bandwidth_doc.html" />
     <link rel="prev" title="Topology Service" href="service_topology_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,12 +45,12 @@
         <li class="right" >
           <a href="service_topology_doc.html" title="Topology Service"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -95,9 +96,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../pce/pce_bellman_ford_doc.html">Bellman-Ford PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pce/pce_bhandari_doc.html">Bhandari PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_topology_doc.html">Topology Service</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Topology Pruning Service</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Topology Pruning Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_bandwidth_doc.html">Reserved Bandwidth Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_vlan_doc.html">VLAN Service</a></li>
 </ul>
@@ -120,17 +119,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="service_bandwidth_doc.html"
                         title="next chapter">Reserved Bandwidth Service</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -139,38 +135,38 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="topology-pruning-service">
 <span id="service-pruning"></span><h1>Topology Pruning Service<a class="headerlink" href="#topology-pruning-service" title="Permalink to this headline">¶</a></h1>
-<p>This is a support service which is essential to completion of the <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a>.  The <em>Pruning Service</em> temporarily modifies the network topology each time a new circuit request is submitted to the PCE. This will temporarily remove network elements that violate the <a class="reference internal" href="../circuit/requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a>, including ports with:</p>
+<p>This is a support service which is essential to completion of the <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a>.  The <em>Pruning Service</em> temporarily modifies the network topology each time a new circuit request is submitted to the PCE. This will temporarily remove network elements that violate the <a class="reference internal" href="../circuit/requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a>, including ports with:</p>
 <ul class="simple">
 <li>Insufficient bandwidth availability.</li>
 <li>Insufficient VLAN availability.</li>
 </ul>
 <p>The updated topology is then considered during pathfinding since it represents a network which is capable of supporting the desired circuit reservation.</p>
-<p>Refer to the figures which describe the <a class="reference internal" href="../pce_doc.html#basic-pce-service"><em>Basic PCE Service</em></a> for illustrative examples of how pruning modifies the network and ensures satisfactory pathfinding.  Furthermore, the user may include with the Request Specification a &#8220;blacklist&#8221; of nodes to avoid during pathfinding. An illustrative example of how the <em>Pruning Service</em> is employed in this scenario is offered in <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-blacklist"><em>“Blacklist” Avoidance Routing</em></a>.</p>
+<p>Refer to the figures which describe the <a class="reference internal" href="../pce_doc.html#basic-pce-service"><span class="std std-ref">Basic PCE Service</span></a> for illustrative examples of how pruning modifies the network and ensures satisfactory pathfinding.  Furthermore, the user may include with the Request Specification a “blacklist” of nodes to avoid during pathfinding. An illustrative example of how the <em>Pruning Service</em> is employed in this scenario is offered in <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-blacklist"><span class="std std-ref">“Blacklist” Avoidance Routing</span></a>.</p>
 <div class="section" id="service-details">
 <h2>Service Details<a class="headerlink" href="#service-details" title="Permalink to this headline">¶</a></h2>
 <p><strong>Calls:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="service_vlan_doc.html#service-vlan"><em>VLAN Service</em></a></li>
-<li><a class="reference internal" href="service_bandwidth_doc.html#service-bandwidth"><em>Reserved Bandwidth Service</em></a></li>
-<li><a class="reference internal" href="service_topology_doc.html#service-topology"><em>Topology Service</em></a></li>
+<li><a class="reference internal" href="service_vlan_doc.html#service-vlan"><span class="std std-ref">VLAN Service</span></a></li>
+<li><a class="reference internal" href="service_bandwidth_doc.html#service-bandwidth"><span class="std std-ref">Reserved Bandwidth Service</span></a></li>
+<li><a class="reference internal" href="service_topology_doc.html#service-topology"><span class="std std-ref">Topology Service</span></a></li>
 </ul>
 <p><strong>Called By:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><em>Explicit Route Object (ERO) PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_nonpalindrome_doc.html#pce-nonpalindrome"><em>Non-Palindromic PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_palindrome_doc.html#pce-palindrome"><em>Palindromic PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><em>Survivability PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><em>Translation PCE Module</em></a></li>
-<li><a class="reference internal" href="../enhanced/virtual_topo_doc.html#virtual-topo"><em>Service-Layer Topology</em></a></li>
-<li><a class="reference internal" href="../enhanced/virtual_surv_topo_doc.html#virtual-surv-topo"><em>Service-Layer Topology with Survivable MPLS-Layer</em></a></li>
+<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><span class="std std-ref">Explicit Route Object (ERO) PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_nonpalindrome_doc.html#pce-nonpalindrome"><span class="std std-ref">Non-Palindromic PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_palindrome_doc.html#pce-palindrome"><span class="std std-ref">Palindromic PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><span class="std std-ref">Survivability PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><span class="std std-ref">Translation PCE Module</span></a></li>
+<li><a class="reference internal" href="../enhanced/virtual_topo_doc.html#virtual-topo"><span class="std std-ref">Service-Layer Topology</span></a></li>
+<li><a class="reference internal" href="../enhanced/virtual_surv_topo_doc.html#virtual-surv-topo"><span class="std std-ref">Service-Layer Topology with Survivable MPLS-Layer</span></a></li>
 </ul>
 <p><strong>API Specification:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/PruningService.html#net.es.oscars.pce.PruningService" title="net.es.oscars.pce.PruningService"><tt class="xref java java-ref docutils literal"><span class="pre">PruningService</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/PruningService.html#net.es.oscars.pce.PruningService" title="net.es.oscars.pce.PruningService"><code class="xref java java-ref docutils literal"><span class="pre">PruningService</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -181,7 +177,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -193,14 +189,14 @@
         <li class="right" >
           <a href="service_topology_doc.html" title="Topology Service"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

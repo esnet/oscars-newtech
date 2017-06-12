@@ -2,7 +2,17 @@
 
 .. java:import:: net.es.oscars.dto.spec SurvivabilityType
 
+.. java:import:: net.es.oscars.dto.topo TopoVertex
+
 .. java:import:: net.es.oscars.dto.topo.enums DeviceType
+
+.. java:import:: net.es.oscars.dto.topo.enums Layer
+
+.. java:import:: net.es.oscars.dto.topo.enums VertexType
+
+.. java:import:: net.es.oscars.pce.exc InvalidUrnException
+
+.. java:import:: net.es.oscars.pce.exc PCEException
 
 .. java:import:: net.es.oscars.pss PSSException
 
@@ -20,11 +30,11 @@
 
 .. java:import:: net.es.oscars.topo.ent UrnE
 
-.. java:import:: net.es.oscars.topo.pop Device
-
 .. java:import:: net.es.oscars.topo.svc TopoService
 
 .. java:import:: org.springframework.beans.factory.annotation Autowired
+
+.. java:import:: org.springframework.security.access.method P
 
 .. java:import:: org.springframework.stereotype Component
 

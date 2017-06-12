@@ -52,38 +52,30 @@ pruneBlacklist
    :param urnBlacklist: - Set of URN strings corresponding to blacklisted devices/ports.
    :return: Set of blacklisted edges to be pruned from the topology.
 
+pruneTopologyOfEdgePortsExcept
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: public void pruneTopologyOfEdgePortsExcept(Topology topo, Set<String> portsToKeep)
+   :outertype: PruningService
+
 pruneWithPipe
 ^^^^^^^^^^^^^
 
-.. java:method:: public Topology pruneWithPipe(Topology topo, RequestedVlanPipeE pipe, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList)
+.. java:method:: public Topology pruneWithPipe(Topology topo, RequestedVlanPipeE pipe, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList)
    :outertype: PruningService
 
    Prune the topology using a logical pipe. The pipe contains the requested bandwidth and VLANs (through querying the attached junctions/fixtures). The URNs are pulled from the URN repository.
 
    :param topo: - The topology to be pruned.
    :param pipe: - The logical pipe, from which the requested bandwidth and VLANs are retrieved.
-   :param rsvBwList: - A list of Reserved Bandwidth to be considered when pruning (along with Bandwidth in the Repo)
+   :param bwAvailMap: - A map of available "Ingress" and 'Egress" bandwidth for each URN
    :param rsvVlanList: - A list of Reserved VLAN tags to be considered when pruning (along with VLANs in the Repo)
    :return: The topology with ineligible edges removed.
 
 pruneWithPipe
 ^^^^^^^^^^^^^
 
-.. java:method:: public Topology pruneWithPipe(Topology topo, RequestedVlanPipeE pipe, Date start, Date end)
-   :outertype: PruningService
-
-   Prune the topology using a logical pipe. The pipe contains the requested bandwidth and VLANs (through querying the attached junctions/fixtures). The URNs are pulled from the URN repository.
-
-   :param topo: - The topology to be pruned.
-   :param pipe: - The logical pipe, from which the requested bandwidth and VLANs are retrieved.
-   :param start: - The start date of the request
-   :param end: - The end date of the request
-   :return: The topology with ineligible edges removed.
-
-pruneWithPipe
-^^^^^^^^^^^^^
-
-.. java:method:: public Topology pruneWithPipe(Topology topo, RequestedVlanPipeE pipe, List<UrnE> urns, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList)
+.. java:method:: public Topology pruneWithPipe(Topology topo, RequestedVlanPipeE pipe, List<UrnE> urns, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList)
    :outertype: PruningService
 
    Prune the topology using a logical pipe. The pipe contains the requested bandwidth and VLANs (through querying the attached junctions/fixtures). A list of URNs is passed into match devices/interfaces to topology elements.
@@ -96,21 +88,21 @@ pruneWithPipe
 pruneWithPipeAZ
 ^^^^^^^^^^^^^^^
 
-.. java:method:: public Topology pruneWithPipeAZ(Topology topo, RequestedVlanPipeE pipe, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList)
+.. java:method:: public Topology pruneWithPipeAZ(Topology topo, RequestedVlanPipeE pipe, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList)
    :outertype: PruningService
 
    Prune the topology based on A->Z bandwidth using a logical pipe. The pipe contains the requested bandwidth and VLANs (through querying the attached junctions/fixtures). The URNs are pulled from the URN repository.
 
    :param topo: - The topology to be pruned.
    :param pipe: - The logical pipe, from which the requested bandwidth and VLANs are retrieved.
-   :param rsvBwList: - A list of Reserved Bandwidth to be considered when pruning (along with Bandwidth in the Repo)
+   :param bwAvailMap: - A map of available "Ingress" and 'Egress" bandwidth for each URN.
    :param rsvVlanList: - A list of Reserved VLAN tags to be considered when pruning (along with VLANs in the Repo)
    :return: The topology with ineligible edges removed.
 
 pruneWithPipeAZ
 ^^^^^^^^^^^^^^^
 
-.. java:method:: public Topology pruneWithPipeAZ(Topology topo, RequestedVlanPipeE pipe, List<UrnE> urns, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList)
+.. java:method:: public Topology pruneWithPipeAZ(Topology topo, RequestedVlanPipeE pipe, List<UrnE> urns, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList)
    :outertype: PruningService
 
    Prune the topology based on A->Z bandwidth using a logical pipe. The pipe contains the requested bandwidth and VLANs (through querying the attached junctions/fixtures). A list of URNs is passed into match devices/interfaces to topology elements.
@@ -123,21 +115,21 @@ pruneWithPipeAZ
 pruneWithPipeZA
 ^^^^^^^^^^^^^^^
 
-.. java:method:: public Topology pruneWithPipeZA(Topology topo, RequestedVlanPipeE pipe, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList)
+.. java:method:: public Topology pruneWithPipeZA(Topology topo, RequestedVlanPipeE pipe, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList)
    :outertype: PruningService
 
    Prune the topology based on Z->A bandwidth using a logical pipe. The pipe contains the requested bandwidth and VLANs (through querying the attached junctions/fixtures). The URNs are pulled from the URN repository.
 
    :param topo: - The topology to be pruned.
    :param pipe: - The logical pipe, from which the requested bandwidth and VLANs are retrieved.
-   :param rsvBwList: - A list of Reserved Bandwidth to be considered when pruning (along with Bandwidth in the Repo)
+   :param bwAvailMap: - A map of available "Ingress" and 'Egress" bandwidth for each URN.
    :param rsvVlanList: - A list of Reserved VLAN tags to be considered when pruning (along with VLANs in the Repo)
    :return: The topology with ineligible edges removed.
 
 pruneWithPipeZA
 ^^^^^^^^^^^^^^^
 
-.. java:method:: public Topology pruneWithPipeZA(Topology topo, RequestedVlanPipeE pipe, List<UrnE> urns, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList)
+.. java:method:: public Topology pruneWithPipeZA(Topology topo, RequestedVlanPipeE pipe, List<UrnE> urns, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList)
    :outertype: PruningService
 
    Prune the topology based on Z->A bandwidth using a logical pipe. The pipe contains the requested bandwidth and VLANs (through querying the attached junctions/fixtures). A list of URNs is passed into match devices/interfaces to topology elements.

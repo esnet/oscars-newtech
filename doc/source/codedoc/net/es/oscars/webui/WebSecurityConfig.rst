@@ -2,8 +2,6 @@
 
 .. java:import:: org.springframework.beans.factory.annotation Autowired
 
-.. java:import:: org.springframework.context.annotation Bean
-
 .. java:import:: org.springframework.context.annotation Configuration
 
 .. java:import:: org.springframework.security.config.annotation.authentication.builders AuthenticationManagerBuilder
@@ -24,12 +22,12 @@ WebSecurityConfig
 
 .. java:type:: @Configuration @EnableWebSecurity @Slf4j public class WebSecurityConfig extends WebSecurityConfigurerAdapter
 
-Fields
-------
-restAuthProvider
-^^^^^^^^^^^^^^^^
+Constructors
+------------
+WebSecurityConfig
+^^^^^^^^^^^^^^^^^
 
-.. java:field:: @Autowired  RestAuthProvider restAuthProvider
+.. java:constructor:: @Autowired public WebSecurityConfig(DatabaseAuthProvider databaseAuthProvider)
    :outertype: WebSecurityConfig
 
 Methods
@@ -44,11 +42,5 @@ configureGlobal
 ^^^^^^^^^^^^^^^
 
 .. java:method:: @Autowired public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception
-   :outertype: WebSecurityConfig
-
-getRestAuthProvider
-^^^^^^^^^^^^^^^^^^^
-
-.. java:method:: @Bean  RestAuthProvider getRestAuthProvider()
    :outertype: WebSecurityConfig
 

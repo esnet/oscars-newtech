@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Bhandari PCE Module &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Bhandari PCE Module &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Engine (PCE)" href="../pce_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Topology Service" href="../service/service_topology_doc.html" />
     <link rel="prev" title="Bellman-Ford PCE Module" href="pce_bellman_ford_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,12 +45,12 @@
         <li class="right" >
           <a href="pce_bellman_ford_doc.html" title="Bellman-Ford PCE Module"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -93,9 +94,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pce_ero_doc.html">Explicit Route Object (ERO) PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_dijkstra_doc.html">Dijkstra PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_bellman_ford_doc.html">Bellman-Ford PCE Module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Bhandari PCE Module</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Bhandari PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../service/service_topology_doc.html">Topology Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../service/service_pruning_doc.html">Topology Pruning Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../service/service_bandwidth_doc.html">Reserved Bandwidth Service</a></li>
@@ -120,17 +119,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="../service/service_topology_doc.html"
                         title="next chapter">Topology Service</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -139,58 +135,58 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="bhandari-pce-module">
 <span id="pce-bhandari"></span><h1>Bhandari PCE Module<a class="headerlink" href="#bhandari-pce-module" title="Permalink to this headline">¶</a></h1>
-<p>This module is one of the fundamental pathfinding elements of the PCE, used to compute the least-cost pair of edge-disjoint paths through a network topology. Such a technique is useful for <a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-services"><em>Survivable Routing Services</em></a>. Bhandari&#8217;s <a class="reference external" href="https://en.wikipedia.org/wiki/Edge_disjoint_shortest_pair_algorithm">Algorithm</a> differs from other heuristics which aim to minimize the cost of the primary path at the cost of a more expensive secondary path. Consider the example below:</p>
+<p>This module is one of the fundamental pathfinding elements of the PCE, used to compute the least-cost pair of edge-disjoint paths through a network topology. Such a technique is useful for <a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-services"><span class="std std-ref">Survivable Routing Services</span></a>. Bhandari’s <a class="reference external" href="https://en.wikipedia.org/wiki/Edge_disjoint_shortest_pair_algorithm">Algorithm</a> differs from other heuristics which aim to minimize the cost of the primary path at the cost of a more expensive secondary path. Consider the example below:</p>
 <div class="section" id="simple-path-protection">
 <h2>Simple Path Protection<a class="headerlink" href="#simple-path-protection" title="Permalink to this headline">¶</a></h2>
 <p>The animation below illustrates how a pair of link-disjoint paths may be found on a network topology in a simple manner.  The steps are very straightforward:</p>
 <ol class="arabic simple">
-<li>Compute the shortest route on the topology (using <a class="reference external" href="https://en.wikipedia.org/wiki/Dijkstra's_algorithm">Dijsktra</a>&#8216;s algorithm or the <a class="reference external" href="https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Bellman-Ford</a> algorithm) as the primary path.</li>
+<li>Compute the shortest route on the topology (using <a class="reference external" href="https://en.wikipedia.org/wiki/Dijkstra's_algorithm">Dijsktra</a>’s algorithm or the <a class="reference external" href="https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Bellman-Ford</a> algorithm) as the primary path.</li>
 <li>Remove all links along the computed primary path from the topology.</li>
 <li>Compute the shortest route on the updated topology, which will serve as the backup path.</li>
 </ol>
-<div class="figure align-center">
+<div class="figure align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/protection_basic.gif"><img alt="Traiditional Path Protection" src="../../_images/protection_basic.gif" style="width: 548.25px; height: 318.0px;" /></a>
-<p class="caption"><em>Simple path protection: Optimize the primary path, and then compute a link-disjoint backup.</em></p>
+<p class="caption"><span class="caption-text"><em>Simple path protection: Optimize the primary path, and then compute a link-disjoint backup.</em></span></p>
 </div>
-<p>Let&#8217;s repeat the process for the different topology shown below. It can be observed that removing the links from the primary path actually prevents a backup from being computed. This results in a false-negative indicating that no pair of disjoint paths could be found.  Bhandari&#8217;s algorithm prevents this false-negative.</p>
-<div class="figure align-center">
+<p>Let’s repeat the process for the different topology shown below. It can be observed that removing the links from the primary path actually prevents a backup from being computed. This results in a false-negative indicating that no pair of disjoint paths could be found.  Bhandari’s algorithm prevents this false-negative.</p>
+<div class="figure align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/protection_fail.gif"><img alt="Traiditional Path Protection Failure" src="../../_images/protection_fail.gif" style="width: 594.0px; height: 352.5px;" /></a>
-<p class="caption"><em>Simple path protection: After computing the primary path, not backup path can exist.</em></p>
+<p class="caption"><span class="caption-text"><em>Simple path protection: After computing the primary path, not backup path can exist.</em></span></p>
 </div>
 </div>
 <div class="section" id="bhandari-s-algorithm">
-<h2>Bhandari&#8217;s Algorithm<a class="headerlink" href="#bhandari-s-algorithm" title="Permalink to this headline">¶</a></h2>
-<p>We revisit the second example above, this time using Bhandari&#8217;s algorithm to show how it computes the least-cost pair of paths. The steps are as follows:</p>
+<h2>Bhandari’s Algorithm<a class="headerlink" href="#bhandari-s-algorithm" title="Permalink to this headline">¶</a></h2>
+<p>We revisit the second example above, this time using Bhandari’s algorithm to show how it computes the least-cost pair of paths. The steps are as follows:</p>
 <ol class="arabic simple">
-<li>Compute the shortest route on the topology (using <a class="reference external" href="https://en.wikipedia.org/wiki/Dijkstra's_algorithm">Dijsktra</a>&#8216;s algorithm or the <a class="reference external" href="https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Bellman-Ford</a> algorithm), but do <em>not</em> treat this as the primary path.</li>
+<li>Compute the shortest route on the topology (using <a class="reference external" href="https://en.wikipedia.org/wiki/Dijkstra's_algorithm">Dijsktra</a>’s algorithm or the <a class="reference external" href="https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Bellman-Ford</a> algorithm), but do <em>not</em> treat this as the primary path.</li>
 <li>Set the costs of all links found along this initial path to negative weights.</li>
-<li>Set the direction of all links found along this initial path to the opposite of the route&#8217;s flow.</li>
+<li>Set the direction of all links found along this initial path to the opposite of the route’s flow.</li>
 <li>Now compute the shortest route on the updated topology (using the Bellman-Ford algorithm which supports negatively-weighted edges).</li>
 <li>Remove any overlapping edges shared by the first path and the second path. The remaining resources represent the least-cost pair of routes from the source to the destination.</li>
 </ol>
-<div class="figure align-center">
+<div class="figure align-center" id="id3">
 <a class="reference internal image-reference" href="../../_images/protection_bhandari.gif"><img alt="Bhandari Path Protection" src="../../_images/protection_bhandari.gif" style="width: 561.0px; height: 356.25px;" /></a>
-<p class="caption"><em>Bhandari path protection: Returns the least-cost pair solution.</em></p>
+<p class="caption"><span class="caption-text"><em>Bhandari path protection: Returns the least-cost pair solution.</em></span></p>
 </div>
 </div>
 <div class="section" id="module-details">
 <h2>Module Details<a class="headerlink" href="#module-details" title="Permalink to this headline">¶</a></h2>
 <p><strong>Calls:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="pce_bellman_ford_doc.html#pce-bellman-ford"><em>Bellman-Ford PCE Module</em></a></li>
+<li><a class="reference internal" href="pce_bellman_ford_doc.html#pce-bellman-ford"><span class="std std-ref">Bellman-Ford PCE Module</span></a></li>
 </ul>
 <p><strong>Called By:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="pce_survivability_doc.html#pce-survivability"><em>Survivability PCE Module</em></a></li>
-<li><a class="reference internal" href="../enhanced/virtual_surv_topo_doc.html#virtual-surv-topo"><em>Service-Layer Topology with Survivable MPLS-Layer</em></a></li>
+<li><a class="reference internal" href="pce_survivability_doc.html#pce-survivability"><span class="std std-ref">Survivability PCE Module</span></a></li>
+<li><a class="reference internal" href="../enhanced/virtual_surv_topo_doc.html#virtual-surv-topo"><span class="std std-ref">Service-Layer Topology with Survivable MPLS-Layer</span></a></li>
 </ul>
 <p><strong>API Specification:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/BhandariPCE.html#net.es.oscars.pce.BhandariPCE" title="net.es.oscars.pce.BhandariPCE"><tt class="xref java java-ref docutils literal"><span class="pre">BhandariPCE</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/BhandariPCE.html#net.es.oscars.pce.BhandariPCE" title="net.es.oscars.pce.BhandariPCE"><code class="xref java java-ref docutils literal"><span class="pre">BhandariPCE</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -201,7 +197,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -213,14 +209,14 @@
         <li class="right" >
           <a href="pce_bellman_ford_doc.html" title="Bellman-Ford PCE Module"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

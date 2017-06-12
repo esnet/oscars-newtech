@@ -8,15 +8,14 @@ import net.es.oscars.dto.bwavail.BandwidthAvailabilityResponse;
 import net.es.oscars.dto.resv.Connection;
 import net.es.oscars.pce.exc.PCEException;
 import net.es.oscars.pss.PSSException;
-import net.es.oscars.resv.rest.ResvController;
 import net.es.oscars.resv.svc.ConnectionGenerationService;
 import net.es.oscars.resv.svc.DateService;
+import net.es.oscars.webui.cont.ReservationController;
 import net.es.oscars.whatif.dto.WhatifSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -24,18 +23,18 @@ import java.util.*;
 public class SuggestionGenerator {
 
 
-    ConnectionGenerationService connectionGenerationService;
+    private ConnectionGenerationService connectionGenerationService;
 
-    ResvController resvController;
+    private ReservationController resvController;
 
-    DateService dateService;
+    private DateService dateService;
 
-    BandwidthAvailabilityGenerationService bwAvailGenService;
+    private BandwidthAvailabilityGenerationService bwAvailGenService;
 
-    BandwidthAvailabilityService bwAvailService;
+    private BandwidthAvailabilityService bwAvailService;
 
     @Autowired
-    public SuggestionGenerator(ConnectionGenerationService connectionGenerationService, ResvController resvController, DateService dateService,
+    public SuggestionGenerator(ConnectionGenerationService connectionGenerationService, ReservationController resvController, DateService dateService,
                                BandwidthAvailabilityGenerationService bwAvailGenService, BandwidthAvailabilityService bwAvailService) {
         this.connectionGenerationService = connectionGenerationService;
         this.resvController = resvController;
@@ -48,10 +47,11 @@ public class SuggestionGenerator {
     /**
      * Generate a list of viable connections given a Start Date, End Date, and requested transfer Volume.
      * Provide the minimum needed bandwidth, and the maximum possible.
+     *
      * @param spec - Submitted request specification.
      * @return A list of connections that could satisfy the demand.
      */
-    public List<Connection> generateWithStartEndVolume(WhatifSpecification spec){
+    public List<Connection> generateWithStartEndVolume(WhatifSpecification spec) {
         List<Connection> connections = new ArrayList<>();
         Date start = dateService.parseDate(spec.getStartDate());
         Date end = dateService.parseDate(spec.getEndDate());
@@ -73,29 +73,29 @@ public class SuggestionGenerator {
 
         // Go through all critical points in the bandwidth availability map
         // Confirm that the available bandwidth does not drop below our minimum required
-        for(Instant instant : bwMap.keySet()) {
+        for (Instant instant : bwMap.keySet()) {
             Integer bandwidth = bwMap.get(instant);
-            if(minimumBandwidth == null || bandwidth < minimumBandwidth) {
+            if (minimumBandwidth == null || bandwidth < minimumBandwidth) {
                 minimumBandwidth = bandwidth;
             }
-            if(bandwidth < minimumRequiredBandwidth) {
+            if (bandwidth < minimumRequiredBandwidth) {
                 return connections;  // OSCARS will generate results
             }
         }
 
         // If the program arrived at this point in the code, we have two possible values for bandwidth
         // The first is the minimum required
-        if(minimumRequiredBandwidth > 0) {
+        if (minimumRequiredBandwidth > 0) {
             possibleBandwidths.add(minimumRequiredBandwidth);
         }
         // The second, if it is not the same as the previous bandwidth value,
         // is the minimum bandwidth found on the bandwidth availability map
-        if(minimumBandwidth != minimumRequiredBandwidth) {
+        if (minimumBandwidth != minimumRequiredBandwidth) {
             possibleBandwidths.add(minimumBandwidth);
         }
 
         // Now we can create a connection for all of the possible bandwidths
-        for(int i = 0; i < possibleBandwidths.size(); i++) {
+        for (int i = 0; i < possibleBandwidths.size(); i++) {
 
             Integer band = possibleBandwidths.get(i);
 
@@ -115,15 +115,14 @@ public class SuggestionGenerator {
             Connection result = null;
             try {
                 result = resvController.preCheck(conn);
-                if(result != null){
+                if (result != null) {
                     // Determine if result is successful. If so, consider storing it as an option
-                    if(result.getReserved().getVlanFlow().getAllPaths().size() > 0){
+                    if (result.getReserved().getVlanFlow().getAllPaths().size() > 0) {
                         // Success!  Now we can add this connection to our list
                         connections.add(result);
                     }
                 }
-            }
-            catch(PCEException |PSSException e){
+            } catch (PCEException | PSSException e) {
                 log.info("Connection precheck caused an exception.");
             }
         }
@@ -135,6 +134,7 @@ public class SuggestionGenerator {
     /**
      * Generate a list of viable connections given a Start Date, and End Date.
      * Get the maximum bandwidth possible.
+     *
      * @param spec - Submitted request specification.
      * @return A list of connections that could satisfy the demand.
      */
@@ -152,11 +152,11 @@ public class SuggestionGenerator {
 
         // Go through all critical points in the bandwidth availability map
         // Calculate the minimum bandwidth available across the map
-        for(Instant instant : bwMap.keySet()) {
+        for (Instant instant : bwMap.keySet()) {
             Integer bandwidth = bwMap.get(instant);
             if (minimumBandwidth == null || bandwidth < minimumBandwidth) {
                 minimumBandwidth = bandwidth;
-                if(minimumBandwidth == 0) {
+                if (minimumBandwidth == 0) {
                     return connections;
                 }
             }
@@ -178,15 +178,14 @@ public class SuggestionGenerator {
         Connection result = null;
         try {
             result = resvController.preCheck(conn);
-            if(result != null){
+            if (result != null) {
                 // Determine if result is successful. If so, consider storing it as an option
-                if(result.getReserved().getVlanFlow().getAllPaths().size() > 0){
+                if (result.getReserved().getVlanFlow().getAllPaths().size() > 0) {
                     // Success!  Now we can add this connection to our list
                     connections.add(result);
                 }
             }
-        }
-        catch(PCEException |PSSException e){
+        } catch (PCEException | PSSException e) {
             log.info("Connection precheck caused an exception.");
         }
 
@@ -196,6 +195,7 @@ public class SuggestionGenerator {
     /**
      * Generate a list of viable connections given a Start Date, and requested transfer volume.
      * Complete as early as possible.
+     *
      * @param spec - Submitted request specification.
      * @return A list of connections that could satisfy the demand.
      */
@@ -206,6 +206,7 @@ public class SuggestionGenerator {
     /**
      * Generate a list of viable connections given an End Date, and requested transfer volume.
      * Complete transfer by deadline.
+     *
      * @param spec - Submitted request specification.
      * @return A list of connections that could satisfy the demand.
      */
@@ -216,6 +217,7 @@ public class SuggestionGenerator {
     /**
      * Generate a list of viable connections given a Start Date, requested transfer volume, and desired bandwidth.
      * Complete as early as possible.
+     *
      * @param spec - Submitted request specification.
      * @return A list of connections that could satisfy the demand.
      */
@@ -226,6 +228,7 @@ public class SuggestionGenerator {
     /**
      * Generate a list of viable connections given an End Date, requested transfer volume, and desired bandwidth.
      * Complete transfer by deadline.
+     *
      * @param spec - Submitted request specification.
      * @return A list of connections that could satisfy the demand.
      */
@@ -236,6 +239,7 @@ public class SuggestionGenerator {
     /**
      * Generate a list of viable connections given a requested transfer volume, and a transfer duration.
      * Find contiguous time periods to perform transfer.
+     *
      * @param spec - Submitted request specification.
      * @return A list of connections that could satisfy the demand.
      */
@@ -246,6 +250,7 @@ public class SuggestionGenerator {
     /**
      * Generate a list of viable connections given just a requested transfer volume.
      * Complete transfer as early as possible.
+     *
      * @param spec - Submitted request specification.
      * @return A list of connections that could satisfy the demand.
      */
@@ -255,7 +260,7 @@ public class SuggestionGenerator {
 
     public Connection createInitialConnection(String srcDevice, Set<String> srcPorts, String dstDevice, Set<String> dstPorts,
                                               Integer azMbps, Integer zaMbps, String connectionId, Date startDate,
-                                              Date endDate){
+                                              Date endDate) {
         net.es.oscars.dto.spec.Specification spec = connectionGenerationService.generateSpecification(srcDevice, srcPorts, dstDevice, dstPorts,
                 "any", "any", azMbps, zaMbps, new ArrayList<>(), new ArrayList<>(), new HashSet<>(),
                 "PALINDROME", "NONE", 1, 1, 1, 1, connectionId,

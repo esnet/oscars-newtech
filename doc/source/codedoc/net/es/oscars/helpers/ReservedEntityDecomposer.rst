@@ -1,7 +1,5 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars.dto.topo Edge
-
 .. java:import:: net.es.oscars.dto.topo.enums UrnType
 
 .. java:import:: net.es.oscars.topo.dao UrnRepository

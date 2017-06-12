@@ -6,5 +6,8 @@ net.es.oscars.resv.svc
 .. toctree::
    :maxdepth: 1
 
+   ConnectionGenerationService
+   ConnectionSimplificationService
+   DateService
    ResvService
 

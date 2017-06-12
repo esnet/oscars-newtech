@@ -6,6 +6,10 @@
 
 .. java:import:: net.es.oscars.dto.topo Topology
 
+.. java:import:: net.es.oscars.dto.topo.enums PortLayer
+
+.. java:import:: net.es.oscars.dto.topo.enums VertexType
+
 .. java:import:: org.springframework.stereotype Component
 
 .. java:import:: java.util.stream Collectors

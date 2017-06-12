@@ -1,6 +1,6 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars CoreUnitTestConfiguration
+.. java:import:: net.es.oscars AbstractCoreTest
 
 .. java:import:: net.es.oscars.dto.spec PalindromicType
 
@@ -8,21 +8,19 @@
 
 .. java:import:: net.es.oscars.helpers RequestedEntityBuilder
 
+.. java:import:: net.es.oscars.pce.exc PCEException
+
 .. java:import:: net.es.oscars.pss PSSException
 
-.. java:import:: net.es.oscars.helpers.test AsymmTopologyBuilder
+.. java:import:: net.es.oscars.pce.helpers AsymmTopologyBuilder
 
-.. java:import:: net.es.oscars.helpers.test TopologyBuilder
+.. java:import:: net.es.oscars.pce.helpers TopologyBuilder
+
+.. java:import:: net.es.oscars.topo.ent BidirectionalPathE
 
 .. java:import:: org.junit Test
 
-.. java:import:: org.junit.runner RunWith
-
 .. java:import:: org.springframework.beans.factory.annotation Autowired
-
-.. java:import:: org.springframework.boot.test SpringApplicationConfiguration
-
-.. java:import:: org.springframework.test.context.junit4 SpringJUnit4ClassRunner
 
 .. java:import:: org.springframework.transaction.annotation Transactional
 
@@ -36,7 +34,7 @@ TopPceTestSurvivableTotal
 .. java:package:: net.es.oscars.pce
    :noindex:
 
-.. java:type:: @Slf4j @RunWith @SpringApplicationConfiguration @Transactional public class TopPceTestSurvivableTotal
+.. java:type:: @Slf4j @Transactional public class TopPceTestSurvivableTotal extends AbstractCoreTest
 
 Methods
 -------
@@ -134,5 +132,17 @@ survivablePceTest9
 ^^^^^^^^^^^^^^^^^^
 
 .. java:method:: @Test public void survivablePceTest9()
+   :outertype: TopPceTestSurvivableTotal
+
+survivablePceTestESnet
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survivablePceTestESnet()
+   :outertype: TopPceTestSurvivableTotal
+
+survivablePceTestESnet3Paths
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void survivablePceTestESnet3Paths()
    :outertype: TopPceTestSurvivableTotal
 

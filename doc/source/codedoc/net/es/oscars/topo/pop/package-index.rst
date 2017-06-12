@@ -6,8 +6,12 @@ net.es.oscars.topo.pop
 .. toctree::
    :maxdepth: 1
 
+   ConsistencyChecker
+   ConsistencyCheckingTest
+   ConsistencyError
+   ConsistencyException
    Device
    Ifce
    TopoFileImporter
-   TopoImporter
+   UIPopulator
 

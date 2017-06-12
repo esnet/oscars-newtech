@@ -1,11 +1,3 @@
-.. java:import:: lombok AllArgsConstructor
-
-.. java:import:: lombok Builder
-
-.. java:import:: lombok Data
-
-.. java:import:: lombok NoArgsConstructor
-
 .. java:import:: java.util List
 
 .. java:import:: java.util Set
@@ -41,7 +33,7 @@ blacklist
 destDevice
 ^^^^^^^^^^
 
-.. java:field::  String destDevice
+.. java:field:: @NonNull  String destDevice
    :outertype: CircuitFlow
 
 destPorts
@@ -57,7 +49,7 @@ destVlan
    :outertype: CircuitFlow
 
 numPaths
-^^^^^^^^^^^^^^^^
+^^^^^^^^
 
 .. java:field::  Integer numPaths
    :outertype: CircuitFlow
@@ -68,10 +60,16 @@ palindromic
 .. java:field::  String palindromic
    :outertype: CircuitFlow
 
+priority
+^^^^^^^^
+
+.. java:field::  Integer priority
+   :outertype: CircuitFlow
+
 sourceDevice
 ^^^^^^^^^^^^
 
-.. java:field::  String sourceDevice
+.. java:field:: @NonNull  String sourceDevice
    :outertype: CircuitFlow
 
 sourcePorts

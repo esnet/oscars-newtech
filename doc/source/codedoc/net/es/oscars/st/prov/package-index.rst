@@ -6,8 +6,5 @@ net.es.oscars.st.prov
 .. toctree::
    :maxdepth: 1
 
-   ProvEvent
-   ProvSM
    ProvState
-   ProvStateException
 

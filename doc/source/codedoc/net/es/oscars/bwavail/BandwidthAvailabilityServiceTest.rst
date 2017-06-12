@@ -1,6 +1,6 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars CoreUnitTestConfiguration
+.. java:import:: net.es.oscars AbstractCoreTest
 
 .. java:import:: net.es.oscars.bwavail.svc BandwidthAvailabilityService
 
@@ -8,11 +8,11 @@
 
 .. java:import:: net.es.oscars.dto.bwavail BandwidthAvailabilityResponse
 
-.. java:import:: net.es.oscars.helpers.test TopologyBuilder
+.. java:import:: net.es.oscars.pce.helpers RepoEntityBuilder
+
+.. java:import:: net.es.oscars.pce.helpers TopologyBuilder
 
 .. java:import:: net.es.oscars.resv.dao ReservedBandwidthRepository
-
-.. java:import:: net.es.oscars.resv.ent ReservedBandwidthE
 
 .. java:import:: net.es.oscars.topo.dao UrnRepository
 
@@ -22,13 +22,7 @@
 
 .. java:import:: org.junit Test
 
-.. java:import:: org.junit.runner RunWith
-
 .. java:import:: org.springframework.beans.factory.annotation Autowired
-
-.. java:import:: org.springframework.boot.test SpringApplicationConfiguration
-
-.. java:import:: org.springframework.test.context.junit4 SpringJUnit4ClassRunner
 
 .. java:import:: org.springframework.transaction.annotation Transactional
 
@@ -44,7 +38,7 @@ BandwidthAvailabilityServiceTest
 .. java:package:: net.es.oscars.bwavail
    :noindex:
 
-.. java:type:: @Slf4j @RunWith @SpringApplicationConfiguration @Transactional public class BandwidthAvailabilityServiceTest
+.. java:type:: @Slf4j @Transactional public class BandwidthAvailabilityServiceTest extends AbstractCoreTest
 
 Methods
 -------
@@ -178,6 +172,12 @@ reservationsStartDuringEndDuring
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. java:method:: @Test public void reservationsStartDuringEndDuring()
+   :outertype: BandwidthAvailabilityServiceTest
+
+reservationsStartDuringEndDuringDifferentPipeAndJunctionBw
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @Test public void reservationsStartDuringEndDuringDifferentPipeAndJunctionBw()
    :outertype: BandwidthAvailabilityServiceTest
 
 reservationsThreeWayOverlapDifferentNodes

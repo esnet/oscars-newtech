@@ -6,6 +6,5 @@ net.es.oscars.pss.pop
 .. toctree::
    :maxdepth: 1
 
-   TemplateImporter
    UrnAddressImporter
 

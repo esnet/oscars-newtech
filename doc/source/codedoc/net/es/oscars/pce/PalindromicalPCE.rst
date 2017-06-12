@@ -1,14 +1,10 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars.dto.topo.enums VertexType
+.. java:import:: net.es.oscars.pce.exc PCEException
 
 .. java:import:: net.es.oscars.resv.ent RequestedVlanPipeE
 
-.. java:import:: net.es.oscars.resv.ent ReservedBandwidthE
-
 .. java:import:: net.es.oscars.resv.ent ReservedVlanE
-
-.. java:import:: net.es.oscars.resv.ent ScheduleSpecificationE
 
 .. java:import:: net.es.oscars.dto.topo TopoEdge
 
@@ -37,7 +33,7 @@ Methods
 computePalindromicERO
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public Map<String, List<TopoEdge>> computePalindromicERO(RequestedVlanPipeE requestPipe, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList) throws PCEException
+.. java:method:: public Map<String, List<TopoEdge>> computePalindromicERO(RequestedVlanPipeE requestPipe, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList) throws PCEException
    :outertype: PalindromicalPCE
 
    Depends on DijkstraPCE to construct the Physical-Layer EROs for a request

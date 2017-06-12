@@ -6,5 +6,7 @@ net.es.oscars.resv
 .. toctree::
    :maxdepth: 1
 
-   SpecUnitTestConfiguration
+   ArchivalTest
+   ResourceChoiceTest
+   SpecPopTest
 

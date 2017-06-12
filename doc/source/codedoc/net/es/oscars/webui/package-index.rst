@@ -6,8 +6,6 @@ net.es.oscars.webui
 .. toctree::
    :maxdepth: 1
 
-   RestAuthProvider
+   DatabaseAuthProvider
    WebSecurityConfig
-   WebuiApp
-   WebuiRestUtil
 

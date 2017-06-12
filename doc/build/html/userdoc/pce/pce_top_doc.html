@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Top PCE Module &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Top PCE Module &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Engine (PCE)" href="../pce_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Translation PCE Module" href="pce_translation_doc.html" />
     <link rel="prev" title="Path Computation Engine (PCE)" href="../pce_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,12 +45,12 @@
         <li class="right" >
           <a href="../pce_doc.html" title="Path Computation Engine (PCE)"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -84,9 +85,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../pce_doc.html">Path Computation Engine (PCE)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pce_doc.html#pce-workflow">PCE Workflow</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../pce_doc.html#pce-structure">PCE Structure</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="">Top PCE Module</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Top PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_translation_doc.html">Translation PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_layer3_doc.html">Layer 3 PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_palindrome_doc.html">Palindromic PCE Module</a></li>
@@ -120,17 +119,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="pce_translation_doc.html"
                         title="next chapter">Translation PCE Module</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -139,25 +135,25 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="top-pce-module">
 <span id="pce-top"></span><h1>Top PCE Module<a class="headerlink" href="#top-pce-module" title="Permalink to this headline">¶</a></h1>
-<p>The Top PCE represents the PCE&#8217;s API through which circuits are submitted for request, and are returned updated upon successful (or unsuccessful) reservation. Additionally, this module serves as the OSCARS Reservation Workflow Control mechanism which decomposes a <a class="reference internal" href="../circuit/requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a> into its <a class="reference internal" href="../circuit/plumbing_doc.html#plumbing"><em>Plumbing Specification</em></a> containers and determines how to process each pipe. Note that these pipes are specified independently, meaning that the Top PCE may prescribe different flows through the remainder of the PCE for a single circuit request. The Top PCE feeds each pipe through one or more service-specific PCE submodules in order to perform the desired constrained pathfinding. The desired services are triggered during request specification, and the Top PCE will determine which of the appropriate PCE submodules to engage for supporting them.</p>
+<p>The Top PCE represents the PCE’s API through which circuits are submitted for request, and are returned updated upon successful (or unsuccessful) reservation. Additionally, this module serves as the OSCARS Reservation Workflow Control mechanism which decomposes a <a class="reference internal" href="../circuit/requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a> into its <a class="reference internal" href="../circuit/plumbing_doc.html#plumbing"><span class="std std-ref">Plumbing Specification</span></a> containers and determines how to process each pipe. Note that these pipes are specified independently, meaning that the Top PCE may prescribe different flows through the remainder of the PCE for a single circuit request. The Top PCE feeds each pipe through one or more service-specific PCE submodules in order to perform the desired constrained pathfinding. The desired services are triggered during request specification, and the Top PCE will determine which of the appropriate PCE submodules to engage for supporting them.</p>
 <div class="section" id="module-details">
 <h2>Module Details<a class="headerlink" href="#module-details" title="Permalink to this headline">¶</a></h2>
 <p><strong>Calls:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="pce_ero_doc.html#pce-ero"><em>Explicit Route Object (ERO) PCE Module</em></a></li>
-<li><a class="reference internal" href="pce_layer3_doc.html#pce-layer3"><em>Layer 3 PCE Module</em></a></li>
-<li><a class="reference internal" href="pce_nonpalindrome_doc.html#pce-nonpalindrome"><em>Non-Palindromic PCE Module</em></a></li>
-<li><a class="reference internal" href="pce_palindrome_doc.html#pce-palindrome"><em>Palindromic PCE Module</em></a></li>
-<li><a class="reference internal" href="pce_survivability_doc.html#pce-survivability"><em>Survivability PCE Module</em></a></li>
-<li><a class="reference internal" href="pce_translation_doc.html#pce-translation"><em>Translation PCE Module</em></a></li>
-<li><a class="reference internal" href="../service/service_topology_doc.html#service-topology"><em>Topology Service</em></a></li>
-<li><a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a></li>
-<li><a class="reference internal" href="../service/service_bandwidth_doc.html#service-bandwidth"><em>Reserved Bandwidth Service</em></a></li>
-<li><a class="reference internal" href="../service/service_vlan_doc.html#service-vlan"><em>VLAN Service</em></a></li>
+<li><a class="reference internal" href="pce_ero_doc.html#pce-ero"><span class="std std-ref">Explicit Route Object (ERO) PCE Module</span></a></li>
+<li><a class="reference internal" href="pce_layer3_doc.html#pce-layer3"><span class="std std-ref">Layer 3 PCE Module</span></a></li>
+<li><a class="reference internal" href="pce_nonpalindrome_doc.html#pce-nonpalindrome"><span class="std std-ref">Non-Palindromic PCE Module</span></a></li>
+<li><a class="reference internal" href="pce_palindrome_doc.html#pce-palindrome"><span class="std std-ref">Palindromic PCE Module</span></a></li>
+<li><a class="reference internal" href="pce_survivability_doc.html#pce-survivability"><span class="std std-ref">Survivability PCE Module</span></a></li>
+<li><a class="reference internal" href="pce_translation_doc.html#pce-translation"><span class="std std-ref">Translation PCE Module</span></a></li>
+<li><a class="reference internal" href="../service/service_topology_doc.html#service-topology"><span class="std std-ref">Topology Service</span></a></li>
+<li><a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a></li>
+<li><a class="reference internal" href="../service/service_bandwidth_doc.html#service-bandwidth"><span class="std std-ref">Reserved Bandwidth Service</span></a></li>
+<li><a class="reference internal" href="../service/service_vlan_doc.html#service-vlan"><span class="std std-ref">VLAN Service</span></a></li>
 </ul>
 <p><strong>Called By:</strong></p>
 <ul class="simple">
@@ -165,7 +161,7 @@
 </ul>
 <p><strong>API Specification:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/TopPCE.html#net.es.oscars.pce.TopPCE" title="net.es.oscars.pce.TopPCE"><tt class="xref java java-ref docutils literal"><span class="pre">TopPCE</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/TopPCE.html#net.es.oscars.pce.TopPCE" title="net.es.oscars.pce.TopPCE"><code class="xref java java-ref docutils literal"><span class="pre">TopPCE</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -176,7 +172,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -188,14 +184,14 @@
         <li class="right" >
           <a href="../pce_doc.html" title="Path Computation Engine (PCE)"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

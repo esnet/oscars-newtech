@@ -7,6 +7,5 @@ net.es.oscars.pss.ent
    :maxdepth: 1
 
    RouterCommandsE
-   TemplateE
    UrnAddressE
 

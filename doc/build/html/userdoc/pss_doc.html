@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Path Setup Subsystem (PSS) &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Path Setup Subsystem (PSS) &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../index.html" />
-    <link rel="up" title="Core Module" href="core_doc.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Web User Interface (WebUI)" href="webui_doc.html" />
     <link rel="prev" title="Service-Layer Topology with Survivable MPLS-Layer" href="enhanced/virtual_surv_topo_doc.html" /> 
   </head>
   <body>
 	<a href="../index.html"><img src="../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,11 +45,11 @@
         <li class="right" >
           <a href="enhanced/virtual_surv_topo_doc.html" title="Service-Layer Topology with Survivable MPLS-Layer"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="core_doc.html" accesskey="U">Core Module</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core_doc.html" accesskey="U">Core Module</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -84,7 +85,7 @@
 <li class="toctree-l2"><a class="reference internal" href="pce_doc.html#pce-workflow">PCE Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pce_doc.html#pce-structure">PCE Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced_service_doc.html">Path Computation Service Enhancements</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Path Setup Subsystem (PSS)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Path Setup Subsystem (PSS)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="webui_doc.html">Web User Interface (WebUI)</a></li>
@@ -101,17 +102,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="webui_doc.html"
                         title="next chapter">Web User Interface (WebUI)</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -120,7 +118,7 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="path-setup-subsystem-pss">
 <span id="pss"></span><h1>Path Setup Subsystem (PSS)<a class="headerlink" href="#path-setup-subsystem-pss" title="Permalink to this headline">¶</a></h1>
@@ -133,7 +131,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -145,13 +143,13 @@
         <li class="right" >
           <a href="enhanced/virtual_surv_topo_doc.html" title="Service-Layer Topology with Survivable MPLS-Layer"
              >previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="core_doc.html" >Core Module</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core_doc.html" >Core Module</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

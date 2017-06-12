@@ -2,13 +2,9 @@
 
 .. java:import:: net.es.oscars.dto.spec SurvivabilityType
 
-.. java:import:: net.es.oscars.resv.ent RequestedVlanPipeE
+.. java:import:: net.es.oscars.dto.topo.enums PortLayer
 
-.. java:import:: net.es.oscars.resv.ent ReservedBandwidthE
-
-.. java:import:: net.es.oscars.resv.ent ReservedVlanE
-
-.. java:import:: net.es.oscars.resv.ent ScheduleSpecificationE
+.. java:import:: net.es.oscars.pce.exc PCEException
 
 .. java:import:: net.es.oscars.servicetopo SurvivableServiceLayerTopology
 
@@ -49,12 +45,13 @@ Methods
 computeSurvivableERO
 ^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public Map<String, List<TopoEdge>> computeSurvivableERO(RequestedVlanPipeE requestPipe, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList) throws PCEException
+.. java:method:: public Map<String, List<TopoEdge>> computeSurvivableERO(RequestedVlanPipeE requestPipe, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList) throws PCEException
    :outertype: SurvivabilityPCE
 
    Depends on BhandariPCE to construct the survivable physical-layer EROs for a request after pruning the topology based on requested parameters
 
    :param requestPipe: Requested pipe with required reservation parameters
+   :param bwAvailMap:
    :throws PCEException:
    :return: A four- element Map containing both the primary and secondary link-disjoint forward-direction EROs and the primary and secondary link-disjoint reverse-direction EROs
 

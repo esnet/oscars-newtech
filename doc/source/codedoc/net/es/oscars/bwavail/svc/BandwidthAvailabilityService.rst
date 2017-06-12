@@ -30,6 +30,8 @@
 
 .. java:import:: net.es.oscars.helpers ReservedEntityDecomposer
 
+.. java:import:: net.es.oscars.pce.exc PCEException
+
 .. java:import:: net.es.oscars.pss PSSException
 
 .. java:import:: net.es.oscars.resv.dao ReservedBandwidthRepository

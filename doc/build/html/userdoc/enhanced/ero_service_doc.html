@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Explicit Routing Services &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Explicit Routing Services &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,42 +17,40 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Service Enhancements" href="../advanced_service_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Survivable Routing Services" href="survivability_service_doc.html" />
     <link rel="prev" title="Multipoint Routing Service" href="multipoint_service_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="survivability_service_doc.html" title="Survivable Routing Services"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="multipoint_service_doc.html" title="Multipoint Routing Service"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" accesskey="U">Path Computation Service Enhancements</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" accesskey="U">Path Computation Service Enhancements</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -84,6 +82,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../virtualcircuits.html">Virtual Circuits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_doc.html">Core Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../webui_doc.html">Web User Interface (WebUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_doc.html">Using the OSCARS API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../whatif_doc.html">What-If Service Module</a></li>
 </ul>
 <ul>
@@ -96,17 +95,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="survivability_service_doc.html"
                         title="next chapter">Survivable Routing Services</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -115,97 +111,97 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="explicit-routing-services">
 <span id="ero-pce-services"></span><h1>Explicit Routing Services<a class="headerlink" href="#explicit-routing-services" title="Permalink to this headline">¶</a></h1>
-<p>OSCARS 1.0 supports the specification of circuits with prescribed route solutions. That is, the <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a> does not necessarily need compute a route without help form the user. The user can in fact designate an <em>Explicit Route Object (ERO)</em> which serves as input to the PCE during pathfinding. The ERO may specify a complete route (in both the forward- and reverse-directions), a partial set of waypoints which must be reach along the route, or a set of devices and ports which must <em>not</em> be included in the route. This service enhances the user&#8217;s ability to predict certain qualities of the espected solution.</p>
+<p>OSCARS 1.0 supports the specification of circuits with prescribed route solutions. That is, the <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a> does not necessarily need compute a route without help form the user. The user can in fact designate an <em>Explicit Route Object (ERO)</em> which serves as input to the PCE during pathfinding. The ERO may specify a complete route (in both the forward- and reverse-directions), a partial set of waypoints which must be reach along the route, or a set of devices and ports which must <em>not</em> be included in the route. This service enhances the user’s ability to predict certain qualities of the espected solution.</p>
 <div class="section" id="complete-route-specification">
 <span id="ero-pce-complete"></span><h2>Complete Route Specification<a class="headerlink" href="#complete-route-specification" title="Permalink to this headline">¶</a></h2>
-<p>The user may specify the complete ERO for either the forward- or reverse-direction. If a complete ERO is specified, the <a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a> will remove all other elements from the topology to ensure that only the expected solution may be computed by the PCE, as shown in the figure below (requested ERO elements with subscripts represent ports on a node that connect to the device matching the subscript label).</p>
-<div class="figure align-center">
+<p>The user may specify the complete ERO for either the forward- or reverse-direction. If a complete ERO is specified, the <a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a> will remove all other elements from the topology to ensure that only the expected solution may be computed by the PCE, as shown in the figure below (requested ERO elements with subscripts represent ports on a node that connect to the device matching the subscript label).</p>
+<div class="figure align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/ero_complete.png"><img alt="Complete ERO" src="../../_images/ero_complete.png" style="width: 672.75px; height: 348.0px;" /></a>
-<p class="caption"><em>A complete ERO may specify a particular route through the network not necessarily matching the most efficient path.</em></p>
+<p class="caption"><span class="caption-text"><em>A complete ERO may specify a particular route through the network not necessarily matching the most efficient path.</em></span></p>
 </div>
 <p>If the expected route is not reservable (due to insufficient bandwidth or VLAN availability), the circuit reservation fails.</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id3">
 <a class="reference internal image-reference" href="../../_images/ero_fail.gif"><img alt="Complete ERO Failure" src="../../_images/ero_fail.gif" style="width: 685.5px; height: 371.25px;" /></a>
-<p class="caption"><em>If even a single port along the specified ERO has insufficient resource availability, the reservation fails.</em></p>
+<p class="caption"><span class="caption-text"><em>If even a single port along the specified ERO has insufficient resource availability, the reservation fails.</em></span></p>
 </div>
 <p>The user may also specify Non-Palindromic forward- and reverse-direction routes such that they do not need to mirror one another. In this case, <em>both</em> EROs must be reservable or the circuit fails. If only the forward ERO is specified, the reverse-path will be computed as its Palindrome.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">If Non-Palindromic EROs are requested, then all Ethernet devices/ports/links used in the forward path, <strong>must</strong> be represented in the return path. Only MPLS devices/ports/links may differ in forward-/reverse-direction paths.</p>
 </div>
-<div class="figure align-center">
+<div class="figure align-center" id="id4">
 <a class="reference internal image-reference" href="../../_images/ero_nonpal.png"><img alt="Non-Palindromic ERO" src="../../_images/ero_nonpal.png" style="width: 683.25px; height: 346.5px;" /></a>
-<p class="caption"><em>The return path may be specified with a different ERO than the forward-direction path.</em></p>
+<p class="caption"><span class="caption-text"><em>The return path may be specified with a different ERO than the forward-direction path.</em></span></p>
 </div>
 <div class="section" id="service-details">
 <h3>Service Details<a class="headerlink" href="#service-details" title="Permalink to this headline">¶</a></h3>
 <p><strong>Can be combined with:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="asymm_service_doc.html#asymm-pce-service"><em>Asymmetric Bandwidth Capability Service</em></a></li>
-<li><a class="reference internal" href="nonpalindromic_service_doc.html#nonpalindromic-pce-service"><em>Non-Palindromic Return Path Service</em></a></li>
-<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></li>
+<li><a class="reference internal" href="asymm_service_doc.html#asymm-pce-service"><span class="std std-ref">Asymmetric Bandwidth Capability Service</span></a></li>
+<li><a class="reference internal" href="nonpalindromic_service_doc.html#nonpalindromic-pce-service"><span class="std std-ref">Non-Palindromic Return Path Service</span></a></li>
+<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></li>
 </ul>
 <p><strong>Relevant PCE Module(s)</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><em>Explicit Route Object (ERO) PCE Module</em></a></li>
+<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><span class="std std-ref">Explicit Route Object (ERO) PCE Module</span></a></li>
 </ul>
 </div>
 </div>
 <div class="section" id="partial-route-specification">
 <span id="ero-pce-partial"></span><h2>Partial Route Specification<a class="headerlink" href="#partial-route-specification" title="Permalink to this headline">¶</a></h2>
 <p>An ERO may alternatively be specified as a partial solution. For example, a user may desire that certain segments of the routing solution pass through specific waypoints. As such, the ERO may be requested as a specific list of network nodes (devices or ports) that must be included in the associated forward and return path. This list represents an in-order mandatory subset of the nodes along the final ERO returned by the PCE. A route is established between each pair of waypoints in the sequence.</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id5">
 <a class="reference internal image-reference" href="../../_images/ero_partial.gif"><img alt="Non-Palindromic ERO" src="../../_images/ero_partial.gif" style="width: 672.75px; height: 348.0px;" /></a>
-<p class="caption"><em>Partial ERO specification will establish a sequence of routes between each pair of waypoints in the sequence.</em></p>
+<p class="caption"><span class="caption-text"><em>Partial ERO specification will establish a sequence of routes between each pair of waypoints in the sequence.</em></span></p>
 </div>
-<p>All network elements not explicitly included in the Partial ERO are still candidates for inclusion in the final routing solution returned by the PCE. Consider requesting a partial ERO of simply the set of ports {A, Z}; the PCE would treat it identically to the <a class="reference internal" href="../pce_doc.html#basic-pce-service"><em>Basic PCE Service</em></a>, and the appropriate solution would traverse a good portion of the network in the above example. However, if even a single specified subpath cannot be computed due to resource availability restrictions, the circuit reservation fails.</p>
+<p>All network elements not explicitly included in the Partial ERO are still candidates for inclusion in the final routing solution returned by the PCE. Consider requesting a partial ERO of simply the set of ports {A, Z}; the PCE would treat it identically to the <a class="reference internal" href="../pce_doc.html#basic-pce-service"><span class="std std-ref">Basic PCE Service</span></a>, and the appropriate solution would traverse a good portion of the network in the above example. However, if even a single specified subpath cannot be computed due to resource availability restrictions, the circuit reservation fails.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Unlike the Complete ERO specification described above, all Partial EROs are required to be palindromic.</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">Since each segment of the final route is computed individually, it&#8217;s possible that waypoints prescribed later in the path may be included in an earlier segment. OSCARS does not permit any cycles in its routing solutions, and if such a scenario were to occur, the Partial ERO would not be valid, and the reservation would fail.</p>
+<p class="last">Since each segment of the final route is computed individually, it’s possible that waypoints prescribed later in the path may be included in an earlier segment. OSCARS does not permit any cycles in its routing solutions, and if such a scenario were to occur, the Partial ERO would not be valid, and the reservation would fail.</p>
 </div>
 <div class="section" id="id1">
 <h3>Service Details<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p><strong>Can be combined with:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="asymm_service_doc.html#asymm-pce-service"><em>Asymmetric Bandwidth Capability Service</em></a></li>
-<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></li>
+<li><a class="reference internal" href="asymm_service_doc.html#asymm-pce-service"><span class="std std-ref">Asymmetric Bandwidth Capability Service</span></a></li>
+<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></li>
 </ul>
 <p><strong>Relevant PCE Module(s)</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><em>Explicit Route Object (ERO) PCE Module</em></a></li>
+<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><span class="std std-ref">Explicit Route Object (ERO) PCE Module</span></a></li>
 </ul>
 </div>
 </div>
 <div class="section" id="blacklist-avoidance-routing">
 <span id="ero-pce-blacklist"></span><h2>“Blacklist” Avoidance Routing<a class="headerlink" href="#blacklist-avoidance-routing" title="Permalink to this headline">¶</a></h2>
-<p>In addition (or as an alternative) to providing nodes that must be included in the path as in the Complete and Partial ERO Specifications, the user may also find it desirable to be able to <em>avoid</em> a particular node or set of nodes comprising a section of the network topology. This desire is likely application-/user-specific. The user may specify a collection of devices and ports which they deem to be undesirable for the given circuit request. All of these &#8220;blacklisted&#8221; nodes, as well as the network links connected to included ports will be explicitly pruned from the network prior to pathfinding. If the remaining network components do not support a working route solution, the reservation fails. Since this ERO service is handled be the <a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a>, it can be combined with all other existing PCE services.</p>
-<div class="figure align-center">
+<p>In addition (or as an alternative) to providing nodes that must be included in the path as in the Complete and Partial ERO Specifications, the user may also find it desirable to be able to <em>avoid</em> a particular node or set of nodes comprising a section of the network topology. This desire is likely application-/user-specific. The user may specify a collection of devices and ports which they deem to be undesirable for the given circuit request. All of these “blacklisted” nodes, as well as the network links connected to included ports will be explicitly pruned from the network prior to pathfinding. If the remaining network components do not support a working route solution, the reservation fails. Since this ERO service is handled be the <a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a>, it can be combined with all other existing PCE services.</p>
+<div class="figure align-center" id="id6">
 <a class="reference internal image-reference" href="../../_images/ero_blacklist.gif"><img alt="Blacklist" src="../../_images/ero_blacklist.gif" style="width: 665.25px; height: 399.75px;" /></a>
-<p class="caption"><em>Blacklisted elements are explicitly pruned out of the topology before PCE execution commences.</em></p>
+<p class="caption"><span class="caption-text"><em>Blacklisted elements are explicitly pruned out of the topology before PCE execution commences.</em></span></p>
 </div>
 <p><strong>Can be combined with:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce_doc.html#basic-pce-service"><em>Basic PCE Service</em></a></li>
-<li><a class="reference internal" href="asymm_service_doc.html#asymm-pce-service"><em>Asymmetric Bandwidth Capability Service</em></a></li>
-<li><a class="reference internal" href="nonpalindromic_service_doc.html#nonpalindromic-pce-service"><em>Non-Palindromic Return Path Service</em></a></li>
-<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></li>
-<li><a class="reference internal" href="#ero-pce-complete"><em>Complete Route Specification</em></a></li>
-<li><a class="reference internal" href="#ero-pce-partial"><em>Partial Route Specification</em></a></li>
-<li><a class="reference internal" href="survivability_service_doc.html#surv-pce-complete"><em>Complete Path Survivability</em></a></li>
-<li><a class="reference internal" href="survivability_service_doc.html#surv-pce-mpls"><em>MPLS-Layer Survivability</em></a></li>
-<li><a class="reference internal" href="survivability_service_doc.html#surv-pce-kpath"><em>K-Disjoint Path Survivability</em></a></li>
+<li><a class="reference internal" href="../pce_doc.html#basic-pce-service"><span class="std std-ref">Basic PCE Service</span></a></li>
+<li><a class="reference internal" href="asymm_service_doc.html#asymm-pce-service"><span class="std std-ref">Asymmetric Bandwidth Capability Service</span></a></li>
+<li><a class="reference internal" href="nonpalindromic_service_doc.html#nonpalindromic-pce-service"><span class="std std-ref">Non-Palindromic Return Path Service</span></a></li>
+<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></li>
+<li><a class="reference internal" href="#ero-pce-complete"><span class="std std-ref">Complete Route Specification</span></a></li>
+<li><a class="reference internal" href="#ero-pce-partial"><span class="std std-ref">Partial Route Specification</span></a></li>
+<li><a class="reference internal" href="survivability_service_doc.html#surv-pce-complete"><span class="std std-ref">Complete Path Survivability</span></a></li>
+<li><a class="reference internal" href="survivability_service_doc.html#surv-pce-mpls"><span class="std std-ref">MPLS-Layer Survivability</span></a></li>
+<li><a class="reference internal" href="survivability_service_doc.html#surv-pce-kpath"><span class="std std-ref">K-Disjoint Path Survivability</span></a></li>
 </ul>
 <p><strong>Relevant Topology/PCE Service(s)</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a></li>
+<li><a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a></li>
 </ul>
 </div>
 </div>
@@ -216,29 +212,26 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="survivability_service_doc.html" title="Survivable Routing Services"
              >next</a> |</li>
         <li class="right" >
           <a href="multipoint_service_doc.html" title="Multipoint Routing Service"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Survivability PCE Module &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Survivability PCE Module &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Engine (PCE)" href="../pce_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Explicit Route Object (ERO) PCE Module" href="pce_ero_doc.html" />
     <link rel="prev" title="Non-Palindromic PCE Module" href="pce_nonpalindrome_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,12 +45,12 @@
         <li class="right" >
           <a href="pce_nonpalindrome_doc.html" title="Non-Palindromic PCE Module"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -89,9 +90,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pce_layer3_doc.html">Layer 3 PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_palindrome_doc.html">Palindromic PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_nonpalindrome_doc.html">Non-Palindromic PCE Module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Survivability PCE Module</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Survivability PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_ero_doc.html">Explicit Route Object (ERO) PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_dijkstra_doc.html">Dijkstra PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_bellman_ford_doc.html">Bellman-Ford PCE Module</a></li>
@@ -120,17 +119,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="pce_ero_doc.html"
                         title="next chapter">Explicit Route Object (ERO) PCE Module</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -139,34 +135,34 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="survivability-pce-module">
 <span id="pce-survivability"></span><h1>Survivability PCE Module<a class="headerlink" href="#survivability-pce-module" title="Permalink to this headline">¶</a></h1>
-<p>This module finds a survivable pair or set of physically (node, port, and link) disjoint routes through the network for a given requested <a class="reference internal" href="../circuit/plumbing_doc.html#plumbing"><em>Plumbing Specification</em></a> pipe. In the case where a pair of paths is required, the Survivability PCE relies upon the <a class="reference internal" href="pce_bhandari_doc.html#pce-bhandari"><em>Bhandari PCE Module</em></a>, which performs Bhandari&#8217;s algorithm to minimize the total cost of both the primary working path and the secondary backup path. This differs from some heuristics which aim to minimize the cost of the primary path at the possible expense of a more costly secondary path.  Thus, both paths are computed simultaneously.  If an appropriate pair cannot be identified which meets the constraints in requested specification, the entire circuit reservation fails. If the user requests a set of <em>K</em> disjoint paths, all <em>K</em> must be computed or the reservation fails.</p>
-<p>This module provides the primary implementation for the <a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-services"><em>Survivable Routing Services</em></a>:</p>
+<p>This module finds a survivable pair or set of physically (node, port, and link) disjoint routes through the network for a given requested <a class="reference internal" href="../circuit/plumbing_doc.html#plumbing"><span class="std std-ref">Plumbing Specification</span></a> pipe. In the case where a pair of paths is required, the Survivability PCE relies upon the <a class="reference internal" href="pce_bhandari_doc.html#pce-bhandari"><span class="std std-ref">Bhandari PCE Module</span></a>, which performs Bhandari’s algorithm to minimize the total cost of both the primary working path and the secondary backup path. This differs from some heuristics which aim to minimize the cost of the primary path at the possible expense of a more costly secondary path.  Thus, both paths are computed simultaneously.  If an appropriate pair cannot be identified which meets the constraints in requested specification, the entire circuit reservation fails. If the user requests a set of <em>K</em> disjoint paths, all <em>K</em> must be computed or the reservation fails.</p>
+<p>This module provides the primary implementation for the <a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-services"><span class="std std-ref">Survivable Routing Services</span></a>:</p>
 <ul class="simple">
-<li><a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-complete"><em>Complete Path Survivability</em></a></li>
-<li><a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-mpls"><em>MPLS-Layer Survivability</em></a></li>
-<li><a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-kpath"><em>K-Disjoint Path Survivability</em></a></li>
+<li><a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-complete"><span class="std std-ref">Complete Path Survivability</span></a></li>
+<li><a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-mpls"><span class="std std-ref">MPLS-Layer Survivability</span></a></li>
+<li><a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-kpath"><span class="std std-ref">K-Disjoint Path Survivability</span></a></li>
 </ul>
 <div class="section" id="module-details">
 <h2>Module Details<a class="headerlink" href="#module-details" title="Permalink to this headline">¶</a></h2>
 <p><strong>Calls:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="pce_bhandari_doc.html#pce-bhandari"><em>Bhandari PCE Module</em></a></li>
-<li><a class="reference internal" href="pce_dijkstra_doc.html#pce-dijkstra"><em>Dijkstra PCE Module</em></a></li>
-<li><a class="reference internal" href="../service/service_topology_doc.html#service-topology"><em>Topology Service</em></a></li>
-<li><a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a></li>
-<li><a class="reference internal" href="../enhanced/virtual_surv_topo_doc.html#virtual-surv-topo"><em>Service-Layer Topology with Survivable MPLS-Layer</em></a></li>
+<li><a class="reference internal" href="pce_bhandari_doc.html#pce-bhandari"><span class="std std-ref">Bhandari PCE Module</span></a></li>
+<li><a class="reference internal" href="pce_dijkstra_doc.html#pce-dijkstra"><span class="std std-ref">Dijkstra PCE Module</span></a></li>
+<li><a class="reference internal" href="../service/service_topology_doc.html#service-topology"><span class="std std-ref">Topology Service</span></a></li>
+<li><a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a></li>
+<li><a class="reference internal" href="../enhanced/virtual_surv_topo_doc.html#virtual-surv-topo"><span class="std std-ref">Service-Layer Topology with Survivable MPLS-Layer</span></a></li>
 </ul>
 <p><strong>Called By:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="pce_top_doc.html#pce-top"><em>Top PCE Module</em></a></li>
+<li><a class="reference internal" href="pce_top_doc.html#pce-top"><span class="std std-ref">Top PCE Module</span></a></li>
 </ul>
 <p><strong>API Specification:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/SurvivabilityPCE.html#net.es.oscars.pce.SurvivabilityPCE" title="net.es.oscars.pce.SurvivabilityPCE"><tt class="xref java java-ref docutils literal"><span class="pre">SurvivabilityPCE</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/SurvivabilityPCE.html#net.es.oscars.pce.SurvivabilityPCE" title="net.es.oscars.pce.SurvivabilityPCE"><code class="xref java java-ref docutils literal"><span class="pre">SurvivabilityPCE</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -177,7 +173,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -189,14 +185,14 @@
         <li class="right" >
           <a href="pce_nonpalindrome_doc.html" title="Non-Palindromic PCE Module"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

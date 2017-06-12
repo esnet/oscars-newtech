@@ -34,6 +34,12 @@ ALU_SDP_ID
 .. java:field:: public static final ResourceType ALU_SDP_ID
    :outertype: ResourceType
 
+ALU_SVC_ID
+^^^^^^^^^^
+
+.. java:field:: public static final ResourceType ALU_SVC_ID
+   :outertype: ResourceType
+
 VC_ID
 ^^^^^
 

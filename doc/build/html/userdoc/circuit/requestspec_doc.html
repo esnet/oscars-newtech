@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Circuit Request Specification &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Circuit Request Specification &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Virtual Circuits" href="../virtualcircuits.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Circuit Schedule Specification" href="schedspec_doc.html" />
     <link rel="prev" title="Virtual Circuits" href="../virtualcircuits.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,11 +45,11 @@
         <li class="right" >
           <a href="../virtualcircuits.html" title="Virtual Circuits"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../virtualcircuits.html" accesskey="U">Virtual Circuits</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../virtualcircuits.html" accesskey="U">Virtual Circuits</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -78,9 +79,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../start.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../start.html#project-structure">Project Structure</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../virtualcircuits.html">Virtual Circuits</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">Circuit Request Specification</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Circuit Request Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schedspec_doc.html">Circuit Schedule Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resvspec_doc.html">Circuit Reservation Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plumbing_doc.html">Plumbing Specification</a></li>
@@ -102,17 +101,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="schedspec_doc.html"
                         title="next chapter">Circuit Schedule Specification</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -121,13 +117,13 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="circuit-request-specification">
 <span id="requestspec"></span><h1>Circuit Request Specification<a class="headerlink" href="#circuit-request-specification" title="Permalink to this headline">¶</a></h1>
-<p>An OSCARS circuit is decomposed roughly into three components: The <em>Circuit Request Specification</em>, the <a class="reference internal" href="schedspec_doc.html#schedspec"><em>Circuit Schedule Specification</em></a>, and the <a class="reference internal" href="resvspec_doc.html#resvspec"><em>Circuit Reservation Specification</em></a>.  The Request Specification describes the user&#8217;s input parameters and models the desired logical connection from the user.</p>
-<p>The request is composed of a collection of pipes, junctions, and fixtures, which are described in detail by the <a class="reference internal" href="plumbing_doc.html#plumbing"><em>Plumbing Specification</em></a>. Each request must consist of at least one pipe or one junction and at least two fixtures.  A user may request a connection across a single junction, which would represent a direct connection between two access ports on a single device.  Alternatively, users may request a pipe, which must begin and end at different junctions, each of which must have at least one port. The given plumbing specification will be passed as input to the <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a>, which is the heart of OSCARS and performs all of its routing and resource allocation duties.  Each device and port has a topology-specific junction. The end-points of a request may be specified using those IDs.</p>
-<p>The user may trigger either a <a class="reference internal" href="../pce_doc.html#basic-pce-service"><em>Basic PCE Service</em></a> or <a class="reference internal" href="../advanced_service_doc.html#advanced-service"><em>Path Computation Service Enhancements</em></a> simply by manipulating the input plumbing specified in the request. Each requested pipe is handled by the PCE individually, and service enhancements are activated per-pipe. In other words, by manipulating the requested parameters of one or more pipes, OSCARS services may be toggled and/or combined where possible.</p>
+<p>An OSCARS circuit is decomposed roughly into three components: The <em>Circuit Request Specification</em>, the <a class="reference internal" href="schedspec_doc.html#schedspec"><span class="std std-ref">Circuit Schedule Specification</span></a>, and the <a class="reference internal" href="resvspec_doc.html#resvspec"><span class="std std-ref">Circuit Reservation Specification</span></a>.  The Request Specification describes the user’s input parameters and models the desired logical connection from the user.</p>
+<p>The request is composed of a collection of pipes, junctions, and fixtures, which are described in detail by the <a class="reference internal" href="plumbing_doc.html#plumbing"><span class="std std-ref">Plumbing Specification</span></a>. Each request must consist of at least one pipe or one junction and at least two fixtures.  A user may request a connection across a single junction, which would represent a direct connection between two access ports on a single device.  Alternatively, users may request a pipe, which must begin and end at different junctions, each of which must have at least one port. The given plumbing specification will be passed as input to the <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a>, which is the heart of OSCARS and performs all of its routing and resource allocation duties.  Each device and port has a topology-specific junction. The end-points of a request may be specified using those IDs.</p>
+<p>The user may trigger either a <a class="reference internal" href="../pce_doc.html#basic-pce-service"><span class="std std-ref">Basic PCE Service</span></a> or <a class="reference internal" href="../advanced_service_doc.html#advanced-service"><span class="std std-ref">Path Computation Service Enhancements</span></a> simply by manipulating the input plumbing specified in the request. Each requested pipe is handled by the PCE individually, and service enhancements are activated per-pipe. In other words, by manipulating the requested parameters of one or more pipes, OSCARS services may be toggled and/or combined where possible.</p>
 <p>The table below details the various components of the requested pipe, and their appropriate values and parameters.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -162,51 +158,51 @@
 <tr class="row-odd"><td>zaMbps</td>
 <td>Integer</td>
 <td>&gt; 0</td>
-<td>Z-&gt;A direction bandwidth requirement. If <em>zaMbps</em> is not equal to <em>azMbps</em>, <a class="reference internal" href="../enhanced/asymm_service_doc.html#asymm-pce-service"><em>Asymmetric Bandwidth Capability Service</em></a> is toggled</td>
+<td>Z-&gt;A direction bandwidth requirement. If <em>zaMbps</em> is not equal to <em>azMbps</em>, <a class="reference internal" href="../enhanced/asymm_service_doc.html#asymm-pce-service"><span class="std std-ref">Asymmetric Bandwidth Capability Service</span></a> is toggled</td>
 </tr>
 <tr class="row-even"><td>azERO</td>
 <td>List&lt;String&gt;</td>
 <td>(Empty)</td>
-<td>Explicit (in-order) Route Object in the A-&gt;Z direction. <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-complete"><em>Complete Route Specification</em></a> or <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-partial"><em>Partial Route Specification</em></a></td>
+<td>Explicit (in-order) Route Object in the A-&gt;Z direction. <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-complete"><span class="std std-ref">Complete Route Specification</span></a> or <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-partial"><span class="std std-ref">Partial Route Specification</span></a></td>
 </tr>
 <tr class="row-odd"><td>zaERO</td>
 <td>List&lt;String&gt;</td>
 <td>(Empty)</td>
-<td>Explicit (in-order) Route Object in the Z-&gt;A direction. Enables <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-complete"><em>Complete Route Specification</em></a></td>
+<td>Explicit (in-order) Route Object in the Z-&gt;A direction. Enables <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-complete"><span class="std std-ref">Complete Route Specification</span></a></td>
 </tr>
 <tr class="row-even"><td>urnBlacklist</td>
 <td>Set&lt;String&gt;</td>
 <td>(Empty)</td>
-<td>Devices/Ports to explicitly avoid during pathfinding. Enables <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-blacklist"><em>“Blacklist” Avoidance Routing</em></a></td>
+<td>Devices/Ports to explicitly avoid during pathfinding. Enables <a class="reference internal" href="../enhanced/ero_service_doc.html#ero-pce-blacklist"><span class="std std-ref">“Blacklist” Avoidance Routing</span></a></td>
 </tr>
 <tr class="row-odd"><td>eroPalindromic</td>
 <td>Enumerated</td>
 <td>PALINDROME (Default)
 NON_PALINDROME</td>
-<td>Toggles <a class="reference internal" href="../enhanced/nonpalindromic_service_doc.html#nonpalindromic-pce-service"><em>Non-Palindromic Return Path Service</em></a></td>
+<td>Toggles <a class="reference internal" href="../enhanced/nonpalindromic_service_doc.html#nonpalindromic-pce-service"><span class="std std-ref">Non-Palindromic Return Path Service</span></a></td>
 </tr>
 <tr class="row-even"><td>eroSurvivability</td>
 <td>Enumerated</td>
 <td>SURVIVABILITY_NONE (Default)
 SURVIVABILITY_TOTAL
 SURVIVABILITY_PARTIAL</td>
-<td>Toggles <a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-services"><em>Survivable Routing Services</em></a></td>
+<td>Toggles <a class="reference internal" href="../enhanced/survivability_service_doc.html#surv-pce-services"><span class="std std-ref">Survivable Routing Services</span></a></td>
 </tr>
 </tbody>
 </table>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">In the current implementation, there is an order of precedence for these values. For example, specifying values for <em>azERO</em> and <em>zaERO</em> override the ability to adaptively compute paths according to the default behavior of the <a class="reference internal" href="../pce_doc.html#basic-pce-service"><em>Basic PCE Service</em></a>. If these values are set, the value in <em>eroPalindromic</em> is also ignored by the system. Similarly, if <em>eroSurvivability</em> is set to anything except <em>SURVIVABILITY_NONE</em>, the <em>eroPalindromic</em> value will be forced to <em>PALINDROME</em>, since non-palindromic survivability is not currently supported.</p>
+<p class="last">In the current implementation, there is an order of precedence for these values. For example, specifying values for <em>azERO</em> and <em>zaERO</em> override the ability to adaptively compute paths according to the default behavior of the <a class="reference internal" href="../pce_doc.html#basic-pce-service"><span class="std std-ref">Basic PCE Service</span></a>. If these values are set, the value in <em>eroPalindromic</em> is also ignored by the system. Similarly, if <em>eroSurvivability</em> is set to anything except <em>SURVIVABILITY_NONE</em>, the <em>eroPalindromic</em> value will be forced to <em>PALINDROME</em>, since non-palindromic survivability is not currently supported.</p>
 </div>
 <div class="section" id="relevant-api-specification">
 <h2>Relevant API Specification<a class="headerlink" href="#relevant-api-specification" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/SpecificationE.html#net.es.oscars.resv.ent.SpecificationE" title="net.es.oscars.resv.ent.SpecificationE"><tt class="xref java java-ref docutils literal"><span class="pre">SpecificationE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedBlueprintE.html#net.es.oscars.resv.ent.RequestedBlueprintE" title="net.es.oscars.resv.ent.RequestedBlueprintE"><tt class="xref java java-ref docutils literal"><span class="pre">RequestedBlueprintE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedVlanFlowE.html#net.es.oscars.resv.ent.RequestedVlanFlowE" title="net.es.oscars.resv.ent.RequestedVlanFlowE"><tt class="xref java java-ref docutils literal"><span class="pre">RequestedVlanFlowE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedVlanJunctionE.html#net.es.oscars.resv.ent.RequestedVlanJunctionE" title="net.es.oscars.resv.ent.RequestedVlanJunctionE"><tt class="xref java java-ref docutils literal"><span class="pre">RequestedVlanJunctionE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedVlanFixtureE.html#net.es.oscars.resv.ent.RequestedVlanFixtureE" title="net.es.oscars.resv.ent.RequestedVlanFixtureE"><tt class="xref java java-ref docutils literal"><span class="pre">RequestedVlanFixtureE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedVlanPipeE.html#net.es.oscars.resv.ent.RequestedVlanPipeE" title="net.es.oscars.resv.ent.RequestedVlanPipeE"><tt class="xref java java-ref docutils literal"><span class="pre">RequestedVlanPipeE</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/SpecificationE.html#net.es.oscars.resv.ent.SpecificationE" title="net.es.oscars.resv.ent.SpecificationE"><code class="xref java java-ref docutils literal"><span class="pre">SpecificationE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedBlueprintE.html#net.es.oscars.resv.ent.RequestedBlueprintE" title="net.es.oscars.resv.ent.RequestedBlueprintE"><code class="xref java java-ref docutils literal"><span class="pre">RequestedBlueprintE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedVlanFlowE.html#net.es.oscars.resv.ent.RequestedVlanFlowE" title="net.es.oscars.resv.ent.RequestedVlanFlowE"><code class="xref java java-ref docutils literal"><span class="pre">RequestedVlanFlowE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedVlanJunctionE.html#net.es.oscars.resv.ent.RequestedVlanJunctionE" title="net.es.oscars.resv.ent.RequestedVlanJunctionE"><code class="xref java java-ref docutils literal"><span class="pre">RequestedVlanJunctionE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedVlanFixtureE.html#net.es.oscars.resv.ent.RequestedVlanFixtureE" title="net.es.oscars.resv.ent.RequestedVlanFixtureE"><code class="xref java java-ref docutils literal"><span class="pre">RequestedVlanFixtureE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/RequestedVlanPipeE.html#net.es.oscars.resv.ent.RequestedVlanPipeE" title="net.es.oscars.resv.ent.RequestedVlanPipeE"><code class="xref java java-ref docutils literal"><span class="pre">RequestedVlanPipeE</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -217,7 +213,7 @@ SURVIVABILITY_PARTIAL</td>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -229,13 +225,13 @@ SURVIVABILITY_PARTIAL</td>
         <li class="right" >
           <a href="../virtualcircuits.html" title="Virtual Circuits"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../virtualcircuits.html" >Virtual Circuits</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../virtualcircuits.html" >Virtual Circuits</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

@@ -1,5 +1,7 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
+.. java:import:: net.es.oscars.bwavail.svc BandwidthAvailabilityService
+
 .. java:import:: net.es.oscars.dto.bwavail BandwidthAvailabilityRequest
 
 .. java:import:: net.es.oscars.dto.bwavail BandwidthAvailabilityResponse
@@ -8,25 +10,19 @@
 
 .. java:import:: net.es.oscars.dto.spec ReservedBandwidth
 
-.. java:import:: net.es.oscars.webui.dto MinimalBwAvailRequest
+.. java:import:: net.es.oscars.resv.ent ReservedBandwidthE
 
-.. java:import:: net.es.oscars.webui.ipc TopologyProvider
+.. java:import:: net.es.oscars.topo.svc TopoService
+
+.. java:import:: net.es.oscars.webui.dto MinimalBwAvailRequest
 
 .. java:import:: org.joda.time DateTime
 
+.. java:import:: org.modelmapper ModelMapper
+
 .. java:import:: org.springframework.beans.factory.annotation Autowired
 
-.. java:import:: org.springframework.core ParameterizedTypeReference
-
-.. java:import:: org.springframework.http HttpEntity
-
-.. java:import:: org.springframework.http HttpMethod
-
-.. java:import:: org.springframework.http ResponseEntity
-
 .. java:import:: org.springframework.stereotype Controller
-
-.. java:import:: org.springframework.web.client RestTemplate
 
 .. java:import:: java.util.stream Collectors
 
@@ -37,6 +33,14 @@ TopologyController
    :noindex:
 
 .. java:type:: @Slf4j @Controller public class TopologyController
+
+Constructors
+------------
+TopologyController
+^^^^^^^^^^^^^^^^^^
+
+.. java:constructor:: @Autowired public TopologyController(TopoService topoService, BandwidthAvailabilityService bwAvailService, TopologyProvider topologyProvider)
+   :outertype: TopologyController
 
 Methods
 -------

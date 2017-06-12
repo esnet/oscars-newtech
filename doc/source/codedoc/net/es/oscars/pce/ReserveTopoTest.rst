@@ -4,6 +4,8 @@
 
 .. java:import:: net.es.oscars.dto.resv ResourceType
 
+.. java:import:: net.es.oscars.pce.exc PCEException
+
 .. java:import:: net.es.oscars.dto.topo.enums Layer
 
 .. java:import:: net.es.oscars.dto.topo TopoEdge
@@ -15,10 +17,6 @@
 .. java:import:: net.es.oscars.pss PCEAssistant
 
 .. java:import:: net.es.oscars.pss PSSException
-
-.. java:import:: net.es.oscars.topo.ent UrnE
-
-.. java:import:: net.es.oscars.dto.topo.enums UrnType
 
 .. java:import:: org.junit Test
 

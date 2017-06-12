@@ -12,6 +12,10 @@
 
 .. java:import:: net.es.oscars.dto.topo.enums VertexType
 
+.. java:import:: net.es.oscars.pce.exc PCEException
+
+.. java:import:: net.es.oscars.pce.exc VlanNotFoundException
+
 .. java:import:: net.es.oscars.pss PCEAssistant
 
 .. java:import:: net.es.oscars.pss PSSException
@@ -169,7 +173,7 @@ createReservedVlanForEROs
 reserveRequestedPipe
 ^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public void reserveRequestedPipe(RequestedVlanPipeE reqPipe, List<TopoEdge> azERO, List<TopoEdge> zaERO, List<ReservedBandwidthE> reservedBandwidths, List<ReservedVlanE> reservedVlans, Set<ReservedMplsPipeE> reservedMplsPipes, Set<ReservedEthPipeE> reservedEthPipes, Map<String, Set<String>> deviceToPortMap, Map<String, String> portToDeviceMap, Date start, Date end, String connectionId) throws PCEException, PSSException
+.. java:method:: public TranslationPCEResponse reserveRequestedPipe(RequestedVlanPipeE reqPipe, List<TopoEdge> azERO, List<TopoEdge> zaERO, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> reservedVlans, Map<String, Set<String>> deviceToPortMap, Map<String, String> portToDeviceMap, Date start, Date end, String connectionId) throws PCEException, PSSException
    :outertype: TranslationPCE
 
    Create a set of reserved pipes/junctions from a requested pipe. A requested pipe can produce: One pipe for each pair of Ethernet devices One pipe for each MPLS segment along the path This function will add to the reservedMplsPipes and reservedEthPipes sets passed in as input
@@ -177,24 +181,16 @@ reserveRequestedPipe
    :param reqPipe: - THe requested pipe, containing details on the requested endpoints/bandwidth/VLANs
    :param azERO: - The physical path taken by the pipe in the A->Z direction
    :param zaERO: - The physical path taken by the pipe in the Z->A direction
-   :param reservedBandwidths: - The list of all bandwidth reserved so far
+   :param bwAvailMap: - Map of "Ingress" and "Egress" bandwidth availability at each URN
    :param reservedVlans: - The list of all VLAN IDs reserved so far
-   :param reservedMplsPipes: - The set of all reserved MPLS pipes so far
-   :param reservedEthPipes: - The set of all reserved Ethernet pipes so far
-   :param deviceToPortMap:
+   :param deviceToPortMap: - Map of all ports per device
    :param portToDeviceMap: @throws PCEException
    :throws PSSException:
-
-reserveRequestedPipeWithPairs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. java:method:: public void reserveRequestedPipeWithPairs(RequestedVlanPipeE reqPipe, List<List<TopoEdge>> azEROs, List<List<TopoEdge>> zaEROs, List<ReservedBandwidthE> reservedBandwidths, List<ReservedVlanE> reservedVlans, Set<ReservedMplsPipeE> reservedMplsPipes, Set<ReservedEthPipeE> reservedEthPipes, Map<String, Set<String>> deviceToPortMap, Map<String, String> portToDeviceMap, Date start, Date end, String connectionId) throws PSSException, PCEException
-   :outertype: TranslationPCE
 
 reserveSimpleJunction
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public ReservedVlanJunctionE reserveSimpleJunction(RequestedVlanJunctionE req_j, List<ReservedBandwidthE> reservedBandwidths, List<ReservedVlanE> reservedVlans, Map<String, Set<String>> deviceToPortMap, Map<String, String> portToDeviceMap, Date start, Date end, String connectionId) throws PCEException, PSSException
+.. java:method:: public ReservedVlanJunctionE reserveSimpleJunction(RequestedVlanJunctionE req_j, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> reservedVlans, Map<String, Set<String>> deviceToPortMap, Map<String, String> portToDeviceMap, Date start, Date end, String connectionId) throws PCEException, PSSException
    :outertype: TranslationPCE
 
    Creates a ReservedVlanJunctionE given a request for ingress/egress traffic within a device.
@@ -211,6 +207,6 @@ reserveSimpleJunction
 testBandwidthRequirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public void testBandwidthRequirements(RequestedVlanPipeE reqPipe, List<TopoEdge> azERO, List<TopoEdge> zaERO, Map<String, UrnE> urnMap, Integer azMbps, Integer zaMbps, Map<String, Map<String, Integer>> availBwMap, Map<TopoVertex, Map<String, Integer>> requestedBandwidthMap, List<ReservedBandwidthE> reservedBandwidths) throws PCEException
+.. java:method:: public void testBandwidthRequirements(RequestedVlanPipeE reqPipe, List<TopoEdge> azERO, List<TopoEdge> zaERO, Map<String, UrnE> urnMap, Integer azMbps, Integer zaMbps, Map<String, Map<String, Integer>> availBwMap, Map<TopoVertex, Map<String, Integer>> requestedBandwidthMap) throws PCEException
    :outertype: TranslationPCE
 

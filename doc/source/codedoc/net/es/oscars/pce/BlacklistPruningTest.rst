@@ -1,6 +1,6 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars CoreUnitTestConfiguration
+.. java:import:: net.es.oscars AbstractCoreTest
 
 .. java:import:: net.es.oscars.dto.spec PalindromicType
 
@@ -8,7 +8,7 @@
 
 .. java:import:: net.es.oscars.helpers RequestedEntityBuilder
 
-.. java:import:: net.es.oscars.helpers.test TopologyBuilder
+.. java:import:: net.es.oscars.pce.helpers TopologyBuilder
 
 .. java:import:: net.es.oscars.dto.topo TopoEdge
 
@@ -20,13 +20,7 @@
 
 .. java:import:: org.junit Test
 
-.. java:import:: org.junit.runner RunWith
-
 .. java:import:: org.springframework.beans.factory.annotation Autowired
-
-.. java:import:: org.springframework.boot.test SpringApplicationConfiguration
-
-.. java:import:: org.springframework.test.context.junit4 SpringJUnit4ClassRunner
 
 .. java:import:: org.springframework.transaction.annotation Transactional
 
@@ -42,7 +36,7 @@ BlacklistPruningTest
 .. java:package:: net.es.oscars.pce
    :noindex:
 
-.. java:type:: @Slf4j @RunWith @SpringApplicationConfiguration @Transactional public class BlacklistPruningTest
+.. java:type:: @Slf4j @Transactional public class BlacklistPruningTest extends AbstractCoreTest
 
 Methods
 -------

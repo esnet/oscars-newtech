@@ -7,12 +7,12 @@ net.es.oscars.webui.cont
    :maxdepth: 1
 
    AdminAcctController
-   AdminConfController
    AdminTopoController
    AdminUserController
    ControllerConfig
    MainController
    ReservationController
    TopologyController
+   TopologyProvider
    VizController
 

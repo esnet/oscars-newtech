@@ -4,33 +4,19 @@
 
 .. java:import:: lombok.extern.slf4j Slf4j
 
+.. java:import:: net.es.oscars.dto IntRange
+
 .. java:import:: net.es.oscars.dto.resv ResourceType
 
-.. java:import:: net.es.oscars.dto.spec ReservedBlueprint
+.. java:import:: net.es.oscars.helpers IntRangeParsing
 
-.. java:import:: net.es.oscars.dto.spec ReservedMplsPipe
-
-.. java:import:: net.es.oscars.dto.spec ReservedVlanFlow
-
-.. java:import:: net.es.oscars.dto.spec ReservedVlanJunction
-
-.. java:import:: net.es.oscars.dto.topo.enums DeviceModel
-
-.. java:import:: net.es.oscars.pce TopPCE
+.. java:import:: net.es.oscars.helpers ResourceChooser
 
 .. java:import:: net.es.oscars.pss PSSException
 
 .. java:import:: net.es.oscars.pss.prop PssConfig
 
-.. java:import:: net.es.oscars.pss.tpl Assembler
-
-.. java:import:: net.es.oscars.pss.tpl Stringifier
-
-.. java:import:: net.es.oscars.resv.dao ConnectionRepository
-
 .. java:import:: net.es.oscars.resv.dao ReservedPssResourceRepository
-
-.. java:import:: net.es.oscars.st.prov ProvState
 
 .. java:import:: net.es.oscars.topo.ent UrnE
 
@@ -60,14 +46,16 @@ PssResourceService
 
 .. java:type:: @Service @Transactional @Slf4j public class PssResourceService
 
-Methods
--------
-generateConfig
-^^^^^^^^^^^^^^
+Constructors
+------------
+PssResourceService
+^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public void generateConfig(ConnectionE conn) throws PSSException
+.. java:constructor:: @Autowired public PssResourceService(ResourceChooser chooser, TopoService topoService, ReservedPssResourceRepository pssResRepo, PssConfig pssConfig)
    :outertype: PssResourceService
 
+Methods
+-------
 release
 ^^^^^^^
 
@@ -77,6 +65,6 @@ release
 reserve
 ^^^^^^^
 
-.. java:method:: public void reserve(ConnectionE conn)
+.. java:method:: public void reserve(ConnectionE conn) throws PSSException
    :outertype: PssResourceService
 

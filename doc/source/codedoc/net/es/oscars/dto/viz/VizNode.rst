@@ -48,6 +48,12 @@ title
 .. java:field::  String title
    :outertype: VizNode
 
+type
+^^^^
+
+.. java:field::  String type
+   :outertype: VizNode
+
 value
 ^^^^^
 

@@ -4,8 +4,6 @@
 
 .. java:import:: net.es.oscars.dto.topo.enums Layer
 
-.. java:import:: net.es.oscars.helpers JsonHelper
-
 .. java:import:: net.es.oscars.topo.dao UrnAdjcyRepository
 
 .. java:import:: net.es.oscars.topo.dao UrnRepository
@@ -32,8 +30,6 @@
 
 .. java:import:: org.springframework.transaction.annotation Transactional
 
-.. java:import:: javax.annotation PostConstruct
-
 .. java:import:: java.io File
 
 .. java:import:: java.io IOException
@@ -44,7 +40,7 @@ TopoFileImporter
 .. java:package:: net.es.oscars.topo.pop
    :noindex:
 
-.. java:type:: @Slf4j @Service public class TopoFileImporter implements TopoImporter
+.. java:type:: @Slf4j @Service public class TopoFileImporter
 
 Constructors
 ------------
@@ -65,6 +61,6 @@ importFromFile
 startup
 ^^^^^^^
 
-.. java:method:: @PostConstruct public void startup()
+.. java:method:: @Transactional public void startup()
    :outertype: TopoFileImporter
 

@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Reserved Bandwidth Service &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Reserved Bandwidth Service &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Engine (PCE)" href="../pce_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="VLAN Service" href="service_vlan_doc.html" />
     <link rel="prev" title="Topology Pruning Service" href="service_pruning_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,12 +45,12 @@
         <li class="right" >
           <a href="service_pruning_doc.html" title="Topology Pruning Service"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -96,9 +97,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../pce/pce_bhandari_doc.html">Bhandari PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_topology_doc.html">Topology Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_pruning_doc.html">Topology Pruning Service</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Reserved Bandwidth Service</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Reserved Bandwidth Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_vlan_doc.html">VLAN Service</a></li>
 </ul>
 </li>
@@ -120,17 +119,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="service_vlan_doc.html"
                         title="next chapter">VLAN Service</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -139,11 +135,11 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="reserved-bandwidth-service">
 <span id="service-bandwidth"></span><h1>Reserved Bandwidth Service<a class="headerlink" href="#reserved-bandwidth-service" title="Permalink to this headline">¶</a></h1>
-<p>This is a support service that retrieves, updates, and maintains bandwidth state information (reserved/available). This service also maps bandwidth partitions to the network elements which consume them, and determines if the bandwidth requirement of the <a class="reference internal" href="../circuit/requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a> can be supported on the topology. The <a class="reference internal" href="service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a> will filter out those elements of the network with insufficient bandwidth availability during the requested circuit schedule.</p>
+<p>This is a support service that retrieves, updates, and maintains bandwidth state information (reserved/available). This service also maps bandwidth partitions to the network elements which consume them, and determines if the bandwidth requirement of the <a class="reference internal" href="../circuit/requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a> can be supported on the topology. The <a class="reference internal" href="service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a> will filter out those elements of the network with insufficient bandwidth availability during the requested circuit schedule.</p>
 <div class="section" id="service-details">
 <h2>Service Details<a class="headerlink" href="#service-details" title="Permalink to this headline">¶</a></h2>
 <p><strong>Calls:</strong></p>
@@ -152,14 +148,14 @@
 </ul>
 <p><strong>Called By:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_top_doc.html#pce-top"><em>Top PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><em>Translation PCE Module</em></a></li>
-<li><a class="reference internal" href="service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a></li>
+<li><a class="reference internal" href="../pce/pce_top_doc.html#pce-top"><span class="std std-ref">Top PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><span class="std std-ref">Translation PCE Module</span></a></li>
+<li><a class="reference internal" href="service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a></li>
 </ul>
 <p><strong>API Specification:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/BandwidthService.html#net.es.oscars.pce.BandwidthService" title="net.es.oscars.pce.BandwidthService"><tt class="xref java java-ref docutils literal"><span class="pre">BandwidthService</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/bwavail/svc/BandwidthAvailabilityService.html#net.es.oscars.bwavail.svc.BandwidthAvailabilityService" title="net.es.oscars.bwavail.svc.BandwidthAvailabilityService"><tt class="xref java java-ref docutils literal"><span class="pre">BandwidthAvailabilityService</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/BandwidthService.html#net.es.oscars.pce.BandwidthService" title="net.es.oscars.pce.BandwidthService"><code class="xref java java-ref docutils literal"><span class="pre">BandwidthService</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/bwavail/svc/BandwidthAvailabilityService.html#net.es.oscars.bwavail.svc.BandwidthAvailabilityService" title="net.es.oscars.bwavail.svc.BandwidthAvailabilityService"><code class="xref java java-ref docutils literal"><span class="pre">BandwidthAvailabilityService</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -170,7 +166,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -182,14 +178,14 @@
         <li class="right" >
           <a href="service_pruning_doc.html" title="Topology Pruning Service"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Path Computation Service Enhancements &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Path Computation Service Enhancements &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../index.html" />
-    <link rel="up" title="Core Module" href="core_doc.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Asymmetric Bandwidth Capability Service" href="enhanced/asymm_service_doc.html" />
     <link rel="prev" title="VLAN Service" href="service/service_vlan_doc.html" /> 
   </head>
   <body>
 	<a href="../index.html"><img src="../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,11 +45,11 @@
         <li class="right" >
           <a href="service/service_vlan_doc.html" title="VLAN Service"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="core_doc.html" accesskey="U">Core Module</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core_doc.html" accesskey="U">Core Module</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -83,7 +84,7 @@
 <li class="toctree-l2"><a class="reference internal" href="pce_doc.html">Path Computation Engine (PCE)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pce_doc.html#pce-workflow">PCE Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pce_doc.html#pce-structure">PCE Structure</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Path Computation Service Enhancements</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Path Computation Service Enhancements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pss_doc.html">Path Setup Subsystem (PSS)</a></li>
 </ul>
 </li>
@@ -101,17 +102,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="enhanced/asymm_service_doc.html"
                         title="next chapter">Asymmetric Bandwidth Capability Service</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -120,12 +118,12 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="path-computation-service-enhancements">
 <span id="advanced-service"></span><h1>Path Computation Service Enhancements<a class="headerlink" href="#path-computation-service-enhancements" title="Permalink to this headline">¶</a></h1>
 <a class="reference internal image-reference" href="../_images/construction.png"><img alt="../_images/construction.png" class="align-center" src="../_images/construction.png" style="width: 640.0px; height: 360.0px;" /></a>
-<p>OSCARS 1.0 supports a number of all-new composable routing capabilities which provide an unprecedented amount of user control over how the <a class="reference internal" href="pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a> identifies working solutions. All of these services may be triggered without alteration to the underlying code, and without the need for modifying configuration parameters when launching OSCARS. This document discusses the PCE service enhancement suite, while <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a> provides details on how the user can exert control over the flow through the PCE to engage and toggle each of the described services. The following table offers a listing of the services discussed throughout the remainder of the document. Note: Forward-direction circuit route is denoted as <strong>A-Z</strong>, while reverse is denoted as <strong>Z-A</strong>.</p>
+<p>OSCARS 1.0 supports a number of all-new composable routing capabilities which provide an unprecedented amount of user control over how the <a class="reference internal" href="pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a> identifies working solutions. All of these services may be triggered without alteration to the underlying code, and without the need for modifying configuration parameters when launching OSCARS. This document discusses the PCE service enhancement suite, while <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a> provides details on how the user can exert control over the flow through the PCE to engage and toggle each of the described services. The following table offers a listing of the services discussed throughout the remainder of the document. Note: Forward-direction circuit route is denoted as <strong>A-Z</strong>, while reverse is denoted as <strong>Z-A</strong>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -137,53 +135,53 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="enhanced/asymm_service_doc.html#asymm-pce-service"><em>Asymmetric Bandwidth Capability Service</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="enhanced/asymm_service_doc.html#asymm-pce-service"><span class="std std-ref">Asymmetric Bandwidth Capability Service</span></a></td>
 <td>A-Z and Z-A circuits may exhibit/explicitly require different bandwidth quantities.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="enhanced/nonpalindromic_service_doc.html#nonpalindromic-pce-service"><em>Non-Palindromic Return Path Service</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="enhanced/nonpalindromic_service_doc.html#nonpalindromic-pce-service"><span class="std std-ref">Non-Palindromic Return Path Service</span></a></td>
 <td>A-Z and Z-A circuits may not mirror one another. Only portions of the route passing through an MPLS segment may differ.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="enhanced/multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></td>
+<tr class="row-even"><td><a class="reference internal" href="enhanced/multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></td>
 <td>Provide more than one destination device for a circuit, or create a cyclic transfer among a set of devices.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="enhanced/ero_service_doc.html#ero-pce-services"><em>Explicit Routing Services</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="enhanced/ero_service_doc.html#ero-pce-services"><span class="std std-ref">Explicit Routing Services</span></a></td>
 <td>Force the PCE to use or avoid specific portions of the network during pathfinding.</td>
 </tr>
 <tr class="row-even"><td><ul class="first last simple">
-<li><a class="reference internal" href="enhanced/ero_service_doc.html#ero-pce-complete"><em>Complete Route Specification</em></a></li>
+<li><a class="reference internal" href="enhanced/ero_service_doc.html#ero-pce-complete"><span class="std std-ref">Complete Route Specification</span></a></li>
 </ul>
 </td>
 <td>Specify exact A-Z and Z-A circuits in which the specified path must be traversed in order. Pathfinding fails if exact match cannot be reserved.</td>
 </tr>
 <tr class="row-odd"><td><ul class="first last simple">
-<li><a class="reference internal" href="enhanced/ero_service_doc.html#ero-pce-partial"><em>Partial Route Specification</em></a></li>
+<li><a class="reference internal" href="enhanced/ero_service_doc.html#ero-pce-partial"><span class="std std-ref">Partial Route Specification</span></a></li>
 </ul>
 </td>
 <td>Specify a partial A-Z or Z-A circuit in which all specified nodes/ports must be reached in relative order, but they serve as waypoints along the computed path.</td>
 </tr>
 <tr class="row-even"><td><ul class="first last simple">
-<li><a class="reference internal" href="enhanced/ero_service_doc.html#ero-pce-blacklist"><em>“Blacklist” Avoidance Routing</em></a></li>
+<li><a class="reference internal" href="enhanced/ero_service_doc.html#ero-pce-blacklist"><span class="std std-ref">“Blacklist” Avoidance Routing</span></a></li>
 </ul>
 </td>
 <td>Specify a set of nodes/ports which are to be pruned from the network topology prior to pathfinding to ensure avoidance.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="enhanced/survivability_service_doc.html#surv-pce-services"><em>Survivable Routing Services</em></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="enhanced/survivability_service_doc.html#surv-pce-services"><span class="std std-ref">Survivable Routing Services</span></a></td>
 <td>Establish multiple routes along disjoint-paths within the same requested pipe in case of physical network failure. If survivable routing is impossible, the entire reservation fails.</td>
 </tr>
 <tr class="row-even"><td><ul class="first last simple">
-<li><a class="reference internal" href="enhanced/survivability_service_doc.html#surv-pce-complete"><em>Complete Path Survivability</em></a></li>
+<li><a class="reference internal" href="enhanced/survivability_service_doc.html#surv-pce-complete"><span class="std std-ref">Complete Path Survivability</span></a></li>
 </ul>
 </td>
 <td><em>Only</em> the souce node/port and destination source/port are shared among paths. <strong>Exactly two paths computed.</strong></td>
 </tr>
 <tr class="row-odd"><td><ul class="first last simple">
-<li><a class="reference internal" href="enhanced/survivability_service_doc.html#surv-pce-mpls"><em>MPLS-Layer Survivability</em></a></li>
+<li><a class="reference internal" href="enhanced/survivability_service_doc.html#surv-pce-mpls"><span class="std std-ref">MPLS-Layer Survivability</span></a></li>
 </ul>
 </td>
 <td>Provides survivability <em>only</em>   within an MPLS segment. All Ethernet segments are identical among paths. <strong>Exactly two paths computed.</strong></td>
 </tr>
 <tr class="row-even"><td><ul class="first last simple">
-<li><a class="reference internal" href="enhanced/survivability_service_doc.html#surv-pce-kpath"><em>K-Disjoint Path Survivability</em></a></li>
+<li><a class="reference internal" href="enhanced/survivability_service_doc.html#surv-pce-kpath"><span class="std std-ref">K-Disjoint Path Survivability</span></a></li>
 </ul>
 </td>
 <td>Specify a number (K) of disjoint paths desired. All paths will be set-wise disjoint.</td>
@@ -200,7 +198,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -212,13 +210,13 @@
         <li class="right" >
           <a href="service/service_vlan_doc.html" title="VLAN Service"
              >previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="core_doc.html" >Core Module</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core_doc.html" >Core Module</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

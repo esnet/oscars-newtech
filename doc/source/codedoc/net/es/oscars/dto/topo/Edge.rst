@@ -22,9 +22,21 @@ origin
 .. java:field::  String origin
    :outertype: Edge
 
+originType
+^^^^^^^^^^
+
+.. java:field::  String originType
+   :outertype: Edge
+
 target
 ^^^^^^
 
 .. java:field::  String target
+   :outertype: Edge
+
+targetType
+^^^^^^^^^^
+
+.. java:field::  String targetType
    :outertype: Edge
 

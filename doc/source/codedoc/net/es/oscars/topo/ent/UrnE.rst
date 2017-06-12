@@ -18,7 +18,7 @@ UrnE
 .. java:package:: net.es.oscars.topo.ent
    :noindex:
 
-.. java:type:: @Data @Entity @Builder @AllArgsConstructor @NoArgsConstructor public class UrnE
+.. java:type:: @Data @Entity @Builder @AllArgsConstructor @NoArgsConstructor @EqualsAndHashCode public class UrnE
 
 Methods
 -------

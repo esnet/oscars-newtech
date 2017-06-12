@@ -6,12 +6,10 @@ net.es.oscars
 .. toctree::
    :maxdepth: 1
 
-   CheckApp
+   AbstractCoreTest
    CoreApp
-   CoreTest
    CoreUnitTestConfiguration
-   Datastore_IT
-   SpecPopTest
-   WhatIfApp
-   WhatIfRestUtil
+   QuickTests
+   SlowTests
+   Startup
 
