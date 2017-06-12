@@ -13,8 +13,6 @@ public class MxVpls {
 
     private Integer vcId;
 
-    private List<String> ifces;
-
     private String serviceName;
 
     private String description;
@@ -26,7 +24,5 @@ public class MxVpls {
     private String policyName;
 
     private String statsFilter;
-
-
 
 }

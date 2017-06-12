@@ -17,18 +17,17 @@ import java.util.Map;
 public class MxParams {
 
 
-    private Map<String, Lsp> lsps;
+    private List<MxLsp> lsps;
 
     private List<MplsPath> paths;
 
 
-    private Map<String, MxQos> policing;
+    private List<MxIfce> ifces;
+
+    private List<MxQos> qos;
 
     private MxVpls mxVpls;
 
-    private String loopbackInterface;
-    private String loopbackAddress;
-    private Boolean applyQos;
 
 
 }
