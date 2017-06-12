@@ -17,12 +17,14 @@ import java.util.*;
 @Slf4j
 @Component
 public class ExCommandGenerator {
-
-    @Autowired
     private Stringifier stringifier;
+    private Assembler assembler;
 
     @Autowired
-    private Assembler assembler;
+    public ExCommandGenerator(Stringifier stringifier, Assembler assembler) {
+        this.stringifier = stringifier;
+        this.assembler = assembler;
+    }
 
     public String dismantle(ExParams params) throws ConfigException {
         this.protectVsNulls(params);
