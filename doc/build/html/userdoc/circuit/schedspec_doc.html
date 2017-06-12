@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Circuit Schedule Specification &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Circuit Schedule Specification &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Virtual Circuits" href="../virtualcircuits.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Circuit Reservation Specification" href="resvspec_doc.html" />
     <link rel="prev" title="Circuit Request Specification" href="requestspec_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,11 +45,11 @@
         <li class="right" >
           <a href="requestspec_doc.html" title="Circuit Request Specification"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../virtualcircuits.html" accesskey="U">Virtual Circuits</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../virtualcircuits.html" accesskey="U">Virtual Circuits</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -79,9 +80,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../start.html#project-structure">Project Structure</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../virtualcircuits.html">Virtual Circuits</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="requestspec_doc.html">Circuit Request Specification</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Circuit Schedule Specification</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Circuit Schedule Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resvspec_doc.html">Circuit Reservation Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plumbing_doc.html">Plumbing Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plumbing_doc.html#advanced-plumbing">Advanced Plumbing</a></li>
@@ -102,17 +101,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="resvspec_doc.html"
                         title="next chapter">Circuit Reservation Specification</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -121,11 +117,11 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="circuit-schedule-specification">
 <span id="schedspec"></span><h1>Circuit Schedule Specification<a class="headerlink" href="#circuit-schedule-specification" title="Permalink to this headline">¶</a></h1>
-<p>An OSCARS circuit is decomposed roughly into three components: The <a class="reference internal" href="requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a>, the <em>Circuit Schedule Specification</em>, and the <a class="reference internal" href="resvspec_doc.html#resvspec"><em>Circuit Reservation Specification</em></a>, and the <em>Circuit Reservation Specification</em>.  The Schedule Specification describes the timing attributes of the circuit. The requested circuit may be composed of multiple elemnts which combine into a <a class="reference internal" href="plumbing_doc.html#plumbing"><em>Plumbing Specification</em></a>. Each of these pipes is handled by the <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a> for independent pathfinding solutions and various <a class="reference internal" href="../advanced_service_doc.html#advanced-service"><em>Path Computation Service Enhancements</em></a> as appropriate.  However, all plumbing elements correspond to a single set of scheduling parameters as described by this specification component. Relevant parameters are described in the following table.</p>
+<p>An OSCARS circuit is decomposed roughly into three components: The <a class="reference internal" href="requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a>, the <em>Circuit Schedule Specification</em>, and the <a class="reference internal" href="resvspec_doc.html#resvspec"><span class="std std-ref">Circuit Reservation Specification</span></a>, and the <em>Circuit Reservation Specification</em>.  The Schedule Specification describes the timing attributes of the circuit. The requested circuit may be composed of multiple elemnts which combine into a <a class="reference internal" href="plumbing_doc.html#plumbing"><span class="std std-ref">Plumbing Specification</span></a>. Each of these pipes is handled by the <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a> for independent pathfinding solutions and various <a class="reference internal" href="../advanced_service_doc.html#advanced-service"><span class="std std-ref">Path Computation Service Enhancements</span></a> as appropriate.  However, all plumbing elements correspond to a single set of scheduling parameters as described by this specification component. Relevant parameters are described in the following table.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="14%" />
@@ -159,7 +155,7 @@
 <tr class="row-odd"><td>Submitted</td>
 <td>Date</td>
 <td>System</td>
-<td>Date/Time of submitted <a class="reference internal" href="requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a></td>
+<td>Date/Time of submitted <a class="reference internal" href="requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a></td>
 </tr>
 <tr class="row-even"><td>Setup</td>
 <td>Date</td>
@@ -181,9 +177,9 @@
 <div class="section" id="relevant-api-specification">
 <h2>Relevant API Specification<a class="headerlink" href="#relevant-api-specification" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/SpecificationE.html#net.es.oscars.resv.ent.SpecificationE" title="net.es.oscars.resv.ent.SpecificationE"><tt class="xref java java-ref docutils literal"><span class="pre">SpecificationE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ScheduleSpecificationE.html#net.es.oscars.resv.ent.ScheduleSpecificationE" title="net.es.oscars.resv.ent.ScheduleSpecificationE"><tt class="xref java java-ref docutils literal"><span class="pre">ScheduleSpecificationE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ScheduleE.html#net.es.oscars.resv.ent.ScheduleE" title="net.es.oscars.resv.ent.ScheduleE"><tt class="xref java java-ref docutils literal"><span class="pre">ScheduleE</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/SpecificationE.html#net.es.oscars.resv.ent.SpecificationE" title="net.es.oscars.resv.ent.SpecificationE"><code class="xref java java-ref docutils literal"><span class="pre">SpecificationE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ScheduleSpecificationE.html#net.es.oscars.resv.ent.ScheduleSpecificationE" title="net.es.oscars.resv.ent.ScheduleSpecificationE"><code class="xref java java-ref docutils literal"><span class="pre">ScheduleSpecificationE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ScheduleE.html#net.es.oscars.resv.ent.ScheduleE" title="net.es.oscars.resv.ent.ScheduleE"><code class="xref java java-ref docutils literal"><span class="pre">ScheduleE</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -194,7 +190,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -206,13 +202,13 @@
         <li class="right" >
           <a href="requestspec_doc.html" title="Circuit Request Specification"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../virtualcircuits.html" >Virtual Circuits</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../virtualcircuits.html" >Virtual Circuits</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

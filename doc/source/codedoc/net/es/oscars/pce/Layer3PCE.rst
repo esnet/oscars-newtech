@@ -1,5 +1,7 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
+.. java:import:: net.es.oscars.pce.exc PCEException
+
 .. java:import:: net.es.oscars.resv.ent Layer3FlowE
 
 .. java:import:: net.es.oscars.resv.ent ScheduleSpecificationE

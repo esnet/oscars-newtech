@@ -6,8 +6,11 @@ net.es.oscars.webui.dto
 .. toctree::
    :maxdepth: 1
 
+   AdvancedPipe
+   AdvancedRequest
+   ConnectionBuilder
+   Filter
    MinimalBwAvailRequest
-   MinimalConnectionBuilder
    MinimalFixture
    MinimalJunction
    MinimalPipe

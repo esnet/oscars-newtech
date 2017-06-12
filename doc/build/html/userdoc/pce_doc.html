@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Path Computation Engine (PCE) &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Path Computation Engine (PCE) &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../index.html" />
-    <link rel="up" title="Core Module" href="core_doc.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Top PCE Module" href="pce/pce_top_doc.html" />
     <link rel="prev" title="Topology Assumptions Reference" href="topologyref_doc.html" /> 
   </head>
   <body>
 	<a href="../index.html"><img src="../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,11 +45,11 @@
         <li class="right" >
           <a href="topologyref_doc.html" title="Topology Assumptions Reference"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="core_doc.html" accesskey="U">Core Module</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core_doc.html" accesskey="U">Core Module</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -80,12 +81,8 @@
 <li class="toctree-l1"><a class="reference internal" href="virtualcircuits.html">Virtual Circuits</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="core_doc.html">Core Module</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="topologyref_doc.html">Topology Assumptions Reference</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Path Computation Engine (PCE)</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#pce-workflow">PCE Workflow</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Path Computation Engine (PCE)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pce-workflow">PCE Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pce-structure">PCE Structure</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pce/pce_top_doc.html">Top PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce/pce_translation_doc.html">Translation PCE Module</a></li>
@@ -121,17 +118,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="pce/pce_top_doc.html"
                         title="next chapter">Top PCE Module</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -140,55 +134,54 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="path-computation-engine-pce">
 <span id="pce-doc"></span><h1>Path Computation Engine (PCE)<a class="headerlink" href="#path-computation-engine-pce" title="Permalink to this headline">¶</a></h1>
 <p>The PCE subsystem provides all of the logic involved with identifying constrained routing solutions. It is, more or less, the engine upon which OSCARS 1.0 is built. The PCE architecture is simply designed, with components grouped into three rough, interdependent categories, shown in the figure below, and described as follows.</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id5">
 <a class="reference internal image-reference" href="../_images/pce_arch_1.png"><img alt="PCE Architecture" src="../_images/pce_arch_1.png" style="width: 468.5px; height: 281.0px;" /></a>
-<p class="caption"><em>High-level PCE component categories.</em></p>
+<p class="caption"><span class="caption-text"><em>High-level PCE component categories.</em></span></p>
 </div>
 <div class="section" id="request-topology-services">
 <h2>Request &amp; Topology Services<a class="headerlink" href="#request-topology-services" title="Permalink to this headline">¶</a></h2>
-<p>The PCE subsystem heavily relies upon the <a class="reference internal" href="service/service_topology_doc.html#service-topology"><em>Topology Service</em></a> and <a class="reference internal" href="service/service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a> modules. This collection of services is responsible for evaluating the user inputs, and pruning the topology as necessary depending on which resources are (or are not) available during the reservation’s prescribed lifetime. Depending on what parameters are associated with the <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a>, when it is passed into the PCE, the topology will be pruned differently.  The services in this category can be considered support modules to the PCE business logic modules.</p>
+<p>The PCE subsystem heavily relies upon the <a class="reference internal" href="service/service_topology_doc.html#service-topology"><span class="std std-ref">Topology Service</span></a> and <a class="reference internal" href="service/service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a> modules. This collection of services is responsible for evaluating the user inputs, and pruning the topology as necessary depending on which resources are (or are not) available during the reservation’s prescribed lifetime. Depending on what parameters are associated with the <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a>, when it is passed into the PCE, the topology will be pruned differently.  The services in this category can be considered support modules to the PCE business logic modules.</p>
 </div>
 <div class="section" id="request-specific-pce-logic-workflow">
 <h2>Request-Specific PCE Logic Workflow<a class="headerlink" href="#request-specific-pce-logic-workflow" title="Permalink to this headline">¶</a></h2>
-<p>The modules in this category comprise the “brain” of the PCE. As of OSCARS 1.0, the progression through the PCE is dynamic. Submodules are engaged depending solely on the user’s input, as specified by the <a class="reference internal" href="circuit/plumbing_doc.html#plumbing"><em>Plumbing Specification</em></a> and do not require any configuration alterations to the system. Details of the <a class="reference internal" href="#pce-workflow"><em>PCE Workflow</em></a> and <a class="reference internal" href="#pce-structure"><em>PCE Structure</em></a> are discussed later in this document.</p>
+<p>The modules in this category comprise the “brain” of the PCE. As of OSCARS 1.0, the progression through the PCE is dynamic. Submodules are engaged depending solely on the user’s input, as specified by the <a class="reference internal" href="circuit/plumbing_doc.html#plumbing"><span class="std std-ref">Plumbing Specification</span></a> and do not require any configuration alterations to the system. Details of the <a class="reference internal" href="#pce-workflow"><span class="std std-ref">PCE Workflow</span></a> and <a class="reference internal" href="#pce-structure"><span class="std std-ref">PCE Structure</span></a> are discussed later in this document.</p>
 </div>
 <div class="section" id="pathfinding-algorithms">
 <span id="id1"></span><h2>Pathfinding Algorithms<a class="headerlink" href="#pathfinding-algorithms" title="Permalink to this headline">¶</a></h2>
-<p>These modules contain standard graph-theory algorithms for identifying routes among nodes through the network. The algorithms take in a topology and the user-requested parameters, and identify the best path, or set of paths to satisfy the demand. Algorithms include: Dijkstra, Bellman-Ford, Bhandari. These modules can be considered support modules for the PCE business logic modules. A number of <a class="reference internal" href="advanced_service_doc.html#advanced-service"><em>Path Computation Service Enhancements</em></a> have been integrated into the PCE to provide intelligent and flexible pathfinding solutions. Those services harness theses standard graph-theory algorithms as underlying routing implementation.</p>
-<div class="figure align-center">
+<p>These modules contain standard graph-theory algorithms for identifying routes among nodes through the network. The algorithms take in a topology and the user-requested parameters, and identify the best path, or set of paths to satisfy the demand. Algorithms include: Dijkstra, Bellman-Ford, Bhandari. These modules can be considered support modules for the PCE business logic modules. A number of <a class="reference internal" href="advanced_service_doc.html#advanced-service"><span class="std std-ref">Path Computation Service Enhancements</span></a> have been integrated into the PCE to provide intelligent and flexible pathfinding solutions. Those services harness theses standard graph-theory algorithms as underlying routing implementation.</p>
+<div class="figure align-center" id="id6">
 <a class="reference internal image-reference" href="../_images/pce_arch_4.png"><img alt="PCE Architecture 2" src="../_images/pce_arch_4.png" style="width: 537.5px; height: 279.0px;" /></a>
-<p class="caption"><em>Finer-grain PCE component modules.</em></p>
+<p class="caption"><span class="caption-text"><em>Finer-grain PCE component modules.</em></span></p>
 </div>
 </div>
 </div>
 <div class="section" id="pce-workflow">
 <span id="id2"></span><h1>PCE Workflow<a class="headerlink" href="#pce-workflow" title="Permalink to this headline">¶</a></h1>
-<p>The OSCARS 1.0 PCE is modular in design, and supports constraint-driven adaptive routing. This means that the current state of the network is taken into account during scheduling in order to prevent conflicts, as well as to identify the best routing solution for each circuit on-demand. The procedure for reserving a reservation is as follows, beginning at the <a class="reference internal" href="pce/pce_top_doc.html#pce-top"><em>Top PCE Module</em></a>:</p>
+<p>The OSCARS 1.0 PCE is modular in design, and supports constraint-driven adaptive routing. This means that the current state of the network is taken into account during scheduling in order to prevent conflicts, as well as to identify the best routing solution for each circuit on-demand. The procedure for reserving a reservation is as follows, beginning at the <a class="reference internal" href="pce/pce_top_doc.html#pce-top"><span class="std std-ref">Top PCE Module</span></a>:</p>
 <dl class="docutils">
 <dt><strong>1.   Parse Request Specification.</strong></dt>
 <dd><ol class="first last loweralpha simple">
-<li>Identify what the user has requested (Start-time, End-time,bandwidth, etc. as specified in the <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a>)</li>
+<li>Identify what the user has requested (Start-time, End-time,bandwidth, etc. as specified in the <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a>)</li>
 <li>Forward input parameters to the appropriate PCE service-specific module.</li>
 </ol>
 </dd>
 <dt><strong>2.   Obtain current network state information.</strong></dt>
 <dd><ol class="first last loweralpha simple">
-<li>Query the <a class="reference internal" href="service/service_topology_doc.html#service-topology"><em>Topology Service</em></a> for devices/ports/links, including connectivity and resource-availability details.</li>
+<li>Query the <a class="reference internal" href="service/service_topology_doc.html#service-topology"><span class="std std-ref">Topology Service</span></a> for devices/ports/links, including connectivity and resource-availability details.</li>
 <li>Identify types of nodes (Ethernet Switch / MPLS Router / Port).</li>
 </ol>
 </dd>
 <dt><strong>3.   Prune the network.</strong></dt>
-<dd><ol class="first last loweralpha">
-<li><p class="first">Form a relationship between network resources and user request.</p>
-</li>
+<dd><ol class="first last loweralpha simple">
+<li>Form a relationship between network resources and user request.</li>
 <li><dl class="first docutils">
-<dt>Invoke the <a class="reference internal" href="service/service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a> to temporarily remove network elements that violate the Request Specification.</dt>
-<dd><ol class="first last lowerroman simple">
+<dt>Invoke the <a class="reference internal" href="service/service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a> to temporarily remove network elements that violate the Request Specification.</dt>
+<dd><ol class="first last lowerroman">
 <li>Elements with <em>Insufficient bandwidth</em>.</li>
 <li>Elements with <em>Insufficient VLAN availability</em>.</li>
 </ol>
@@ -198,10 +191,10 @@
 </ol>
 </dd>
 <dt><strong>4.   Pathfinding.</strong></dt>
-<dd><ol class="first last loweralpha">
+<dd><ol class="first last loweralpha simple">
 <li><dl class="first docutils">
-<dt>Employ one of the appropriate <a class="reference internal" href="#pathfinding-algorithms"><em>Pathfinding Algorithms</em></a> to compute the shortest (least-cost) route(s) through the pruned network. The result is the least-cost constrained route.</dt>
-<dd><ol class="first last lowerroman simple">
+<dt>Employ one of the appropriate <a class="reference internal" href="#pathfinding-algorithms"><span class="std std-ref">Pathfinding Algorithms</span></a> to compute the shortest (least-cost) route(s) through the pruned network. The result is the least-cost constrained route.</dt>
+<dd><ol class="first last lowerroman">
 <li>Solution approaches may vary based on Request Specification and Topology state.</li>
 </ol>
 </dd>
@@ -211,64 +204,64 @@
 </dd>
 <dt><strong>5.   Reservation.</strong></dt>
 <dd><ol class="first last loweralpha simple">
-<li>If Pathfinding is successful, save the selected network resources (route information, selected VLAN, schedule, etc.) into the circuit&#8217;s <a class="reference internal" href="circuit/resvspec_doc.html#resvspec"><em>Circuit Reservation Specification</em></a>. Otherwise, fail gracefully.</li>
+<li>If Pathfinding is successful, save the selected network resources (route information, selected VLAN, schedule, etc.) into the circuit’s <a class="reference internal" href="circuit/resvspec_doc.html#resvspec"><span class="std std-ref">Circuit Reservation Specification</span></a>. Otherwise, fail gracefully.</li>
 <li>Save the circuit details in the Reservation Database.</li>
 </ol>
 </dd>
 <dt><strong>6.   Configure the networks.</strong></dt>
 <dd><ol class="first last loweralpha simple">
-<li>Forward the reservation details to the <a class="reference internal" href="pss_doc.html#pss"><em>Path Setup Subsystem (PSS)</em></a> for network configuration.</li>
+<li>Forward the reservation details to the <a class="reference internal" href="pss_doc.html#pss"><span class="std std-ref">Path Setup Subsystem (PSS)</span></a> for network configuration.</li>
 </ol>
 </dd>
 </dl>
 <p>When the PCE is engaged, the user is offered one guarantee: If there is a route through the network that can satisfy the requested paramters, OSCARS will find it.</p>
 <div class="section" id="basic-pce-service">
 <span id="id3"></span><h2>Basic PCE Service<a class="headerlink" href="#basic-pce-service" title="Permalink to this headline">¶</a></h2>
-<p>The animation below illustrates the fundamental behavior of the PCE in action. This example offers a glimpse at a small network with only one path available to the circuit requested from <em>port A</em> to <em>port Z</em> (colors and shapes are described in the <a class="reference internal" href="topologyref_doc.html#topologyref"><em>Topology Assumptions Reference</em></a>). In the simplest of use-cases, the circuit established is bidirectional and symetric, meaning that the same path is selected in the reverse direction (<em>Z-A</em>), and the reserved bandwidth is identical in both directions. For the sake of clarity we assume that the requested bandwidth is smaller than the capacity on each link along the given path. Therefore, no topology elements warrant pruning.</p>
-<div class="figure align-center">
+<p>The animation below illustrates the fundamental behavior of the PCE in action. This example offers a glimpse at a small network with only one path available to the circuit requested from <em>port A</em> to <em>port Z</em> (colors and shapes are described in the <a class="reference internal" href="topologyref_doc.html#topologyref"><span class="std std-ref">Topology Assumptions Reference</span></a>). In the simplest of use-cases, the circuit established is bidirectional and symetric, meaning that the same path is selected in the reverse direction (<em>Z-A</em>), and the reserved bandwidth is identical in both directions. For the sake of clarity we assume that the requested bandwidth is smaller than the capacity on each link along the given path. Therefore, no topology elements warrant pruning.</p>
+<div class="figure align-center" id="id7">
 <a class="reference internal image-reference" href="../_images/pce_basic.gif"><img alt="Basic PCE" src="../_images/pce_basic.gif" style="width: 592.8px; height: 247.65px;" /></a>
-<p class="caption"><em>Basic PCE behavior: End-to-end circuit is established in a bidirectional and symmetric fashion.</em></p>
+<p class="caption"><span class="caption-text"><em>Basic PCE behavior: End-to-end circuit is established in a bidirectional and symmetric fashion.</em></span></p>
 </div>
-<p>As an alternative, consider the next figure which depicts a circuit reservation request with a bandwidth requirement of 100 Mbps between <em>port A</em> and <em>port Z</em>. As shown however, the link capcity between <em>device M</em> and <em>device N</em> is less than sufficient, and can only support a maximum of 50 Mbps (this coule be due to network design decisions, or could be the result of other unrelated circuit reservation which have previously reserved the majority of the link&#8217;s available bandwidth resources). This example illustrates how links are pruned from the network. Since the topology is so small, there is no alternative path for the circuit. When the PCE fails to find a working path solution, the request itself fails, and no Reservation Specification is added to the circuit. The circuit is added to the Reservation Database in the failed state.</p>
-<div class="figure align-center">
+<p>As an alternative, consider the next figure which depicts a circuit reservation request with a bandwidth requirement of 100 Mbps between <em>port A</em> and <em>port Z</em>. As shown however, the link capcity between <em>device M</em> and <em>device N</em> is less than sufficient, and can only support a maximum of 50 Mbps (this coule be due to network design decisions, or could be the result of other unrelated circuit reservation which have previously reserved the majority of the link’s available bandwidth resources). This example illustrates how links are pruned from the network. Since the topology is so small, there is no alternative path for the circuit. When the PCE fails to find a working path solution, the request itself fails, and no Reservation Specification is added to the circuit. The circuit is added to the Reservation Database in the failed state.</p>
+<div class="figure align-center" id="id8">
 <a class="reference internal image-reference" href="../_images/pce_fail.gif"><img alt="Basic PCE Failure" src="../_images/pce_fail.gif" style="width: 605.8px; height: 234.65px;" /></a>
-<p class="caption"><em>Basic PCE behavior: If a suitable path cannot be computed, the circuit fails.</em></p>
+<p class="caption"><span class="caption-text"><em>Basic PCE behavior: If a suitable path cannot be computed, the circuit fails.</em></span></p>
 </div>
-<p>The next animation shows a larger network with alternative path solutions throughout the network from <em>port A</em> to <em>port Z</em>. OSCARS 1.0 supports shortest-path routing solutions. Since the path length through the northern hemisphere of the shown network (M-N-O) is shorter in length than the southern route (M-P-Q-O), the northern path is preferred. OSCARS aims to always provide the shortest constrained-path in this manner. The <a class="reference internal" href="#pathfinding-algorithms"><em>Pathfinding Algorithms</em></a> described briefly above provide the underlying logic for this path computation.</p>
-<div class="figure align-center">
+<p>The next animation shows a larger network with alternative path solutions throughout the network from <em>port A</em> to <em>port Z</em>. OSCARS 1.0 supports shortest-path routing solutions. Since the path length through the northern hemisphere of the shown network (M-N-O) is shorter in length than the southern route (M-P-Q-O), the northern path is preferred. OSCARS aims to always provide the shortest constrained-path in this manner. The <a class="reference internal" href="#pathfinding-algorithms"><span class="std std-ref">Pathfinding Algorithms</span></a> described briefly above provide the underlying logic for this path computation.</p>
+<div class="figure align-center" id="id9">
 <a class="reference internal image-reference" href="../_images/pce_altroute.gif"><img alt="Basic PCE Routing" src="../_images/pce_altroute.gif" style="width: 608.4px; height: 336.05px;" /></a>
-<p class="caption"><em>Basic PCE behavior: The shortest path is preferred by the PCE.</em></p>
+<p class="caption"><span class="caption-text"><em>Basic PCE behavior: The shortest path is preferred by the PCE.</em></span></p>
 </div>
-<p>It&#8217;s important to note that the PCE identifies the shortest <em>constrained-path</em>, where the constraints are resource availability. The PCE employs an adaptive routing solution service rather than precomputing circuit routes. For example, consider the slight change to the network shown below where once again the link <em>(M,N)</em> cannot support the requested bandwidth constraint. In this scenario, that link will be pruned from the network. Fortunately however, there remains a connected alternative route <em>(M-P-Q-O)</em>, which is selected and assigned to the circuit.  As such, if a connected path exists which can support the requested constraints, OSCARS will compute it (even if it  take an out-of-the-way set of links). OSCARS prioritizes working solutions over cost, but will reduce cost overhead as much as possible if a solution can be found.</p>
-<div class="figure align-center">
+<p>It’s important to note that the PCE identifies the shortest <em>constrained-path</em>, where the constraints are resource availability. The PCE employs an adaptive routing solution service rather than precomputing circuit routes. For example, consider the slight change to the network shown below where once again the link <em>(M,N)</em> cannot support the requested bandwidth constraint. In this scenario, that link will be pruned from the network. Fortunately however, there remains a connected alternative route <em>(M-P-Q-O)</em>, which is selected and assigned to the circuit.  As such, if a connected path exists which can support the requested constraints, OSCARS will compute it (even if it  take an out-of-the-way set of links). OSCARS prioritizes working solutions over cost, but will reduce cost overhead as much as possible if a solution can be found.</p>
+<div class="figure align-center" id="id10">
 <a class="reference internal image-reference" href="../_images/pce_fullbehavior.gif"><img alt="Basic PCE Full" src="../_images/pce_fullbehavior.gif" style="width: 606.45px; height: 336.7px;" /></a>
-<p class="caption"><em>Basic PCE behavior: The shortest constrained-path is computed by the PCE.</em></p>
+<p class="caption"><span class="caption-text"><em>Basic PCE behavior: The shortest constrained-path is computed by the PCE.</em></span></p>
 </div>
-<p>OSCARS 1.0 incorporates a modular PCE, such that the basic pathfinding solutions shown here do not exhibit the entire potential of the system. Taking its influence from emerging communication trends from industry and academia alike, OSCARS 1.0 also includes a robust catalog of <a class="reference internal" href="advanced_service_doc.html#advanced-service"><em>Path Computation Service Enhancements</em></a>. Each of these services provides additional flexibility and control over how the PCE identifies solutions.</p>
+<p>OSCARS 1.0 incorporates a modular PCE, such that the basic pathfinding solutions shown here do not exhibit the entire potential of the system. Taking its influence from emerging communication trends from industry and academia alike, OSCARS 1.0 also includes a robust catalog of <a class="reference internal" href="advanced_service_doc.html#advanced-service"><span class="std std-ref">Path Computation Service Enhancements</span></a>. Each of these services provides additional flexibility and control over how the PCE identifies solutions.</p>
 <div class="section" id="service-details">
 <h3>Service Details<a class="headerlink" href="#service-details" title="Permalink to this headline">¶</a></h3>
 <p><strong>Can be combined with:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="enhanced/asymm_service_doc.html#asymm-pce-service"><em>Asymmetric Bandwidth Capability Service</em></a></li>
-<li><a class="reference internal" href="enhanced/multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></li>
+<li><a class="reference internal" href="enhanced/asymm_service_doc.html#asymm-pce-service"><span class="std std-ref">Asymmetric Bandwidth Capability Service</span></a></li>
+<li><a class="reference internal" href="enhanced/multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></li>
 </ul>
 <p><strong>Relevant PCE Module(s)</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="pce/pce_palindrome_doc.html#pce-palindrome"><em>Palindromic PCE Module</em></a></li>
+<li><a class="reference internal" href="pce/pce_palindrome_doc.html#pce-palindrome"><span class="std std-ref">Palindromic PCE Module</span></a></li>
 </ul>
 </div>
 </div>
 </div>
 <div class="section" id="pce-structure">
 <span id="id4"></span><h1>PCE Structure<a class="headerlink" href="#pce-structure" title="Permalink to this headline">¶</a></h1>
-<div class="figure align-center">
+<div class="figure align-center" id="id11">
 <a class="reference internal image-reference" href="../_images/pce_arch_2.png"><img alt="PCE Wokflow" src="../_images/pce_arch_2.png" style="width: 558.0px; height: 198.5px;" /></a>
-<p class="caption"><em>PCE business logic workflow.</em></p>
+<p class="caption"><span class="caption-text"><em>PCE business logic workflow.</em></span></p>
 </div>
-<p>The figure above shows the logic flow through the PCE. The <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a> enters the <a class="reference internal" href="pce/pce_top_doc.html#pce-top"><em>Top PCE Module</em></a>, which serves as the Reservation Workflow Control mechanism and decomposes the request into its <a class="reference internal" href="circuit/plumbing_doc.html#plumbing"><em>Plumbing Specification</em></a> and determines how to process each pipe. Note that pipes are specified independently, meaning that the Top PCE may prescribe different flows for a single circuit request. Each requested pipe will then be fed through one or more service-specific PCE submodules in order to perform the desired constrained pathfinding. These service-specific submodules each provide unique logic to identify routing solutions. These submodules are integrated to provide the set of <a class="reference internal" href="advanced_service_doc.html#advanced-service"><em>Path Computation Service Enhancements</em></a> new to OSCARS 1.0. For example, assume that a user wants to incorporate a survivable backup path to be computed upon submission of a circuit request. There exists a PCE submodule designed for accomplishing exactly this task. Alternatively, consider a scenario in which the user wishes to prescribe a specific route, often known as an <em>Explicit Route Object (ERO)</em> to a circuit. The OSCARS PCE provides a submodule for supporting such an action. The desired services are triggered during request specification, and the Top PCE will determine which of the appropriate PCE submodules to engage for supporting them. The figure below gives an expanded view of the PCE logic workflow. Each of the service-specific PCE submodules (which may cooperate with one another in some cases) will return the selected path elements describing the routing solution. The selected elements are then passed to the <a class="reference internal" href="pce/pce_translation_doc.html#pce-translation"><em>Translation PCE Module</em></a> where the route is adapted into the reserved plumbing architecture which comprises the <a class="reference internal" href="circuit/resvspec_doc.html#resvspec"><em>Circuit Reservation Specification</em></a>. A significant portion of this process is that of <a class="reference internal" href="service/service_vlan_doc.html#vlan-translation"><em>VLAN Translation and Swapping</em></a>. The reservation details are added to the circuit, which is returned back to the Top PCE, which in turn gives back to the caller the updated circuit.</p>
-<div class="figure align-center">
+<p>The figure above shows the logic flow through the PCE. The <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a> enters the <a class="reference internal" href="pce/pce_top_doc.html#pce-top"><span class="std std-ref">Top PCE Module</span></a>, which serves as the Reservation Workflow Control mechanism and decomposes the request into its <a class="reference internal" href="circuit/plumbing_doc.html#plumbing"><span class="std std-ref">Plumbing Specification</span></a> and determines how to process each pipe. Note that pipes are specified independently, meaning that the Top PCE may prescribe different flows for a single circuit request. Each requested pipe will then be fed through one or more service-specific PCE submodules in order to perform the desired constrained pathfinding. These service-specific submodules each provide unique logic to identify routing solutions. These submodules are integrated to provide the set of <a class="reference internal" href="advanced_service_doc.html#advanced-service"><span class="std std-ref">Path Computation Service Enhancements</span></a> new to OSCARS 1.0. For example, assume that a user wants to incorporate a survivable backup path to be computed upon submission of a circuit request. There exists a PCE submodule designed for accomplishing exactly this task. Alternatively, consider a scenario in which the user wishes to prescribe a specific route, often known as an <em>Explicit Route Object (ERO)</em> to a circuit. The OSCARS PCE provides a submodule for supporting such an action. The desired services are triggered during request specification, and the Top PCE will determine which of the appropriate PCE submodules to engage for supporting them. The figure below gives an expanded view of the PCE logic workflow. Each of the service-specific PCE submodules (which may cooperate with one another in some cases) will return the selected path elements describing the routing solution. The selected elements are then passed to the <a class="reference internal" href="pce/pce_translation_doc.html#pce-translation"><span class="std std-ref">Translation PCE Module</span></a> where the route is adapted into the reserved plumbing architecture which comprises the <a class="reference internal" href="circuit/resvspec_doc.html#resvspec"><span class="std std-ref">Circuit Reservation Specification</span></a>. A significant portion of this process is that of <a class="reference internal" href="service/service_vlan_doc.html#vlan-translation"><span class="std std-ref">VLAN Translation and Swapping</span></a>. The reservation details are added to the circuit, which is returned back to the Top PCE, which in turn gives back to the caller the updated circuit.</p>
+<div class="figure align-center" id="id12">
 <a class="reference internal image-reference" href="../_images/pce_arch_3.png"><img alt="PCE Expanded Wokflow" src="../_images/pce_arch_3.png" style="width: 525.5px; height: 284.0px;" /></a>
-<p class="caption"><em>Expanded PCE business logic workflow.</em></p>
+<p class="caption"><span class="caption-text"><em>Expanded PCE business logic workflow.</em></span></p>
 </div>
 <div class="section" id="pce-submodules">
 <h2>PCE Submodules<a class="headerlink" href="#pce-submodules" title="Permalink to this headline">¶</a></h2>
@@ -323,7 +316,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -335,13 +328,13 @@
         <li class="right" >
           <a href="topologyref_doc.html" title="Topology Assumptions Reference"
              >previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="core_doc.html" >Core Module</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="core_doc.html" >Core Module</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

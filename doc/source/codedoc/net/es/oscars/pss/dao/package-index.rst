@@ -7,6 +7,5 @@ net.es.oscars.pss.dao
    :maxdepth: 1
 
    RouterCommandsRepository
-   TemplateRepository
    UrnAddressRepository
 

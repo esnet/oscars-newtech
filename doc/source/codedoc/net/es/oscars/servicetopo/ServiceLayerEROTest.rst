@@ -1,6 +1,6 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars CoreUnitTestConfiguration
+.. java:import:: net.es.oscars AbstractCoreTest
 
 .. java:import:: net.es.oscars.dto.pss EthFixtureType
 
@@ -8,15 +8,27 @@
 
 .. java:import:: net.es.oscars.dto.pss EthPipeType
 
-.. java:import:: net.es.oscars.pce DijkstraPCE
-
-.. java:import:: net.es.oscars.pce PruningService
+.. java:import:: net.es.oscars.dto.spec PalindromicType
 
 .. java:import:: net.es.oscars.dto.topo TopoEdge
 
 .. java:import:: net.es.oscars.dto.topo TopoVertex
 
 .. java:import:: net.es.oscars.dto.topo Topology
+
+.. java:import:: net.es.oscars.dto.topo.enums Layer
+
+.. java:import:: net.es.oscars.dto.topo.enums PortLayer
+
+.. java:import:: net.es.oscars.dto.topo.enums UrnType
+
+.. java:import:: net.es.oscars.dto.topo.enums VertexType
+
+.. java:import:: net.es.oscars.pce BandwidthService
+
+.. java:import:: net.es.oscars.pce DijkstraPCE
+
+.. java:import:: net.es.oscars.pce PruningService
 
 .. java:import:: net.es.oscars.topo.ent IntRangeE
 
@@ -26,23 +38,9 @@
 
 .. java:import:: net.es.oscars.topo.ent UrnE
 
-.. java:import:: net.es.oscars.dto.topo.enums Layer
-
-.. java:import:: net.es.oscars.dto.spec PalindromicType
-
-.. java:import:: net.es.oscars.dto.topo.enums UrnType
-
-.. java:import:: net.es.oscars.dto.topo.enums VertexType
-
 .. java:import:: org.junit Test
 
-.. java:import:: org.junit.runner RunWith
-
 .. java:import:: org.springframework.beans.factory.annotation Autowired
-
-.. java:import:: org.springframework.boot.test SpringApplicationConfiguration
-
-.. java:import:: org.springframework.test.context.junit4 SpringJUnit4ClassRunner
 
 .. java:import:: org.springframework.transaction.annotation Transactional
 
@@ -58,7 +56,7 @@ ServiceLayerEROTest
 .. java:package:: net.es.oscars.servicetopo
    :noindex:
 
-.. java:type:: @Slf4j @RunWith @SpringApplicationConfiguration @Transactional public class ServiceLayerEROTest
+.. java:type:: @Slf4j @Transactional public class ServiceLayerEROTest extends AbstractCoreTest
 
    Created by jeremy on 6/24/16. Primarily tests correctness of service-layer topology logical edge construction, initialization, and population during MPLS-layer routing
 

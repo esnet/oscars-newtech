@@ -16,52 +16,28 @@ ProvState
 
 Enum Constants
 --------------
-BUILDING_AUTO
-^^^^^^^^^^^^^
+BUILDING
+^^^^^^^^
 
-.. java:field:: public static final ProvState BUILDING_AUTO
+.. java:field:: public static final ProvState BUILDING
    :outertype: ProvState
 
-BUILDING_MANUAL
-^^^^^^^^^^^^^^^
+BUILT
+^^^^^
 
-.. java:field:: public static final ProvState BUILDING_MANUAL
+.. java:field:: public static final ProvState BUILT
    :outertype: ProvState
 
-BUILT_AUTO
+DISMANTLED
 ^^^^^^^^^^
 
-.. java:field:: public static final ProvState BUILT_AUTO
+.. java:field:: public static final ProvState DISMANTLED
    :outertype: ProvState
 
-BUILT_MANUAL
-^^^^^^^^^^^^
+DISMANTLING
+^^^^^^^^^^^
 
-.. java:field:: public static final ProvState BUILT_MANUAL
-   :outertype: ProvState
-
-DISMANTLED_AUTO
-^^^^^^^^^^^^^^^
-
-.. java:field:: public static final ProvState DISMANTLED_AUTO
-   :outertype: ProvState
-
-DISMANTLED_MANUAL
-^^^^^^^^^^^^^^^^^
-
-.. java:field:: public static final ProvState DISMANTLED_MANUAL
-   :outertype: ProvState
-
-DISMANTLING_AUTO
-^^^^^^^^^^^^^^^^
-
-.. java:field:: public static final ProvState DISMANTLING_AUTO
-   :outertype: ProvState
-
-DISMANTLING_MANUAL
-^^^^^^^^^^^^^^^^^^
-
-.. java:field:: public static final ProvState DISMANTLING_MANUAL
+.. java:field:: public static final ProvState DISMANTLING
    :outertype: ProvState
 
 FAILED
@@ -70,10 +46,10 @@ FAILED
 .. java:field:: public static final ProvState FAILED
    :outertype: ProvState
 
-GENERATING
-^^^^^^^^^^
+GENERATED
+^^^^^^^^^
 
-.. java:field:: public static final ProvState GENERATING
+.. java:field:: public static final ProvState GENERATED
    :outertype: ProvState
 
 INITIAL
@@ -82,9 +58,9 @@ INITIAL
 .. java:field:: public static final ProvState INITIAL
    :outertype: ProvState
 
-READY_TO_GENERATE
-^^^^^^^^^^^^^^^^^
+READY
+^^^^^
 
-.. java:field:: public static final ProvState READY_TO_GENERATE
+.. java:field:: public static final ProvState READY
    :outertype: ProvState
 

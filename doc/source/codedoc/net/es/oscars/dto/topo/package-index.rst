@@ -7,7 +7,9 @@ net.es.oscars.dto.topo
    :maxdepth: 1
 
    BidirectionalPath
+   DevicePortMap
    Edge
+   ReservedBandwidths
    TopoEdge
    TopoVertex
    Topology

@@ -8,13 +8,11 @@
 
 .. java:import:: net.es.oscars.dto.topo.enums VertexType
 
+.. java:import:: net.es.oscars.pce.exc PCEException
+
 .. java:import:: net.es.oscars.resv.ent RequestedVlanPipeE
 
-.. java:import:: net.es.oscars.resv.ent ReservedBandwidthE
-
 .. java:import:: net.es.oscars.resv.ent ReservedVlanE
-
-.. java:import:: net.es.oscars.topo.ent UrnE
 
 .. java:import:: net.es.oscars.topo.svc TopoService
 
@@ -39,7 +37,7 @@ Methods
 computeSpecifiedERO
 ^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public Map<String, List<TopoEdge>> computeSpecifiedERO(RequestedVlanPipeE requestPipe, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList) throws PCEException
+.. java:method:: public Map<String, List<TopoEdge>> computeSpecifiedERO(RequestedVlanPipeE requestPipe, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList) throws PCEException
    :outertype: EroPCE
 
    Depends on DijkstraPCE to construct the Physical-Layer EROs for a request after pruning the topology based on requested ERO parameters

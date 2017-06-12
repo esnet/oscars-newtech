@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>VLAN Service &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>VLAN Service &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,42 +17,40 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Engine (PCE)" href="../pce_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Path Computation Service Enhancements" href="../advanced_service_doc.html" />
     <link rel="prev" title="Reserved Bandwidth Service" href="service_bandwidth_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="../advanced_service_doc.html" title="Path Computation Service Enhancements"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="service_bandwidth_doc.html" title="Reserved Bandwidth Service"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -100,9 +98,7 @@
 <li class="toctree-l3"><a class="reference internal" href="service_topology_doc.html">Topology Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_pruning_doc.html">Topology Pruning Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_bandwidth_doc.html">Reserved Bandwidth Service</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">VLAN Service</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">VLAN Service</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../advanced_service_doc.html">Path Computation Service Enhancements</a></li>
@@ -110,6 +106,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../webui_doc.html">Web User Interface (WebUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_doc.html">Using the OSCARS API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../whatif_doc.html">What-If Service Module</a></li>
 </ul>
 <ul>
@@ -122,17 +119,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="../advanced_service_doc.html"
                         title="next chapter">Path Computation Service Enhancements</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -141,14 +135,14 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="vlan-service">
 <span id="service-vlan"></span><h1>VLAN Service<a class="headerlink" href="#vlan-service" title="Permalink to this headline">¶</a></h1>
 <p>Provides methods that handle retrieving reserved VLAN IDs from the repository, mapping reserved/available/requested VLAN IDs to network elements, and determining if requested VLAN IDs can be supported on a topology.</p>
 <div class="section" id="vlan-translation-and-swapping">
 <span id="vlan-translation"></span><h2>VLAN Translation and Swapping<a class="headerlink" href="#vlan-translation-and-swapping" title="Permalink to this headline">¶</a></h2>
-<p>VLAN Translation (or Swapping), is a procedure used by the <a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><em>Translation PCE Module</em></a> to assign VLAN tags to a reserved path. VLAN translation allows one VLAN tag, possibly different than the tag(s) requested, to be used for the intermediate ports in a path. The VLANs available at each port (or at each switch) are encapsulated in a set of <em>Range</em> objects, each of which represents a contiguous range of VLAN IDs. For example, <em>Ranges [5, 10]</em> and <em>[15, 20]</em> could be available at a specific port, while IDs outside of that range are unavailable. To perform VLAN swapping, this service takes the path(s) returned from pathfinding in the <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a> and retrieve the available ranges from each port involved in the path (along with each port on each switch in the path, if those ports aren&#8217;t already in the path). The problem becomes similar to the <em>set cover problem</em>: choose the minimum set of VLANs that will cover all involved ports. The following restrictions apply: fixtures(ingress/egress points) must use one of the requested VLAN tags (may be different for distinct fixtures), all intermediate ports along the path must use the same VLAN tag, and all ports on any switches involved must use the same VLAN tag.</p>
+<p>VLAN Translation (or Swapping), is a procedure used by the <a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><span class="std std-ref">Translation PCE Module</span></a> to assign VLAN tags to a reserved path. VLAN translation allows one VLAN tag, possibly different than the tag(s) requested, to be used for the intermediate ports in a path. The VLANs available at each port (or at each switch) are encapsulated in a set of <em>Range</em> objects, each of which represents a contiguous range of VLAN IDs. For example, <em>Ranges [5, 10]</em> and <em>[15, 20]</em> could be available at a specific port, while IDs outside of that range are unavailable. To perform VLAN swapping, this service takes the path(s) returned from pathfinding in the <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a> and retrieve the available ranges from each port involved in the path (along with each port on each switch in the path, if those ports aren’t already in the path). The problem becomes similar to the <em>set cover problem</em>: choose the minimum set of VLANs that will cover all involved ports. The following restrictions apply: fixtures(ingress/egress points) must use one of the requested VLAN tags (may be different for distinct fixtures), all intermediate ports along the path must use the same VLAN tag, and all ports on any switches involved must use the same VLAN tag.</p>
 <div class="section" id="major-steps">
 <h3>Major steps<a class="headerlink" href="#major-steps" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
@@ -156,9 +150,9 @@
 <li>If Step 1 was unsuccessful: For each fixture, assign a requested &amp; available VLAN tag. Check if any of those tags are available across the intermediate ports of the path. If so, assign it to those ports as well (if they have not have VLANs assigned yet). If any fixture cannot have an assignment, then the request cannot be provisioned and circuit reservation fails.</li>
 <li>If the intermediate ports are still not assigned, determine if there are any tags that are available across the entire intermediate path. If so, assign them. If not, the request cannot be provisioned and circuit reservation fails.</li>
 </ol>
-<div class="figure align-center">
+<div class="figure align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/vlan_trans.png"><img alt="VLAN Translation" src="../../_images/vlan_trans.png" style="width: 533.0px; height: 302.25px;" /></a>
-<p class="caption"><em>VLAN translation example where a different VLAN tag can be assigned to intermediate ports if a requested tag is not available.</em></p>
+<p class="caption"><span class="caption-text"><em>VLAN translation example where a different VLAN tag can be assigned to intermediate ports if a requested tag is not available.</em></span></p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -174,13 +168,13 @@
 </ul>
 <p><strong>Called By:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_top_doc.html#pce-top"><em>Top PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><em>Translation PCE Module</em></a></li>
-<li><a class="reference internal" href="service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a></li>
+<li><a class="reference internal" href="../pce/pce_top_doc.html#pce-top"><span class="std std-ref">Top PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><span class="std std-ref">Translation PCE Module</span></a></li>
+<li><a class="reference internal" href="service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a></li>
 </ul>
 <p><strong>API Specification:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/VlanService.html#net.es.oscars.pce.VlanService" title="net.es.oscars.pce.VlanService"><tt class="xref java java-ref docutils literal"><span class="pre">VlanService</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/VlanService.html#net.es.oscars.pce.VlanService" title="net.es.oscars.pce.VlanService"><code class="xref java java-ref docutils literal"><span class="pre">VlanService</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -191,29 +185,26 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="../advanced_service_doc.html" title="Path Computation Service Enhancements"
              >next</a> |</li>
         <li class="right" >
           <a href="service_bandwidth_doc.html" title="Reserved Bandwidth Service"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

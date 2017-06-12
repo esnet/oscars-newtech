@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Service-Layer Topology with Survivable MPLS-Layer &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Service-Layer Topology with Survivable MPLS-Layer &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Survivable Routing Services" href="survivability_service_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Path Setup Subsystem (PSS)" href="../pss_doc.html" />
     <link rel="prev" title="Survivable Routing Services" href="survivability_service_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,13 +45,13 @@
         <li class="right" >
           <a href="survivability_service_doc.html" title="Survivable Routing Services"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &raquo;</li>
-          <li><a href="survivability_service_doc.html" accesskey="U">Survivable Routing Services</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="survivability_service_doc.html" accesskey="U">Survivable Routing Services</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -95,17 +96,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="../pss_doc.html"
                         title="next chapter">Path Setup Subsystem (PSS)</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -114,11 +112,11 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="service-layer-topology-with-survivable-mpls-layer">
 <span id="virtual-surv-topo"></span><h1>Service-Layer Topology with Survivable MPLS-Layer<a class="headerlink" href="#service-layer-topology-with-survivable-mpls-layer" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference internal" href="survivability_service_doc.html#surv-pce-mpls"><em>MPLS-Layer Survivability</em></a> introduced in OSCARS 1.0 provides intelligent, flexible, and survivable routing capabilities supported by the heterogeneity of physical devices used throughout ESnet. In particular, device classes include: Ethernet Switches, and MPLS Routers. These services consider the distribution of these devices and decompose the physical network topology into two distinct layers:</p>
+<p>The <a class="reference internal" href="survivability_service_doc.html#surv-pce-mpls"><span class="std std-ref">MPLS-Layer Survivability</span></a> introduced in OSCARS 1.0 provides intelligent, flexible, and survivable routing capabilities supported by the heterogeneity of physical devices used throughout ESnet. In particular, device classes include: Ethernet Switches, and MPLS Routers. These services consider the distribution of these devices and decompose the physical network topology into two distinct layers:</p>
 <div class="section" id="the-service-layer-topology">
 <h2>The Service-Layer Topology<a class="headerlink" href="#the-service-layer-topology" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -132,27 +130,27 @@
 <li>MPLS routers and connected ports.</li>
 <li>Network links connecting a pair of MPLS routers.</li>
 </ul>
-<p>All circuit service begins and terminates are devices and ports on the Service-Layer. The MPLS-Layer, meanwhile, is abstracted out of the Service-Layer such that no MPLS elements are included. For each pair of elements on the border between the two layers, there exist two abstract edges as shown in the figure below (refer to the <a class="reference internal" href="../topologyref_doc.html#topologyref"><em>Topology Assumptions Reference</em></a> for an introduction to the topology element illustrations used throughout this document). These edges represent a logical pair of link-disjoint connections through the MPLS-Layer.</p>
-<div class="figure align-center">
+<p>All circuit service begins and terminates are devices and ports on the Service-Layer. The MPLS-Layer, meanwhile, is abstracted out of the Service-Layer such that no MPLS elements are included. For each pair of elements on the border between the two layers, there exist two abstract edges as shown in the figure below (refer to the <a class="reference internal" href="../topologyref_doc.html#topologyref"><span class="std std-ref">Topology Assumptions Reference</span></a> for an introduction to the topology element illustrations used throughout this document). These edges represent a logical pair of link-disjoint connections through the MPLS-Layer.</p>
+<div class="figure align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/service_topo.gif"><img alt="Service-Layer Topology" src="../../_images/service_topo.gif" style="width: 45%;" /></a>
-<p class="caption"><em>All MPLS-Layer components are abstracted out of the Service-Layer to be replaced by abstract edges connecting pairs of Service-Layer components.</em></p>
+<p class="caption"><span class="caption-text"><em>All MPLS-Layer components are abstracted out of the Service-Layer to be replaced by abstract edges connecting pairs of Service-Layer components.</em></span></p>
 </div>
-<p>The Service-Layer topology can then be submitted in place of the true physical topology to the <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a>. The abstract links are treated identically to physical links by the PCE components. That is, they are pruned from the Service-Layer topology and then included in the set of links passed into the <a class="reference internal" href="../pce_doc.html#pathfinding-algorithms"><em>Pathfinding Algorithms</em></a>. Once the PCE has completed execution on the Service-Layer topology, any abstract links included in the solution are translated back into their corresponding physical counterparts. No further processing by the PCE is performed in order to compute the physical paths. The process of assigning translational values and weights is described below.</p>
+<p>The Service-Layer topology can then be submitted in place of the true physical topology to the <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a>. The abstract links are treated identically to physical links by the PCE components. That is, they are pruned from the Service-Layer topology and then included in the set of links passed into the <a class="reference internal" href="../pce_doc.html#pathfinding-algorithms"><span class="std std-ref">Pathfinding Algorithms</span></a>. Once the PCE has completed execution on the Service-Layer topology, any abstract links included in the solution are translated back into their corresponding physical counterparts. No further processing by the PCE is performed in order to compute the physical paths. The process of assigning translational values and weights is described below.</p>
 <div class="section" id="computing-survivable-abstract-links">
 <h3>Computing Survivable Abstract Links<a class="headerlink" href="#computing-survivable-abstract-links" title="Permalink to this headline">¶</a></h3>
-<p>Unlike the <a class="reference internal" href="virtual_topo_doc.html#virtual-topo"><em>Service-Layer Topology</em></a> in which each abstract link corresponds to a single route through the MPLS-Layer, the <em>Service-Layer Topology with Survivable MPLS-Layer</em> maps a single abstract link to a <strong>pair</strong> of routes through the MPLS-Layer. Not only is there a 2:1 route-to-link mapping from MPLS-Layer to Service-Layer, but the pair of routes is also necessarily link-disjoint. An abstract link exists on the Service-Layer topology if and only if two paths beginning and ending at the appropriate border ports of the MPLS-Layer can be established such that they do not have any ports or links in common with each other (except for the source and destination end-points). Since the abstract links are unidirectional, these survivable route-pairs are computed individually and there is no guarantee that they will use any of the same intermediate MPLS-Layer links or provide survivability in the same way. The only guarantee to the user is that each unidirecitonal abstract link will provide a primary and backup path solution through the MPLS-Layer. The computation of abstract links is performed as shown in the following figures.</p>
-<div class="figure align-center">
+<p>Unlike the <a class="reference internal" href="virtual_topo_doc.html#virtual-topo"><span class="std std-ref">Service-Layer Topology</span></a> in which each abstract link corresponds to a single route through the MPLS-Layer, the <em>Service-Layer Topology with Survivable MPLS-Layer</em> maps a single abstract link to a <strong>pair</strong> of routes through the MPLS-Layer. Not only is there a 2:1 route-to-link mapping from MPLS-Layer to Service-Layer, but the pair of routes is also necessarily link-disjoint. An abstract link exists on the Service-Layer topology if and only if two paths beginning and ending at the appropriate border ports of the MPLS-Layer can be established such that they do not have any ports or links in common with each other (except for the source and destination end-points). Since the abstract links are unidirectional, these survivable route-pairs are computed individually and there is no guarantee that they will use any of the same intermediate MPLS-Layer links or provide survivability in the same way. The only guarantee to the user is that each unidirecitonal abstract link will provide a primary and backup path solution through the MPLS-Layer. The computation of abstract links is performed as shown in the following figures.</p>
+<div class="figure align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/mpls_routing_survivable.gif"><img alt="MPLS-Layer Survivable Routing" src="../../_images/mpls_routing_survivable.gif" style="width: 391.0px; height: 349.35px;" /></a>
-<p class="caption"><em>Survivable link-disjoint routing is performed between each pair of MPLS-Layer ports.</em></p>
+<p class="caption"><span class="caption-text"><em>Survivable link-disjoint routing is performed between each pair of MPLS-Layer ports.</em></span></p>
 </div>
-<p>First, a pair of link-disjoint routes is computed between every pair of MPLS-Layer ports using the <a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><em>Bhandari PCE Module</em></a>. This procedure is conducted for every circuit reservation requiring this abstraction because the network state is dynamic and changes with each subsequent circuit reservation or release. Then, those MPLS-Layer routes beginning and terminating at the end-points of an abstract link are saved as a translational list mapping the physical path-pair to the appropriate abstract links. The weight of an abstract link is exactly identical to the sum of the weights of all physical links contained within the <strong>primary</strong> MPLS-Layer path.</p>
-<div class="figure align-center">
+<p>First, a pair of link-disjoint routes is computed between every pair of MPLS-Layer ports using the <a class="reference internal" href="../pce/pce_bhandari_doc.html#pce-bhandari"><span class="std std-ref">Bhandari PCE Module</span></a>. This procedure is conducted for every circuit reservation requiring this abstraction because the network state is dynamic and changes with each subsequent circuit reservation or release. Then, those MPLS-Layer routes beginning and terminating at the end-points of an abstract link are saved as a translational list mapping the physical path-pair to the appropriate abstract links. The weight of an abstract link is exactly identical to the sum of the weights of all physical links contained within the <strong>primary</strong> MPLS-Layer path.</p>
+<div class="figure align-center" id="id3">
 <a class="reference internal image-reference" href="../../_images/mpls_route_map_survivable.gif"><img alt="MPLS-Layer Survivable Route Map" src="../../_images/mpls_route_map_survivable.gif" style="width: 75%;" /></a>
-<p class="caption"><em>The weight of the computed abstract links corresponds to the total weight of the physical links traversed by the</em> primary path <em>in the MPLS-Layer pair. Abstract link pairs need not correspond to idential survivable route pairs nor weights.</em></p>
+<p class="caption"><span class="caption-text"><em>The weight of the computed abstract links corresponds to the total weight of the physical links traversed by the</em> primary path <em>in the MPLS-Layer pair. Abstract link pairs need not correspond to idential survivable route pairs nor weights.</em></span></p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The necessity to map the physical survivable path-pair to an abstract link requires an additional pass through the PCE&#8217;s pathfinding algorithms. In this case, the topology used for the path computation is the MPLS-Layer topology. This enables each abstract Service-Layer link to correspond to the least-cost pair of link-disjoint routes through the MPLS-Layer.</p>
+<p class="last">The necessity to map the physical survivable path-pair to an abstract link requires an additional pass through the PCE’s pathfinding algorithms. In this case, the topology used for the path computation is the MPLS-Layer topology. This enables each abstract Service-Layer link to correspond to the least-cost pair of link-disjoint routes through the MPLS-Layer.</p>
 </div>
 </div>
 </div>
@@ -164,7 +162,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -176,15 +174,15 @@
         <li class="right" >
           <a href="survivability_service_doc.html" title="Survivable Routing Services"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &raquo;</li>
-          <li><a href="survivability_service_doc.html" >Survivable Routing Services</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="survivability_service_doc.html" >Survivable Routing Services</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

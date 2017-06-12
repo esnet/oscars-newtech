@@ -2,9 +2,9 @@
 
 .. java:import:: net.es.oscars.authnz.dao UserRepository
 
-.. java:import:: net.es.oscars.authnz.ent EPermissions
+.. java:import:: net.es.oscars.authnz.ent PermissionsE
 
-.. java:import:: net.es.oscars.authnz.ent EUser
+.. java:import:: net.es.oscars.authnz.ent UserE
 
 .. java:import:: net.es.oscars.authnz.prop AuthnzProperties
 
@@ -13,8 +13,6 @@
 .. java:import:: org.springframework.security.crypto.bcrypt BCryptPasswordEncoder
 
 .. java:import:: org.springframework.stereotype Component
-
-.. java:import:: javax.annotation PostConstruct
 
 .. java:import:: java.util List
 
@@ -36,9 +34,9 @@ AuthnzPopulator
 
 Methods
 -------
-initializeUserDb
-^^^^^^^^^^^^^^^^
+startup
+^^^^^^^
 
-.. java:method:: @PostConstruct public void initializeUserDb()
+.. java:method:: public void startup()
    :outertype: AuthnzPopulator
 

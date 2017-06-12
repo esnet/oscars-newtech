@@ -1,8 +1,10 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars.pce PCEException
+.. java:import:: net.es.oscars.pce.exc PCEException
 
 .. java:import:: net.es.oscars.pss PSSException
+
+.. java:import:: net.es.oscars.pss.svc PSSAdapter
 
 .. java:import:: net.es.oscars.pss.svc PssResourceService
 
@@ -35,7 +37,7 @@ Constructors
 ResvProcessor
 ^^^^^^^^^^^^^
 
-.. java:constructor:: @Autowired public ResvProcessor(ResvService resvService)
+.. java:constructor:: @Autowired public ResvProcessor(ResvService resvService, PSSAdapter pssAdapter, ProcessingProperties processingProperties)
    :outertype: ResvProcessor
 
 Methods
@@ -44,5 +46,11 @@ processingLoop
 ^^^^^^^^^^^^^^
 
 .. java:method:: @Scheduled @Transactional public void processingLoop()
+   :outertype: ResvProcessor
+
+startup
+^^^^^^^
+
+.. java:method:: public void startup()
    :outertype: ResvProcessor
 

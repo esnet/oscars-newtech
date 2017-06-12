@@ -4,7 +4,9 @@
 
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars.pce PCEException
+.. java:import:: net.es.oscars.pce.exc DuplicateConnectionIdException
+
+.. java:import:: net.es.oscars.pce.exc PCEException
 
 .. java:import:: net.es.oscars.pce TopPCE
 
@@ -17,6 +19,8 @@
 .. java:import:: net.es.oscars.st.prov ProvState
 
 .. java:import:: net.es.oscars.st.resv ResvState
+
+.. java:import:: org.modelmapper ModelMapper
 
 .. java:import:: org.springframework.beans.factory.annotation Autowired
 
@@ -50,6 +54,16 @@ abort
 .. java:method:: public void abort(ConnectionE c)
    :outertype: ResvService
 
+archiveReservation
+^^^^^^^^^^^^^^^^^^
+
+.. java:method:: public void archiveReservation(ConnectionE c)
+   :outertype: ResvService
+
+   Populates the ArchivedBlueprintE of a Connection when it transitions into a final state from a reserved/active one. This enables freeing of reserved resources but maintains tracking and archival info on the connection.
+
+   :param c: ConnectionE to archive
+
 commit
 ^^^^^^
 
@@ -72,6 +86,12 @@ findByConnectionId
 ^^^^^^^^^^^^^^^^^^
 
 .. java:method:: public Optional<ConnectionE> findByConnectionId(String connectionId)
+   :outertype: ResvService
+
+generated
+^^^^^^^^^
+
+.. java:method:: public void generated(ConnectionE c)
    :outertype: ResvService
 
 hold
@@ -102,6 +122,12 @@ preCheck
 ^^^^^^^^
 
 .. java:method:: public Boolean preCheck(ConnectionE c) throws PSSException, PCEException
+   :outertype: ResvService
+
+provFailed
+^^^^^^^^^^
+
+.. java:method:: public void provFailed(ConnectionE c)
    :outertype: ResvService
 
 save

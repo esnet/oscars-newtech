@@ -4,21 +4,13 @@
 
 .. java:import:: lombok.extern.slf4j Slf4j
 
+.. java:import:: net.es.oscars.dto.topo DevicePortMap
+
 .. java:import:: net.es.oscars.dto.topo TopoEdge
 
 .. java:import:: net.es.oscars.dto.topo TopoVertex
 
 .. java:import:: net.es.oscars.dto.topo Topology
-
-.. java:import:: net.es.oscars.dto.topo.enums VertexType
-
-.. java:import:: net.es.oscars.dto.topo.enums DeviceModel
-
-.. java:import:: net.es.oscars.dto.topo.enums DeviceType
-
-.. java:import:: net.es.oscars.dto.topo.enums Layer
-
-.. java:import:: net.es.oscars.dto.topo.enums UrnType
 
 .. java:import:: net.es.oscars.resv.dao ReservedBandwidthRepository
 
@@ -69,13 +61,19 @@ Methods
 buildDeviceToPortMap
 ^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public Map<String, Set<String>> buildDeviceToPortMap()
+.. java:method:: public DevicePortMap buildDeviceToPortMap()
    :outertype: TopoService
 
 buildPortToDeviceMap
 ^^^^^^^^^^^^^^^^^^^^
 
 .. java:method:: public Map<String, String> buildPortToDeviceMap(Map<String, Set<String>> deviceToPortMap)
+   :outertype: TopoService
+
+determineIfRouterHasEthernetPorts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: public boolean determineIfRouterHasEthernetPorts(String deviceURN)
    :outertype: TopoService
 
 device
@@ -126,10 +124,22 @@ getVertexTypeFromDeviceType
 .. java:method:: public VertexType getVertexTypeFromDeviceType(DeviceType deviceType)
    :outertype: TopoService
 
+identifyEdgePortURNs
+^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: public Set<String> identifyEdgePortURNs()
+   :outertype: TopoService
+
 layer
 ^^^^^
 
 .. java:method:: public Topology layer(Layer layer) throws NoSuchElementException
+   :outertype: TopoService
+
+lookupPortLayer
+^^^^^^^^^^^^^^^
+
+.. java:method:: public PortLayer lookupPortLayer(String portURN)
    :outertype: TopoService
 
 reservableBandwidths

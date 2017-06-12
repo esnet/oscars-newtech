@@ -28,7 +28,6 @@
         <module>core</module>
         <module>shared</module>
         <module>pss</module>
-        <module>webui</module>
     </modules>
     <profiles>
         <profile>

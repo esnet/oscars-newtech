@@ -6,5 +6,6 @@ net.es.oscars.bwavail.svc
 .. toctree::
    :maxdepth: 1
 
+   BandwidthAvailabilityGenerationService
    BandwidthAvailabilityService
 

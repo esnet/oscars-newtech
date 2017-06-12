@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Circuit Reservation Specification &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Circuit Reservation Specification &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Virtual Circuits" href="../virtualcircuits.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Plumbing Specification" href="plumbing_doc.html" />
     <link rel="prev" title="Circuit Schedule Specification" href="schedspec_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,11 +45,11 @@
         <li class="right" >
           <a href="schedspec_doc.html" title="Circuit Schedule Specification"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../virtualcircuits.html" accesskey="U">Virtual Circuits</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../virtualcircuits.html" accesskey="U">Virtual Circuits</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -80,9 +81,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../virtualcircuits.html">Virtual Circuits</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="requestspec_doc.html">Circuit Request Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schedspec_doc.html">Circuit Schedule Specification</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Circuit Reservation Specification</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Circuit Reservation Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plumbing_doc.html">Plumbing Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plumbing_doc.html#advanced-plumbing">Advanced Plumbing</a></li>
 </ul>
@@ -102,17 +101,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="plumbing_doc.html"
                         title="next chapter">Plumbing Specification</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -121,24 +117,24 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="circuit-reservation-specification">
 <span id="resvspec"></span><h1>Circuit Reservation Specification<a class="headerlink" href="#circuit-reservation-specification" title="Permalink to this headline">¶</a></h1>
-<p>An OSCARS circuit is decomposed roughly into three components: The <a class="reference internal" href="requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a>, the <a class="reference internal" href="schedspec_doc.html#schedspec"><em>Circuit Schedule Specification</em></a>, and the <em>Circuit Reservation Specification</em>. The Reservation Specification describes the <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a> output upon completion of successful or unsuccessful pathfinding execution. This represented the response to the user from OSCARS.</p>
-<p>The Circuit Reservation Specification is a collection of Pipes, Junctions, and Fixtures, as described by the <a class="reference internal" href="plumbing_doc.html#plumbing"><em>Plumbing Specification</em></a>.</p>
+<p>An OSCARS circuit is decomposed roughly into three components: The <a class="reference internal" href="requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a>, the <a class="reference internal" href="schedspec_doc.html#schedspec"><span class="std std-ref">Circuit Schedule Specification</span></a>, and the <em>Circuit Reservation Specification</em>. The Reservation Specification describes the <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a> output upon completion of successful or unsuccessful pathfinding execution. This represented the response to the user from OSCARS.</p>
+<p>The Circuit Reservation Specification is a collection of Pipes, Junctions, and Fixtures, as described by the <a class="reference internal" href="plumbing_doc.html#plumbing"><span class="std std-ref">Plumbing Specification</span></a>.</p>
 <div class="section" id="relevant-api-specification">
 <h2>Relevant API Specification<a class="headerlink" href="#relevant-api-specification" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedBlueprintE.html#net.es.oscars.resv.ent.ReservedBlueprintE" title="net.es.oscars.resv.ent.ReservedBlueprintE"><tt class="xref java java-ref docutils literal"><span class="pre">ReservedBlueprintE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedVlanFlowE.html#net.es.oscars.resv.ent.ReservedVlanFlowE" title="net.es.oscars.resv.ent.ReservedVlanFlowE"><tt class="xref java java-ref docutils literal"><span class="pre">ReservedVlanFlowE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedVlanJunctionE.html#net.es.oscars.resv.ent.ReservedVlanJunctionE" title="net.es.oscars.resv.ent.ReservedVlanJunctionE"><tt class="xref java java-ref docutils literal"><span class="pre">ReservedVlanJunctionE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedVlanFixtureE.html#net.es.oscars.resv.ent.ReservedVlanFixtureE" title="net.es.oscars.resv.ent.ReservedVlanFixtureE"><tt class="xref java java-ref docutils literal"><span class="pre">ReservedVlanFixtureE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedEthPipeE.html#net.es.oscars.resv.ent.ReservedEthPipeE" title="net.es.oscars.resv.ent.ReservedEthPipeE"><tt class="xref java java-ref docutils literal"><span class="pre">ReservedEthPipeE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedMplsPipeE.html#net.es.oscars.resv.ent.ReservedMplsPipeE" title="net.es.oscars.resv.ent.ReservedMplsPipeE"><tt class="xref java java-ref docutils literal"><span class="pre">ReservedMplsPipeE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedBandwidthE.html#net.es.oscars.resv.ent.ReservedBandwidthE" title="net.es.oscars.resv.ent.ReservedBandwidthE"><tt class="xref java java-ref docutils literal"><span class="pre">ReservedBandwidthE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedVlanE.html#net.es.oscars.resv.ent.ReservedVlanE" title="net.es.oscars.resv.ent.ReservedVlanE"><tt class="xref java java-ref docutils literal"><span class="pre">ReservedVlanE</span></tt></a></li>
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedPssResourceE.html#net.es.oscars.resv.ent.ReservedPssResourceE" title="net.es.oscars.resv.ent.ReservedPssResourceE"><tt class="xref java java-ref docutils literal"><span class="pre">ReservedPssResourceE</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedBlueprintE.html#net.es.oscars.resv.ent.ReservedBlueprintE" title="net.es.oscars.resv.ent.ReservedBlueprintE"><code class="xref java java-ref docutils literal"><span class="pre">ReservedBlueprintE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedVlanFlowE.html#net.es.oscars.resv.ent.ReservedVlanFlowE" title="net.es.oscars.resv.ent.ReservedVlanFlowE"><code class="xref java java-ref docutils literal"><span class="pre">ReservedVlanFlowE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedVlanJunctionE.html#net.es.oscars.resv.ent.ReservedVlanJunctionE" title="net.es.oscars.resv.ent.ReservedVlanJunctionE"><code class="xref java java-ref docutils literal"><span class="pre">ReservedVlanJunctionE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedVlanFixtureE.html#net.es.oscars.resv.ent.ReservedVlanFixtureE" title="net.es.oscars.resv.ent.ReservedVlanFixtureE"><code class="xref java java-ref docutils literal"><span class="pre">ReservedVlanFixtureE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedEthPipeE.html#net.es.oscars.resv.ent.ReservedEthPipeE" title="net.es.oscars.resv.ent.ReservedEthPipeE"><code class="xref java java-ref docutils literal"><span class="pre">ReservedEthPipeE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedMplsPipeE.html#net.es.oscars.resv.ent.ReservedMplsPipeE" title="net.es.oscars.resv.ent.ReservedMplsPipeE"><code class="xref java java-ref docutils literal"><span class="pre">ReservedMplsPipeE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedBandwidthE.html#net.es.oscars.resv.ent.ReservedBandwidthE" title="net.es.oscars.resv.ent.ReservedBandwidthE"><code class="xref java java-ref docutils literal"><span class="pre">ReservedBandwidthE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedVlanE.html#net.es.oscars.resv.ent.ReservedVlanE" title="net.es.oscars.resv.ent.ReservedVlanE"><code class="xref java java-ref docutils literal"><span class="pre">ReservedVlanE</span></code></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/resv/ent/ReservedPssResourceE.html#net.es.oscars.resv.ent.ReservedPssResourceE" title="net.es.oscars.resv.ent.ReservedPssResourceE"><code class="xref java java-ref docutils literal"><span class="pre">ReservedPssResourceE</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -149,7 +145,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -161,13 +157,13 @@
         <li class="right" >
           <a href="schedspec_doc.html" title="Circuit Schedule Specification"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../virtualcircuits.html" >Virtual Circuits</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../virtualcircuits.html" >Virtual Circuits</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

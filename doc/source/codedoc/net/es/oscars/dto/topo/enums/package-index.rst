@@ -10,6 +10,7 @@ net.es.oscars.dto.topo.enums
    DeviceType
    IfceType
    Layer
+   PortLayer
    UrnType
    VertexType
 

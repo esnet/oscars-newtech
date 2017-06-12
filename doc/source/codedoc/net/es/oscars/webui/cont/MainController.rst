@@ -1,6 +1,10 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars.webui.ipc TopologyProvider
+.. java:import:: net.es.oscars.authnz.svc UserService
+
+.. java:import:: net.es.oscars.dto.topo.enums Layer
+
+.. java:import:: net.es.oscars.topo.svc TopoService
 
 .. java:import:: org.springframework.beans.factory.annotation Autowired
 
@@ -16,8 +20,6 @@
 
 .. java:import:: org.springframework.web.bind.annotation ResponseBody
 
-.. java:import:: org.springframework.web.client RestTemplate
-
 MainController
 ==============
 
@@ -25,6 +27,14 @@ MainController
    :noindex:
 
 .. java:type:: @Slf4j @Controller public class MainController
+
+Constructors
+------------
+MainController
+^^^^^^^^^^^^^^
+
+.. java:constructor:: @Autowired public MainController(UserService userService, TopoService topoService)
+   :outertype: MainController
 
 Methods
 -------

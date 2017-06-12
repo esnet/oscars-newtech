@@ -8,27 +8,27 @@
 
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars.pce DijkstraPCE
-
-.. java:import:: net.es.oscars.pce PruningService
-
-.. java:import:: net.es.oscars.resv.ent RequestedVlanPipeE
-
-.. java:import:: net.es.oscars.resv.ent ReservedBandwidthE
-
-.. java:import:: net.es.oscars.resv.ent ReservedVlanE
-
 .. java:import:: net.es.oscars.dto.topo TopoEdge
 
 .. java:import:: net.es.oscars.dto.topo TopoVertex
 
 .. java:import:: net.es.oscars.dto.topo Topology
 
-.. java:import:: net.es.oscars.topo.ent UrnE
-
 .. java:import:: net.es.oscars.dto.topo.enums Layer
 
+.. java:import:: net.es.oscars.dto.topo.enums PortLayer
+
 .. java:import:: net.es.oscars.dto.topo.enums VertexType
+
+.. java:import:: net.es.oscars.pce DijkstraPCE
+
+.. java:import:: net.es.oscars.pce PruningService
+
+.. java:import:: net.es.oscars.resv.ent RequestedVlanPipeE
+
+.. java:import:: net.es.oscars.resv.ent ReservedVlanE
+
+.. java:import:: net.es.oscars.topo.ent UrnE
 
 .. java:import:: org.springframework.beans.factory.annotation Autowired
 
@@ -52,7 +52,7 @@ buildLogicalLayerDstNodes
 .. java:method:: public void buildLogicalLayerDstNodes(TopoVertex dstDevice, TopoVertex dstOutPort)
    :outertype: ServiceLayerTopology
 
-   Adds a VIRTUAL device and port onto the Service-layer to represent a request's terminating node which is on the MPLS-layer. This is necessary since if the request is destined on the MPLS-layer, it has no foothold on the service-layer; VIRTUAL nodes are dummy hooks. A bidirectional zero-cost link is added between the VIRTUAL port and MPLS-layer dstOutPort. If the specified topology nodes are already on the Service-layer, this method does nothing to modify the Service-layer topology.
+   Adds a VIRTUAL port onto the Service-layer to represent a request's terminating node which is on the MPLS-layer. This is necessary since if the request is destined on the MPLS-layer, it has no foothold on the service-layer; VIRTUAL nodes are dummy hooks. A bidirectional zero-cost link is added between the VIRTUAL port and MPLS-layer dstOutPort. If the specified topology nodes are already on the Service-layer, this method does nothing to modify the Service-layer topology.
 
    :param dstDevice: - Request's destination device
    :param dstOutPort: - Request's destination port
@@ -63,7 +63,7 @@ buildLogicalLayerSrcNodes
 .. java:method:: public void buildLogicalLayerSrcNodes(TopoVertex srcDevice, TopoVertex srcInPort)
    :outertype: ServiceLayerTopology
 
-   Adds a VIRTUAL device and port onto the Service-layer to represent a request's starting node which is on the MPLS-layer. This is necessary since if the request is sourced on the MPLS-layer, it has no foothold on the service-layer; VIRTUAL nodes are dummy hooks. A bidirectional zero-cost link is added between the VIRTUAL port and MPLS-layer srcInPort. If the specified topology nodes are already on the Service-layer, this method does nothing to modify the Service-layer topology.
+   Adds a VIRTUAL port onto the Service-layer to represent a request's starting node which is on the MPLS-layer. This is necessary since if the request is sourced on the MPLS-layer, it has no foothold on the service-layer; VIRTUAL nodes are dummy hooks. A bidirectional zero-cost link is added between the VIRTUAL port and MPLS-layer srcInPort. If the specified topology nodes are already on the Service-layer, this method does nothing to modify the Service-layer topology.
 
    :param srcDevice: - Request's source device
    :param srcInPort: - Request's source port
@@ -71,14 +71,14 @@ buildLogicalLayerSrcNodes
 calculateLogicalLinkWeights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public void calculateLogicalLinkWeights(RequestedVlanPipeE requestedVlanPipe, List<UrnE> urnList, List<ReservedBandwidthE> rsvBwList, List<ReservedVlanE> rsvVlanList)
+.. java:method:: public void calculateLogicalLinkWeights(RequestedVlanPipeE requestedVlanPipe, List<UrnE> urnList, Map<String, Map<String, Integer>> bwAvailMap, List<ReservedVlanE> rsvVlanList)
    :outertype: ServiceLayerTopology
 
    Managing method - Determines whether to perform logical edge weight computation Symmetrically or Asymmetrically. This method may no longer be necessary, since the Symmetric subroutine was too naive to work in general cases.
 
    :param requestedVlanPipe: - Request pipe
    :param urnList: - List of URNs in the network; Necessary for passing to PruningService methods
-   :param rsvBwList: - List of currently reserved Bandwidth elements (during request schedule)
+   :param bwAvailMap: - Map of available bandwidth for "Ingress" and "Egress" direction for each URN.
    :param rsvVlanList: - List of currently reserved VLAN elements (during request schedule)
 
 createMultilayerTopology

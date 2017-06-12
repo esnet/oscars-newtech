@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Bellman-Ford PCE Module &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Bellman-Ford PCE Module &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Engine (PCE)" href="../pce_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Bhandari PCE Module" href="pce_bhandari_doc.html" />
     <link rel="prev" title="Dijkstra PCE Module" href="pce_dijkstra_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,12 +45,12 @@
         <li class="right" >
           <a href="pce_dijkstra_doc.html" title="Dijkstra PCE Module"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -92,9 +93,7 @@
 <li class="toctree-l3"><a class="reference internal" href="pce_survivability_doc.html">Survivability PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_ero_doc.html">Explicit Route Object (ERO) PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_dijkstra_doc.html">Dijkstra PCE Module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Bellman-Ford PCE Module</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Bellman-Ford PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pce_bhandari_doc.html">Bhandari PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../service/service_topology_doc.html">Topology Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../service/service_pruning_doc.html">Topology Pruning Service</a></li>
@@ -120,17 +119,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="pce_bhandari_doc.html"
                         title="next chapter">Bhandari PCE Module</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -139,11 +135,11 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="bellman-ford-pce-module">
 <span id="pce-bellman-ford"></span><h1>Bellman-Ford PCE Module<a class="headerlink" href="#bellman-ford-pce-module" title="Permalink to this headline">¶</a></h1>
-<p>This module is one of the fundamental pathfinding elements of the PCE, used to compute shortest (least-cost) path routing on a constrained network. The Bellman-Ford <a class="reference external" href="https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Algorithm</a> is one of the most widely adopted routing algorithms because it optimally computes its path, and is able to incorporate negatively weighted edges into its graph model. This module serves as the underlying pathfinding mechanism for the <a class="reference internal" href="pce_bhandari_doc.html#pce-bhandari"><em>Bhandari PCE Module</em></a>, which requires negative edge weights. The module is not incorporated into any service-specific PCE modules at this time.</p>
+<p>This module is one of the fundamental pathfinding elements of the PCE, used to compute shortest (least-cost) path routing on a constrained network. The Bellman-Ford <a class="reference external" href="https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Algorithm</a> is one of the most widely adopted routing algorithms because it optimally computes its path, and is able to incorporate negatively weighted edges into its graph model. This module serves as the underlying pathfinding mechanism for the <a class="reference internal" href="pce_bhandari_doc.html#pce-bhandari"><span class="std std-ref">Bhandari PCE Module</span></a>, which requires negative edge weights. The module is not incorporated into any service-specific PCE modules at this time.</p>
 <div class="section" id="module-details">
 <h2>Module Details<a class="headerlink" href="#module-details" title="Permalink to this headline">¶</a></h2>
 <p><strong>Calls:</strong></p>
@@ -152,11 +148,11 @@
 </ul>
 <p><strong>Called By:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="pce_bhandari_doc.html#pce-bhandari"><em>Bhandari PCE Module</em></a></li>
+<li><a class="reference internal" href="pce_bhandari_doc.html#pce-bhandari"><span class="std std-ref">Bhandari PCE Module</span></a></li>
 </ul>
 <p><strong>API Specification:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/BellmanFordPCE.html#net.es.oscars.pce.BellmanFordPCE" title="net.es.oscars.pce.BellmanFordPCE"><tt class="xref java java-ref docutils literal"><span class="pre">BellmanFordPCE</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/pce/BellmanFordPCE.html#net.es.oscars.pce.BellmanFordPCE" title="net.es.oscars.pce.BellmanFordPCE"><code class="xref java java-ref docutils literal"><span class="pre">BellmanFordPCE</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -167,7 +163,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -179,14 +175,14 @@
         <li class="right" >
           <a href="pce_dijkstra_doc.html" title="Dijkstra PCE Module"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Core Module &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Core Module &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,21 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Topology Assumptions Reference" href="topologyref_doc.html" />
     <link rel="prev" title="Plumbing Specification" href="circuit/plumbing_doc.html" /> 
   </head>
   <body>
 	<a href="../index.html"><img src="../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -43,10 +45,10 @@
         <li class="right" >
           <a href="circuit/plumbing_doc.html" title="Plumbing Specification"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -76,7 +78,7 @@
 <li class="toctree-l1"><a class="reference internal" href="start.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="start.html#project-structure">Project Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="virtualcircuits.html">Virtual Circuits</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Core Module</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Core Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="topologyref_doc.html">Topology Assumptions Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pce_doc.html">Path Computation Engine (PCE)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pce_doc.html#pce-workflow">PCE Workflow</a></li>
@@ -99,17 +101,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="topologyref_doc.html"
                         title="next chapter">Topology Assumptions Reference</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -118,35 +117,35 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="core-module">
 <span id="core"></span><h1>Core Module<a class="headerlink" href="#core-module" title="Permalink to this headline">¶</a></h1>
 <p>The OSCARS Core is responsible for all circuit setup, reservation, and management operations. The figure below shows the primary submodules contained within the core. The role of each submodule is briefly described below. In addition to these descriptions, the Core is responsible for handling application configuration, as well as AuthN and AuthZ responsibilities.</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/architecture.png"><img alt="Core module architecture" src="../_images/architecture.png" style="width: 640.0px; height: 360.0px;" /></a>
-<p class="caption"><em>High-level depiction of the OSCARS core module&#8217;s components.</em></p>
+<p class="caption"><span class="caption-text"><em>High-level depiction of the OSCARS core module’s components.</em></span></p>
 </div>
 <div class="section" id="request-specification">
 <h2>Request Specification<a class="headerlink" href="#request-specification" title="Permalink to this headline">¶</a></h2>
-<p>Responsible for describing the formats of new incoming circuit request objects. Includes source node/port, destination node/port, start-time, end-time, bandwidth requirement, as well as additional optional values which alter the level and type of pathfinding service that OSCARS will perform in trying to satisfy the request. Specifics are offered in Section V of this document. Additional details: <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a></p>
+<p>Responsible for describing the formats of new incoming circuit request objects. Includes source node/port, destination node/port, start-time, end-time, bandwidth requirement, as well as additional optional values which alter the level and type of pathfinding service that OSCARS will perform in trying to satisfy the request. Specifics are offered in Section V of this document. Additional details: <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a></p>
 </div>
 <div class="section" id="reservation-specification">
 <h2>Reservation Specification<a class="headerlink" href="#reservation-specification" title="Permalink to this headline">¶</a></h2>
-<p>Responsible for describing the formats of successful and unsuccessful reservation objects. Additional details: <a class="reference internal" href="circuit/resvspec_doc.html#resvspec"><em>Circuit Reservation Specification</em></a></p>
+<p>Responsible for describing the formats of successful and unsuccessful reservation objects. Additional details: <a class="reference internal" href="circuit/resvspec_doc.html#resvspec"><span class="std std-ref">Circuit Reservation Specification</span></a></p>
 </div>
 <div class="section" id="plumbing-specification">
 <h2>Plumbing Specification<a class="headerlink" href="#plumbing-specification" title="Permalink to this headline">¶</a></h2>
-<p>Internal representation of Request/Reservation Specifications. Manipulation of requested &#8220;plumbing&#8221; details allows OSCARS to enable a number of cooperating service enhancements during circuit setup.
-Additional details: <a class="reference internal" href="circuit/plumbing_doc.html#plumbing"><em>Plumbing Specification</em></a></p>
+<p>Internal representation of Request/Reservation Specifications. Manipulation of requested “plumbing” details allows OSCARS to enable a number of cooperating service enhancements during circuit setup.
+Additional details: <a class="reference internal" href="circuit/plumbing_doc.html#plumbing"><span class="std std-ref">Plumbing Specification</span></a></p>
 </div>
 <div class="section" id="reservation-workflow-control">
 <h2>Reservation Workflow Control<a class="headerlink" href="#reservation-workflow-control" title="Permalink to this headline">¶</a></h2>
-<p>Interprets the Request and Plumbing Specifications to determine which enhanced service capabilities should be considered and incorporated during the reservation process. This submodule determines how various path computation submodules should be accessed and in what order or combinations. In the implmentation, this component is called the <a class="reference internal" href="pce/pce_top_doc.html#pce-top"><em>Top PCE Module</em></a></p>
+<p>Interprets the Request and Plumbing Specifications to determine which enhanced service capabilities should be considered and incorporated during the reservation process. This submodule determines how various path computation submodules should be accessed and in what order or combinations. In the implmentation, this component is called the <a class="reference internal" href="pce/pce_top_doc.html#pce-top"><span class="std std-ref">Top PCE Module</span></a></p>
 </div>
 <div class="section" id="path-computation-engine">
 <h2>Path Computation Engine<a class="headerlink" href="#path-computation-engine" title="Permalink to this headline">¶</a></h2>
-<p>Provides all of the logic for computing a path given the current topology state (as maintained by the Topology Service), and the Request Specification. An extensive range of PCE services is newly available as of OSCARS 1.0, which can be applied independently for each request. The PCE evaluates the Request Specification, and dynamically traverses a set of non-linear submodules in a manner which best services the given request. The result is either a working path, or a notice of failure. The PCE is detailed extensively in: <a class="reference internal" href="pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a></p>
+<p>Provides all of the logic for computing a path given the current topology state (as maintained by the Topology Service), and the Request Specification. An extensive range of PCE services is newly available as of OSCARS 1.0, which can be applied independently for each request. The PCE evaluates the Request Specification, and dynamically traverses a set of non-linear submodules in a manner which best services the given request. The result is either a working path, or a notice of failure. The PCE is detailed extensively in: <a class="reference internal" href="pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a></p>
 </div>
 <div class="section" id="pruning-service">
 <h2>Pruning Service<a class="headerlink" href="#pruning-service" title="Permalink to this headline">¶</a></h2>
@@ -177,77 +176,35 @@ Additional details: <a class="reference internal" href="circuit/plumbing_doc.htm
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="topologyref_doc.html">Topology Assumptions Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pce_doc.html">Path Computation Engine (PCE)</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pce_doc.html#pce-workflow">PCE Workflow</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="pce_doc.html">Path Computation Engine (PCE)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pce_doc.html#pce-workflow">PCE Workflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pce_doc.html#pce-structure">PCE Structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_top_doc.html">Top PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_translation_doc.html">Translation PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_layer3_doc.html">Layer 3 PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_palindrome_doc.html">Palindromic PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_nonpalindrome_doc.html">Non-Palindromic PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_survivability_doc.html">Survivability PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_ero_doc.html">Explicit Route Object (ERO) PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_dijkstra_doc.html">Dijkstra PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_bellman_ford_doc.html">Bellman-Ford PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pce/pce_bhandari_doc.html">Bhandari PCE Module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="service/service_topology_doc.html">Topology Service</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="service/service_pruning_doc.html">Topology Pruning Service</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="service/service_bandwidth_doc.html">Reserved Bandwidth Service</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="service/service_vlan_doc.html">VLAN Service</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_top_doc.html">Top PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_translation_doc.html">Translation PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_layer3_doc.html">Layer 3 PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_palindrome_doc.html">Palindromic PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_nonpalindrome_doc.html">Non-Palindromic PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_survivability_doc.html">Survivability PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_ero_doc.html">Explicit Route Object (ERO) PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_dijkstra_doc.html">Dijkstra PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_bellman_ford_doc.html">Bellman-Ford PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pce/pce_bhandari_doc.html">Bhandari PCE Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="service/service_topology_doc.html">Topology Service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="service/service_pruning_doc.html">Topology Pruning Service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="service/service_bandwidth_doc.html">Reserved Bandwidth Service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="service/service_vlan_doc.html">VLAN Service</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="advanced_service_doc.html">Path Computation Service Enhancements</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="enhanced/asymm_service_doc.html">Asymmetric Bandwidth Capability Service</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="enhanced/asymm_service_doc.html">Asymmetric Bandwidth Capability Service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="enhanced/nonpalindromic_service_doc.html">Non-Palindromic Return Path Service</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="enhanced/virtual_topo_doc.html">Service-Layer Topology</a><ul class="simple">
+<li class="toctree-l3"><a class="reference internal" href="enhanced/virtual_topo_doc.html">Service-Layer Topology</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="enhanced/multipoint_service_doc.html">Multipoint Routing Service</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="enhanced/ero_service_doc.html">Explicit Routing Services</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="enhanced/multipoint_service_doc.html">Multipoint Routing Service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enhanced/ero_service_doc.html">Explicit Routing Services</a></li>
 <li class="toctree-l2"><a class="reference internal" href="enhanced/survivability_service_doc.html">Survivable Routing Services</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="enhanced/virtual_surv_topo_doc.html">Service-Layer Topology with Survivable MPLS-Layer</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="enhanced/virtual_surv_topo_doc.html">Service-Layer Topology with Survivable MPLS-Layer</a></li>
 </ul>
 </li>
 </ul>
@@ -264,7 +221,7 @@ Additional details: <a class="reference internal" href="circuit/plumbing_doc.htm
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -276,12 +233,12 @@ Additional details: <a class="reference internal" href="circuit/plumbing_doc.htm
         <li class="right" >
           <a href="circuit/plumbing_doc.html" title="Plumbing Specification"
              >previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

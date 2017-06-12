@@ -7,4 +7,5 @@ net.es.oscars.bwavail.rest
    :maxdepth: 1
 
    BandwidthAvailabilityController
+   SimpleBwAvailController
 

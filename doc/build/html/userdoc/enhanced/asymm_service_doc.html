@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Asymmetric Bandwidth Capability Service &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Asymmetric Bandwidth Capability Service &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,42 +17,40 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Service Enhancements" href="../advanced_service_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Non-Palindromic Return Path Service" href="nonpalindromic_service_doc.html" />
     <link rel="prev" title="Path Computation Service Enhancements" href="../advanced_service_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="nonpalindromic_service_doc.html" title="Non-Palindromic Return Path Service"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../advanced_service_doc.html" title="Path Computation Service Enhancements"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" accesskey="U">Path Computation Service Enhancements</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" accesskey="U">Path Computation Service Enhancements</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -84,6 +82,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../virtualcircuits.html">Virtual Circuits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_doc.html">Core Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../webui_doc.html">Web User Interface (WebUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_doc.html">Using the OSCARS API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../whatif_doc.html">What-If Service Module</a></li>
 </ul>
 <ul>
@@ -96,17 +95,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="nonpalindromic_service_doc.html"
                         title="next chapter">Non-Palindromic Return Path Service</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -115,36 +111,36 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="asymmetric-bandwidth-capability-service">
 <span id="asymm-pce-service"></span><h1>Asymmetric Bandwidth Capability Service<a class="headerlink" href="#asymmetric-bandwidth-capability-service" title="Permalink to this headline">¶</a></h1>
-<p>Some communication does not require identical bandwidth constraints in the A-Z and Z-A direction. For example, the return path may only be required for control signalling, and could thus require much less bandwidth than the data transfer which may be unidirectional in the forward-direction.  Traditional circuit establishment calls for specifying a single uniform bandwidth rate for both directions. The result is illustrated by the below figure, in which the bandwidth capacity on some network links is sufficient to support the A-Z path, but no sufficient to support the Z-A path. During path computation, the <a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a> will first prune out the insufficient (unidirectional) link, and thus no bidirectional path exists to support the given reservation.</p>
-<div class="figure align-center">
+<p>Some communication does not require identical bandwidth constraints in the A-Z and Z-A direction. For example, the return path may only be required for control signalling, and could thus require much less bandwidth than the data transfer which may be unidirectional in the forward-direction.  Traditional circuit establishment calls for specifying a single uniform bandwidth rate for both directions. The result is illustrated by the below figure, in which the bandwidth capacity on some network links is sufficient to support the A-Z path, but no sufficient to support the Z-A path. During path computation, the <a class="reference internal" href="../service/service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a> will first prune out the insufficient (unidirectional) link, and thus no bidirectional path exists to support the given reservation.</p>
+<div class="figure align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/pce_asymm_need.gif"><img alt="Insufficient Bandwidth" src="../../_images/pce_asymm_need.gif" style="width: 674.25px; height: 285.0px;" /></a>
-<p class="caption"><em>A symmetric circuit cannot be established due to asymmetric bandwidth availability.</em></p>
+<p class="caption"><span class="caption-text"><em>A symmetric circuit cannot be established due to asymmetric bandwidth availability.</em></span></p>
 </div>
 <p>The <em>Asymmetric Bandwidth Capability Service</em> increases circuit specification flexibility by enabling non-uniform A-Z and Z-A bandwidth requirements. A link is only chosen during pathfinding if the matching link in the opposite direction (e.g. links (M, N) and (N, M) ) has sufficient bandwidth to support the requested bandwidth in that direction. An example where the user requests 100 Mbps in the AZ direction, and only 25 Mbps in the return direction, is depicted in the following figure. Contrast this result to the figure above in which a symmetric bandwidth equal to the forward data-transfer rate resulted in circuit reservation failure.</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/pce_asymm_sol.gif"><img alt="Asymmetric Bandwidth" src="../../_images/pce_asymm_sol.gif" style="width: 669.0px; height: 279.0px;" /></a>
-<p class="caption"><em>Asymmetric Bandwidth Reservation with 100 Mbps A-Z, and 25 Mbps Z-A.</em></p>
+<p class="caption"><span class="caption-text"><em>Asymmetric Bandwidth Reservation with 100 Mbps A-Z, and 25 Mbps Z-A.</em></span></p>
 </div>
 <div class="section" id="service-details">
 <h2>Service Details<a class="headerlink" href="#service-details" title="Permalink to this headline">¶</a></h2>
 <p><strong>Can be combined with:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce_doc.html#basic-pce-service"><em>Basic PCE Service</em></a></li>
-<li><a class="reference internal" href="nonpalindromic_service_doc.html#nonpalindromic-pce-service"><em>Non-Palindromic Return Path Service</em></a></li>
-<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></li>
-<li><a class="reference internal" href="ero_service_doc.html#ero-pce-services"><em>Explicit Routing Services</em></a></li>
-<li><a class="reference internal" href="survivability_service_doc.html#surv-pce-services"><em>Survivable Routing Services</em></a></li>
+<li><a class="reference internal" href="../pce_doc.html#basic-pce-service"><span class="std std-ref">Basic PCE Service</span></a></li>
+<li><a class="reference internal" href="nonpalindromic_service_doc.html#nonpalindromic-pce-service"><span class="std std-ref">Non-Palindromic Return Path Service</span></a></li>
+<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></li>
+<li><a class="reference internal" href="ero_service_doc.html#ero-pce-services"><span class="std std-ref">Explicit Routing Services</span></a></li>
+<li><a class="reference internal" href="survivability_service_doc.html#surv-pce-services"><span class="std std-ref">Survivable Routing Services</span></a></li>
 </ul>
 <p><strong>Relevant PCE Module(s)</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_palindrome_doc.html#pce-palindrome"><em>Palindromic PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_nonpalindrome_doc.html#pce-nonpalindrome"><em>Non-Palindromic PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><em>Explicit Route Object (ERO) PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><em>Survivability PCE Module</em></a></li>
+<li><a class="reference internal" href="../pce/pce_palindrome_doc.html#pce-palindrome"><span class="std std-ref">Palindromic PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_nonpalindrome_doc.html#pce-nonpalindrome"><span class="std std-ref">Non-Palindromic PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><span class="std std-ref">Explicit Route Object (ERO) PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><span class="std std-ref">Survivability PCE Module</span></a></li>
 </ul>
 </div>
 </div>
@@ -155,29 +151,26 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="nonpalindromic_service_doc.html" title="Non-Palindromic Return Path Service"
              >next</a> |</li>
         <li class="right" >
           <a href="../advanced_service_doc.html" title="Path Computation Service Enhancements"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

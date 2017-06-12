@@ -12,7 +12,7 @@
     "urn": "forr-rt2:ge-0/0/0"
   }, 
   {
-    "ipv4Address": "127.0.0.1", 
+    "ipv4Address": "134.55.200.118", 
     "urn": "srs-rt3"
   }, 
   {
@@ -28,14 +28,6 @@
     "urn": "ameslab-rt3:xe-0/0/0"
   }, 
   {
-    "ipv4Address": "134.55.38.134", 
-    "urn": "pppl-rt5:xe-0/2/0"
-  }, 
-  {
-    "ipv4Address": "134.55.38.162", 
-    "urn": "eqx-chi-rt1:xe-5/0/0"
-  }, 
-  {
     "ipv4Address": "134.55.200.155", 
     "urn": "orau-rt3"
   }, 
@@ -48,12 +40,16 @@
     "urn": "llnl-mr2:xe-3/2/0"
   }, 
   {
+    "ipv4Address": "134.55.200.113", 
+    "urn": "fnal-mr2"
+  }, 
+  {
     "ipv4Address": "134.55.220.78", 
     "urn": "srs-rt3:ge-0/1/0"
   }, 
   {
-    "ipv4Address": "134.55.43.109", 
-    "urn": "hous-cr5:2/1/1"
+    "ipv4Address": "134.55.39.178", 
+    "urn": "nash-cr5:4/2/1"
   }, 
   {
     "ipv4Address": "134.55.200.79", 
@@ -68,20 +64,12 @@
     "urn": "aofa-cr5:1/1/1"
   }, 
   {
-    "ipv4Address": "134.55.200.153", 
-    "urn": "paix-pa-rt3"
-  }, 
-  {
     "ipv4Address": "134.55.222.14", 
     "urn": "lond-cr5:2/1/1"
   }, 
   {
     "ipv4Address": "134.55.200.145", 
     "urn": "star-cr5"
-  }, 
-  {
-    "ipv4Address": "134.55.38.181", 
-    "urn": "eqx-ash-rt1:ge-0/1/3"
   }, 
   {
     "ipv4Address": "134.55.200.136", 
@@ -92,12 +80,20 @@
     "urn": "aofa-cr5:3/1/1"
   }, 
   {
+    "ipv4Address": "134.55.207.53", 
+    "urn": "eqx-ash-cr5:2/1/1"
+  }, 
+  {
     "ipv4Address": "134.55.39.158", 
     "urn": "snll-mr2:xe-1/2/0"
   }, 
   {
     "ipv4Address": "134.55.39.50", 
     "urn": "nash-cr5:3/1/1"
+  }, 
+  {
+    "ipv4Address": "134.55.49.98", 
+    "urn": "fnal-mr2:xe-8/1/0"
   }, 
   {
     "ipv4Address": "134.55.37.78", 
@@ -116,8 +112,8 @@
     "urn": "bost-cr5:1/1/1"
   }, 
   {
-    "ipv4Address": "134.55.222.34", 
-    "urn": "llnl-mr2:xe-0/2/0"
+    "ipv4Address": "134.55.38.162", 
+    "urn": "eqx-chi-cr5:10/1/4"
   }, 
   {
     "ipv4Address": "134.55.200.130", 
@@ -128,24 +124,20 @@
     "urn": "ornl-rt4:xe-1/0/0"
   }, 
   {
+    "ipv4Address": "134.55.36.21", 
+    "urn": "sunn-cr5:10/1/4"
+  }, 
+  {
     "ipv4Address": "134.55.42.29", 
     "urn": "aofa-cr5:9/1/4"
   }, 
   {
-    "ipv4Address": "134.55.218.18", 
-    "urn": "ga-rt2:xe-0/0/0"
-  }, 
-  {
-    "ipv4Address": "134.55.41.18", 
-    "urn": "lsvn-cr1:xe-3/0/0"
+    "ipv4Address": "134.55.36.29", 
+    "urn": "sunn-cr5:10/2/4"
   }, 
   {
     "ipv4Address": "134.55.200.110", 
     "urn": "slac-mr2"
-  }, 
-  {
-    "ipv4Address": "134.55.218.134", 
-    "urn": "sunn-cr5:10/2/1"
   }, 
   {
     "ipv4Address": "134.55.38.133", 
@@ -160,8 +152,16 @@
     "urn": "sunn-cr5:10/2/2"
   }, 
   {
-    "ipv4Address": "134.55.200.71", 
-    "urn": "eqx-chi-rt1"
+    "ipv4Address": "134.55.42.41", 
+    "urn": "chic-cr5:2/1/1"
+  }, 
+  {
+    "ipv4Address": "134.55.42.6", 
+    "urn": "bnl-mr2:xe-2/1/0"
+  }, 
+  {
+    "ipv4Address": "134.55.36.22", 
+    "urn": "slac-mr2:xe-1/1/0"
   }, 
   {
     "ipv4Address": "134.55.200.108", 
@@ -220,6 +220,10 @@
     "urn": "snla-rt3:xe-1/2/0"
   }, 
   {
+    "ipv4Address": "134.55.222.34", 
+    "urn": "llnl-mr2:xe-0/2/0"
+  }, 
+  {
     "ipv4Address": "134.55.217.162", 
     "urn": "albq-cr5:10/1/3"
   }, 
@@ -232,7 +236,7 @@
     "urn": "ornl-rt4:xe-1/2/0"
   }, 
   {
-    "ipv4Address": "127.0.0.1", 
+    "ipv4Address": "198.129.33.37", 
     "urn": "lvk-rt2"
   }, 
   {
@@ -248,6 +252,10 @@
     "urn": "wash-cr5:3/1/1"
   }, 
   {
+    "ipv4Address": "134.55.37.58", 
+    "urn": "snll-mr2:xe-2/2/0"
+  }, 
+  {
     "ipv4Address": "134.55.37.54", 
     "urn": "bois-cr1:xe-0/0/0"
   }, 
@@ -260,12 +268,12 @@
     "urn": "nash-cr5:10/1/5"
   }, 
   {
-    "ipv4Address": "134.55.43.29", 
-    "urn": "ornl-rt4:ge-0/0/1"
-  }, 
-  {
     "ipv4Address": "134.55.37.50", 
     "urn": "lbl-mr2:xe-7/2/0"
+  }, 
+  {
+    "ipv4Address": "134.55.220.81", 
+    "urn": "nash-cr5:10/1/3"
   }, 
   {
     "ipv4Address": "134.55.42.58", 
@@ -292,6 +300,10 @@
     "urn": "esnet-rt5"
   }, 
   {
+    "ipv4Address": "134.55.218.61", 
+    "urn": "chic-cr5:7/1/1"
+  }, 
+  {
     "ipv4Address": "134.55.40.201", 
     "urn": "chic-cr5:4/1/1"
   }, 
@@ -308,8 +320,8 @@
     "urn": "nersc-mr2:xe-2/2/0"
   }, 
   {
-    "ipv4Address": "134.55.37.58", 
-    "urn": "snll-mr2:xe-2/2/0"
+    "ipv4Address": "134.55.43.109", 
+    "urn": "hous-cr5:2/1/1"
   }, 
   {
     "ipv4Address": "134.55.39.5", 
@@ -328,6 +340,14 @@
     "urn": "kans-cr5:2/1/1"
   }, 
   {
+    "ipv4Address": "134.55.39.177", 
+    "urn": "wash-cr5:5/2/1"
+  }, 
+  {
+    "ipv4Address": "134.55.42.45", 
+    "urn": "chic-cr5:6/2/1"
+  }, 
+  {
     "ipv4Address": "134.55.37.73", 
     "urn": "albq-cr5:2/1/1"
   }, 
@@ -340,12 +360,20 @@
     "urn": "sunn-cr5:10/1/1"
   }, 
   {
-    "ipv4Address": "134.55.36.21", 
-    "urn": "sunn-cr5:10/1/4"
+    "ipv4Address": "134.55.37.81", 
+    "urn": "chic-cr5:6/1/1"
+  }, 
+  {
+    "ipv4Address": "134.55.220.82", 
+    "urn": "srs-rt3:ge-1/1/0"
   }, 
   {
     "ipv4Address": "134.55.37.57", 
     "urn": "sunn-cr5:10/1/5"
+  }, 
+  {
+    "ipv4Address": "134.55.218.17", 
+    "urn": "sdsc-sdn2:xe-1/1/0"
   }, 
   {
     "ipv4Address": "134.55.40.198", 
@@ -364,12 +392,8 @@
     "urn": "snll-mr2"
   }, 
   {
-    "ipv4Address": "134.55.217.153", 
-    "urn": "sdsc-sdn2:xe-0/1/0"
-  }, 
-  {
-    "ipv4Address": "134.55.200.37", 
-    "urn": "eqx-sj-rt1"
+    "ipv4Address": "134.55.38.146", 
+    "urn": "eqx-sj-cr5:10/2/4"
   }, 
   {
     "ipv4Address": "134.55.49.57", 
@@ -378,10 +402,6 @@
   {
     "ipv4Address": "134.55.41.1", 
     "urn": "wash-ar1:ae0"
-  }, 
-  {
-    "ipv4Address": "134.55.218.82", 
-    "urn": "chic-cr5:10/1/3"
   }, 
   {
     "ipv4Address": "134.55.38.161", 
@@ -400,24 +420,12 @@
     "urn": "sdsc-sdn2"
   }, 
   {
-    "ipv4Address": "134.55.38.146", 
-    "urn": "eqx-sj-rt1:xe-0/2/0"
-  }, 
-  {
     "ipv4Address": "134.55.217.113", 
     "urn": "star-cr5:8/1/6"
   }, 
   {
-    "ipv4Address": "134.55.42.18", 
-    "urn": "osti-rt2:xe-0/0/0"
-  }, 
-  {
     "ipv4Address": "134.55.39.102", 
     "urn": "pnwg-cr5:10/1/6"
-  }, 
-  {
-    "ipv4Address": "134.55.41.210", 
-    "urn": "anl-mr2:xe-2/0/0"
   }, 
   {
     "ipv4Address": "134.55.41.17", 
@@ -460,16 +468,12 @@
     "urn": "kans-cr5:1/1/1"
   }, 
   {
-    "ipv4Address": "134.55.220.5", 
-    "urn": "fnal-mr2:xe-2/1/0"
-  }, 
-  {
     "ipv4Address": "134.55.37.62", 
     "urn": "wash-cr5:5/1/1"
   }, 
   {
-    "ipv4Address": "134.55.200.36", 
-    "urn": "eqx-ash-rt1"
+    "ipv4Address": "134.55.42.46", 
+    "urn": "star-cr5:5/1/1"
   }, 
   {
     "ipv4Address": "134.55.39.122", 
@@ -492,15 +496,11 @@
     "urn": "lond-cr5:1/1/1"
   }, 
   {
-    "ipv4Address": "134.55.41.74", 
-    "urn": "sacr-cr5:10/1/3"
-  }, 
-  {
     "ipv4Address": "134.55.39.101", 
     "urn": "denv-cr5:10/1/4"
   }, 
   {
-    "ipv4Address": "134.55.240.108", 
+    "ipv4Address": "134.55.200.114", 
     "urn": "anl-mr2"
   }, 
   {
@@ -532,24 +532,16 @@
     "urn": "sacr-cr5:10/2/3"
   }, 
   {
-    "ipv4Address": "134.55.221.138", 
-    "urn": "bnl-mr2:xe-3/0/0"
-  }, 
-  {
     "ipv4Address": "134.55.218.190", 
     "urn": "star-cr5:1/1/1"
-  }, 
-  {
-    "ipv4Address": "134.55.43.94", 
-    "urn": "nersc-mr2:xe-8/1/0"
   }, 
   {
     "ipv4Address": "134.55.42.37", 
     "urn": "pnwg-cr5:2/2/1"
   }, 
   {
-    "ipv4Address": "134.55.221.69", 
-    "urn": "eqx-ash-rt1:xe-2/1/0"
+    "ipv4Address": "134.55.217.153", 
+    "urn": "sdsc-sdn2:xe-0/1/0"
   }, 
   {
     "ipv4Address": "134.55.39.169", 
@@ -560,8 +552,12 @@
     "urn": "atla-cr5:10/1/3"
   }, 
   {
-    "ipv4Address": "134.55.37.66", 
-    "urn": "eqx-ash-rt1:xe-2/0/0"
+    "ipv4Address": "134.55.43.29", 
+    "urn": "ornl-rt4:ge-0/0/1"
+  }, 
+  {
+    "ipv4Address": "134.55.221.138", 
+    "urn": "bnl-mr2:xe-0/0/0"
   }, 
   {
     "ipv4Address": "134.55.43.22", 
@@ -588,6 +584,10 @@
     "urn": "jgi-mr2:xe-1/1/0"
   }, 
   {
+    "ipv4Address": "134.55.207.54", 
+    "urn": "eqx-chi-cr5:2/1/1"
+  }, 
+  {
     "ipv4Address": "134.55.38.182", 
     "urn": "doe-gtn-rt2:ge-0/1/0"
   }, 
@@ -596,8 +596,8 @@
     "urn": "hous-cr5"
   }, 
   {
-    "ipv4Address": "134.55.221.73", 
-    "urn": "eqx-ash-rt1:xe-1/1/0"
+    "ipv4Address": "134.55.200.94", 
+    "urn": "eqx-chi-cr5"
   }, 
   {
     "ipv4Address": "134.55.38.210", 
@@ -616,28 +616,40 @@
     "urn": "orau-rt3:ge-0/2/0"
   }, 
   {
-    "ipv4Address": "134.55.40.202", 
-    "urn": "nash-cr5:1/1/1"
+    "ipv4Address": "134.55.240.161", 
+    "urn": "lsvn-cr1"
   }, 
   {
-    "ipv4Address": "134.55.200.44", 
+    "ipv4Address": "134.55.240.162", 
     "urn": "ga-rt2"
   }, 
   {
-    "ipv4Address": "134.55.42.6", 
-    "urn": "bnl-mr2:xe-4/3/0"
+    "ipv4Address": "134.55.37.66", 
+    "urn": "eqx-ash-cr5:10/1/2"
   }, 
   {
-    "ipv4Address": "134.55.42.41", 
-    "urn": "chic-cr5:2/1/1"
+    "ipv4Address": "134.55.220.5", 
+    "urn": "fnal-mr2:xe-1/1/0"
   }, 
   {
-    "ipv4Address": "134.55.200.113", 
-    "urn": "fnal-mr2"
+    "ipv4Address": "134.55.38.134", 
+    "urn": "pppl-rt5:xe-0/2/0"
+  }, 
+  {
+    "ipv4Address": "134.55.219.1", 
+    "urn": "wash-cr5:4/2/1"
   }, 
   {
     "ipv4Address": "134.55.200.147", 
     "urn": "wash-cr5"
+  }, 
+  {
+    "ipv4Address": "134.55.42.18", 
+    "urn": "osti-rt2:ae0"
+  }, 
+  {
+    "ipv4Address": "134.55.49.1", 
+    "urn": "sunn-cr5:9/1/2"
   }, 
   {
     "ipv4Address": "134.55.219.46", 
@@ -648,7 +660,7 @@
     "urn": "newy-cr5"
   }, 
   {
-    "ipv4Address": "134.55.240.107", 
+    "ipv4Address": "134.55.200.111", 
     "urn": "nersc-mr2"
   }, 
   {
@@ -684,6 +696,10 @@
     "urn": "kans-cr5:3/1/1"
   }, 
   {
+    "ipv4Address": "134.55.36.30", 
+    "urn": "lsvn-cr1:xe-1/2/0"
+  }, 
+  {
     "ipv4Address": "134.55.219.78", 
     "urn": "llnl-mr2:xe-2/0/0"
   }, 
@@ -692,20 +708,24 @@
     "urn": "atla-cr5"
   }, 
   {
-    "ipv4Address": "134.55.36.102", 
-    "urn": "eqx-ash-rt1:xe-1/0/0"
+    "ipv4Address": "134.55.221.70", 
+    "urn": "wash-cr5:10/1/1"
   }, 
   {
     "ipv4Address": "134.55.43.42", 
     "urn": "ornl-cr5:6/1/1"
   }, 
   {
+    "ipv4Address": "134.55.37.82", 
+    "urn": "nash-cr5:4/1/1"
+  }, 
+  {
     "ipv4Address": "134.55.36.13", 
     "urn": "sunn-cr5:9/1/3"
   }, 
   {
-    "ipv4Address": "134.55.49.1", 
-    "urn": "sunn-cr5:9/1/2"
+    "ipv4Address": "134.55.218.18", 
+    "urn": "ga-rt2:xe-0/0/0"
   }, 
   {
     "ipv4Address": "134.55.43.89", 
@@ -720,6 +740,10 @@
     "urn": "snll-mr2:xe-1/1/0"
   }, 
   {
+    "ipv4Address": "134.55.221.69", 
+    "urn": "eqx-ash-cr5:10/1/3"
+  }, 
+  {
     "ipv4Address": "134.55.49.2", 
     "urn": "lbl-mr2:xe-1/3/0"
   }, 
@@ -728,28 +752,28 @@
     "urn": "sunn-cr5:5/1/1"
   }, 
   {
+    "ipv4Address": "134.55.41.18", 
+    "urn": "lsvn-cr1:xe-2/2/0"
+  }, 
+  {
     "ipv4Address": "134.55.36.45", 
     "urn": "chic-cr5:1/1/1"
+  }, 
+  {
+    "ipv4Address": "134.55.200.107", 
+    "urn": "eqx-ash-cr5"
   }, 
   {
     "ipv4Address": "134.55.200.142", 
     "urn": "ornl-cr5"
   }, 
   {
-    "ipv4Address": "134.55.36.22", 
-    "urn": "slac-mr2:xe-2/2/0"
+    "ipv4Address": "134.55.219.2", 
+    "urn": "eqx-ash-cr5:1/1/1"
   }, 
   {
-    "ipv4Address": "134.55.218.81", 
-    "urn": "eqx-chi-rt1:ge-0/1/0"
-  }, 
-  {
-    "ipv4Address": "134.55.221.70", 
-    "urn": "wash-cr5:10/1/1"
-  }, 
-  {
-    "ipv4Address": "134.55.41.2", 
-    "urn": "wash-cr5:10/1/3"
+    "ipv4Address": "134.55.36.73", 
+    "urn": "fnal-mr2:xe-0/0/0"
   }, 
   {
     "ipv4Address": "134.55.217.166", 
@@ -772,6 +796,14 @@
     "urn": "jgi-mr2:xe-2/2/0"
   }, 
   {
+    "ipv4Address": "134.55.221.73", 
+    "urn": "eqx-ash-cr5:10/2/3"
+  }, 
+  {
+    "ipv4Address": "134.55.36.102", 
+    "urn": "eqx-ash-cr5:10/2/2"
+  }, 
+  {
     "ipv4Address": "127.0.0.1", 
     "urn": "bois-cr1"
   }, 
@@ -784,8 +816,8 @@
     "urn": "chic-cr5:3/1/1"
   }, 
   {
-    "ipv4Address": "134.55.49.98", 
-    "urn": "fnal-mr2:xe-8/1/0"
+    "ipv4Address": "134.55.43.94", 
+    "urn": "nersc-mr2:xe-1/1/0"
   }, 
   {
     "ipv4Address": "134.55.200.148", 
@@ -816,8 +848,8 @@
     "urn": "snll-mr2:xe-0/2/0"
   }, 
   {
-    "ipv4Address": "134.55.218.17", 
-    "urn": "sdsc-sdn2:xe-1/1/0"
+    "ipv4Address": "134.55.200.64", 
+    "urn": "eqx-sj-cr5"
   }, 
   {
     "ipv4Address": "134.55.220.74", 
@@ -840,16 +872,12 @@
     "urn": "elpa-cr5:2/1/1"
   }, 
   {
-    "ipv4Address": "134.55.36.73", 
-    "urn": "fnal-mr2:xe-0/0/0"
+    "ipv4Address": "134.55.41.2", 
+    "urn": "wash-cr5:10/1/3"
   }, 
   {
     "ipv4Address": "134.55.222.13", 
     "urn": "amst-cr5:2/1/1"
-  }, 
-  {
-    "ipv4Address": "134.55.41.73", 
-    "urn": "paix-pa-rt3:ae0"
   }, 
   {
     "ipv4Address": "134.55.42.30", 
@@ -888,12 +916,20 @@
     "urn": "denv-cr5:2/1/1"
   }, 
   {
+    "ipv4Address": "134.55.41.210", 
+    "urn": "anl-mr2:xe-2/3/0"
+  }, 
+  {
+    "ipv4Address": "134.55.218.62", 
+    "urn": "eqx-chi-cr5:1/1/1"
+  }, 
+  {
     "ipv4Address": "134.55.37.65", 
     "urn": "star-cr5:10/1/2"
   }, 
   {
-    "ipv4Address": "134.55.200.151", 
-    "urn": "lsvn-cr1"
+    "ipv4Address": "134.55.40.202", 
+    "urn": "nash-cr5:1/1/1"
   }, 
   {
     "ipv4Address": "134.55.41.209", 
@@ -910,6 +946,10 @@
   {
     "ipv4Address": "134.55.39.170", 
     "urn": "aofa-cr5:5/2/1"
+  }, 
+  {
+    "ipv4Address": "134.55.38.181", 
+    "urn": "eqx-ash-cr5:10/1/1"
   }, 
   {
     "ipv4Address": "134.55.217.65", 

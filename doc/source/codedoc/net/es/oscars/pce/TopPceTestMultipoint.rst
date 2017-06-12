@@ -1,10 +1,12 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
-.. java:import:: net.es.oscars CoreUnitTestConfiguration
+.. java:import:: net.es.oscars AbstractCoreTest
 
 .. java:import:: net.es.oscars.dto.spec PalindromicType
 
 .. java:import:: net.es.oscars.dto.spec SurvivabilityType
+
+.. java:import:: net.es.oscars.pce.exc PCEException
 
 .. java:import:: net.es.oscars.pss PSSException
 
@@ -12,17 +14,11 @@
 
 .. java:import:: net.es.oscars.resv.dao ReservedBandwidthRepository
 
-.. java:import:: net.es.oscars.helpers.test MultipointTopologyBuilder
+.. java:import:: net.es.oscars.pce.helpers MultipointTopologyBuilder
 
 .. java:import:: org.junit Test
 
-.. java:import:: org.junit.runner RunWith
-
 .. java:import:: org.springframework.beans.factory.annotation Autowired
-
-.. java:import:: org.springframework.boot.test SpringApplicationConfiguration
-
-.. java:import:: org.springframework.test.context.junit4 SpringJUnit4ClassRunner
 
 .. java:import:: org.springframework.transaction.annotation Transactional
 
@@ -36,7 +32,7 @@ TopPceTestMultipoint
 .. java:package:: net.es.oscars.pce
    :noindex:
 
-.. java:type:: @Slf4j @RunWith @SpringApplicationConfiguration @Transactional public class TopPceTestMultipoint
+.. java:type:: @Slf4j @Transactional public class TopPceTestMultipoint extends AbstractCoreTest
 
    Created by jeremy on 6/30/16. Tests End-to-End correctness of the PCE modules
 

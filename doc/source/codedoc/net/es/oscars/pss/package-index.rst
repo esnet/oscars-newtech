@@ -6,14 +6,11 @@ net.es.oscars.pss
 .. toctree::
    :maxdepth: 1
 
-   AluGenTest
-   AluParamsBuilder
-   AluQosGen
-   ExGenTest
-   ExParamsBuilder
-   MxGenTest
-   MxParamsBuilder
+   AbstractPssTest
+   AdapterTest
+   IdentifierAllocationTest
    PCEAssistant
    PSSException
-   PssUnitTestConfiguration
+   PssApp
+   PssTestConfiguration
 

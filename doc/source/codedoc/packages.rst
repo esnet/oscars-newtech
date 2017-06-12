@@ -5,50 +5,57 @@ Javadoc
    :maxdepth: 2
 
    net/es/oscars/package-index
-   net/es/oscars/acct/package-index
    net/es/oscars/acct/dao/package-index
    net/es/oscars/acct/ent/package-index
-   net/es/oscars/acct/rest/package-index
    net/es/oscars/acct/svc/package-index
    net/es/oscars/authnz/dao/package-index
    net/es/oscars/authnz/ent/package-index
    net/es/oscars/authnz/pop/package-index
    net/es/oscars/authnz/prop/package-index
-   net/es/oscars/authnz/rest/package-index
    net/es/oscars/authnz/svc/package-index
    net/es/oscars/bwavail/package-index
    net/es/oscars/bwavail/rest/package-index
    net/es/oscars/bwavail/svc/package-index
-   net/es/oscars/conf/dao/package-index
-   net/es/oscars/conf/ent/package-index
-   net/es/oscars/conf/pop/package-index
-   net/es/oscars/conf/prop/package-index
-   net/es/oscars/conf/rest/package-index
    net/es/oscars/dto/package-index
    net/es/oscars/dto/acct/package-index
    net/es/oscars/dto/auth/package-index
    net/es/oscars/dto/bwavail/package-index
    net/es/oscars/dto/cfg/package-index
    net/es/oscars/dto/pss/package-index
+   net/es/oscars/dto/pss/cmd/package-index
+   net/es/oscars/dto/pss/cp/package-index
+   net/es/oscars/dto/pss/params/package-index
+   net/es/oscars/dto/pss/params/alu/package-index
+   net/es/oscars/dto/pss/params/ex/package-index
+   net/es/oscars/dto/pss/params/mx/package-index
+   net/es/oscars/dto/pss/st/package-index
    net/es/oscars/dto/resv/package-index
+   net/es/oscars/dto/resv/precheck/package-index
    net/es/oscars/dto/rsrc/package-index
    net/es/oscars/dto/spec/package-index
    net/es/oscars/dto/topo/package-index
    net/es/oscars/dto/topo/enums/package-index
    net/es/oscars/dto/viz/package-index
    net/es/oscars/helpers/package-index
-   net/es/oscars/helpers/test/package-index
-   net/es/oscars/oscarsapi/package-index
    net/es/oscars/pce/package-index
+   net/es/oscars/pce/exc/package-index
+   net/es/oscars/pce/helpers/package-index
    net/es/oscars/pss/package-index
-   net/es/oscars/pss/cmd/package-index
+   net/es/oscars/pss/beans/package-index
+   net/es/oscars/pss/ctg/package-index
    net/es/oscars/pss/dao/package-index
    net/es/oscars/pss/ent/package-index
+   net/es/oscars/pss/go/package-index
+   net/es/oscars/pss/help/package-index
    net/es/oscars/pss/pop/package-index
    net/es/oscars/pss/prop/package-index
+   net/es/oscars/pss/rancid/package-index
    net/es/oscars/pss/rest/package-index
+   net/es/oscars/pss/rtr/package-index
    net/es/oscars/pss/svc/package-index
+   net/es/oscars/pss/task/package-index
    net/es/oscars/pss/tpl/package-index
+   net/es/oscars/pss/unit/package-index
    net/es/oscars/rest/package-index
    net/es/oscars/resv/package-index
    net/es/oscars/resv/dao/package-index
@@ -56,8 +63,6 @@ Javadoc
    net/es/oscars/resv/rest/package-index
    net/es/oscars/resv/svc/package-index
    net/es/oscars/servicetopo/package-index
-   net/es/oscars/simpleresv/rest/package-index
-   net/es/oscars/simpleresv/svc/package-index
    net/es/oscars/st/oper/package-index
    net/es/oscars/st/prov/package-index
    net/es/oscars/st/resv/package-index
@@ -68,15 +73,14 @@ Javadoc
    net/es/oscars/topo/ent/package-index
    net/es/oscars/topo/pop/package-index
    net/es/oscars/topo/prop/package-index
-   net/es/oscars/topo/rest/package-index
    net/es/oscars/topo/serialization/package-index
    net/es/oscars/topo/svc/package-index
-   net/es/oscars/ui/pop/package-index
-   net/es/oscars/ui/prop/package-index
-   net/es/oscars/ui/rest/package-index
    net/es/oscars/webui/package-index
    net/es/oscars/webui/cont/package-index
    net/es/oscars/webui/dto/package-index
-   net/es/oscars/webui/ipc/package-index
    net/es/oscars/webui/viz/package-index
+   net/es/oscars/whatif/package-index
+   net/es/oscars/whatif/dto/package-index
+   net/es/oscars/whatif/rest/package-index
+   net/es/oscars/whatif/svc/package-index
 

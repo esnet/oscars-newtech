@@ -8,6 +8,8 @@
 
 .. java:import:: net.es.oscars.dto.topo.enums Layer
 
+.. java:import:: net.es.oscars.dto.topo.enums PortLayer
+
 .. java:import:: net.es.oscars.dto.topo.enums VertexType
 
 .. java:import:: org.junit Test

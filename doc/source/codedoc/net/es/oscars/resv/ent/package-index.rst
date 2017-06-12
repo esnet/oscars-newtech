@@ -6,6 +6,15 @@ net.es.oscars.resv.ent
 .. toctree::
    :maxdepth: 1
 
+   ArchivedBandwidthE
+   ArchivedBlueprintE
+   ArchivedEthPipeE
+   ArchivedMplsPipeE
+   ArchivedPssResourceE
+   ArchivedVlanE
+   ArchivedVlanFixtureE
+   ArchivedVlanFlowE
+   ArchivedVlanJunctionE
    ConnectionE
    Layer3FixtureE
    Layer3FlowE

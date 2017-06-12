@@ -6,6 +6,6 @@ net.es.oscars.authnz.ent
 .. toctree::
    :maxdepth: 1
 
-   EPermissions
-   EUser
+   PermissionsE
+   UserE
 

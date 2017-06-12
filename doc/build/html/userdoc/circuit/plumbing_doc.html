@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Plumbing Specification &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Plumbing Specification &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Virtual Circuits" href="../virtualcircuits.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Core Module" href="../core_doc.html" />
     <link rel="prev" title="Circuit Reservation Specification" href="resvspec_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,11 +45,11 @@
         <li class="right" >
           <a href="resvspec_doc.html" title="Circuit Reservation Specification"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../virtualcircuits.html" accesskey="U">Virtual Circuits</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../virtualcircuits.html" accesskey="U">Virtual Circuits</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -81,10 +82,8 @@
 <li class="toctree-l2"><a class="reference internal" href="requestspec_doc.html">Circuit Request Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schedspec_doc.html">Circuit Schedule Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resvspec_doc.html">Circuit Reservation Specification</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Plumbing Specification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#advanced-plumbing">Advanced Plumbing</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Plumbing Specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-plumbing">Advanced Plumbing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../core_doc.html">Core Module</a></li>
@@ -102,17 +101,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="../core_doc.html"
                         title="next chapter">Core Module</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -121,7 +117,7 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="plumbing-specification">
 <span id="plumbing"></span><h1>Plumbing Specification<a class="headerlink" href="#plumbing-specification" title="Permalink to this headline">¶</a></h1>
@@ -131,55 +127,55 @@
 <li><strong>Junctions</strong>, which are the major hubs at which the water may be diverted or change course. These can be visualized as the T-junctions which connect three or more pipes together.</li>
 <li><strong>Fixtures</strong>, which represent the ingress and egress points to the plumbing. These are items such as taps/faucets, sinks, bathtubs, etc. For the sake of simplicity, we will impose a rule that all Fixtures are attached directly to a Junction.</li>
 </ul>
-<div class="figure align-center">
+<div class="figure align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/pipehome.png"><img alt="Plumbing in the home" src="../../_images/pipehome.png" style="width: 272.0px; height: 283.0px;" /></a>
-<p class="caption"><em>Plumbing components in the home: pipes, junctions, fixtures.</em></p>
+<p class="caption"><span class="caption-text"><em>Plumbing components in the home: pipes, junctions, fixtures.</em></span></p>
 </div>
-<p>OSCARS applies the above analogy to each circuit request and reservation; obviously replacing the water transferred through the system with network traffic. Here, the fixtures are simply the ingress/egress ports where the data enters/exits the network. The junctions represent the network devices (Ethernet switches and MPLS routers). Note that the ingress/egress ports are found on these devices. Lastly, the pipes will connect the junctions. OSCARS passes the user request into the <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a> in the form of a set of Requested Pipes and Requested “Simple” Junctions (which represent a request to establish a circuit from one port on a device to another port on the same device). Note: No fewer than two fixtures may be specified as part of a circuit request.</p>
-<div class="figure align-center">
+<p>OSCARS applies the above analogy to each circuit request and reservation; obviously replacing the water transferred through the system with network traffic. Here, the fixtures are simply the ingress/egress ports where the data enters/exits the network. The junctions represent the network devices (Ethernet switches and MPLS routers). Note that the ingress/egress ports are found on these devices. Lastly, the pipes will connect the junctions. OSCARS passes the user request into the <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a> in the form of a set of Requested Pipes and Requested “Simple” Junctions (which represent a request to establish a circuit from one port on a device to another port on the same device). Note: No fewer than two fixtures may be specified as part of a circuit request.</p>
+<div class="figure align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/pipeintro.png"><img alt="Plumbing overview" src="../../_images/pipeintro.png" style="width: 640.0px; height: 360.0px;" /></a>
-<p class="caption"><em>Overview of OSCARS circuit plumbing representation.</em></p>
+<p class="caption"><span class="caption-text"><em>Overview of OSCARS circuit plumbing representation.</em></span></p>
 </div>
-<p>Using these sets of requested pipes and junctions, pathfinding is performed by PCE modules based on the user&#8217;s <a class="reference internal" href="requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a>, and then the solution paths are translated back into Reserved Pipes, Reserved Junctions, and Reserved Fixtures. An example of the distinction between Requested plumbing, the physical path, and Reserved plumbing is shown in the figure above. This process (performed by the <a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><em>Translation PCE Module</em></a>) takes a physical path, and converts it into a series of pipes (or just singular junctions, for any requested “simple” junctions) in the following manner:</p>
+<p>Using these sets of requested pipes and junctions, pathfinding is performed by PCE modules based on the user’s <a class="reference internal" href="requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a>, and then the solution paths are translated back into Reserved Pipes, Reserved Junctions, and Reserved Fixtures. An example of the distinction between Requested plumbing, the physical path, and Reserved plumbing is shown in the figure above. This process (performed by the <a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><span class="std std-ref">Translation PCE Module</span></a>) takes a physical path, and converts it into a series of pipes (or just singular junctions, for any requested “simple” junctions) in the following manner:</p>
 <ul class="simple">
 <li>For each pair of adjacent Ethernet switches, a reserved pipe is constructed, with the ports connecting them contained within the pipe, and with the two switches represented as junctions.</li>
-<li>For each Ethernet switch &#8211; MPLS router pair, a reserved pipe is constructed in the same fashion.</li>
+<li>For each Ethernet switch – MPLS router pair, a reserved pipe is constructed in the same fashion.</li>
 <li>For each segment of two or more MPLS routers “in a row”, one reserved MPLS pipe is constructed, where the first MPLS router and the last MPLS router in the segment act as junctions, while any intermediate ports or other MPLS routers are contained within the pipe.</li>
 </ul>
-<p>The reserved plumbing elements comprise the circuit&#8217;s <a class="reference internal" href="resvspec_doc.html#resvspec"><em>Circuit Reservation Specification</em></a>.</p>
+<p>The reserved plumbing elements comprise the circuit’s <a class="reference internal" href="resvspec_doc.html#resvspec"><span class="std std-ref">Circuit Reservation Specification</span></a>.</p>
 </div>
 <div class="section" id="advanced-plumbing">
 <h1>Advanced Plumbing<a class="headerlink" href="#advanced-plumbing" title="Permalink to this headline">¶</a></h1>
 <p>The advantage to this logical plumbing setup is that it enables a user to very easily visualize the requested circuit from a logical perspective. Furthermore, if the user wishes to take advantage of the numerous new service enhancements offered by the PCE, or provide details for multiple circuits simultaneously, they can do so simply be prescribing pipes correctly. Each circuit request may consist of multiple plumbing units.  For example, consider the following figure which specifies a pair pipes as part of the same circuit request. OSCARS will handle both of those pipes together as a single submission and produce the following pair of circuits.</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id3">
 <a class="reference internal image-reference" href="../../_images/pipe_pair.png"><img alt="Advanced plumbing pair" src="../../_images/pipe_pair.png" style="width: 640.0px; height: 360.0px;" /></a>
-<p class="caption"><em>Advanced plumbing: Multiple pipes between more than two junctions.</em></p>
+<p class="caption"><span class="caption-text"><em>Advanced plumbing: Multiple pipes between more than two junctions.</em></span></p>
 </div>
 <div class="section" id="multi-pipe-plumbing">
 <h2>Multi-Pipe Plumbing<a class="headerlink" href="#multi-pipe-plumbing" title="Permalink to this headline">¶</a></h2>
 <p>Consider a case where two paths are required between the end-points of a circuit. This may include scenarios such as multipath routing in which the user wishes to oversubscribe the bandwidth capacity of a connection for parallel transfers. Specifically, two circuits (which may or may not consist of the same physical routes through the network topology) are desired. Another use-case is survivable networking. The user may expect two (or more) link-disjoint paths through the network in case on circuit fails due to a physical malfunction on the network.  The following diagram depicts the appropriate Request Specification. A user very simply needs to specify two distinct pipes, both with the same junctions and fixtures, and OSCARS handled the rest.</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id4">
 <a class="reference internal image-reference" href="../../_images/pipe_advanced_1.png"><img alt="Advanced plumbing 1" src="../../_images/pipe_advanced_1.png" style="width: 398.5px; height: 134.0px;" /></a>
-<p class="caption"><em>Advanced plumbing: Multi-pipe circuit request between the same junction/fixture pairs.</em></p>
+<p class="caption"><span class="caption-text"><em>Advanced plumbing: Multi-pipe circuit request between the same junction/fixture pairs.</em></span></p>
 </div>
 </div>
 <div class="section" id="multi-directional-plumbing">
 <h2>Multi-Directional Plumbing<a class="headerlink" href="#multi-directional-plumbing" title="Permalink to this headline">¶</a></h2>
 <p>Many networking applications call for replicated backup of mission-critical datasets or distribution of information for collaborative analysis and study. OSCARS 1.0 supports these use-cases easily, enabling the user to specify such a multi-directional or multicast communication setup effortlessly through the appropriate plumbing description. Consider the figure below. Two unique pipes are established between the set of three junctions. This specification ensures that the top-left resource is able to share and distribute data to both of its peers. As a bonus, the junction at the bottom of the figure has three fixtures specified, indicating that data will be distributed onto three adjacent LANs (which may be entirely separate network domains).</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id5">
 <a class="reference internal image-reference" href="../../_images/pipe_advanced_2.png"><img alt="Advanced plumbing 2" src="../../_images/pipe_advanced_2.png" style="width: 412.0px; height: 306.0px;" /></a>
-<p class="caption"><em>Advanced plumbing: Multi-directional circuit request between a set of junctions.</em></p>
+<p class="caption"><span class="caption-text"><em>Advanced plumbing: Multi-directional circuit request between a set of junctions.</em></span></p>
 </div>
 </div>
 <div class="section" id="user-s-choice-plumbing">
-<h2>User&#8217;s Choice Plumbing<a class="headerlink" href="#user-s-choice-plumbing" title="Permalink to this headline">¶</a></h2>
+<h2>User’s Choice Plumbing<a class="headerlink" href="#user-s-choice-plumbing" title="Permalink to this headline">¶</a></h2>
 <p>Given this robust plumbing infrastructure the possibilities are truly endless when it comes to specifying a logical request. As long as at least two fixtures are included in the specification (and of course assuming that the network can support the desired bandwidth and VLAN resources) any circuit set is feasible. Consider the pair of figures below for an idea of the possibilities.</p>
-<div class="figure align-center">
+<div class="figure align-center" id="id6">
 <a class="reference internal image-reference" href="../../_images/pipe_advanced_3.png"><img alt="Advanced plumbing 3" src="../../_images/pipe_advanced_3.png" style="width: 743.0px; height: 325.5px;" /></a>
-<p class="caption"><em>Advanced plumbing: Flexible to application&#8217;s needs.</em></p>
+<p class="caption"><span class="caption-text"><em>Advanced plumbing: Flexible to application’s needs.</em></span></p>
 </div>
-<p>OSCARS 1.0 is designed to seamlessly adapt to a user&#8217;s changing service requirements. More importantly, OSCARS 1.0 has been designed with a focus on introducing a novel service suite never before offered on a such a large-scale or commercial system. By focusing on the cutting-edge at inception, new and emerging communication paradigms from academia and industry alike will be easily adopted in OSCARS!</p>
-<p>The <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a> is responsible for computing the routes necessary to construct the circuit reservation. If the user specifies multiple pipes with different parameters or service requirements, each pipe is handled independently. For example, a request consisting of two unique pipes, where one pipe specifies <em>Service A</em>, and the other specifies <em>Service B</em>, both pipes will be satisfied without interference from the other&#8217;s service.</p>
+<p>OSCARS 1.0 is designed to seamlessly adapt to a user’s changing service requirements. More importantly, OSCARS 1.0 has been designed with a focus on introducing a novel service suite never before offered on a such a large-scale or commercial system. By focusing on the cutting-edge at inception, new and emerging communication paradigms from academia and industry alike will be easily adopted in OSCARS!</p>
+<p>The <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a> is responsible for computing the routes necessary to construct the circuit reservation. If the user specifies multiple pipes with different parameters or service requirements, each pipe is handled independently. For example, a request consisting of two unique pipes, where one pipe specifies <em>Service A</em>, and the other specifies <em>Service B</em>, both pipes will be satisfied without interference from the other’s service.</p>
 </div>
 </div>
 
@@ -189,7 +185,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -201,13 +197,13 @@
         <li class="right" >
           <a href="resvspec_doc.html" title="Circuit Reservation Specification"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../virtualcircuits.html" >Virtual Circuits</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../virtualcircuits.html" >Virtual Circuits</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

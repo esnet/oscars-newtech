@@ -1,3 +1,5 @@
+.. java:import:: net.es.oscars.dto.pss.cmd CommandType
+
 RouterCommandsE
 ===============
 

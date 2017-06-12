@@ -10,4 +10,6 @@ net.es.oscars.dto.bwavail
    BandwidthAvailabilityResponse
    PortBandwidthAvailabilityRequest
    PortBandwidthAvailabilityResponse
+   SimpleBandwidthAvailabilityRequest
+   SimplePortBandwidthAvailabilityRequest
 

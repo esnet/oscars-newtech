@@ -9,7 +9,6 @@ import net.es.oscars.topo.dao.UrnAdjcyRepository;
 import net.es.oscars.topo.dao.UrnRepository;
 import net.es.oscars.topo.ent.UrnAdjcyE;
 import net.es.oscars.topo.ent.UrnE;
-import net.es.oscars.ui.pop.UIPopulator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;

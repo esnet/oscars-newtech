@@ -17,15 +17,11 @@ trap 'kill %1; kill %2 echo -e "\nExiting.."; exit' SIGINT
 echo "Starting core.."
 java -jar target/core-1.0.0-beta.jar &
 
-echo "Starting web UI.."
-cd "$top_dir/webui"
-java -jar target/webui-1.0.0-beta.jar &
-
 echo "Starting PSS"
 cd "$top_dir/pss"
 java -jar target/pss-1.0.0-beta.jar
 
-kill %1; kill %2; kill %3
+kill %1; kill %2
 
 cd ${orig_dir}
 

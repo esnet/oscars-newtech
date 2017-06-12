@@ -1,4 +1,4 @@
-.. java:import:: net.es.oscars.authnz.ent EUser
+.. java:import:: net.es.oscars.authnz.ent UserE
 
 .. java:import:: org.springframework.data.repository CrudRepository
 
@@ -14,25 +14,25 @@ UserRepository
 .. java:package:: net.es.oscars.authnz.dao
    :noindex:
 
-.. java:type:: @Repository public interface UserRepository extends CrudRepository<EUser, Long>
+.. java:type:: @Repository public interface UserRepository extends CrudRepository<UserE, Long>
 
 Methods
 -------
 findAll
 ^^^^^^^
 
-.. java:method::  List<EUser> findAll()
+.. java:method::  List<UserE> findAll()
    :outertype: UserRepository
 
 findByCertSubject
 ^^^^^^^^^^^^^^^^^
 
-.. java:method::  Optional<EUser> findByCertSubject(String certSubject)
+.. java:method::  Optional<UserE> findByCertSubject(String certSubject)
    :outertype: UserRepository
 
 findByUsername
 ^^^^^^^^^^^^^^
 
-.. java:method::  Optional<EUser> findByUsername(String username)
+.. java:method::  Optional<UserE> findByUsername(String username)
    :outertype: UserRepository
 

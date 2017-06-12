@@ -1,7 +1,5 @@
 .. java:import:: net.es.oscars.pss.ent RouterCommandsE
 
-.. java:import:: net.es.oscars.pss.ent TemplateE
-
 .. java:import:: org.springframework.data.repository CrudRepository
 
 .. java:import:: org.springframework.stereotype Repository
@@ -29,6 +27,6 @@ findAll
 findByConnectionIdAndDeviceUrn
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method::  Optional<RouterCommandsE> findByConnectionIdAndDeviceUrn(String connectionId, String deviceUrn)
+.. java:method::  List<RouterCommandsE> findByConnectionIdAndDeviceUrn(String connectionId, String deviceUrn)
    :outertype: RouterCommandsRepository
 

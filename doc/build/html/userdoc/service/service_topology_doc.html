@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Topology Service &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Topology Service &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,22 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Engine (PCE)" href="../pce_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Topology Pruning Service" href="service_pruning_doc.html" />
     <link rel="prev" title="Bhandari PCE Module" href="../pce/pce_bhandari_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -44,12 +45,12 @@
         <li class="right" >
           <a href="../pce/pce_bhandari_doc.html" title="Bhandari PCE Module"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" accesskey="U">Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -94,9 +95,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../pce/pce_dijkstra_doc.html">Dijkstra PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pce/pce_bellman_ford_doc.html">Bellman-Ford PCE Module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pce/pce_bhandari_doc.html">Bhandari PCE Module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Topology Service</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Topology Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_pruning_doc.html">Topology Pruning Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_bandwidth_doc.html">Reserved Bandwidth Service</a></li>
 <li class="toctree-l3"><a class="reference internal" href="service_vlan_doc.html">VLAN Service</a></li>
@@ -120,17 +119,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="service_pruning_doc.html"
                         title="next chapter">Topology Pruning Service</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -139,12 +135,12 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="topology-service">
 <span id="service-topology"></span><h1>Topology Service<a class="headerlink" href="#topology-service" title="Permalink to this headline">¶</a></h1>
 <p>This is a support service which maintains and updates Topology information. This includes completed details on network devices, ports, and links. Each of these components has its own set of attributes, such as available bandwidth capacity, device make and model, etc. This service provides connectivity details and supports methods for retrieving the topology as a multi-layer representation. For example, MPLS Routers and their interconnections are represented as a single layer, while Ethernet switches and their connections are represented as another. Furthermore, OSCARS represents ports and devices as connected nodes such that there is a zero-cost link between them. An internal-layer topology contains information about each of these connections.</p>
-<p>The <em>Topology Service</em> is used heavily by the <a class="reference internal" href="../pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a> during pathfinding using the assumptions described in <a class="reference internal" href="../topologyref_doc.html#topologyref"><em>Topology Assumptions Reference</em></a>.</p>
+<p>The <em>Topology Service</em> is used heavily by the <a class="reference internal" href="../pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a> during pathfinding using the assumptions described in <a class="reference internal" href="../topologyref_doc.html#topologyref"><span class="std std-ref">Topology Assumptions Reference</span></a>.</p>
 <div class="section" id="service-details">
 <h2>Service Details<a class="headerlink" href="#service-details" title="Permalink to this headline">¶</a></h2>
 <p><strong>Calls:</strong></p>
@@ -153,19 +149,19 @@
 </ul>
 <p><strong>Called By:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_dijkstra_doc.html#pce-dijkstra"><em>Dijkstra PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><em>Explicit Route Object (ERO) PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_nonpalindrome_doc.html#pce-nonpalindrome"><em>Non-Palindromic PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_palindrome_doc.html#pce-palindrome"><em>Palindromic PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><em>Survivability PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_top_doc.html#pce-top"><em>Top PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><em>Translation PCE Module</em></a></li>
-<li><a class="reference internal" href="service_pruning_doc.html#service-pruning"><em>Topology Pruning Service</em></a></li>
-<li><a class="reference internal" href="service_bandwidth_doc.html#service-bandwidth"><em>Reserved Bandwidth Service</em></a></li>
+<li><a class="reference internal" href="../pce/pce_dijkstra_doc.html#pce-dijkstra"><span class="std std-ref">Dijkstra PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><span class="std std-ref">Explicit Route Object (ERO) PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_nonpalindrome_doc.html#pce-nonpalindrome"><span class="std std-ref">Non-Palindromic PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_palindrome_doc.html#pce-palindrome"><span class="std std-ref">Palindromic PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_survivability_doc.html#pce-survivability"><span class="std std-ref">Survivability PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_top_doc.html#pce-top"><span class="std std-ref">Top PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_translation_doc.html#pce-translation"><span class="std std-ref">Translation PCE Module</span></a></li>
+<li><a class="reference internal" href="service_pruning_doc.html#service-pruning"><span class="std std-ref">Topology Pruning Service</span></a></li>
+<li><a class="reference internal" href="service_bandwidth_doc.html#service-bandwidth"><span class="std std-ref">Reserved Bandwidth Service</span></a></li>
 </ul>
 <p><strong>API Specification:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../../codedoc/net/es/oscars/topo/svc/TopoService.html#net.es.oscars.topo.svc.TopoService" title="net.es.oscars.topo.svc.TopoService"><tt class="xref java java-ref docutils literal"><span class="pre">TopoService</span></tt></a></li>
+<li><a class="reference internal" href="../../codedoc/net/es/oscars/topo/svc/TopoService.html#net.es.oscars.topo.svc.TopoService" title="net.es.oscars.topo.svc.TopoService"><code class="xref java java-ref docutils literal"><span class="pre">TopoService</span></code></a></li>
 </ul>
 </div>
 </div>
@@ -176,7 +172,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -188,14 +184,14 @@
         <li class="right" >
           <a href="../pce/pce_bhandari_doc.html" title="Bhandari PCE Module"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../pce_doc.html" >Path Computation Engine (PCE)</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

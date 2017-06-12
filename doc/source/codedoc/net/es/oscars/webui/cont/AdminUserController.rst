@@ -1,24 +1,32 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
+.. java:import:: net.es.oscars.authnz.dao UserRepository
+
+.. java:import:: net.es.oscars.authnz.ent UserE
+
+.. java:import:: net.es.oscars.authnz.svc UserService
+
+.. java:import:: net.es.oscars.dto.auth Permissions
+
 .. java:import:: net.es.oscars.dto.auth User
 
-.. java:import:: net.es.oscars.webui RestAuthProvider
+.. java:import:: org.modelmapper ModelMapper
 
 .. java:import:: org.springframework.beans.factory.annotation Autowired
+
+.. java:import:: org.springframework.http HttpStatus
+
+.. java:import:: org.springframework.security.crypto.bcrypt BCryptPasswordEncoder
 
 .. java:import:: org.springframework.stereotype Controller
 
 .. java:import:: org.springframework.ui Model
 
-.. java:import:: org.springframework.web.bind.annotation ModelAttribute
+.. java:import:: java.util List
 
-.. java:import:: org.springframework.web.bind.annotation PathVariable
+.. java:import:: java.util NoSuchElementException
 
-.. java:import:: org.springframework.web.bind.annotation RequestMapping
-
-.. java:import:: org.springframework.web.bind.annotation RequestMethod
-
-.. java:import:: org.springframework.web.client RestTemplate
+.. java:import:: java.util.stream Collectors
 
 AdminUserController
 ===================
@@ -27,6 +35,14 @@ AdminUserController
    :noindex:
 
 .. java:type:: @Slf4j @Controller public class AdminUserController
+
+Constructors
+------------
+AdminUserController
+^^^^^^^^^^^^^^^^^^^
+
+.. java:constructor:: @Autowired public AdminUserController(UserRepository userRepo, UserService userService)
+   :outertype: AdminUserController
 
 Methods
 -------
@@ -70,5 +86,17 @@ admin_user_update_submit
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. java:method:: @RequestMapping public String admin_user_update_submit(User updatedUser)
+   :outertype: AdminUserController
+
+getInstitutions
+^^^^^^^^^^^^^^^
+
+.. java:method:: @RequestMapping @ResponseBody public List<String> getInstitutions()
+   :outertype: AdminUserController
+
+handleResourceNotFoundException
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: @ExceptionHandler @ResponseStatus public void handleResourceNotFoundException(NoSuchElementException ex)
    :outertype: AdminUserController
 

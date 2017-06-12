@@ -20,6 +20,8 @@
 
 .. java:import:: org.springframework.stereotype Service
 
+.. java:import:: java.time Instant
+
 .. java:import:: java.util.stream Collectors
 
 BandwidthService
@@ -32,45 +34,57 @@ BandwidthService
 
 Methods
 -------
-buildBandwidthAvailabilityMap
+amendBandwidthAvailabilityMap
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public Map<String, Map<String, Integer>> buildBandwidthAvailabilityMap(List<ReservedBandwidthE> rsvBandwidths)
+.. java:method:: public Map<String, Map<String, Integer>> amendBandwidthAvailabilityMap(Map<String, Map<String, Integer>> availBwMap, List<ReservedBandwidthE> newBandwidths)
    :outertype: BandwidthService
 
-   Build a map of the available bandwidth at each URN. For each URN, there is a map of "Ingress" and "Egress" bandwidth available. Only port URNs can be found in this map.
+   Update a current bandwidth availability map with the new reserved bandwidth additions.
 
-   :param rsvBandwidths: - A list of all bandwidth reserved so far
-   :return: A mapping of URN to Ingress/Egress bandwidth availability
+   :param availBwMap: - Current map of "Ingress" and "Egress" bandwidth available for each/specific URNs
+   :param newBandwidths: - A list of reserved bandwidths that will be added to this map
+   :return: The updated map
 
-buildBandwidthAvailabilityMapUrn
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+buildBandwidthAvailabilityMapForUrn
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public Map<String, Integer> buildBandwidthAvailabilityMapUrn(String urn, ReservableBandwidthE bandwidth, Map<String, List<ReservedBandwidthE>> resvBwMap)
+.. java:method:: public Map<String, Integer> buildBandwidthAvailabilityMapForUrn(String urn, ReservableBandwidthE capacity, Map<String, List<ReservedBandwidthE>> resvBwMap)
    :outertype: BandwidthService
 
    Determine how much Ingress/Egress bandwidth is still available at a URN. If the list of reserved bandwidths is empty, then all of the Reservable Bandwidth at that URN is available. Otherwise, subtract the sum Ingress/Egress bandwidth from the maximum reservable bandwidth at that URN.
 
-   :param bandwidth: - ReservableBandwidthE object, which contains the maximum Ingress/Egress bandwidth for a given URN
+   :param capacity: - ReservableBandwidthE object, which contains the maximum Ingress/Egress bandwidth for a given URN
    :param resvBwMap: - A Mapping from a URN to a list of Reserved Bandwidths at that URN.
-   :return: A map containing the net available ingress/egress bandwidth at a URN
+   :return: A mapping Ingress/Egress bandwidth availability {Ingress: num, Egress: num}
 
-buildBandwidthAvailabilityMapWithUrns
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+buildBandwidthAvailabilityMapFromUrnList
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public Map<String, Map<String, Integer>> buildBandwidthAvailabilityMapWithUrns(List<ReservedBandwidthE> rsvBandwidths, List<UrnE> urns)
+.. java:method:: public Map<String, Map<String, Integer>> buildBandwidthAvailabilityMapFromUrnList(List<ReservedBandwidthE> rsvBandwidths, List<UrnE> urns)
    :outertype: BandwidthService
 
-   Build a map of the available bandwidth at each URN. For each URN, there is a map of "Ingress" and "Egress" bandwidth available. Only port URNs can be found in this map.
+   Build a map of the available bandwidth at each URN. For each URN, there is a map of "Ingress" and "Egress" bandwidth available. Only port URNs can be found in this map. URNs are passed in.
 
    :param rsvBandwidths: - A list of all bandwidth reserved so far
    :param urns: - A list of UrnE objects
-   :return: A mapping of URN to Ingress/Egress bandwidth availability
+   :return: A mapping of URN name to Ingress/Egress bandwidth availability {urn = {Ingress: num, Egress: num}}
+
+buildBandwidthAvailabilityMapFromUrnRepo
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: public Map<String, Map<String, Integer>> buildBandwidthAvailabilityMapFromUrnRepo(List<ReservedBandwidthE> rsvBandwidths)
+   :outertype: BandwidthService
+
+   Build a map of the available bandwidth at each URN. For each URN, there is a map of "Ingress" and "Egress" bandwidth available. Only port URNs can be found in this map. Retrieves URNs from the repository.
+
+   :param rsvBandwidths: - A list of all bandwidth reserved so far
+   :return: A mapping of URN name to Ingress/Egress bandwidth availability {urn = {Ingress: num, Egress: num}}
 
 buildRequestedBandwidthMap
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public Map<TopoVertex, Map<String, Integer>> buildRequestedBandwidthMap(List<List<TopoEdge>> EROs, List<Integer> bandwidths)
+.. java:method:: public Map<TopoVertex, Map<String, Integer>> buildRequestedBandwidthMap(List<List<TopoEdge>> EROs, List<Integer> bandwidths, RequestedVlanPipeE reqPipe)
    :outertype: BandwidthService
 
    Build a map of the requested bandwidth at each port TopoVertex contained within the passed in EROs
@@ -78,6 +92,12 @@ buildRequestedBandwidthMap
    :param EROs: - List of paths
    :param bandwidths: - List of bandwidths
    :return: A mapping from TopoVertex (ports only) to requested "Ingress" and "Egress" bandwidth
+
+buildRequestedFixtureBandwidthMap
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: public Map<String, Map<String, Integer>> buildRequestedFixtureBandwidthMap(Set<RequestedVlanFixtureE> fixtures)
+   :outertype: BandwidthService
 
 buildReservedBandwidthMap
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -136,7 +156,7 @@ evaluateBandwidthEROUni
 evaluateBandwidthEdge
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public boolean evaluateBandwidthEdge(TopoEdge edge, Integer azBw, Integer zaBw, Map<String, UrnE> urnMap, Map<String, Map<String, Integer>> availBwMap)
+.. java:method:: public boolean evaluateBandwidthEdge(TopoEdge edge, Integer azBw, Integer zaBw, Map<String, UrnE> urnMap, Map<String, Map<String, Integer>> availBwMap, Map<String, Map<String, Integer>> requestedFixtureBwMap)
    :outertype: BandwidthService
 
    Evaluate an edge to determine if the nodes on either end of the edge support the requested az and za bandwidths. An edge will only fail the test if one or both URNs (corresponding to the nodes): (1) have valid reservable bandwidth fields, and (2) the URN(s) do not have sufficient available bandwidth available in both the az and za directions (egress and ingress).
@@ -146,32 +166,40 @@ evaluateBandwidthEdge
    :param zaBw: - The requested bandwidth in the other direction.
    :param urnMap: - Map of URN name to UrnE object.
    :param availBwMap: - Map of UrnE objects to "Ingress" and "Egress" Available Bandwidth
+   :param requestedFixtureBwMap: - Map of requested bandwidth for each fixture. Can be different from az and za azbw.
    :return: True if there is sufficient reservable bandwidth, False otherwise.
 
 evaluateBandwidthEdgeUni
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public boolean evaluateBandwidthEdgeUni(TopoEdge edge, Integer theBw, Map<String, UrnE> urnMap, Map<String, Map<String, Integer>> availBwMap)
+.. java:method:: public boolean evaluateBandwidthEdgeUni(TopoEdge edge, Integer theBw, Map<String, UrnE> urnMap, Map<String, Map<String, Integer>> availBwMap, Map<String, Map<String, Integer>> requestedFixtureBwMap)
    :outertype: BandwidthService
 
-   Evaluate an edge to determine if the nodes on either end of the edge support the requested unidriectional bandwidth. An edge will only fail the test if one or both URNs (corresponding to the nodes): (1) have valid reservable bandwidth fields, and (2) the URN(s) do not have sufficient available bandwidth available in the unique direction.
+   Evaluate an edge to determine if the nodes on either end of the edge support the requested unidirectional bandwidth. An edge will only fail the test if one or both URNs (corresponding to the nodes): (1) have valid reservable bandwidth fields, and (2) the URN(s) do not have sufficient available bandwidth available in the unique direction.
 
    :param edge: - The edge to be evaluated.
    :param theBw: - The requested bandwidth in one direction.
    :param urnMap: - Map of URN name to UrnE object.
    :param availBwMap: - Map of UrnE objects to "Ingress" and "Egress" Available Bandwidth
+   :param requestedFixtureBwMap: - Map of requested bandwidth for each fixture. Can be different from az and za azbw.
    :return: True if there is sufficient reservable bandwidth, False otherwise.
+
+evaluateBandwidthFixtures
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: public boolean evaluateBandwidthFixtures(RequestedVlanPipeE reqPipe, Map<String, Map<String, Integer>> availBwMap)
+   :outertype: BandwidthService
 
 evaluateBandwidthJunction
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public boolean evaluateBandwidthJunction(RequestedVlanJunctionE req_j, List<ReservedBandwidthE> reservedBandwidths)
+.. java:method:: public boolean evaluateBandwidthJunction(RequestedVlanJunctionE req_j, Map<String, Map<String, Integer>> bwAvailMap)
    :outertype: BandwidthService
 
    Confirm that a requested VLAN junction supports the requested bandwidth. Checks each fixture of the junction.
 
    :param req_j: - The requested junction.
-   :param reservedBandwidths: - The reserved bandwidth.
+   :param bwAvailMap: - Map of available bandwidth at each URN
    :return: True, if there is enough bandwidth at every fixture. False, otherwise.
 
 evaluateBandwidthSharedURN

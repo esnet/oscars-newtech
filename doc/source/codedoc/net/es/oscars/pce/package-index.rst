@@ -15,9 +15,9 @@ net.es.oscars.pce
    EroPCE
    EroPceTest
    Gatherer
+   HeavyLoadTest
    Layer3PCE
    NonPalindromicalPCE
-   PCEException
    PalindromicalPCE
    PruningService
    ReserveTopoTest
@@ -26,13 +26,16 @@ net.es.oscars.pce
    TopPCE
    TopPceTest
    TopPceTestAsymmetric
+   TopPceTestManycast
    TopPceTestMultipoint
    TopPceTestNonPalindromic
+   TopPceTestNonPalindromicESnet
    TopPceTestSurvivablePartial
    TopPceTestSurvivableTotal
    TopoAssistant
    TopologyPruneTest
    TranslationPCE
+   TranslationPCEResponse
    VlanService
    VlanTranslationTest
 

@@ -1,6 +1,6 @@
 .idea
 *.iml
 */target/*
-webui/node_modules
-webui/src/main/resources/static/built/*
-!webui/src/main/resources/static/built/index.html
+core/node_modules
+core/src/main/resources/static/built/*
+!core/src/main/resources/static/built/index.html

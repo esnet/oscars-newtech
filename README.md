@@ -59,6 +59,9 @@ The new OSCARS is a [Springboot](http://projects.spring.io/spring-boot/) applica
 The main project directory is structured as follows:
 ### bin
 Contains script(s) for running OSCARS.
+### doc
+Auto-generated documentation; use `bin/generatedocs.sh` at the top-level distribution directory to update.  You will need a working installation of javasphinx.
+
 ### core
 The main application. Handles reservation requests, determines which path (if any) is available to satisfy the request, and reserves the network resources. Key modules include:
 * **acct** - Maintains list of customers and handles storing, editing, and retrieving account information.
@@ -77,9 +80,8 @@ The main application. Handles reservation requests, determines which path (if an
 ### shared 
 A collection of shared classes used by the different modules. 
 
-### webui 
-The web interface through which users can view their current and past reservations, and submit reservation requests. The WebUI is built using the [React](https://facebook.github.io/react/) framework. 
-
 ### pss
 The Path Setup Subsystem. The core sends commands to it, and it generates appropriate config and then commits it to network devices through rancid. 
 
+### topo
+Topology-related scripts and utilities; currently ESnet-specific Python code. 

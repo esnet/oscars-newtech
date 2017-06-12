@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting Started &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Getting Started &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -17,21 +17,23 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Virtual Circuits" href="virtualcircuits.html" />
     <link rel="prev" title="OSCARS 1.0" href="../index.html" /> 
   </head>
   <body>
 	<a href="../index.html"><img src="../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -43,10 +45,10 @@
         <li class="right" >
           <a href="../index.html" title="OSCARS 1.0"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -73,9 +75,7 @@
 </body>	
 <h3><a href="../index.html">Table Of Contents</a></h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Getting Started</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#project-structure">Project Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="virtualcircuits.html">Virtual Circuits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="core_doc.html">Core Module</a></li>
@@ -93,17 +93,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="virtualcircuits.html"
                         title="next chapter">Virtual Circuits</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -112,11 +109,11 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>Here you&#8217;ll find instructions on obtaining, installing, and initializing OSCARS 1.0.</p>
+<p>Here you’ll find instructions on obtaining, installing, and initializing OSCARS 1.0.</p>
 <div class="section" id="download-the-sourcecode">
 <h2>Download the sourcecode<a class="headerlink" href="#download-the-sourcecode" title="Permalink to this headline">¶</a></h2>
 <p>The latest version of OSCARS can be downloaded via the project <a class="reference external" href="https://github.com/esnet/oscars-newtech">Github</a>.</p>
@@ -132,23 +129,23 @@
 <div class="section" id="building-with-maven">
 <h2>Building with Maven<a class="headerlink" href="#building-with-maven" title="Permalink to this headline">¶</a></h2>
 <p>To build the project, run the following commands from the main project directory:</p>
-<div class="highlight-bash"><div class="highlight"><pre>mvn install
+<div class="highlight-bash"><div class="highlight"><pre><span></span>mvn install
 </pre></div>
 </div>
 <p>This will require all unit tests included with the project to pass as a condition of a successful build. This is the recommended command.</p>
 <p>Alternatively, you may skip these tests:</p>
-<div class="highlight-bash"><div class="highlight"><pre>mvn install -DskipTests
+<div class="highlight-bash"><div class="highlight"><pre><span></span>mvn install -DskipTests
 </pre></div>
 </div>
 <p>The unit tests can be run separately if desired:</p>
-<div class="highlight-bash"><div class="highlight"><pre>mvn <span class="nb">test</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>mvn <span class="nb">test</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="starting-oscars-modules">
 <h2>Starting OSCARS Modules<a class="headerlink" href="#starting-oscars-modules" title="Permalink to this headline">¶</a></h2>
 <p>OSCARS is pre-packaged with a start script, which initializes all modules of the system easily and conveniently. From the main project directory, run the command:</p>
-<div class="highlight-bash"><div class="highlight"><pre>./bin/start.sh
+<div class="highlight-bash"><div class="highlight"><pre><span></span>./bin/start.sh
 </pre></div>
 </div>
 <p>At this point, OSCARS should be fully installed, built, and running on your local machine.  The following instructions will enable you to use the system, submit circuit reservations, etc.</p>
@@ -166,42 +163,36 @@
 </div>
 <div class="section" id="project-structure">
 <h1>Project Structure<a class="headerlink" href="#project-structure" title="Permalink to this headline">¶</a></h1>
-<p>The role of OSCARS is to schedule <a class="reference internal" href="virtualcircuits.html#virtualcircuit"><em>Virtual Circuits</em></a> with guaranteed bandwidth and service offerings.</p>
+<p>The role of OSCARS is to schedule <a class="reference internal" href="virtualcircuits.html#virtualcircuit"><span class="std std-ref">Virtual Circuits</span></a> with guaranteed bandwidth and service offerings.</p>
 <p>OSCARS 1.0 has been developed as a Springboot application, made up of two major components:
-- The main application (&#8220;core&#8221;).
-- The web user interface (&#8220;webui&#8221;).</p>
+- The main application (“core”).
+- The web user interface (“webui”).</p>
 <p>The main project directory is structured as follows:</p>
-<ul>
-<li><p class="first"><strong>/bin</strong>: Contains scripts and executables for running OSCARS.</p>
-</li>
-<li><p class="first"><strong>/check</strong>: Integration tests.</p>
-</li>
+<ul class="simple">
+<li><strong>/bin</strong>: Contains scripts and executables for running OSCARS.</li>
+<li><strong>/check</strong>: Integration tests.</li>
 <li><dl class="first docutils">
-<dt><strong>/core</strong>: The main OSCARS application. The <a class="reference internal" href="core_doc.html#core"><em>Core Module</em></a> handles circuit requests, determines which path (if any) is available to satisfy the request, and submits them for pathfinding based on their specifications. If successful, the Core also reserves the appropriate network resources in an automated fashion. Key modules include:</dt>
-<dd><ul class="first last simple">
+<dt><strong>/core</strong>: The main OSCARS application. The <a class="reference internal" href="core_doc.html#core"><span class="std std-ref">Core Module</span></a> handles circuit requests, determines which path (if any) is available to satisfy the request, and submits them for pathfinding based on their specifications. If successful, the Core also reserves the appropriate network resources in an automated fashion. Key modules include:</dt>
+<dd><ul class="first last">
 <li><strong>acct</strong>: Maintains list of customers and handles storing, editing, and retrieving account information.</li>
 <li><strong>authnz</strong>: Tracks permissions/authorization associated with user accounts.</li>
 <li><strong>bwavail</strong>: Calculates the minimum amount of bandwidth available between a given source and destination within a given time duration. Returns a series of time points and corresponding changes in           availability, based on reservations in the system.</li>
-<li><strong>conf</strong>: Retrieves configurations, specified in &#8220;oscars-newtech/core/config&#8221;, for each OSCARS module on startup.</li>
+<li><strong>conf</strong>: Retrieves configurations, specified in “oscars-newtech/core/config”, for each OSCARS module on startup.</li>
 <li><strong>helpers</strong>: Functions useful for dealing with Instants and VLAN expression parsing.</li>
-<li><strong>pce</strong>: The <a class="reference internal" href="pce_doc.html#pce-doc"><em>Path Computation Engine (PCE)</em></a>. It takes a requested reservation&#8217;s parameters, evaluates the current topology, determines the (shortest) path, if any, and decides which network resources must be reserved.</li>
-<li><strong>pss</strong>: The <a class="reference internal" href="pss_doc.html#pss"><em>Path Setup Subsystem (PSS)</em></a> sets up, tears down, modifies and verifies network paths. Handles templates for physical network devices.</li>
-<li><strong>resv</strong>: Tracks reservations, and receives user parameters for reservation requests. This module describes <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><em>Circuit Request Specification</em></a>, <a class="reference internal" href="circuit/schedspec_doc.html#schedspec"><em>Circuit Schedule Specification</em></a>, and <a class="reference internal" href="circuit/resvspec_doc.html#resvspec"><em>Circuit Reservation Specification</em></a> for a circuit.</li>
-<li><strong>servicetopo</strong>: Abstracts the network topology to create unique <a class="reference internal" href="enhanced/virtual_topo_doc.html#virtual-topo"><em>Service-Layer Topology</em></a> views of the topology for a given request.</li>
+<li><strong>pce</strong>: The <a class="reference internal" href="pce_doc.html#pce-doc"><span class="std std-ref">Path Computation Engine (PCE)</span></a>. It takes a requested reservation’s parameters, evaluates the current topology, determines the (shortest) path, if any, and decides which network resources must be reserved.</li>
+<li><strong>pss</strong>: The <a class="reference internal" href="pss_doc.html#pss"><span class="std std-ref">Path Setup Subsystem (PSS)</span></a> sets up, tears down, modifies and verifies network paths. Handles templates for physical network devices.</li>
+<li><strong>resv</strong>: Tracks reservations, and receives user parameters for reservation requests. This module describes <a class="reference internal" href="circuit/requestspec_doc.html#requestspec"><span class="std std-ref">Circuit Request Specification</span></a>, <a class="reference internal" href="circuit/schedspec_doc.html#schedspec"><span class="std std-ref">Circuit Schedule Specification</span></a>, and <a class="reference internal" href="circuit/resvspec_doc.html#resvspec"><span class="std std-ref">Circuit Reservation Specification</span></a> for a circuit.</li>
+<li><strong>servicetopo</strong>: Abstracts the network topology to create unique <a class="reference internal" href="enhanced/virtual_topo_doc.html#virtual-topo"><span class="std std-ref">Service-Layer Topology</span></a> views of the topology for a given request.</li>
 <li><strong>tasks</strong>: Services which run in the background and perform tasks at certain intervals (e.g. Select a submitted request to begin the reservation process).</li>
-<li><strong>topo</strong>: The <a class="reference internal" href="service/service_topology_doc.html#service-topology"><em>Topology Service</em></a> maintains topology information.</li>
+<li><strong>topo</strong>: The <a class="reference internal" href="service/service_topology_doc.html#service-topology"><span class="std std-ref">Topology Service</span></a> maintains topology information.</li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p class="first"><strong>/doc</strong>: User and Code documentation.</p>
-</li>
-<li><p class="first"><strong>/shared</strong>: A collection of shared class definitions used by the different modules.</p>
-</li>
-<li><p class="first"><strong>/webui</strong>: The <a class="reference internal" href="webui_doc.html#webui"><em>Web User Interface (WebUI)</em></a> through which users can view their current and past reservations, and submit new reservation requests. The WebUI is built using the Thymeleaf template engine. The WebUI is a portal through which a user communicates with the Core API through REST calls.</p>
-</li>
-<li><p class="first"><strong>/whatif</strong>: Classes to facilitate flexible circuit provisioning. Services include translating incomplete or loosely-defined input parameters into optional or alternative solutions which may have different characteristics, service enhancements, and costs.</p>
-</li>
+<li><strong>/doc</strong>: User and Code documentation.</li>
+<li><strong>/shared</strong>: A collection of shared class definitions used by the different modules.</li>
+<li><strong>/webui</strong>: The <a class="reference internal" href="webui_doc.html#webui"><span class="std std-ref">Web User Interface (WebUI)</span></a> through which users can view their current and past reservations, and submit new reservation requests. The WebUI is built using the Thymeleaf template engine. The WebUI is a portal through which a user communicates with the Core API through REST calls.</li>
+<li><strong>/whatif</strong>: Classes to facilitate flexible circuit provisioning. Services include translating incomplete or loosely-defined input parameters into optional or alternative solutions which may have different characteristics, service enhancements, and costs.</li>
 </ul>
 </div>
 
@@ -211,7 +202,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -223,12 +214,12 @@
         <li class="right" >
           <a href="../index.html" title="OSCARS 1.0"
              >previous</a> |</li>
-        <li><a href="../index.html">OSCARS</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">OSCARS</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

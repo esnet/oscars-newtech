@@ -61,10 +61,21 @@ buildAvailableVlanIdMap
 createReservedVlanList
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. java:method:: public List<ReservedVlanE> createReservedVlanList(Set<ReservedVlanJunctionE> reservedJunctions, Set<ReservedEthPipeE> reservedEthPipes, Date start, Date end)
+.. java:method:: public List<ReservedVlanE> createReservedVlanList(Set<ReservedVlanJunctionE> reservedJunctions, Set<ReservedEthPipeE> reservedEthPipes)
    :outertype: VlanService
 
    Given a set of reserved junctions and reserved ethernet pipes, retrieve all reserved VLAN objects within the specified schedule period.
+
+   :param reservedJunctions: - Set of reserved junctions
+   :param reservedEthPipes: - Set of reserved ethernet pipes
+
+createReservedVlanListFromJunctionsPipesRepo
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. java:method:: public List<ReservedVlanE> createReservedVlanListFromJunctionsPipesRepo(Set<ReservedVlanJunctionE> reservedJunctions, Set<ReservedEthPipeE> reservedEthPipes, Date start, Date end)
+   :outertype: VlanService
+
+   Given a set of reserved junctions and reserved ethernet pipes, retrieve all reserved VLAN objects from Repo within the specified schedule period and from the reserved junctions/pipes.
 
    :param reservedJunctions: - Set of reserved junctions
    :param reservedEthPipes: - Set of reserved ethernet pipes
@@ -92,7 +103,7 @@ findMaxValidEdgeSet
    :param availableEdges: - The set of currently available edges, which will be pruned further using VLAN tags.
    :param urnMap: - Map of URN name to UrnE object.
    :param vlans: - Requested VLAN ranges. Any VLAN ID within those ranges can be accepted.
-   :param availVlanMap: - Map of UrnE objects to a List of available VLAN tags.
+   :param availVlanMap: - Map of UrnE objects to a List<> of available VLAN tags.
    :return: The input edges, pruned using the input set of VLAN tags.
 
 findSetCover

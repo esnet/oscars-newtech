@@ -6,9 +6,12 @@ net.es.oscars.helpers
 .. toctree::
    :maxdepth: 1
 
+   ImprovedH2Dialect
    InstantConverter
    IntRangeParsing
-   JsonHelper
    RequestedEntityBuilder
    ReservedEntityDecomposer
+   ResourceChooser
+   ResourceChooser-Method
+   ResourceChooser-ResourceChoiceException
 

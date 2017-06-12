@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Non-Palindromic Return Path Service &mdash; OSCARS 1.0 1.0.2017 documentation</title>
+    <title>Non-Palindromic Return Path Service &#8212; OSCARS 1.0 1.0.2017 documentation</title>
     
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -17,42 +17,40 @@
         VERSION:     '1.0.2017',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/esnet.png"/>
-    <link rel="top" title="OSCARS 1.0 1.0.2017 documentation" href="../../index.html" />
-    <link rel="up" title="Path Computation Service Enhancements" href="../advanced_service_doc.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Service-Layer Topology" href="virtual_topo_doc.html" />
     <link rel="prev" title="Asymmetric Bandwidth Capability Service" href="asymm_service_doc.html" /> 
   </head>
   <body>
 	<a href="../../index.html"><img src="../../_static/oscars_banner.png" alt="OSCARS 1.0" width="100%"></a>
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="virtual_topo_doc.html" title="Service-Layer Topology"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="asymm_service_doc.html" title="Asymmetric Bandwidth Capability Service"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" accesskey="U">Path Computation Service Enhancements</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" accesskey="U">Path Computation Service Enhancements</a> &#187;</li> 
       </ul>
     </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper"><html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head></head>
       
@@ -84,6 +82,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../virtualcircuits.html">Virtual Circuits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../core_doc.html">Core Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../webui_doc.html">Web User Interface (WebUI)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_doc.html">Using the OSCARS API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../whatif_doc.html">What-If Service Module</a></li>
 </ul>
 <ul>
@@ -96,17 +95,14 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="virtual_topo_doc.html"
                         title="next chapter">Service-Layer Topology</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -115,18 +111,18 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="non-palindromic-return-path-service">
 <span id="nonpalindromic-pce-service"></span><h1>Non-Palindromic Return Path Service<a class="headerlink" href="#non-palindromic-return-path-service" title="Permalink to this headline">¶</a></h1>
-<p>It is possible for the MPLS layer to support non-identical A-Z and Z-A paths. The user can request that the path computation performed for a particulat pipe be Non-Palindromic, allowing the PCE to use (possibly) different paths through the MPLS layer to provision the request. All Ethernet devices/ports/links used in the forward path, <strong>must</strong> be represented in the return path. Only MPLS devices/ports/links may differ in forward-/reverse-direction paths. This is accomplished by creating a <a class="reference internal" href="virtual_topo_doc.html#virtual-topo"><em>Service-Layer Topology</em></a> for each Non-Palindromic request. This Service-Layer topology abstracts out the MPLS-Layer devices, and replaces them with a pair of abstract links between each pair of Service-Layer elements adjacent to the MPLS-Layer. These abstract links are computed independently such they they each correspond to the shortest path between the end-points. Therefore, the forward and return paths <em>may</em> contain different routing elements.</p>
+<p>It is possible for the MPLS layer to support non-identical A-Z and Z-A paths. The user can request that the path computation performed for a particulat pipe be Non-Palindromic, allowing the PCE to use (possibly) different paths through the MPLS layer to provision the request. All Ethernet devices/ports/links used in the forward path, <strong>must</strong> be represented in the return path. Only MPLS devices/ports/links may differ in forward-/reverse-direction paths. This is accomplished by creating a <a class="reference internal" href="virtual_topo_doc.html#virtual-topo"><span class="std std-ref">Service-Layer Topology</span></a> for each Non-Palindromic request. This Service-Layer topology abstracts out the MPLS-Layer devices, and replaces them with a pair of abstract links between each pair of Service-Layer elements adjacent to the MPLS-Layer. These abstract links are computed independently such they they each correspond to the shortest path between the end-points. Therefore, the forward and return paths <em>may</em> contain different routing elements.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">There is currently no support for <em>forcing</em> Non-Palindromic solutions. It&#8217;s entirely possible for the PCE to compute Palindromic solutions even when Non-Palindromic service is requested.</p>
+<p class="last">There is currently no support for <em>forcing</em> Non-Palindromic solutions. It’s entirely possible for the PCE to compute Palindromic solutions even when Non-Palindromic service is requested.</p>
 </div>
-<div class="figure align-center">
+<div class="figure align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/pce_nonpal.gif"><img alt="Non-Palindromic Circuit" src="../../_images/pce_nonpal.gif" style="width: 666.0px; height: 412.5px;" /></a>
-<p class="caption"><em>Non-Palindromic circuit with a different return path.</em></p>
+<p class="caption"><span class="caption-text"><em>Non-Palindromic circuit with a different return path.</em></span></p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -136,14 +132,14 @@
 <h2>Service Details<a class="headerlink" href="#service-details" title="Permalink to this headline">¶</a></h2>
 <p><strong>Can be combined with:</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="asymm_service_doc.html#asymm-pce-service"><em>Asymmetric Bandwidth Capability Service</em></a></li>
-<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><em>Multipoint Routing Service</em></a></li>
-<li><a class="reference internal" href="ero_service_doc.html#ero-pce-services"><em>Explicit Routing Services</em></a></li>
+<li><a class="reference internal" href="asymm_service_doc.html#asymm-pce-service"><span class="std std-ref">Asymmetric Bandwidth Capability Service</span></a></li>
+<li><a class="reference internal" href="multipoint_service_doc.html#multipoint-pce-service"><span class="std std-ref">Multipoint Routing Service</span></a></li>
+<li><a class="reference internal" href="ero_service_doc.html#ero-pce-services"><span class="std std-ref">Explicit Routing Services</span></a></li>
 </ul>
 <p><strong>Relevant PCE Module(s)</strong></p>
 <ul class="simple">
-<li><a class="reference internal" href="../pce/pce_nonpalindrome_doc.html#pce-nonpalindrome"><em>Non-Palindromic PCE Module</em></a></li>
-<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><em>Explicit Route Object (ERO) PCE Module</em></a></li>
+<li><a class="reference internal" href="../pce/pce_nonpalindrome_doc.html#pce-nonpalindrome"><span class="std std-ref">Non-Palindromic PCE Module</span></a></li>
+<li><a class="reference internal" href="../pce/pce_ero_doc.html#pce-ero"><span class="std std-ref">Explicit Route Object (ERO) PCE Module</span></a></li>
 </ul>
 <div class="toctree-wrapper compound">
 </div>
@@ -156,29 +152,26 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="virtual_topo_doc.html" title="Service-Layer Topology"
              >next</a> |</li>
         <li class="right" >
           <a href="asymm_service_doc.html" title="Asymmetric Bandwidth Capability Service"
              >previous</a> |</li>
-        <li><a href="../../index.html">OSCARS</a> &raquo;</li>
-          <li><a href="../core_doc.html" >Core Module</a> &raquo;</li>
-          <li><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">OSCARS</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../core_doc.html" >Core Module</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../advanced_service_doc.html" >Path Computation Service Enhancements</a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2017, ESnet.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, ESnet.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

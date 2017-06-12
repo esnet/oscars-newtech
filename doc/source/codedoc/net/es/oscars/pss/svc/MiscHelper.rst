@@ -1,18 +1,16 @@
 .. java:import:: lombok.extern.slf4j Slf4j
 
+.. java:import:: net.es.oscars.dto.pss.params MplsHop
+
+.. java:import:: net.es.oscars.dto.pss.params MplsPath
+
 .. java:import:: net.es.oscars.dto.resv ResourceType
 
 .. java:import:: net.es.oscars.pss PSSException
 
-.. java:import:: net.es.oscars.pss.cmd MplsHop
-
-.. java:import:: net.es.oscars.pss.cmd MplsPath
-
 .. java:import:: net.es.oscars.pss.dao UrnAddressRepository
 
 .. java:import:: net.es.oscars.pss.ent UrnAddressE
-
-.. java:import:: net.es.oscars.topo.ent UrnE
 
 .. java:import:: net.es.oscars.topo.svc TopoService
 
@@ -56,12 +54,6 @@ mplsPathBuilder
 ^^^^^^^^^^^^^^^
 
 .. java:method:: public MplsPath mplsPathBuilder(ConnectionE conn, List<String> ero) throws PSSException
-   :outertype: MiscHelper
-
-pssResourceOfType
-^^^^^^^^^^^^^^^^^
-
-.. java:method:: public Optional<Integer> pssResourceOfType(Set<ReservedPssResourceE> resources, ResourceType rt)
    :outertype: MiscHelper
 
 vlanString

@@ -20,11 +20,6 @@ try:
     core_proc = subprocess.Popen(['java', "-jar", os.path.join("target", "core-1.0.0-beta.jar")])
     processes.append(core_proc)
 
-    # Launch webui
-    os.chdir(os.path.join(top_dir, "webui"))
-    web_proc = subprocess.Popen(['java', "-jar", os.path.join("target", "webui-1.0.0-beta.jar")])
-    processes.append(web_proc)
-
     # Launch PSS
     os.chdir(os.path.join(top_dir, "pss"))
     pss_proc = subprocess.Popen(['java', "-jar", os.path.join("target", "pss-1.0.0-beta.jar")])

@@ -28,7 +28,7 @@
 
 .. java:import:: net.es.oscars.dto.viz VizNode
 
-.. java:import:: net.es.oscars.webui.ipc TopologyProvider
+.. java:import:: net.es.oscars.webui.cont TopologyProvider
 
 .. java:import:: org.springframework.beans.factory.annotation Autowired
 
@@ -49,6 +49,14 @@ VizExporter
    :noindex:
 
 .. java:type:: @Component @Slf4j public class VizExporter
+
+Constructors
+------------
+VizExporter
+^^^^^^^^^^^
+
+.. java:constructor:: @Autowired public VizExporter(TopologyProvider topologyProvider)
+   :outertype: VizExporter
 
 Methods
 -------
