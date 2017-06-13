@@ -16,12 +16,14 @@ import java.util.*;
 @Slf4j
 @Component
 public class MxCommandGenerator {
-
-    @Autowired
     private Stringifier stringifier;
+    private Assembler assembler;
 
     @Autowired
-    private Assembler assembler;
+    public MxCommandGenerator(Stringifier stringifier, Assembler assembler) {
+        this.stringifier = stringifier;
+        this.assembler = assembler;
+    }
 
     public String dismantle(MxParams params) throws ConfigException {
         this.protectVsNulls(params);
@@ -60,26 +62,35 @@ public class MxCommandGenerator {
         Map<String, Object> root;
         List<String> fragments = new ArrayList<>();
         try {
-            if (params.getPaths().isEmpty()) {
-                log.info("Empty paths, skipping..");
-            } else {
-                root = new HashMap<>();
-                root.put("paths", params.getPaths());
-                String pathConfig = stringifier.stringify(root, tp.getPath());
-                fragments.add(pathConfig);
-            }
+            root = new HashMap<>();
+            root.put("paths", params.getPaths());
+            String pathConfig = stringifier.stringify(root, tp.getPath());
+            fragments.add(pathConfig);
 
-            if (params.getLsps().isEmpty()) {
-                log.info("Empty LSPs, skipping..");
-            } else {
-                root = new HashMap<>();
-                root.put("lsps", params.getLsps());
-                String lspConfig = stringifier.stringify(root, tp.getLsp());
-                fragments.add(lspConfig);
-            }
+            root = new HashMap<>();
+            root.put("lsps", params.getLsps());
+            String lspConfig = stringifier.stringify(root, tp.getLsp());
+            fragments.add(lspConfig);
+
+            root = new HashMap<>();
+            root.put("ifces", params.getIfces());
+            String ifcesConfig = stringifier.stringify(root, tp.getIfces());
+            fragments.add(ifcesConfig);
+
+            root = new HashMap<>();
+            root.put("qoses", params.getQos());
+            String qosConfig = stringifier.stringify(root, tp.getQos());
+            fragments.add(qosConfig);
+
+            root = new HashMap<>();
+            root.put("mxLsps", params.getLsps());
+            root.put("vpls", params.getMxVpls());
+            String sdpConfig = stringifier.stringify(root, tp.getSdp());
+            fragments.add(sdpConfig);
 
             root = new HashMap<>();
             root.put("vpls", params.getMxVpls());
+            root.put("ifces", params.getIfces());
             String vplsServiceConfig = stringifier.stringify(root, tp.getVpls());
             fragments.add(vplsServiceConfig);
 
@@ -101,26 +112,11 @@ public class MxCommandGenerator {
         if (params.getMxVpls() == null) {
             throw new ConfigException("null Juniper MX VPLS");
         }
-        if (params.getMxVpls().getIfces() == null) {
-            throw new ConfigException("null Juniper MX VPLS ifce list");
-        }
-        if (params.getApplyQos() == null) {
-            params.setApplyQos(false);
-        }
-        if (params.getLoopbackAddress() == null) {
-            throw new ConfigException("null Juniper MX loopback address");
-        }
-        if (params.getLoopbackInterface() == null ) {
-            throw new ConfigException("null Juniper MX loopback ifce");
-        }
-        if (params.getPolicing() == null) {
-            params.setPolicing(new HashMap<>());
-        }
         if (params.getPaths() == null) {
             params.setPaths(new ArrayList<>());
         }
         if (params.getLsps() == null) {
-            params.setLsps(new HashMap<>());
+            params.setLsps(new ArrayList<>());
         }
 
     }

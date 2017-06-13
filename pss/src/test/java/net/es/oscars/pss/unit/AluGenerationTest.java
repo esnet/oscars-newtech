@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.AbstractPssTest;
+import net.es.oscars.pss.ctg.AluTests;
 import net.es.oscars.pss.ctg.UnitTests;
 import net.es.oscars.pss.help.ParamsLoader;
 import net.es.oscars.pss.beans.ConfigException;
@@ -27,7 +28,7 @@ public class AluGenerationTest extends AbstractPssTest {
 
 
     @Test
-    @Category(UnitTests.class)
+    @Category({UnitTests.class, AluTests.class})
     public void makeAluConfigs() throws ConfigException, IOException {
 
         log.info("testing build");
@@ -60,7 +61,7 @@ public class AluGenerationTest extends AbstractPssTest {
 
     }
 
-    @Category(UnitTests.class)
+    @Category({UnitTests.class, AluTests.class})
     @Test(expected = ConfigException.class)
     public void failToMakeAluConfig() throws ConfigException, IOException {
         log.info("testing things that should fail");

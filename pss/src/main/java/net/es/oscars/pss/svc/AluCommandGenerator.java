@@ -17,12 +17,14 @@ import java.util.*;
 @Slf4j
 @Component
 public class AluCommandGenerator {
-
-    @Autowired
     private Stringifier stringifier;
+    private Assembler assembler;
 
     @Autowired
-    private Assembler assembler;
+    public AluCommandGenerator(Stringifier stringifier, Assembler assembler) {
+        this.stringifier = stringifier;
+        this.assembler = assembler;
+    }
 
     public String dismantle(AluParams params) throws ConfigException {
         this.protectVsNulls(params);

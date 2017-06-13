@@ -1,7 +1,7 @@
 <#-- @ftlvariable name="mxLsps" type="java.util.List<net.es.oscars.dto.pss.params.mx.MxLsp>" -->
 <#-- @ftlvariable name="vpls" type="net.es.oscars.dto.pss.params.mx.MxVpls" -->
-
 <#assign communityMembers = "65000:672277L:"+vpls.vcId>
+<#assign mesh_group = "sdp-"+vpls.vcId >
 
 set policy-options community ${vpls.community} members ${communityMembers}
 
@@ -14,13 +14,8 @@ set then install-nexthop lsp ${mxlsp.lsp.name}
 set then accept
 top
 
+set routing-options forwarding-table export [ ${vpls.policyName} ]
 
-edit routing-options
-set forwarding-table export [ ${vpls.policyName} ]
-top
-
-
-<#assign mesh_group = "sdp-"+vpls.vcId >
 <#list mxLsps as mxlsp>
 <#assign lsp_neighbor = mxlsp.neighbor>
 edit routing-instances ${vpls.serviceName} protocols vpls mesh-group ${mesh_group}
