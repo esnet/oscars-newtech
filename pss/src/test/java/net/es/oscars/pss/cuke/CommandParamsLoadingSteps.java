@@ -8,6 +8,7 @@ import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.ConfigException;
 import net.es.oscars.pss.ctg.UnitTests;
 import net.es.oscars.pss.help.ParamsLoader;
+import net.es.oscars.pss.help.PssTestConfig;
 import net.es.oscars.pss.help.RouterTestSpec;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,19 @@ public class CommandParamsLoadingSteps extends CucumberSteps {
     private ParamsLoader loader;
     @Autowired
     private CucumberWorld world;
+    @Autowired
+    private PssTestConfig pssTestConfig;
 
+    @Then("^I will clear all the loaded test specs$")
+    public void i_will_clear_all_the_loaded_test_specs() throws Throwable {
+        loader.getSpecs().clear();
+    }
+
+    @Then("^I will add the \"([^\"]*)\" test spec$")
+    public void i_will_add_the_test_spec(String path) throws Throwable {
+        String fullPath = pssTestConfig.getCaseDirectory()+"/"+path;
+        loader.addSpec(fullPath);
+    }
 
     @Given("^I have loaded the \"([^\"]*)\" test commands$")
     public void i_have_loaded_the_CommandType_test_commands(CommandType t) {

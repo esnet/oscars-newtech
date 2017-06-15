@@ -5,6 +5,7 @@ Feature: MX command generation
 
   Scenario: Generate single-device EX "BUILD" commands
     Given I have initialized the world
+    Then I set the test specification directory to "config/test/unit"
     Given I have loaded the "BUILD" test commands
     Given I choose the commands matching device model "JUNIPER_EX"
     Given I choose the commands that should "SUCCEED"
@@ -14,6 +15,7 @@ Feature: MX command generation
 
   Scenario: Generate single-device EX "DISMANTLE" commands
     Given I have initialized the world
+    Then I set the test specification directory to "config/test/unit"
     Given I have loaded the "DISMANTLE" test commands
     Given I choose the commands matching device model "JUNIPER_EX"
     Given I choose the commands that should "SUCCEED"

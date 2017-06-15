@@ -53,6 +53,12 @@
             </properties>
         </profile>
         <profile>
+            <id>routerconfig</id>
+            <properties>
+                <cucumber.options>--tags @routerconfig --strict</cucumber.options>
+            </properties>
+        </profile>
+        <profile>
             <id>noTest</id>
             <properties>
                 <cucumber.options>--tags @none --strict</cucumber.options>

@@ -72,14 +72,21 @@ public class ParamsLoader {
         this.specs = result;
     }
 
-    public RouterTestSpec loadSpec(String path) throws IOException{
+    public RouterTestSpec addSpec(String path) throws IOException{
+        RouterTestSpec spec = this.getSpec(path);
+        specs.add(spec);
+        return spec;
+    }
+
+
+
+    private RouterTestSpec getSpec(String path) throws IOException{
         ObjectMapper mapper = new ObjectMapper();
 
         File f = new File(path);
         RouterTestSpec spec = mapper.readValue(f, RouterTestSpec.class);
         spec.setFilename(path);
         return spec;
-
     }
 
 }
