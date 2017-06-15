@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Slf4j
-public class AluConfigTest extends AbstractPssTest {
+public class AluConfigTest {
 
     @Autowired
     private CommandRunner runner;
@@ -46,7 +46,6 @@ public class AluConfigTest extends AbstractPssTest {
 
     }
 
-    @Test
     @Category({RouterTests.class, AluTests.class})
     public void singleAluTest() throws IOException {
         log.info("starting single ALU test");
@@ -103,7 +102,6 @@ public class AluConfigTest extends AbstractPssTest {
 
     }
 
-    @Test
     @Category({RouterTests.class, AluTests.class})
     public void twoAluTest() throws IOException, InterruptedException {
         String prefix = pssTestConfig.getCaseDirectory();

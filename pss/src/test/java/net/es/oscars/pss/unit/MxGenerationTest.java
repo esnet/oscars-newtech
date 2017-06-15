@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-public class MxGenerationTest extends AbstractPssTest {
+public class MxGenerationTest {
 
     @Autowired
     private ParamsLoader loader;
@@ -26,12 +26,12 @@ public class MxGenerationTest extends AbstractPssTest {
     private MxCommandGenerator commandGen;
 
 
-    @Test
     @Category(UnitTests.class)
     public void makeMxConfigs() throws ConfigException, IOException {
 
         log.info("testing MX build");
-        List<RouterTestSpec> specs = loader.loadSpecs(CommandType.BUILD);
+        loader.loadSpecs(CommandType.BUILD);
+        List<RouterTestSpec> specs = loader.getSpecs();
 
         for (RouterTestSpec spec : specs) {
             if (spec.getModel().equals(DeviceModel.JUNIPER_MX)) {
@@ -45,7 +45,8 @@ public class MxGenerationTest extends AbstractPssTest {
 
         log.info("testing MX dismantle");
 
-        specs = loader.loadSpecs(CommandType.DISMANTLE);
+        loader.loadSpecs(CommandType.DISMANTLE);
+        specs = loader.getSpecs();
 
         for (RouterTestSpec spec : specs) {
             if (spec.getModel().equals(DeviceModel.JUNIPER_MX)) {

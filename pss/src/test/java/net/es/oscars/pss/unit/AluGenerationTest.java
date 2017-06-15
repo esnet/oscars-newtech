@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-public class AluGenerationTest extends AbstractPssTest {
+public class AluGenerationTest {
 
     @Autowired
     private ParamsLoader loader;
@@ -27,12 +27,12 @@ public class AluGenerationTest extends AbstractPssTest {
     private AluCommandGenerator commandGen;
 
 
-    @Test
     @Category({UnitTests.class, AluTests.class})
     public void makeAluConfigs() throws ConfigException, IOException {
 
         log.info("testing build");
-        List<RouterTestSpec> specs = loader.loadSpecs(CommandType.BUILD);
+        loader.loadSpecs(CommandType.BUILD);
+        List<RouterTestSpec> specs = loader.getSpecs();
 
         for (RouterTestSpec spec : specs) {
             if (spec.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
@@ -46,7 +46,8 @@ public class AluGenerationTest extends AbstractPssTest {
 
         log.info("testing dismantle");
 
-        specs = loader.loadSpecs(CommandType.DISMANTLE);
+        loader.loadSpecs(CommandType.DISMANTLE);
+        specs = loader.getSpecs();
 
         for (RouterTestSpec spec : specs) {
             if (spec.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
@@ -62,15 +63,15 @@ public class AluGenerationTest extends AbstractPssTest {
     }
 
     @Category({UnitTests.class, AluTests.class})
-    @Test(expected = ConfigException.class)
     public void failToMakeAluConfig() throws ConfigException, IOException {
         log.info("testing things that should fail");
 
-        List<RouterTestSpec> setupSpecs = loader.loadSpecs(CommandType.BUILD);
+        loader.loadSpecs(CommandType.BUILD);
+        List<RouterTestSpec> specs = loader.getSpecs();
         boolean anyFailScenariosFound = false;
 
 
-        for (RouterTestSpec spec : setupSpecs) {
+        for (RouterTestSpec spec : specs) {
             if (spec.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
                 if (spec.getShouldFail()) {
                     log.info("testing "+spec.getFilename());

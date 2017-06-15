@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Slf4j
-public class ControlPlaneTest extends AbstractPssTest {
+public class ControlPlaneTest {
 
     @Autowired
     private CommandQueuer queuer;
@@ -48,7 +48,6 @@ public class ControlPlaneTest extends AbstractPssTest {
         rancidProps.setExecute(true);
     }
 
-    @Test
     @Category({RouterTests.class, ControlPlaneTests.class})
     public void basicTest() throws NoSuchElementException, ControlPlaneException, InterruptedException, IOException {
         log.info("starting control plane test");
