@@ -2,21 +2,13 @@ package net.es.oscars.pss.cuke;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import net.es.oscars.pss.PssTestConfiguration;
 import net.es.oscars.pss.ctg.UnitTests;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootContextLoader;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-@TestPropertySource(locations = "file:config/test/application.properties")
-@ContextConfiguration(
-        loader = SpringBootContextLoader.class,
-        classes = PssTestConfiguration.class)
 @Category({UnitTests.class})
 public class SharedSteps {
     @Autowired

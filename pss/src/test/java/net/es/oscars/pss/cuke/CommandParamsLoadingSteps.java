@@ -5,19 +5,12 @@ import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.topo.enums.DeviceModel;
-import net.es.oscars.pss.AbstractPssTest;
-import net.es.oscars.pss.PssTestConfiguration;
 import net.es.oscars.pss.beans.ConfigException;
 import net.es.oscars.pss.ctg.UnitTests;
 import net.es.oscars.pss.help.ParamsLoader;
 import net.es.oscars.pss.help.RouterTestSpec;
 import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootContextLoader;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,13 +19,9 @@ import java.util.stream.Collectors;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-@TestPropertySource(locations = "file:config/test/application.properties")
-@ContextConfiguration(
-        loader = SpringBootContextLoader.class,
-        classes = PssTestConfiguration.class)
 @Category({UnitTests.class})
 @Slf4j
-public class CommandParamsLoadingSteps {
+public class CommandParamsLoadingSteps extends CucumberSteps {
     @Autowired
     private ParamsLoader loader;
     @Autowired

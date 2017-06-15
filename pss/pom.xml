@@ -9,7 +9,7 @@
         <version>1.0.0-beta</version>
     </parent>
     <properties>
-        <cucumber.options>--strict</cucumber.options>
+        <cucumber.options>--tags @unit --strict</cucumber.options>
     </properties>
 
 
@@ -23,15 +23,27 @@
             </properties>
         </profile>
         <profile>
-            <id>router</id>
+            <id>live</id>
             <properties>
-                <cucumber.options>--tags @router --strict</cucumber.options>
+                <cucumber.options>--tags @live --strict</cucumber.options>
             </properties>
         </profile>
         <profile>
             <id>alu</id>
             <properties>
                 <cucumber.options>--tags @alu --strict</cucumber.options>
+            </properties>
+        </profile>
+        <profile>
+            <id>mx</id>
+            <properties>
+                <cucumber.options>--tags @mx --strict</cucumber.options>
+            </properties>
+        </profile>
+        <profile>
+            <id>ex</id>
+            <properties>
+                <cucumber.options>--tags @ex --strict</cucumber.options>
             </properties>
         </profile>
         <profile>

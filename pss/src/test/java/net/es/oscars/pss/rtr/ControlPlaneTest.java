@@ -36,17 +36,6 @@ public class ControlPlaneTest {
     @Autowired
     private HealthService healthService;
 
-    @Before
-    public void before() throws InterruptedException {
-        System.out.println("==============================================================================");
-        System.out.println("Ready to run control plane tests! These WILL attempt to contact routers.");
-        System.out.println("Make sure you have configured test.properties correctly. ");
-        System.out.println("Starting in 3 seconds. Ctrl-C to abort.");
-        System.out.println("==============================================================================");
-        Thread.sleep(3000);
-
-        rancidProps.setExecute(true);
-    }
 
     @Category({RouterTests.class, ControlPlaneTests.class})
     public void basicTest() throws NoSuchElementException, ControlPlaneException, InterruptedException, IOException {

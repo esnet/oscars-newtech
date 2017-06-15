@@ -78,7 +78,7 @@ public class RancidRunner {
 
             // scp the file to remote host: /tmp/
             try {
-                log.debug("SCPing: " + tmpPath + " -> " + scpTo);
+                log.info("SCPing: " + tmpPath + " -> " + scpTo);
                 new ProcessExecutor()
                         .command("scp", tmpPath, scpTo)
                         .exitValues(0)
@@ -89,7 +89,7 @@ public class RancidRunner {
                         "ssh",
                         host,
                         arguments.getExecutable(),
-                        "-x", tmpPath,
+                        "-x", remotePath,
                         "-f", cloginrc,
                         arguments.getRouter()
                 };

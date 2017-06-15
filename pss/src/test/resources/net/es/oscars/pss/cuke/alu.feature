@@ -1,3 +1,4 @@
+@unit @alu
 Feature: Alcatel command generation
 
   I want to verify I can generate commands for ALU SR7750s
@@ -8,7 +9,7 @@ Feature: Alcatel command generation
     Given I choose the commands matching device model "ALCATEL_SR7750"
     Given I choose the commands that should "SUCCEED"
     Then the command list is not empty
-    When I "BUILD" on the alu command generator with the test commands
+    When I "BUILD" on the "ALCATEL_SR7750" command generator with the test commands
     Then I did not receive an exception
 
   Scenario: Generate single-device ALU "DISMANTLE" commands
@@ -17,7 +18,7 @@ Feature: Alcatel command generation
     Given I choose the commands matching device model "ALCATEL_SR7750"
     Given I choose the commands that should "SUCCEED"
     Then the command list is not empty
-    When I "DISMANTLE" on the alu command generator with the test commands
+    When I "DISMANTLE" on the "ALCATEL_SR7750" command generator with the test commands
     Then I did not receive an exception
 
 
@@ -28,6 +29,6 @@ Feature: Alcatel command generation
     Given I choose the commands matching device model "ALCATEL_SR7750"
     Given I choose the commands that should "FAIL"
     Then the command list is not empty
-    When I "BUILD" on the alu command generator with the test commands
+    When I "BUILD" on the "ALCATEL_SR7750" command generator with the test commands
     Then I did receive an exception
     And all the test commands generated an exception
