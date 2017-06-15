@@ -1,74 +1,60 @@
-package net.es.oscars.pss.rtr;
+package net.es.oscars.pss.cuke;
 
+import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.CommandStatus;
 import net.es.oscars.dto.pss.st.ControlPlaneStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
-import net.es.oscars.pss.AbstractPssTest;
 import net.es.oscars.pss.beans.ControlPlaneException;
 import net.es.oscars.pss.beans.DeviceEntry;
-import net.es.oscars.pss.ctg.ControlPlaneTests;
-import net.es.oscars.pss.ctg.RouterTests;
+import net.es.oscars.pss.ctg.UnitTests;
 import net.es.oscars.pss.help.PssTestConfig;
-import net.es.oscars.pss.prop.RancidProps;
 import net.es.oscars.pss.svc.CommandQueuer;
 import net.es.oscars.pss.svc.HealthService;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.*;
 
+@Category({UnitTests.class})
 @Slf4j
-public class ControlPlaneTest extends AbstractPssTest {
-
+public class ControlPlaneSteps extends CucumberSteps {
+    @Autowired
+    private CucumberWorld world;
     @Autowired
     private CommandQueuer queuer;
-
-    @Autowired
-    private RancidProps rancidProps;
 
     @Autowired
     private PssTestConfig pssTestConfig;
 
     @Autowired
     private HealthService healthService;
+    Map<DeviceEntry, String> entryCommands;
+    Map<String, ControlPlaneStatus> statusMap;
+    Set<String> commandIds;
+    Set<String> waitingFor;
 
-    @Before
-    public void before() throws InterruptedException {
-        System.out.println("==============================================================================");
-        System.out.println("Ready to run control plane tests! These WILL attempt to contact routers.");
-        System.out.println("Make sure you have configured test.properties correctly. ");
-        System.out.println("Starting in 3 seconds. Ctrl-C to abort.");
-        System.out.println("==============================================================================");
-        Thread.sleep(3000);
+    @Then("^I will add the control plane test commands for \"([^\"]*)\" to the queue$")
+    public void i_will_add_the_control_plane_test_commands_for_to_the_queue(String testcase) throws Throwable {
+        String prefix = pssTestConfig.getCaseDirectory()+"/"+testcase;
+        entryCommands = healthService.queueControlPlaneCheck(queuer, prefix+"/control-plane-check.json");
 
-        rancidProps.setExecute(true);
-    }
+        statusMap = new HashMap<>();
 
-    @Test
-    @Category({RouterTests.class, ControlPlaneTests.class})
-    public void basicTest() throws NoSuchElementException, ControlPlaneException, InterruptedException, IOException {
-        log.info("starting control plane test");
-        String prefix = pssTestConfig.getCaseDirectory();
-
-        Map<DeviceEntry, String> entryCommands = healthService.queueControlPlaneCheck(queuer, prefix+"/control-plane-check.json");
-
-        Map<String, ControlPlaneStatus> statusMap = new HashMap<>();
-
-        Set<String> commandIds = new HashSet<>();
-        Set<String> waitingFor = new HashSet<>();
+        commandIds = new HashSet<>();
+        waitingFor = new HashSet<>();
 
         entryCommands.entrySet().forEach(e -> {
             waitingFor.add(e.getKey().getDevice());
             commandIds.add(e.getValue());
-
         });
+    }
 
+    @Then("^I will wait up to (\\d+) ms for the control plane commands to complete$")
+    public void i_will_wait_up_to_ms_for_the_control_plane_commands_to_complete(int millis) throws Throwable {
         int totalMs = 0;
-        while (waitingFor.size() > 0 && totalMs < 60000) {
+        while (waitingFor.size() > 0 && totalMs < millis) {
             Thread.sleep(2000);
             totalMs += 2000;
             waitingFor.clear();
@@ -87,21 +73,29 @@ public class ControlPlaneTest extends AbstractPssTest {
         }
         if (waitingFor.size() > 0) {
             log.error("timed out waiting for some devices");
-            throw new ControlPlaneException("timed out");
-
+            String timedOut = StringUtils.join(waitingFor, ", ");
+            ControlPlaneException ex = new ControlPlaneException("timed out waiting for "+timedOut);
+            world.add(ex);
+            throw ex;
         }
+    }
 
-
-        log.debug("done collecting statuses");
-
+    @Then("^I have verified the control plane to all the devices$")
+    public void i_have_verified_the_control_plane_to_all_the_devices() throws Throwable {
+        List<String> notVerified = new ArrayList<>();
         for (String device : statusMap.keySet()) {
             ControlPlaneStatus st = statusMap.get(device);
             if (!st.equals(ControlPlaneStatus.OK)) {
-                throw new ControlPlaneException("Could not verify " + device);
+                notVerified.add(device);
             }
-
         }
-
+        if (!notVerified.isEmpty()) {
+            String complaint = StringUtils.join(waitingFor, ", ");
+            ControlPlaneException ex = new ControlPlaneException("could not verify "+complaint);
+            world.add(ex);
+            throw ex;
+        }
     }
 
 }
+

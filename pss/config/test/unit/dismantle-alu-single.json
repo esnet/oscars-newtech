@@ -1,0 +1,34 @@
+{
+  "device": "dev-7750sr12-rt1-es1",
+  "model": "ALCATEL_SR7750",
+  "shouldFail": false,
+  "aluParams": {
+    "aluVpls": {
+      "svcId": 6011,
+      "saps": [
+        {
+          "port": "8/1/1",
+          "vlan": 3101,
+          "ingressQosId": 5211,
+          "egressQosId": 5511
+        },
+        {
+          "port": "8/1/2",
+          "vlan": 3101,
+          "ingressQosId": 5211,
+          "egressQosId": 5511
+        }
+      ]
+    },
+    "qoses": [
+      {
+        "type": "SAP_INGRESS",
+        "policyId": 5211
+      },
+      {
+        "type": "SAP_EGRESS",
+        "policyId": 5511
+      }
+    ]
+  }
+}

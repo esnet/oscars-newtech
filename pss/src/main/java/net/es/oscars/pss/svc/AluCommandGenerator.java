@@ -87,7 +87,7 @@ public class AluCommandGenerator {
             }
 
             if (params.getPaths() == null || params.getPaths().isEmpty()) {
-                log.info("No paths, skipping..");
+                log.debug("No paths, skipping..");
 
             } else {
                 root = new HashMap<>();
@@ -101,7 +101,7 @@ public class AluCommandGenerator {
             }
 
             if (params.getLsps() == null || params.getLsps().isEmpty()) {
-                log.info("No LSPs, skipping..");
+                log.debug("No LSPs, skipping..");
             } else {
                 root = new HashMap<>();
                 root.put("lsps", params.getLsps());
@@ -114,7 +114,7 @@ public class AluCommandGenerator {
             }
 
             if (params.getSdps() == null || params.getSdps().isEmpty()) {
-                log.info("No SDPs, skipping..");
+                log.debug("No SDPs, skipping..");
             } else {
                 root = new HashMap<>();
                 root.put("sdps", params.getSdps());
@@ -127,7 +127,7 @@ public class AluCommandGenerator {
             }
 
             if (params.getLoopbackInterface() == null) {
-                log.info("No loopback, skipping..");
+                log.debug("No loopback, skipping..");
             } else {
                 root = new HashMap<>();
                 root.put("loopback_ifce_name", params.getLoopbackInterface());
