@@ -13,6 +13,7 @@ import net.es.oscars.resv.ent.ConnectionE;
 import net.es.oscars.resv.ent.RequestedBlueprintE;
 import net.es.oscars.resv.ent.RequestedVlanPipeE;
 import net.es.oscars.resv.svc.ResvService;
+import net.es.oscars.st.resv.ResvState;
 import net.es.oscars.topo.pop.TopoFileImporter;
 import org.junit.Before;
 import org.junit.Test;
@@ -263,6 +264,10 @@ public class CreateResvTest extends AbstractCoreTest {
 
         // Make sure there is now one more reservation than when we started.
         assert(r2 == r1 + 1);
+        // But that reservation should be in ABORTING state.
+        Optional<ConnectionE> c3 = resvService.findByConnectionId(conn3.getConnectionId());
+        assert(c3.isPresent() && c3.get().getStates().getResv() == ResvState.ABORTING);
+        log.info("Reservation is " + c3.get().getStates().getResv());
 
     }
 
