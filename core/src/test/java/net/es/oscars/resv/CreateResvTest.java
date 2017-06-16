@@ -256,6 +256,14 @@ public class CreateResvTest extends AbstractCoreTest {
         }
         assert(ok == true);
 */
+
+        // Check the number of reservations again.
+        int r2 = resvService.findAll().size();
+        log.info("Created (?) reservation, now with " + r2);
+
+        // Make sure there is now one more reservation than when we started.
+        assert(r2 == r1 + 1);
+
     }
 
     public void testGetResvs() {
