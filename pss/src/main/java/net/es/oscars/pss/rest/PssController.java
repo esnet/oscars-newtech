@@ -9,6 +9,8 @@ import net.es.oscars.dto.pss.cmd.CommandStatus;
 import net.es.oscars.dto.pss.cmd.GenerateResponse;
 import net.es.oscars.dto.pss.cp.ControlPlaneHealth;
 import net.es.oscars.pss.beans.ConfigException;
+import net.es.oscars.pss.beans.ControlPlaneException;
+import net.es.oscars.pss.beans.UrnMappingException;
 import net.es.oscars.pss.svc.HealthService;
 import net.es.oscars.pss.svc.RouterConfigBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +58,8 @@ public class PssController {
     }
 
     @RequestMapping(value = "/generate", method = RequestMethod.POST)
-    public GenerateResponse generate(@RequestBody Command cmd) throws ConfigException, JsonProcessingException {
+    public GenerateResponse generate(@RequestBody Command cmd)
+            throws ConfigException, UrnMappingException, JsonProcessingException {
         log.info("generating router config");
 
         ObjectMapper mapper = new ObjectMapper();

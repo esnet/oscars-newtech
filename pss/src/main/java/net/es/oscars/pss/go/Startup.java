@@ -1,8 +1,10 @@
 package net.es.oscars.pss.go;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.pss.beans.UrnMappingException;
 import net.es.oscars.pss.prop.StartupProps;
 import net.es.oscars.pss.svc.CommandQueuer;
+import net.es.oscars.pss.svc.UrnMappingService;
 import net.es.oscars.pss.svc.HealthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,15 +18,19 @@ public class Startup {
     private CommandQueuer queuer;
     private StartupProps props;
     private HealthService healthService;
+    private UrnMappingService urnMappingService;
 
     @Autowired
-    public Startup(CommandQueuer queuer, HealthService healthService, StartupProps props) {
+    public Startup(CommandQueuer queuer, HealthService healthService,
+                   UrnMappingService urnMappingService, StartupProps props) {
         this.queuer = queuer;
         this.props = props;
         this.healthService = healthService;
+        this.urnMappingService = urnMappingService;
     }
 
-    public void onStart() throws IOException {
+    public void onStart() throws IOException, UrnMappingException {
+        urnMappingService.startup();
         if (!props.getPerformControlPlaneCheck()) {
             log.info("config declines start up control plane check");
         } else {

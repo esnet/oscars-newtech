@@ -3,31 +3,22 @@ package net.es.oscars.pss.prop;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import net.es.oscars.pss.beans.UrnMappingMethod;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@ConfigurationProperties(prefix = "rancid")
+@ConfigurationProperties(prefix = "controlplane")
 @Data
 @Component
 @NoArgsConstructor
-public class RancidProps {
-
-
-    @NonNull
-    private Boolean execute;
+public class UrnMappingProps {
 
     @NonNull
-    private String dir;
+    private UrnMappingMethod method;
 
-    @NonNull
-    private String host;
+    private String addressesFile;
 
-    @NonNull
-    private String cloginrc;
-
-    @NonNull
-    private String controlPlaneAddressesFile;
-
+    private String dnsSuffix;
 
 }
 
