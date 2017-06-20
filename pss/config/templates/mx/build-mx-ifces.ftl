@@ -4,7 +4,7 @@
 <#list ifces as ifce>
 edit interfaces ${ifce.port}
 edit unit ${ifce.vlan}
-set description ${ifce.description}
+set description "${ifce.description}"
 set encapsulation vlan-vpls
 set vlan-id ${ifce.vlan}
 set output-vlan-map swap

@@ -3,7 +3,7 @@
 <#list paths as path>
 edit protocols mpls path ${path.name}
 <#list path.hops as hop>
-set ${hop} strict
+set ${hop.address} strict
 </#list>
 top
 </#list>

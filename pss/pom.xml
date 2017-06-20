@@ -59,6 +59,12 @@
             </properties>
         </profile>
         <profile>
+            <id>wip</id>
+            <properties>
+                <cucumber.options>--tags @wip --strict</cucumber.options>
+            </properties>
+        </profile>
+        <profile>
             <id>noTest</id>
             <properties>
                 <cucumber.options>--tags @none --strict</cucumber.options>

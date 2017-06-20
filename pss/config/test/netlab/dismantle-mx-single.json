@@ -5,16 +5,16 @@
   "mxParams": {
     "ifces": [
       {
-        "port": "xe-8/1/0",
+        "port": "xe-9/1/0",
         "vlan": 1221,
         "description": "some desc",
-        "statsFilter": "OSCARS stats filter"
+        "statsFilter": "OSCARS-stats-filter"
       },
       {
         "port": "xe-11/2/0",
         "vlan": 1221,
         "description": "some desc",
-        "statsFilter": "OSCARS stats filter"
+        "statsFilter": "OSCARS-stats-filter"
       }
     ],
     "paths": [
@@ -39,7 +39,7 @@
           "metric": 65100,
           "to": "192.124.57.8"
         },
-        "policeFilter": "policeFilter"
+        "policeFilter": "filter-1234"
       }
     ],
     "qos": [
@@ -57,8 +57,9 @@
       "serviceName": "NKJSBD-12",
       "description": "my description",
       "community": "NKJSBD",
+      "communityId": 39001,
       "policyName": "asddfasd",
-      "statsFilter": "stats Filter"
+      "statsFilter": "OSCARS-stats-filter"
     }
 
   }

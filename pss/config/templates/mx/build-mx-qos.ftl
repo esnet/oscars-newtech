@@ -11,6 +11,7 @@ set loss-priority low
 set forwarding-class best-effort-vc
 set loss-priority high
 </#if>
+top
 
 <#if qos.createPolicer>
 edit firewall policer ${qos.policerName}

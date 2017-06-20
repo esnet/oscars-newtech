@@ -74,8 +74,8 @@ def main():
                         help="Path to devices output file")
     parser.add_argument('--output-adjacencies', default=OUTPUT_ADJCIES,
                         help="Path to IS-IS adjacencies output file")
-    parser.add_argument('--output-addresses', default=OUTPUT_ADDRS,
-                        help="Path to addresses file")
+    parser.add_argument('--output-entryMap', default=OUTPUT_ADDRS,
+                        help="Path to entryMap file")
 
     opts = parser.parse_args()
 
