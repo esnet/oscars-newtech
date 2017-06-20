@@ -2,6 +2,9 @@
 <#-- @ftlvariable name="ifces" type="java.util.List<net.es.oscars.dto.pss.params.mx.MxIfce>" -->
 
 edit routing-instances ${vpls.serviceName}
+<#list ifces as ifce>
+set interface ${ifce.port}.${ifce.vlan}
+</#list>
 set instance-type vpls
 edit protocols vpls
 set no-tunnel-services
@@ -19,7 +22,7 @@ set address ${vpls.loopback}
 
 <#if vpls.statsFilter??>
 top
-edit firewall family vpls filter ${vpls.statsFilter}
+edit firewall family vpls filter "${vpls.statsFilter}"
 set interface-specific
 set term oscars then count oscars_counter
 set term oscars then accept

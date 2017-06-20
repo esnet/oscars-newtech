@@ -4,6 +4,7 @@ package net.es.oscars.pss.svc;
 import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.ConfigException;
+import net.es.oscars.pss.beans.UrnMappingException;
 import net.es.oscars.pss.prop.RancidProps;
 import net.es.oscars.pss.rancid.RancidArguments;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,19 +16,22 @@ public class RouterConfigBuilder {
     private AluCommandGenerator acg;
     private MxCommandGenerator mcg;
     private ExCommandGenerator ecg;
+    private UrnMappingService ums;
 
     @Autowired
     public RouterConfigBuilder(RancidProps props,
                                AluCommandGenerator acg,
                                MxCommandGenerator mcg,
-                               ExCommandGenerator ecg) {
+                               ExCommandGenerator ecg,
+                               UrnMappingService ums) {
         this.props = props;
         this.acg = acg;
         this.mcg = mcg;
         this.ecg = ecg;
+        this.ums = ums;
     }
 
-    public String generate(Command command) throws ConfigException {
+    public String generate(Command command) throws ConfigException, UrnMappingException  {
         String result = "";
         switch (command.getType()) {
             case CONFIG_STATUS:
@@ -48,7 +52,8 @@ public class RouterConfigBuilder {
     }
 
 
-    public RancidArguments controlPlaneCheck(String device, DeviceModel model) throws ConfigException {
+    public RancidArguments controlPlaneCheck(String deviceUrn, DeviceModel model)
+            throws ConfigException, UrnMappingException  {
         String routerConfig;
         switch (model) {
             case ALCATEL_SR7750:
@@ -62,11 +67,12 @@ public class RouterConfigBuilder {
                 throw new ConfigException("unknown model");
         }
 
-        return buildRouterConfig(routerConfig, device, model);
+        return buildRouterConfig(routerConfig, deviceUrn, model);
     }
 
 
-    public RancidArguments build(Command command) throws ConfigException {
+    public RancidArguments build(Command command)
+            throws ConfigException, UrnMappingException  {
         String routerConfig = "";
         DeviceModel model = command.getModel();
         switch (model) {
@@ -86,7 +92,7 @@ public class RouterConfigBuilder {
         return buildRouterConfig(routerConfig, command.getDevice(), command.getModel());
     }
 
-    public RancidArguments dismantle(Command command) throws ConfigException {
+    public RancidArguments dismantle(Command command) throws ConfigException, UrnMappingException  {
         String routerConfig = "";
         DeviceModel model = command.getModel();
         switch (model) {
@@ -106,10 +112,13 @@ public class RouterConfigBuilder {
         return buildRouterConfig(routerConfig, command.getDevice(), command.getModel());
     }
 
-    public RancidArguments buildRouterConfig(String routerConfig, String device, DeviceModel model) throws ConfigException {
+    public RancidArguments buildRouterConfig(String routerConfig, String deviceUrn, DeviceModel model)
+            throws ConfigException, UrnMappingException {
         String execPath;
         String cloginrc = props.getCloginrc();
         String dir = props.getDir();
+        String router = ums.getRouterAddress(deviceUrn);
+
 
         switch (model) {
             case ALCATEL_SR7750:
@@ -127,7 +136,7 @@ public class RouterConfigBuilder {
                 .cloginrc(cloginrc)
                 .executable(execPath)
                 .routerConfig(routerConfig)
-                .router(device)
+                .router(router)
                 .build();
 
     }

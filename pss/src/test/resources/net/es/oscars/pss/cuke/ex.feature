@@ -1,5 +1,5 @@
-@mx @unit
-Feature: MX command generation
+@ex @unit
+Feature: EX command generation
 
   I want to verify I can generate commands for Juniper EX
 

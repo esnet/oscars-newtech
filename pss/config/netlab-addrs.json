@@ -1,0 +1,20 @@
+{
+  "addresses": {
+    "dev-7750sr12-rt1": {
+      "ipv4Address": "192.74.211.6",
+      "dns": "dev-7750sr12-rt1-es1.es.net"
+    },
+    "dev-7750sr12-rt2": {
+      "ipv4Address": "192.74.211.2",
+      "dns": "dev-7750sr12-rt2-es1.es.net"
+    },
+    "dev-mx960-rt1": {
+      "ipv4Address": "192.74.211.3",
+      "dns": "dev-mx960-rt1-es1.es.net"
+    },
+    "dev-mx960-rt2": {
+      "ipv4Address": "192.74.211.15",
+      "dns": "dev-mx960-rt2-es1.es.net"
+    }
+  }
+}
