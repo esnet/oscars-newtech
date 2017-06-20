@@ -13,13 +13,19 @@ import net.es.oscars.dto.topo.enums.IfceType;
 import net.es.oscars.dto.topo.enums.UrnType;
 import net.es.oscars.topo.prop.TopoProperties;
 import net.es.oscars.topo.serialization.UrnAdjcy;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.ProcessResult;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 @Slf4j
@@ -238,4 +244,75 @@ public class TopoFileImporter {
 
     }
 
+    /**
+     * Update the network topology based on data published to ESDB
+     * Actually retrieving the topology is of course just the first step.
+     * If for example a node goes away or something like that,
+     * we need to do the right thing for circuits traversing that node.
+     * The fixedRate parameter below is the amount of time between
+     * invocations, in ms.  Once an hour would imply a fixed rate of 3,600,000.
+     */
+    @Scheduled(fixedRate = 3600000)
+    public void updateTopo() {
+        log.info("updateTopo() fired");
+
+        // XXX
+        // We need to supply at least four parameters:
+        // --token
+        // --output-devices
+        // --output-adjacencies
+        // --output-addresses
+        if (topoProperties == null) {
+            log.error("No 'topo' stanza in application properties! Skipping topology import.");
+            return;
+        }
+
+        // We need an ESDB application token / key, as well as the path to the import
+        // script (esdb-topo.py) otherwise we can't do the import.
+        // XXX We should in theory be able to infer the path to esdb-topo.py, right?
+        if (topoProperties.getEsdbKey() == null) {
+            log.info("No ESDB key in configuration, skipping topology import.");
+            return;
+        }
+        if (topoProperties.getImportScriptPath() == null) {
+            log.info("No import script path, skipping topology import.");
+            return;
+        }
+
+        String devicesFilename = "./config/topo/" + topoProperties.getPrefix() + "-devices.json";
+        String adjciesFilename = "./config/topo/" + topoProperties.getPrefix() + "-adjcies.json";
+        String addressesFilename = "./config/topo/" + topoProperties.getPrefix() + "-names.json";
+
+        String [] cliArgs = {
+            topoProperties.getImportScriptPath(),
+            "--token", topoProperties.getEsdbKey(),
+            "--output-devices", devicesFilename,
+            "--output-adjacencies", adjciesFilename,
+            "--output-addresses", addressesFilename
+        };
+
+        String cli = StringUtils.join(cliArgs, " ");
+
+        log.info("Ready to execute: " + cli);
+
+        try {
+            ProcessResult res = new ProcessExecutor().command(cliArgs).readOutput(true).timeout(5, TimeUnit.SECONDS).execute();
+            if (res.getExitValue() != 0) {
+                log.error("Import script returned an error code, rc = " + res.getExitValue());
+                if (res.getOutput() != null) {
+                    log.error("Output: " + res.getOutput().getString());
+                }
+            }
+        }
+        catch (TimeoutException e) {
+            log.error("Import script timeout");
+            return;
+        }
+        catch (Exception e) {
+            log.error("Import script exception: " + e.toString());
+            return;
+        }
+
+
+    }
 }

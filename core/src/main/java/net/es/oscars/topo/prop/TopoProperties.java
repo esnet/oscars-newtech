@@ -13,4 +13,6 @@ import org.springframework.context.annotation.Configuration;
 public class TopoProperties {
     @NonNull
     private String prefix;
+    private String esdbKey;
+    private String importScriptPath;
 }
