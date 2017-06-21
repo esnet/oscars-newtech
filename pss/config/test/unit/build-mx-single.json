@@ -38,7 +38,7 @@
     "qos": [
       {
         "policerName": "policer-1234",
-        "filterName": "filter-1234",
+        "filterName": "policeFilter",
         "mbps": 1000,
         "createPolicer": true,
         "forwarding": "EXPEDITED",
@@ -52,7 +52,7 @@
       "description": "my description",
       "community": "NKJSBD",
       "policyName": "asddfasd",
-      "statsFilter": "stats Filter"
+      "statsFilter": "stats-Filter"
     }
   }
 }

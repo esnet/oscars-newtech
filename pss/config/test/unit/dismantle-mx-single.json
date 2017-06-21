@@ -24,7 +24,7 @@
     "lsps": [
       {
         "neighbor": "1.2.3.1",
-        "lsp":       {
+        "lsp": {
           "name": "OKI9R5-lsp",
           "pathName": "OKI9R5-path",
           "setupPriority": 5,
@@ -38,7 +38,7 @@
     "qos": [
       {
         "policerName": "policer-1234",
-        "filterName": "filter-1234",
+        "filterName": "policeFilter",
         "mbps": 1000,
         "createPolicer": true,
         "forwarding": "EXPEDITED",
@@ -52,8 +52,7 @@
       "description": "my description",
       "community": "NKJSBD",
       "policyName": "asddfasd",
-      "statsFilter": "stats Filter"
+      "statsFilter": "stats-Filter"
     }
-
   }
 }
