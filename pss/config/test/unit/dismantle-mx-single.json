@@ -7,8 +7,7 @@
       {
         "port": "xe-3/1/0",
         "vlan": 1221,
-        "description": "some desc",
-        "statsFilter": "OSCARS stats filter"
+        "description": "some desc"
       }
     ],
     "paths": [

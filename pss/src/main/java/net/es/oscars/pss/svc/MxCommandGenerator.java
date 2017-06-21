@@ -2,9 +2,10 @@ package net.es.oscars.pss.svc;
 
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.dto.pss.params.mx.MxParams;
-import net.es.oscars.pss.beans.ConfigException;
-import net.es.oscars.pss.beans.MxTemplatePaths;
+import net.es.oscars.dto.pss.params.MplsHop;
+import net.es.oscars.dto.pss.params.MplsPath;
+import net.es.oscars.dto.pss.params.mx.*;
+import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.tpl.Assembler;
 import net.es.oscars.pss.tpl.Stringifier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class MxCommandGenerator {
     private Stringifier stringifier;
     private Assembler assembler;
 
+
     @Autowired
     public MxCommandGenerator(Stringifier stringifier, Assembler assembler) {
         this.stringifier = stringifier;
@@ -27,7 +29,7 @@ public class MxCommandGenerator {
 
     public String dismantle(MxParams params) throws ConfigException {
         this.protectVsNulls(params);
-        this.verifyPaths(params);
+        this.verifyParams(params);
 
         MxTemplatePaths mtp = MxTemplatePaths.builder()
                 .lsp("mx/dismantle-mx-mpls-lsp.ftl")
@@ -42,7 +44,7 @@ public class MxCommandGenerator {
 
     public String build(MxParams params) throws ConfigException {
         this.protectVsNulls(params);
-        this.verifyPaths(params);
+        this.verifyParams(params);
 
         MxTemplatePaths mtp = MxTemplatePaths.builder()
                 .lsp("mx/build-mx-mpls-lsp.ftl")
@@ -74,6 +76,7 @@ public class MxCommandGenerator {
 
             root = new HashMap<>();
             root.put("ifces", params.getIfces());
+            root.put("vpls", params.getMxVpls());
             String ifcesConfig = stringifier.stringify(root, tp.getIfces());
             fragments.add(ifcesConfig);
 
@@ -121,12 +124,158 @@ public class MxCommandGenerator {
 
     }
 
-    private void verifyPaths(MxParams params) throws ConfigException {
+    private void verifyParams(MxParams params) throws ConfigException {
+        // verify ifces
+        StringBuffer errorStr = new StringBuffer("");
+        Boolean hasError = false;
+        Map<KeywordWithContext, KeywordValidationCriteria> keywordMap = new HashMap<>();
+        KeywordValidationCriteria alphanum_criteria = KeywordValidationCriteria.builder()
+                .format(KeywordFormat.ALPHANUMERIC_DASH_UNDERSCORE)
+                .length(32)
+                .build();
+        KeywordValidationCriteria ip_criteria = KeywordValidationCriteria.builder()
+                .format(KeywordFormat.IPV4_ADDRESS)
+                .length(32)
+                .build();
 
+        Set<String> pathNames = new HashSet<>();
+        for (MplsPath path : params.getPaths()) {
+            KeywordWithContext kwc_path = KeywordWithContext.builder()
+                    .context("MPLS path name").keyword(path.getName())
+                    .build();
+            keywordMap.put(kwc_path, alphanum_criteria);
+            pathNames.add(path.getName());
+            for (MplsHop hop : path.getHops()) {
+                KeywordWithContext kwc_hop_addr = KeywordWithContext.builder()
+                        .context("MPLS hop address").keyword(hop.getAddress())
+                        .build();
+                keywordMap.put(kwc_hop_addr, ip_criteria);
+            }
+        }
+
+        for (MxIfce ifce : params.getIfces()) {
+            if (ifce.getVlan() < 2 || ifce.getVlan() > 4094) {
+                String err = ifce.getPort() + " : vlan " + ifce.getVlan() + " out of range (2-4094)\n";
+                errorStr.append(err);
+                hasError = true;
+            }
+        }
+        Set<String> qosFilters = new HashSet<>();
+        for (MxQos qos : params.getQos()) {
+            qosFilters.add(qos.getFilterName());
+        }
+
+
+        Set<String> lspFilters = new HashSet<>();
+        Set<String> lspPathNames = new HashSet<>();
+        for (MxLsp lsp : params.getLsps()) {
+            lspPathNames.add(lsp.getLsp().getPathName());
+            if (!pathNames.contains(lsp.getLsp().getPathName())) {
+                String err = " LSP path name " + lsp.getLsp().getPathName()+ " not defined in paths\n";
+                errorStr.append(err);
+                hasError = true;
+            }
+            KeywordWithContext kwc_lsp_path_name = KeywordWithContext.builder()
+                    .context("LSP path name").keyword(lsp.getLsp().getPathName())
+                    .build();
+            KeywordWithContext kwc_lsp_name = KeywordWithContext.builder()
+                    .context("LSP name").keyword(lsp.getLsp().getName())
+                    .build();
+            KeywordWithContext kwc_lsp_nei = KeywordWithContext.builder()
+                    .context("LSP neighbor").keyword(lsp.getNeighbor())
+                    .build();
+            KeywordWithContext kwc_lsp_to = KeywordWithContext.builder()
+                    .context("LSP to").keyword(lsp.getLsp().getTo())
+                    .build();
+
+            keywordMap.put(kwc_lsp_name, alphanum_criteria);
+            keywordMap.put(kwc_lsp_path_name, alphanum_criteria);
+            keywordMap.put(kwc_lsp_nei, ip_criteria);
+            keywordMap.put(kwc_lsp_to, ip_criteria);
+
+            if (!qosFilters.contains(lsp.getPoliceFilter())) {
+                String err = "LSP to " + lsp.getNeighbor() + " :  uses a police filter not set in QoS\n";
+                errorStr.append(err);
+                hasError = true;
+            }
+            KeywordWithContext kwc_lsp_police_filter = KeywordWithContext.builder()
+                    .context("LSP police filter").keyword(lsp.getPoliceFilter())
+                    .build();
+
+            keywordMap.put(kwc_lsp_police_filter, alphanum_criteria);
+
+            lspFilters.add(lsp.getPoliceFilter());
+        }
+        for (String pathName : pathNames) {
+            if (!lspPathNames.contains(pathName)) {
+                String err = " path name " + pathName+ " not used by LSP\n";
+                errorStr.append(err);
+                hasError = true;
+
+            }
+        }
+
+        for (MxQos qos : params.getQos()) {
+            if (!lspFilters.contains(qos.getFilterName())) {
+                String err = "QOS filter " + qos.getFilterName() + " is not used by any LSPs\n";
+                errorStr.append(err);
+                hasError = true;
+            }
+            KeywordWithContext qos_filter_name = KeywordWithContext.builder()
+                    .context("QOS filter name").keyword(qos.getFilterName())
+                    .build();
+            KeywordWithContext qos_policer_name = KeywordWithContext.builder()
+                    .context("QOS filter name").keyword(qos.getPolicerName())
+                    .build();
+
+            keywordMap.put(qos_filter_name, alphanum_criteria);
+            keywordMap.put(qos_policer_name, alphanum_criteria);
+        }
+
+        MxVpls vpls = params.getMxVpls();
+        if (vpls.getCommunityId() < 1 || vpls.getCommunityId() > 65534) {
+            errorStr.append("VPLS community ID out of range (1-65535)\n");
+            hasError = true;
+        }
+        // this is allowed to be null
+        if (vpls.getLoopback() != null) {
+            KeywordWithContext kwc_vpls_loopback = KeywordWithContext.builder()
+                    .context("VPLS loopback").keyword(vpls.getLoopback())
+                    .build();
+            keywordMap.put(kwc_vpls_loopback, ip_criteria);
+        }
+
+        KeywordWithContext kwc_vpls_pol_name= KeywordWithContext.builder()
+                .context("VPLS policy name").keyword(vpls.getPolicyName())
+                .build();
+        KeywordWithContext kwc_vpls_stats_filter = KeywordWithContext.builder()
+                .context("VPLS stats filter").keyword(vpls.getStatsFilter())
+                .build();
+        KeywordWithContext kwc_vpls_svc_name = KeywordWithContext.builder()
+                .context("VPLS service name").keyword(vpls.getServiceName())
+                .build();
+
+        keywordMap.put(kwc_vpls_pol_name, alphanum_criteria);
+        keywordMap.put(kwc_vpls_stats_filter, alphanum_criteria);
+        keywordMap.put(kwc_vpls_svc_name, alphanum_criteria);
+
+        Map<KeywordWithContext, KeywordValidationResult> results = KeywordValidator.validate(keywordMap);
+        for (KeywordWithContext keyword : results.keySet()) {
+            KeywordValidationResult res = results.get(keyword);
+            if (!res.getValid()) {
+                errorStr.append(res.getError()+"\n");
+                hasError = true;
+            }
+        }
+
+
+        if (hasError) {
+            log.error(errorStr.toString());
+            throw new ConfigException(errorStr.toString());
+        }
 
 
     }
-
 
 
 }

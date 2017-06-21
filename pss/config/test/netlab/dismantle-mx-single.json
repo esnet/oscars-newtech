@@ -7,14 +7,12 @@
       {
         "port": "xe-9/1/0",
         "vlan": 1221,
-        "description": "some desc",
-        "statsFilter": "OSCARS-stats-filter"
+        "description": "some desc"
       },
       {
         "port": "xe-11/2/0",
         "vlan": 1221,
-        "description": "some desc",
-        "statsFilter": "OSCARS-stats-filter"
+        "description": "some desc"
       }
     ],
     "paths": [

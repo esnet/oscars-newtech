@@ -39,7 +39,7 @@ public class ParamsLoader {
         File dir = new File(pssTestConfig.getCaseDirectory());
         Iterator<File> files = FileUtils.iterateFiles(dir, extensions, false);
         ObjectMapper mapper = new ObjectMapper();
-        String prefix = "";
+        String prefix;
         switch (type) {
             case BUILD:
                 prefix = "build";
@@ -54,6 +54,8 @@ public class ParamsLoader {
                 prefix = "cfg_status";
                 break;
             case CONTROL_PLANE_STATUS:
+                prefix = "cpl_status";
+                break;
             default:
                 throw new ConfigException("no test specification for " + type);
 
@@ -69,6 +71,7 @@ public class ParamsLoader {
                 result.add(spec);
             }
         }
+        log.debug("loaded "+result.size()+ " specs");
         this.specs = result;
     }
 
