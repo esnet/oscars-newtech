@@ -16,6 +16,7 @@ public class CucumberWorld {
 
     public void add(Exception e) throws RuntimeException {
         if (!expectException) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         exceptions.add(e);

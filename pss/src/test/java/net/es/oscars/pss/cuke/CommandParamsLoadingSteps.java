@@ -46,13 +46,16 @@ public class CommandParamsLoadingSteps extends CucumberSteps {
         try {
             loader.loadSpecs(t);
         } catch (ConfigException | IOException ex) {
+            log.error(ex.getMessage(), ex);
             world.add(ex);
         }
+
     }
 
     @Given("^I choose the commands matching device model \"([^\"]*)\"$")
     public void i_choose_the_commands_matching_device_model_(DeviceModel model) {
         List<RouterTestSpec> specs = loader.getSpecs().stream().filter(t -> t.getModel().equals(model)).collect(Collectors.toList());
+        log.debug("specs matching: "+specs.size());
         loader.getSpecs().clear();
         loader.getSpecs().addAll(specs);
     }
@@ -73,6 +76,7 @@ public class CommandParamsLoadingSteps extends CucumberSteps {
         }
         loader.getSpecs().clear();
         loader.getSpecs().addAll(specs);
+        log.debug("specs matching: "+specs.size());
     }
 
     @Then("^the command list is not empty$")

@@ -7,7 +7,7 @@
       {
         "vlanId": 211,
         "description": "some description",
-        "name": "OSCARS VLAN 211",
+        "name": "OSCARS-VLAN_211",
         "ifces": [
           {
             "port": "ge-1/1/1"

@@ -1,16 +1,11 @@
 {
-  "device": "dev-mx960-rt1-es1",
+  "device": "dev-7750sr12-rt1-es1",
   "model": "JUNIPER_MX",
-  "shouldFail": false,
+  "shouldFail": true,
   "mxParams": {
     "ifces": [
       {
-        "port": "xe-9/1/0",
-        "vlan": 1221,
-        "description": "some desc"
-      },
-      {
-        "port": "xe-11/2/0",
+        "port": "xe-3/1/0",
         "vlan": 1221,
         "description": "some desc"
       }
@@ -21,7 +16,7 @@
         "hops": [
           {
             "order": 1,
-            "address": "192.124.57.137"
+            "address": "foobarzoom"
           }
         ]
       }
@@ -37,13 +32,13 @@
           "metric": 65100,
           "to": "192.124.57.8"
         },
-        "policeFilter": "filter-1234"
+        "policeFilter": "policeFilter-1234"
       }
     ],
     "qos": [
       {
         "policerName": "policer-1234",
-        "filterName": "filter-1234",
+        "filterName": "policeFilter-1234",
         "mbps": 1000,
         "createPolicer": true,
         "forwarding": "EXPEDITED",
@@ -52,12 +47,12 @@
     ],
     "mxVpls": {
       "vcId": 91112,
+      "communityId": 39001,
       "serviceName": "NKJSBD-12",
       "description": "my description",
       "community": "NKJSBD",
-      "communityId": 39001,
       "policyName": "asddfasd",
-      "statsFilter": "OSCARS-stats-filter"
+      "statsFilter": "stats-filter"
     }
 
   }

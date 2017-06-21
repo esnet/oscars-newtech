@@ -4,11 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.es.oscars.dto.pss.params.Lsp;
 import net.es.oscars.dto.pss.params.MplsPath;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Builder
@@ -22,7 +20,7 @@ public class MxParams {
     private List<MplsPath> paths;
 
 
-    private List<MxIfce> ifces;
+    private List<TaggedIfce> ifces;
 
     private List<MxQos> qos;
 

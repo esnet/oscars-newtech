@@ -34,7 +34,7 @@ public class ModelSteps {
     private CucumberWorld world;
 
     @When("^I \"([^\"]*)\" on the \"([^\"]*)\" command generator with the test commands$")
-    public void i_EXEC_on_the_mx_command_generator_with_the_test_commands(CommandType t, DeviceModel m) {
+    public void i_EXEC_on_the_MODEL_command_generator_with_the_test_commands(CommandType t, DeviceModel m) {
         for (RouterTestSpec spec : loader.getSpecs()) {
             try {
                 String config;

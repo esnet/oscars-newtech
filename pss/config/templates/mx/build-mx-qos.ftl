@@ -1,7 +1,7 @@
 <#-- @ftlvariable name="qoses" type="java.util.List<net.es.oscars.dto.pss.params.mx.MxQos>" -->
 
 <#list qoses as qos>
-edit firewall family any filter ${qos.filterName} term oscars then
+edit firewall family any filter "${qos.filterName}" term oscars then
 set count oscars
 set accept
 <#if qos.forwarding == "EXPEDITED">
@@ -14,7 +14,7 @@ set loss-priority high
 top
 
 <#if qos.createPolicer>
-edit firewall policer ${qos.policerName}
+edit firewall policer "${qos.policerName}"
 <#if qos.mbps gt 0>
     <#assign bw_limit = qos.mbps+"000000" >
     <#assign burst_limit = qos.mbps+"00000" >
@@ -27,7 +27,7 @@ set then loss-priority high
 set then discard
 </#if>
 top
-set firewall family any filter ${qos.filterName} term oscars then policer ${qos.policerName}
+set firewall family any filter "${qos.filterName}" term oscars then policer "${qos.policerName}"
 </#if>
 
 </#list>

@@ -4,8 +4,7 @@ import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.params.*;
 import net.es.oscars.dto.pss.params.alu.*;
-import net.es.oscars.pss.beans.AluTemplatePaths;
-import net.es.oscars.pss.beans.ConfigException;
+import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.tpl.Assembler;
 import net.es.oscars.pss.tpl.Stringifier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +18,18 @@ import java.util.*;
 public class AluCommandGenerator {
     private Stringifier stringifier;
     private Assembler assembler;
+    private KeywordValidator validator;
 
     @Autowired
-    public AluCommandGenerator(Stringifier stringifier, Assembler assembler) {
+    public AluCommandGenerator(Stringifier stringifier, Assembler assembler, KeywordValidator validator) {
         this.stringifier = stringifier;
         this.assembler = assembler;
+        this.validator = validator;
     }
 
     public String dismantle(AluParams params) throws ConfigException {
         this.protectVsNulls(params);
+        this.verifyKeywords(params);
         this.verifyAluQosParams(params);
         this.verifySdpIds(params);
         this.verifyPaths(params);
@@ -48,6 +50,7 @@ public class AluCommandGenerator {
             throw new ConfigException("null ALU params!");
         }
         this.protectVsNulls(params);
+        this.verifyKeywords(params);
         this.verifyAluQosParams(params);
         this.verifySdpIds(params);
         this.verifyPaths(params);
@@ -277,6 +280,99 @@ public class AluCommandGenerator {
             throw new ConfigException(error);
         }
 
+
+    }
+    private void verifyKeywords(AluParams params) throws ConfigException {
+        StringBuilder errorStr = new StringBuilder("");
+        Boolean hasError = false;
+
+        Map<KeywordWithContext, KeywordValidationCriteria> keywordMap = new HashMap<>();
+        KeywordValidationCriteria alphanum_criteria = KeywordValidationCriteria.builder()
+                .format(KeywordFormat.ALPHANUMERIC_DASH_UNDERSCORE)
+                .length(32)
+                .build();
+        KeywordValidationCriteria ip_criteria = KeywordValidationCriteria.builder()
+                .format(KeywordFormat.IPV4_ADDRESS)
+                .length(32)
+                .build();
+
+        keywordMap.put(KeywordWithContext.builder()
+                .context("VPLS service name")
+                .keyword(params.getAluVpls().getServiceName())
+                .build(), alphanum_criteria);
+        for (AluSap aluSap : params.getAluVpls().getSaps()) {
+            if (aluSap.getVlan() < 2 || aluSap.getVlan() > 4094) {
+                String err = aluSap.getPort() + " : vlan " + aluSap.getVlan() + " out of range (2-4094)\n";
+                errorStr.append(err);
+                hasError = true;
+            }
+        }
+
+        if (params.getLoopbackAddress() != null) {
+            keywordMap.put(KeywordWithContext.builder()
+                    .context("loopback address")
+                    .keyword(params.getLoopbackAddress())
+                    .build(), ip_criteria);
+        }
+
+        if (params.getAluVpls().getEndpointName() != null) {
+            keywordMap.put(KeywordWithContext.builder()
+                    .context("VPLS endpoint name")
+                    .keyword(params.getAluVpls().getEndpointName())
+                    .build(), alphanum_criteria);
+        }
+
+        for (Lsp lsp : params.getLsps()) {
+
+            keywordMap.put(KeywordWithContext.builder()
+                    .context("LSP path name").keyword(lsp.getPathName())
+                    .build(), alphanum_criteria);
+            keywordMap.put(KeywordWithContext.builder()
+                    .context("LSP name").keyword(lsp.getName())
+                    .build(), alphanum_criteria);
+            keywordMap.put(KeywordWithContext.builder()
+                    .context("LSP to").keyword(lsp.getTo())
+                    .build(), ip_criteria);
+        }
+
+        for (AluSdp sdp : params.getSdps()) {
+            keywordMap.put(KeywordWithContext.builder()
+                    .context("SDP far end ").keyword(sdp.getFarEnd())
+                    .build(), ip_criteria);
+            keywordMap.put(KeywordWithContext.builder()
+                    .context("SDP LSP name").keyword(sdp.getLspName())
+                    .build(), alphanum_criteria);
+        }
+        for (AluQos qos : params.getQoses()) {
+            keywordMap.put(KeywordWithContext.builder()
+                    .context("QoS policy name").keyword(qos.getPolicyName())
+                    .build(), alphanum_criteria);
+        }
+
+        for (MplsPath path : params.getPaths()) {
+            keywordMap.put(KeywordWithContext.builder()
+                    .context("MPLS path name").keyword(path.getName())
+                    .build(), alphanum_criteria);
+
+            for (MplsHop hop : path.getHops()) {
+                keywordMap.put(KeywordWithContext.builder()
+                        .context("MPLS hop address").keyword(hop.getAddress())
+                        .build(), ip_criteria);
+            }
+        }
+
+
+        Map<KeywordWithContext, KeywordValidationResult> results = validator.validate(keywordMap);
+        KeywordValidationResult overall = validator.gatherErrors(results);
+        errorStr.append(overall.getError());
+        if (!overall.getValid()) {
+            hasError = true;
+        }
+
+        if (hasError) {
+            log.error(errorStr.toString());
+            throw new ConfigException(errorStr.toString());
+        }
 
     }
 

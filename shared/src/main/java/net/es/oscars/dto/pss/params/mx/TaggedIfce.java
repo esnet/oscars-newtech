@@ -6,15 +6,13 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MxIfce {
+public class TaggedIfce {
 
     private String port;
 
     private Integer vlan;
 
     private String description;
-
-    private String statsFilter;
 
 
 }

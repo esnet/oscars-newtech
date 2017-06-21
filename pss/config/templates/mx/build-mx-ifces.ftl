@@ -1,4 +1,5 @@
-<#-- @ftlvariable name="ifces" type="java.util.List<net.es.oscars.dto.pss.params.mx.MxIfce>" -->
+<#-- @ftlvariable name="ifces" type="java.util.List<net.es.oscars.dto.pss.params.mx.TaggedIfce>" -->
+<#-- @ftlvariable name="vpls" type="net.es.oscars.dto.pss.params.mx.MxVpls" -->
 
 
 <#list ifces as ifce>
@@ -8,7 +9,7 @@ set description "${ifce.description}"
 set encapsulation vlan-vpls
 set vlan-id ${ifce.vlan}
 set output-vlan-map swap
-set family vpls filter input ${ifce.statsFilter}
-set family vpls filter output ${ifce.statsFilter}
+set family vpls filter input "${vpls.statsFilter}"
+set family vpls filter output "${vpls.statsFilter}"
 top
 </#list>
