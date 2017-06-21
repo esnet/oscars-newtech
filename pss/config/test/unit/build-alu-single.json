@@ -22,7 +22,7 @@
         }
       ],
       "serviceName": "testNewOscars-3101",
-      "description": "es.net-1234, to someplace"
+      "description": "es_net-1234, to someplace"
     },
     "qoses": [
       {
@@ -30,16 +30,16 @@
         "policing": "STRICT",
         "mbps": 100,
         "policyId": 5211,
-        "policyName": "es.net-1234",
-        "description": "es.net-1234"
+        "policyName": "es_net-1234",
+        "description": "es_net-1234"
       },
       {
         "type": "SAP_EGRESS",
         "policing": "STRICT",
         "mbps": 100,
         "policyId": 5511,
-        "policyName": "es.net-1234",
-        "description": "es.net-1234"
+        "policyName": "es_net-1234",
+        "description": "es_net-1234"
       }
     ],
     "applyQos": true

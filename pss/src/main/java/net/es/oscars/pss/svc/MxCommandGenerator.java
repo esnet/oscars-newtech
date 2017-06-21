@@ -19,12 +19,14 @@ import java.util.*;
 public class MxCommandGenerator {
     private Stringifier stringifier;
     private Assembler assembler;
+    private KeywordValidator validator;
 
 
     @Autowired
-    public MxCommandGenerator(Stringifier stringifier, Assembler assembler) {
+    public MxCommandGenerator(Stringifier stringifier, Assembler assembler, KeywordValidator validator) {
         this.stringifier = stringifier;
         this.assembler = assembler;
+        this.validator = validator;
     }
 
     public String dismantle(MxParams params) throws ConfigException {
@@ -126,7 +128,7 @@ public class MxCommandGenerator {
 
     private void verifyParams(MxParams params) throws ConfigException {
         // verify ifces
-        StringBuffer errorStr = new StringBuffer("");
+        StringBuilder errorStr = new StringBuilder("");
         Boolean hasError = false;
         Map<KeywordWithContext, KeywordValidationCriteria> keywordMap = new HashMap<>();
         KeywordValidationCriteria alphanum_criteria = KeywordValidationCriteria.builder()
@@ -152,14 +154,13 @@ public class MxCommandGenerator {
                 keywordMap.put(kwc_hop_addr, ip_criteria);
             }
         }
-
-        for (MxIfce ifce : params.getIfces()) {
-            if (ifce.getVlan() < 2 || ifce.getVlan() > 4094) {
-                String err = ifce.getPort() + " : vlan " + ifce.getVlan() + " out of range (2-4094)\n";
-                errorStr.append(err);
-                hasError = true;
-            }
+        KeywordValidationResult kwr = validator.verifyIfces(params.getIfces());
+        if (!kwr.getValid()) {
+            hasError = true;
+            errorStr.append(kwr.getError());
         }
+
+
         Set<String> qosFilters = new HashSet<>();
         for (MxQos qos : params.getQos()) {
             qosFilters.add(qos.getFilterName());
@@ -211,7 +212,6 @@ public class MxCommandGenerator {
                 String err = " path name " + pathName+ " not used by LSP\n";
                 errorStr.append(err);
                 hasError = true;
-
             }
         }
 
@@ -259,13 +259,11 @@ public class MxCommandGenerator {
         keywordMap.put(kwc_vpls_stats_filter, alphanum_criteria);
         keywordMap.put(kwc_vpls_svc_name, alphanum_criteria);
 
-        Map<KeywordWithContext, KeywordValidationResult> results = KeywordValidator.validate(keywordMap);
-        for (KeywordWithContext keyword : results.keySet()) {
-            KeywordValidationResult res = results.get(keyword);
-            if (!res.getValid()) {
-                errorStr.append(res.getError()+"\n");
-                hasError = true;
-            }
+        Map<KeywordWithContext, KeywordValidationResult> results = validator.validate(keywordMap);
+        KeywordValidationResult overall = validator.gatherErrors(results);
+        errorStr.append(overall.getError());
+        if (!overall.getValid()) {
+            hasError = true;
         }
 
 

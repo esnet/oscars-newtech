@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MxIfce {
+public class TaggedIfce {
 
     private String port;
 

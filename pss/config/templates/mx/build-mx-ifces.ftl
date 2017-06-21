@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="ifces" type="java.util.List<net.es.oscars.dto.pss.params.mx.MxIfce>" -->
+<#-- @ftlvariable name="ifces" type="java.util.List<net.es.oscars.dto.pss.params.mx.TaggedIfce>" -->
 <#-- @ftlvariable name="vpls" type="net.es.oscars.dto.pss.params.mx.MxVpls" -->
 
 
