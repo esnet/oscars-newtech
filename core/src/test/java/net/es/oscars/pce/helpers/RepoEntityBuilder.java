@@ -1,6 +1,7 @@
 package net.es.oscars.pce.helpers;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.AbstractCoreTest;
 import net.es.oscars.dto.topo.TopoEdge;
 import net.es.oscars.dto.topo.TopoVertex;
 import net.es.oscars.dto.topo.enums.VertexType;
@@ -20,7 +21,7 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class RepoEntityBuilder {
+public class RepoEntityBuilder extends AbstractCoreTest {
 
     @Autowired
     private UrnRepository urnRepo;
