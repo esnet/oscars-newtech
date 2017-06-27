@@ -2,6 +2,7 @@ package net.es.oscars;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.authnz.pop.AuthnzPopulator;
+import net.es.oscars.helpers.StartupProperties;
 import net.es.oscars.pss.pop.UrnAddressImporter;
 import net.es.oscars.tasks.ResvProcessor;
 import net.es.oscars.topo.pop.ConsistencyException;
@@ -26,6 +27,7 @@ public class Startup {
     private ResvProcessor processor;
     private AuthnzPopulator authnzPopulator;
     private ConsistencyChecker consistencyChecker;
+    private StartupProperties startupProperties;
 
     @Bean
     public Executor taskExecutor() {
@@ -35,7 +37,7 @@ public class Startup {
     @Autowired
     public Startup(TopoFileImporter importer, UIPopulator populator, UrnAddressImporter urnAddressImporter,
                    ResvProcessor processor, AuthnzPopulator authnzPopulator,
-                   ConsistencyChecker consistencyChecker ) {
+                   ConsistencyChecker consistencyChecker, StartupProperties startupProperties) {
 
         this.processor = processor;
         this.authnzPopulator = authnzPopulator;
@@ -43,9 +45,16 @@ public class Startup {
         this.uiPopulator = populator;
         this.urnAddressImporter = urnAddressImporter;
         this.consistencyChecker = consistencyChecker;
+        this.startupProperties = startupProperties;
     }
 
     void onStart() throws IOException, ConsistencyException {
+        if (startupProperties.getExit()) {
+            System.out.println("Exiting..");
+            System.exit(0);
+        }
+        System.out.println(startupProperties.getBanner());
+
         importer.startup();
         uiPopulator.startup();
         urnAddressImporter.startup();
