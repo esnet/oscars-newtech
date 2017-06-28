@@ -8,6 +8,7 @@ const vis = require('../../../node_modules/vis/dist/vis');
 const ReservationList = require("./reservationList");
 import Dropdown from 'react-dropdown';
 const DateTime = require('react-datetime');
+const $ = require('jquery');
 
 let timeoutId = -1;
 let resStatusFilter = "Reservation Status";

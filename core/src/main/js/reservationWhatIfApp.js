@@ -6,6 +6,7 @@ const networkVis = require('./networkVis');
 const deepEqual = require('deep-equal');
 const vis = require('../../../node_modules/vis/dist/vis');
 const validator = require('./validator');
+const $ = require('jquery');
 
 
 class ReservationWhatIfApp extends React.Component{

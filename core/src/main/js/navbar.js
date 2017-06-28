@@ -2,7 +2,7 @@ const React = require('react');
 const Link = require('react-router').Link;
 
 // tag::navbar[]
-class NavBar extends React.Component{
+class NavBar extends React.Component {
     render() {
         return (
             <nav className="navbar navbar-default">
@@ -20,9 +20,9 @@ class NavBar extends React.Component{
 
                     <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul className="nav navbar-nav">
-                            <li><Link to="/react/resv/list">Reservation List</Link></li>
-                            <li><Link to="/react/resv/gui">New Reservation</Link></li>
-                            <li><Link to="/react/resv/whatif">What-If?</Link></li>
+                            <li><Link to="/react/list">Reservation List</Link></li>
+                            <li><Link to="/react/new">New Reservation</Link></li>
+                            <li><Link to="/react/whatif">What-If?</Link></li>
                             {this.props.isAuthenticated ?
                                 <AuthenticatedNavBarElement /> :
                                 <div></div>
@@ -52,9 +52,9 @@ class NavBar extends React.Component{
 // <li><a href="/resv/gui">New Reservation</a></li>
 // <li><a href="/resv/timebw">What-If?</a></li>
 
-class AuthenticatedNavBarElement extends React.Component{
+class AuthenticatedNavBarElement extends React.Component {
 
-    render(){
+    render() {
         return (
             <li className="dropdown">
                 <a href="#" className="dropdown-toggle" data-toggle="dropdown"
@@ -70,9 +70,9 @@ class AuthenticatedNavBarElement extends React.Component{
     }
 }
 
-class AdminNavBarElement extends React.Component{
+class AdminNavBarElement extends React.Component {
 
-    render(){
+    render() {
         return (
             <li className="dropdown">
                 <a href="#" className="dropdown-toggle" data-toggle="dropdown"
