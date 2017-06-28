@@ -37,6 +37,8 @@ public class TopologyController {
 
     private ModelMapper modelMapper = new ModelMapper();
 
+
+
     @RequestMapping(value = "/topology/reservedbw", method = RequestMethod.GET)
     @ResponseBody
     public List<ReservedBandwidth> getAllReservedBw() {

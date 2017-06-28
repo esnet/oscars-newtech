@@ -1,5 +1,6 @@
 'use strict';
 const moment = require('moment');
+let $ = require('jquery');
 /*
  opts = {
     method: String,

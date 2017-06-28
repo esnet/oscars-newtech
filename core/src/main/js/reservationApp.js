@@ -7,6 +7,9 @@ const DateTime = require('react-datetime');
 const validator = require('./validator');
 const deepEqual = require('deep-equal');
 import Dropdown from 'react-dropdown';
+const $ = require('jquery');
+import Datetime from 'react-datetime';
+
 
 class ReservationApp extends React.Component {
 
@@ -957,15 +960,15 @@ class ParameterForm extends React.Component {
                             </div>
                         </div>
 
-                        <CalendarForm
+                        <Datetime
                             name="Start"
-                            date={this.props.reservation.startAt}
-                            handleDateChange={this.props.handleStartDateChange}
+                            value={this.props.reservation.startAt}
+                            onChange={this.props.handleStartDateChange}
                         />
-                        <CalendarForm
+                        <Datetime
                             name="End"
-                            date={this.props.reservation.endAt}
-                            handleDateChange={this.props.handleEndDateChange}
+                            value={this.props.reservation.endAt}
+                            onChange={this.props.handleEndDateChange}
                         />
 
                         <div id="errors_box" className={this.props.messageBoxClass}>{this.props.message}</div>
@@ -991,22 +994,6 @@ class ParameterForm extends React.Component {
     }
 }
 
-class CalendarForm extends React.Component {
-
-    render() {
-        let divId = this.props.name + "_at_dtp";
-        return (
-            <div className="form-group">
-                <label className="col-md-2 control-label">{this.props.name} at</label>
-                <div className="col-md-4 input-group" id={divId}>
-                    <DateTime value={this.props.date}
-                              onChange={this.props.handleDateChange}
-                              inputProps={{readOnly: true, style: {backgroundColor: "white"}}}/>
-                </div>
-            </div>
-        );
-    }
-}
 
 class ParameterFormButton extends React.Component {
 

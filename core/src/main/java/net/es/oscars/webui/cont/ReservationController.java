@@ -67,29 +67,11 @@ public class ReservationController {
     private ModelMapper modelMapper = new ModelMapper();
 
 
-    @RequestMapping("/resv/view/{connectionId}")
-    public String resv_view(@PathVariable String connectionId, Model model) {
-
-        Connection conn = convertConnToDto(resvService.findByConnectionId(connectionId).orElseThrow(NoSuchElementException::new));
-
-        model.addAttribute("connectionId", conn.getConnectionId());
-
-        model.addAttribute("connection", conn);
-        return "resv_view";
-    }
-
-
 
     @RequestMapping(value = "/resv/get/{connectionId}", method = RequestMethod.GET)
     @ResponseBody
     public Connection resv_get_details(@PathVariable String connectionId) {
         return convertConnToDto(resvService.findByConnectionId(connectionId).orElseThrow(NoSuchElementException::new));
-    }
-
-
-    @RequestMapping("/resv/list")
-    public String resv_list(Model model) {
-        return "resv_list";
     }
 
 
@@ -107,18 +89,6 @@ public class ReservationController {
         return this.filtered(f);
     }
 
-
-    @RequestMapping(value = "/resv/commit/{connectionId}", method = RequestMethod.GET)
-    public String connection_commit(@PathVariable String connectionId, Model model) {
-
-        try {
-            Thread.sleep(500L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return "redirect:/resv/view/" + this.commitConnection(connectionId);
-    }
 
     @RequestMapping(value = "/resv/commit", method = RequestMethod.POST)
     @ResponseBody
@@ -174,10 +144,6 @@ public class ReservationController {
     }
 
 
-    @RequestMapping("/resv/gui")
-    public String resv_gui(Model model) {
-        return "resv_gui";
-    }
 
 
     @RequestMapping(value = "/resv/commands/{connectionId}/{deviceUrn}", method = RequestMethod.GET)
@@ -296,10 +262,6 @@ public class ReservationController {
     }
 
 
-    @RequestMapping("/resv/timebw")
-    public String resv_timebar(Model model) {
-        return "timeBw";
-    }
 
 
     private ConnectionFilter makeConnectionFilter(Filter filter) {

@@ -4,7 +4,6 @@ module.exports = {
     entry: './src/main/js/app.js',
     devtool: 'sourcemaps',
     cache: true,
-    debug: true,
     output: {
         path:  path.join(__dirname, 'src', 'main', 'resources', 'static', 'built'),
         filename: 'bundle.js'
@@ -14,7 +13,7 @@ module.exports = {
             {
                 test: /\.js|\.jsx/,
                 exclude: /(node_modules)/,
-                loader: 'babel',
+                loader: 'babel-loader',
                 query: {
                     cacheDirectory: true,
                     presets: ['es2015', 'react']
@@ -50,5 +49,4 @@ module.exports = {
             poll: 1000
         }
     }
-
 };

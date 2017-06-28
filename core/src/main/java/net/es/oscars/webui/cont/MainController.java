@@ -27,35 +27,14 @@ public class MainController {
         this.topoService = topoService;
     }
 
-    @RequestMapping("/")
+    @RequestMapping({"/", "/react/*"})
     public String home(Model model) {
-        return "redirect:/react";
+        return "react";
     }
 
     @RequestMapping("/login")
     public String loginPage(Model model) {
         return "login";
-    }
-
-
-    @RequestMapping("/react/resv/list")
-    public String reactListPage(Model model) {
-        return "react";
-    }
-
-    @RequestMapping("/react/resv/gui")
-    public String reactResvPage(Model model) {
-        return "react";
-    }
-
-    @RequestMapping("/react/resv/whatif")
-    public String reactWhatifPage(Model model) {
-        return "react";
-    }
-
-    @RequestMapping("/react")
-    public String reactPage(Model model) {
-        return "redirect:/react/resv/list";
     }
 
 
