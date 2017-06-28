@@ -1,23 +1,11 @@
+language: java
+jdk:
+- oraclejdk8
+install:
+- mvn -q -B clean install
+cache:
+  directories:
+  - $HOME/.m2
 notifications:
   slack:
     secure: HHA1VsBjtWiNXoRD9sJqCPFInaFHuO/clVeZoIFJmZoG2j4odDwltWorGeERpEXl/7n2ZoKwgw8rKAxR+Ak2SMFjSIda04l86F2zKDzrUEwMmHYR1FEDM6e+pzlv+dYcPNupOUAVNyv01DVp1HNph8PX32ocFQTawSZ7hzfI+cyVs3nbTYD4f2La6fCAFB1cTD/yPLgXhQHJowUTB+xxVNtNtUDFeaQVZjyjrD6mTc5IyWo0cIdOMSrj5QMppgzxycTX2qd7s2HwaWA0RaXmTayCAntHptZ/sOXRUCZk8jNTLUldpwKsbK0wi+wHP2X31zTiqED+Bwm4G53GoKlAm/B5FLSDvTAzXs2hV7Bz8cs5fCBcLu83G7EvA8cozvYT6YU2VzFUJimUtYKMV3fi3iImkETTFosS0JcGLddlzgHITqzsuRDJnxgUmffbJskDwUNvL98j/mUk+pXvMUkf/I3qO5P2ndYBwC7pu8vXjVm7aFOm515PLitUKKH/2VYW2+5mtYBJeaRL+QfuFXS6VurdVKvSAJfu25xCv0gPRC7mbRNDSJp5i6g84B+vrTcPYvLXQHNBWMbQoLpCaYPrqUgzEVYRwJU5XflHUAiBFkkXyvr0s1UQwjodjxaYdqQqg756Vx3t+QZ1UGDFEU6v/TWSYuXZZHJ50GZ3tDifCo4=
-
-matrix:
-  include:
-    - language: java
-      jdk:
-      - oraclejdk8
-      install:
-      - mvn -q -B clean install
-      cache:
-        directories:
-        - $HOME/.m2
-      before_script:
-        - echo "MAVEN_OPTS='-Xmx2g'" > ~/.mavenrc
-  - language: node_js
-    node_js:
-      - "6"
-    install:
-      - npm install
-    script:
-      - npm run test
