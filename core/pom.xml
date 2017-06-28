@@ -42,6 +42,15 @@
             <version>${project.version}</version>
             <groupId>${project.groupId}</groupId>
         </dependency>
+        <!--
+        TODO: uncomment this to pull in oscars-frontend
+
+        <dependency>
+            <groupId>net.es.oscars</groupId>
+            <artifactId>frontend</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        -->
 
         <dependency>
             <groupId>net.jodah</groupId>
