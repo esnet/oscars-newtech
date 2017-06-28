@@ -28,6 +28,7 @@
         <module>core</module>
         <module>shared</module>
         <module>pss</module>
+        <module>frontend</module>
     </modules>
     <profiles>
         <profile>
