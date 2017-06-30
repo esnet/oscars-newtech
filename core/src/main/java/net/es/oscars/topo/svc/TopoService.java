@@ -89,7 +89,11 @@ public class TopoService {
                     }
 
                     if (urnCapabilities.contains(layer) || layer.equals(Layer.INTERNAL)) {
-                        TopoVertex dev = new TopoVertex(u.getUrn(), vertType, portLayer);
+                        TopoVertex dev = TopoVertex.builder()
+                                .portLayer(portLayer)
+                                .vertexType(vertType)
+                                .urn(u.getUrn())
+                                .build();
                         topo.getVertices().add(dev);
                     }
                 });
@@ -310,6 +314,25 @@ public class TopoService {
         }
 
         return false;
+    }
+
+    public DevicePortMap deviceEdgePorts() {
+        DevicePortMap dpm = this.buildDeviceToPortMap();
+        DevicePortMap result = DevicePortMap.builder()
+                .map(new HashMap<>())
+                .build();
+        dpm.getMap().entrySet().forEach((e) -> {
+            String device = e.getKey();
+            result.getMap().put(device, new HashSet<>());
+            Set<String> ports = e.getValue();
+            for (String port : ports) {
+                PortLayer layer = lookupPortLayer(port);
+                if (layer.equals(PortLayer.ETHERNET)) {
+                    result.getMap().get(device).add(port);
+                }
+            }
+        });
+        return result;
     }
 
     public Set<String> identifyEdgePortURNs() {

@@ -128,8 +128,14 @@ public class TopologyController {
     @RequestMapping(value = "/topology/deviceportmap/full", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Set<String>> get_device2port_map() {
+        return topoService.buildDeviceToPortMap().getMap();
+    }
 
-        return topologyProvider.devicePortMap();
+    @RequestMapping(value = "/topology/portsForFixtures", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Set<String>> portsForFixtures() {
+        return topoService.deviceEdgePorts().getMap();
+
     }
 
 
