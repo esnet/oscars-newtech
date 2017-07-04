@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static net.es.oscars.helpers.IntRangeParsing.intRangesFromIntegers;
+
 @Slf4j
 @Service
 @Component
@@ -167,33 +169,9 @@ public class VlanService {
     public String stringifyVlanMap(Map<String, Set<Integer>> input) {
         Map<String, String> output = new HashMap<>();
         input.keySet().forEach(urn -> {
-            List<Integer> availVlans = new ArrayList<>();
-            availVlans.addAll(input.get(urn));
-            Collections.sort(availVlans);
-            Set<IntRange> ranges = new HashSet<>();
-
-            IntRange range = IntRange.builder().floor(0).ceiling(0).build();
-            for (Integer idx = 0; idx < availVlans.size(); idx++) {
-                Integer vlan = availVlans.get(idx);
-                if (range.getCeiling() == 0) {
-                    range.setFloor(vlan);
-                    range.setCeiling(vlan);
-                }
-                if (idx == availVlans.size() - 1) {
-                    range.setCeiling(vlan);
-                    ranges.add(range);
-                } else {
-                    if (range.getCeiling() + 1 == vlan) {
-                        range.setCeiling(vlan);
-                    } else {
-                        ranges.add(range);
-                        range = IntRange.builder().floor(vlan).ceiling(vlan).build();
-                    }
-                }
-            }
+            List<IntRange> ranges = intRangesFromIntegers(input.get(urn));
 
             String row = ranges.toString();
-
 
             output.put(urn, row);
         });

@@ -2,6 +2,7 @@ package net.es.oscars.helpers;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.IntRange;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -30,6 +31,37 @@ public class IntRangeParsing {
                 Pattern.COMMENTS);
         Matcher m = re_valid.matcher(text);
         return m.matches();
+    }
+
+    public static List<IntRange> intRangesFromIntegers(Set<Integer> ints) {
+        List<IntRange> ranges = new ArrayList<>();
+        List<Integer> sortedInts = new ArrayList<>();
+        sortedInts.addAll(ints);
+        Collections.sort(sortedInts);
+
+
+        IntRange range = IntRange.builder().floor(-1).ceiling(-1).build();
+
+        for (Integer idx = 0; idx < sortedInts.size(); idx++) {
+            Integer vlan = sortedInts.get(idx);
+
+            if (range.getCeiling() == -1) {
+                range.setFloor(vlan);
+                range.setCeiling(vlan);
+            } else {
+                if (range.getCeiling() + 1 == vlan) {
+                    range.setCeiling(vlan);
+                } else {
+                    ranges.add(range);
+                    range = IntRange.builder().floor(vlan).ceiling(vlan).build();
+                }
+                if (idx == sortedInts.size() - 1) {
+                    range.setCeiling(vlan);
+                    ranges.add(range);
+                }
+            }
+        }
+        return ranges;
     }
 
     public static List<IntRange> retrieveIntRanges(String text) throws NumberFormatException {
@@ -66,6 +98,21 @@ public class IntRangeParsing {
 
     }
 
+    public static String asString(List<IntRange> ranges) {
+        ranges = mergeIntRanges(ranges);
+        ranges.sort(Comparator.comparing(IntRange::getFloor));
+        List<String> parts = new ArrayList<>();
+        ranges.forEach(r -> {
+            if (r.getCeiling().equals(r.getFloor())) {
+                parts.add(r.getCeiling() + "");
+            } else {
+                parts.add(r.getFloor() + "-" + r.getCeiling());
+
+            }
+        });
+        return StringUtils.join(parts, ',');
+    }
+
     public static List<IntRange> mergeIntRanges(List<IntRange> input) {
 
         // don't mutate the list; copy it first
@@ -76,22 +123,22 @@ public class IntRangeParsing {
         });
 
 
-        if (ranges == null || ranges.size() <= 1) {
+        if (ranges.size() <= 1) {
             return ranges;
         }
 
-        ranges.sort((a, b) -> a.getFloor().compareTo(b.getFloor()));
+        ranges.sort(Comparator.comparing(IntRange::getFloor));
 
         List<IntRange> result = new ArrayList<>();
 
         IntRange prev = ranges.get(0);
         for (int i = 1; i < ranges.size(); i++) {
             IntRange curr = ranges.get(i);
-            log.info("checking "+prev.toString() + " and "+curr.toString());
+            log.info("checking " + prev.toString() + " and " + curr.toString());
 
             // ceiling +1 can merge with floor; these are integers
-            if (prev.getCeiling() +1  >= curr.getFloor()) {
-                log.info("merging "+prev.toString() + " and "+curr.toString());
+            if (prev.getCeiling() + 1 >= curr.getFloor()) {
+                log.info("merging " + prev.toString() + " and " + curr.toString());
 
                 Integer newCeiling = Math.max(prev.getCeiling(), curr.getCeiling());
                 // merged case

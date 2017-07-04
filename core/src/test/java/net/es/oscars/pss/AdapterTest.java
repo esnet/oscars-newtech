@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.AbstractCoreTest;
 import net.es.oscars.QuickTests;
 
+import net.es.oscars.SlowTests;
 import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.dto.pss.cmd.CommandResponse;
 import net.es.oscars.dto.pss.cmd.CommandStatus;
@@ -43,7 +44,7 @@ public class AdapterTest extends AbstractCoreTest {
     private PSSParamsAdapter paramsAdapter;
 
     @Test
-    @Category(QuickTests.class)
+    @Category(SlowTests.class)
     public void testParallelSubmit() throws InterruptedException, ExecutionException {
         MockPssServer pssProxy = new MockPssServer();
 
