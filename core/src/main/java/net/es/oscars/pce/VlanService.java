@@ -118,13 +118,9 @@ public class VlanService {
 
         // Get map of all reserved VLAN IDs per URN
         Map<String, Set<Integer>> reservedVlanIdMap = buildReservedVlanIdMap(urnMap, reservedVlans);
-        String stringifyVlanMap = stringifyVlanMap(reservedVlanIdMap);
-        //log.info("Reserved VLAN ID Map: " + stringifyVlanMap);
 
         // Get map of all reservable VLAN IDs per URN
         Map<String, Set<Integer>> reservableVlanIdMap = buildReservableVlanIdMap(urnMap);
-        stringifyVlanMap = stringifyVlanMap(reservableVlanIdMap);
-        //log.info("Reservable VLAN ID Map: " + stringifyVlanMap);
 
         if (urnMap == null) {
             log.error("null URN map!");
@@ -160,25 +156,11 @@ public class VlanService {
                     }
                 });
 
-        stringifyVlanMap = stringifyVlanMap(availableVlanIdMap);
         //log.info("Available VLAN ID Map: " + stringifyVlanMap);
 
         return availableVlanIdMap;
     }
 
-    public String stringifyVlanMap(Map<String, Set<Integer>> input) {
-        Map<String, String> output = new HashMap<>();
-        input.keySet().forEach(urn -> {
-            List<IntRange> ranges = intRangesFromIntegers(input.get(urn));
-
-            String row = ranges.toString();
-
-            output.put(urn, row);
-        });
-
-        return output.toString();
-
-    }
 
 
     private Map<String, Set<Integer>> buildReservableVlanIdMap(Map<String, UrnE> urnMap) {
@@ -202,7 +184,9 @@ public class VlanService {
         for (ReservedVlanE rsvVlan : reservedVlans) {
             Integer vlanId = rsvVlan.getVlan();
             String urn = rsvVlan.getUrn();
-            reservedVlanIdMap.get(urn).add(vlanId);
+            if (reservedVlanIdMap.keySet().contains(urn)) {
+                reservedVlanIdMap.get(urn).add(vlanId);
+            }
         }
         return reservedVlanIdMap;
     }

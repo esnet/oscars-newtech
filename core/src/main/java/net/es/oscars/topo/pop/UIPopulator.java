@@ -23,6 +23,7 @@ public class UIPopulator {
     }
 
     private DevicePositions positions;
+    private Boolean started = false;
 
     public void startup() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -32,6 +33,7 @@ public class UIPopulator {
 
         positions = mapper.readValue(jsonFile, DevicePositions.class);
         log.info("positions imported for devices: " + positions.getPositions().size());
+        started = true;
 
     }
 

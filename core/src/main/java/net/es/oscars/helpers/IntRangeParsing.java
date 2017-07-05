@@ -106,7 +106,7 @@ public class IntRangeParsing {
             if (r.getCeiling().equals(r.getFloor())) {
                 parts.add(r.getCeiling() + "");
             } else {
-                parts.add(r.getFloor() + "-" + r.getCeiling());
+                parts.add(r.getFloor() + ":" + r.getCeiling());
 
             }
         });
