@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.IntRange;
 import net.es.oscars.dto.topo.enums.UrnType;
-import net.es.oscars.dto.vlanavail.PortVlanAvailability;
-import net.es.oscars.dto.vlanavail.VlanAvailabilityRequest;
-import net.es.oscars.dto.vlanavail.VlanAvailabilityResponse;
+import net.es.oscars.dto.vlanavail.*;
 import net.es.oscars.helpers.IntRangeParsing;
 import net.es.oscars.pce.VlanService;
 import net.es.oscars.pce.exc.PCEException;
@@ -95,6 +93,29 @@ public class VlanController {
         });
 
         return response;
+    }
+
+
+    @RequestMapping(value = "/vlan/pick", method = RequestMethod.POST)
+    @ResponseBody
+    public VlanPickResponse pickVlan(@RequestBody VlanPickRequest request) {
+        log.info(request.toString());
+
+        Random r = new Random();
+        int vlanId = 2000 + r.nextInt(500);
+
+        VlanPickResponse response = VlanPickResponse.builder()
+                .heldUntil(new Date())
+                .vlanId(vlanId)
+                .build();
+        return response;
+    }
+
+    @RequestMapping(value = "/vlan/release", method = RequestMethod.POST)
+    @ResponseBody
+    public void releaseVlan(@RequestBody VlanReleaseRequest request) {
+        log.info(request.toString());
+
     }
 
 }
