@@ -70,10 +70,23 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>oscars-frontend-mvn-repo</id>
+            <url>https://raw.github.com/esnet/oscars-frontend/mvn-repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
     </repositories>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>net.es.oscars</groupId>
+                <artifactId>frontend</artifactId>
+                <version>1.0.0</version>
+            </dependency>
             <dependency>
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-swagger-ui</artifactId>
