@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class MinimalFixture {
+    private String port;
     private String vlan;
     private String azbw;
     private String zabw;

@@ -408,9 +408,13 @@ public class VlanService {
         // Use the ports' available vlans
         else {
             Map<String, Set<Integer>> vlanIdPerPort = new HashMap<>();
-            Map<String, Set<Integer>> availableVlanMap = reqFixtures.stream()
-                    .map(RequestedVlanFixtureE::getPortUrn)
-                    .collect(Collectors.toMap(urn -> urn, urn -> getAvailableVlanIds(urn, rsvVlanMap, deviceToPortMap, urnMap)));
+
+            Map<String, Set<Integer>> availableVlanMap = new HashMap<>();
+            for (RequestedVlanFixtureE reqFixture : reqFixtures) {
+                Set<Integer> availableVlans = getAvailableVlanIds(reqFixture.getPortUrn(), rsvVlanMap, deviceToPortMap, urnMap);
+                availableVlanMap.put(reqFixture.getPortUrn(), availableVlans);
+            }
+
             reqVlanMap = buildRequestedVlanIdMap(reqFixtures, availableVlanMap);
             // Get all of the requested VLANs per URN that are available
             for (String urn : reqVlanMap.keySet()) {

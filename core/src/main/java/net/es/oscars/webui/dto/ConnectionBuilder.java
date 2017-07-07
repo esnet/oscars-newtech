@@ -152,11 +152,12 @@ public class ConnectionBuilder
                     .fixtures(new HashSet<>())
                     .junctionType(EthJunctionType.REQUESTED)
                     .build();
-            for (String port : junctions.get(nodeId).getFixtures().keySet()) {
-                MinimalFixture fix = junctions.get(nodeId).getFixtures().get(port);
+            for (String fixtureId : junctions.get(nodeId).getFixtures().keySet()) {
+                MinimalFixture fix = junctions.get(nodeId).getFixtures().get(fixtureId);
                 Integer azBw = Integer.parseInt(fix.getAzbw());
                 Integer zaBw = Integer.parseInt(fix.getZabw());
                 String vlan = fix.getVlan();
+                String port = fix.getPort();
 
                 RequestedVlanFixture rvfix = RequestedVlanFixture.builder()
                         .fixtureType(EthFixtureType.REQUESTED)
