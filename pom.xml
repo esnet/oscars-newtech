@@ -28,6 +28,7 @@
         <module>core</module>
         <module>shared</module>
         <module>pss</module>
+        <module>backend</module>
     </modules>
     <profiles>
         <profile>
@@ -107,6 +108,11 @@
                 <groupId>com.jayway.restassured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>2.9.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>0.7.0</version>
             </dependency>
 
             <dependency>
