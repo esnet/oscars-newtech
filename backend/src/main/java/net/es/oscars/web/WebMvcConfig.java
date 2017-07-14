@@ -13,17 +13,11 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         super.addResourceHandlers(registry);
-
+        // set caching
         if (!registry.hasMappingForPattern("/webjars/**")) {
             registry.addResourceHandler("/webjars/**")
                     .addResourceLocations("classpath:/META-INF/resources/webjars/")
                     .setCachePeriod(60);
-        }
-        if (!registry.hasMappingForPattern("/frontend/**")) {
-            registry.addResourceHandler("/frontend/**")
-                    .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS)
-                    .setCachePeriod(3600);
-
         }
 
     }

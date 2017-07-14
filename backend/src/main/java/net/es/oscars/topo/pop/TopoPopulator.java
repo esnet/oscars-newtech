@@ -73,6 +73,10 @@ public class TopoPopulator implements StartupComponent {
         List<Device> fileDevices = importDevicesFromFile(devicesFilename);
         log.info("Devices defined in file " + devicesFilename + " : " + fileDevices.size());
 
+
+//        ObjectMapper mapper = new ObjectMapper();
+//        log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(fileDevices));
+
         if (deviceRepo.count() == 0) {
             log.info("Device db empty. Will replace with input from file " + devicesFilename);
 
@@ -112,7 +116,13 @@ public class TopoPopulator implements StartupComponent {
     private List<Device> importDevicesFromFile(String filename) throws IOException {
         File jsonFile = new File(filename);
         ObjectMapper mapper = new ObjectMapper();
-        return Arrays.asList(mapper.readValue(jsonFile, Device[].class));
+        List<Device> devices = Arrays.asList(mapper.readValue(jsonFile, Device[].class));
+        for (Device d : devices) {
+            for (Port p : d.getPorts()) {
+                p.setDevice(d);
+            }
+        }
+        return devices;
     }
 
     private List<PortAdjcy> importPortAdjciesFromFile(String filename) throws IOException {

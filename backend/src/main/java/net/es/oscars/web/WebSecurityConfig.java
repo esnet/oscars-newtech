@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -52,46 +53,38 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    public void configure(WebSecurity web) throws Exception {
+
+        // don't apply the JWT filter or any kind of security for swagger
+        // or statics
+        web.ignoring().antMatchers(
+                HttpMethod.GET,
+                "/",
+                "/webjars/**",
+                "/*.html",
+                "/favicon.ico",
+                "/**/*.html",
+                "/**/*.css",
+                "/**/*.js",
+                "/swagger-ui.html/**",
+                "/swagger-resources/**",
+                "/null/swagger-resources/**",
+                "/v2/api-docs",
+                "/configuration/ui",
+                "/configuration/security");
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 // no need for CSRF or sessions
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
-//                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-
-
                 .authorizeRequests()
-                // permit all:
-                // allow root, favicon, and login
-                .antMatchers(
-                        HttpMethod.GET,
-                        "/",
-                        "/*.html",
-                        "/favicon.ico",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js").permitAll()
-
-                // swagger
-                .antMatchers(
-                        "/swagger-ui.html",
-                        "/webjars/**",
-                        "/swagger-resources/configuration/ui",
-                        "/swagge‌​r-ui.html",
-                        "/v2/api-docs",
-                        "/configuration/ui",
-                        "/swagger-resources",
-                        "/null/swagger-resources",
-                        "/configuration/security",
-                        "/swagger-ui.html").permitAll()
-
-
-                // webjars all allowed
-                .antMatchers("/webjars/**").permitAll()
-
-                // anything under /api is our public API
+                // allow everyone to public API
                 .antMatchers("/api/**").permitAll()
+
                 .anyRequest().authenticated()
                 // only allow authenticated users to get /protected pages or API endpoints
                 .antMatchers("/protected/**").authenticated()
@@ -99,6 +92,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // only allow admins to anything under /admin
                 .antMatchers("/admin/**").hasAuthority("ADMIN")
                 .and()
+
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
 

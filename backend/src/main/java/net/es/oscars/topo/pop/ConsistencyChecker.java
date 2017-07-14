@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.es.oscars.app.StartupComponent;
 import net.es.oscars.app.StartupException;
+import net.es.oscars.topo.beans.TopoException;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;
 import net.es.oscars.topo.svc.TopoService;
@@ -39,10 +40,10 @@ public class ConsistencyChecker implements StartupComponent {
 
     public void startup() throws StartupException {
         try {
-            ts.updateTopo(deviceRepo.findAll(), adjcyRepo.findAll());
-
             this.checkConsistency();
-        } catch (ConsistencyException ex) {
+
+            ts.updateTopo(deviceRepo.findAll(), adjcyRepo.findAll());
+        } catch (ConsistencyException|TopoException ex) {
             log.error(ex.getMessage());
             throw new StartupException(ex.getMessage());
         }

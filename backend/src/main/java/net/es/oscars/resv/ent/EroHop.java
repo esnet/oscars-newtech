@@ -1,7 +1,8 @@
-package net.es.oscars.resv.beans;
+package net.es.oscars.resv.ent;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import net.es.oscars.resv.enums.EroHopType;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,9 +17,9 @@ public class EroHop
 {
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
 
-    @NonNull
     private EroHopType type;
 
     @NonNull

@@ -48,7 +48,6 @@ public class AccountController {
     @RequestMapping(value = "/api/account/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest)
             throws AuthenticationException {
-        log.info(authenticationRequest.toString());
 
         // Perform the security
         final Authentication authentication = authenticationManager.authenticate(

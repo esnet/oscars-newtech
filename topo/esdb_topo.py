@@ -192,8 +192,18 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None):
                                 "ceiling": 2999
                             }
                         ]
+                    found_port = False
+                    for out_port in device["ports"]:
+                        if out_port["urn"] == ifce_data["urn"]:
+                            found_port = True
 
-                    device["ports"].append(ifce_data)
+                            out_port["capabilities"] = ifce_data["capabilities"]
+                            out_port["reservableIngressBw"] = ifce_data["reservableIngressBw"]
+                            out_port["reservableEgressBw"] = ifce_data["reservableEgressBw"]
+                            if "reservableVlans" in ifce_data.keys():
+                                out_port["reservableVlans"] = ifce_data["reservableVlans"]
+                    if not found_port:
+                        device["ports"].append(ifce_data)
 
 
 def merge_isis_ports(oscars_devices=None, igp_portmap=None):

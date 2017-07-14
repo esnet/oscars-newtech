@@ -17,11 +17,9 @@ public class TopoUrn {
     @NonNull
     private String urn;
 
-    @NonNull
     private UrnType urnType;
 
     // if this is a port, this will be set to the parent device entity
-    @NonNull
     private Device device;
 
     // may be null

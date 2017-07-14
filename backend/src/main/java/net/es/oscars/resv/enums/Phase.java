@@ -1,8 +1,8 @@
-package net.es.oscars.resv.beans;
+package net.es.oscars.resv.enums;
 
 public enum Phase {
     RESERVED,
     ARCHIVED,
     HELD,
-    REQUESTED
+    DESIGN
 }

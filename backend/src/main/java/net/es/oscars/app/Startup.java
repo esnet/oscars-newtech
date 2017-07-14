@@ -57,6 +57,7 @@ public class Startup {
             System.out.println("Exiting..");
             System.exit(1);
         }
+        log.info("OSCARS startup successful.");
 
     }
 

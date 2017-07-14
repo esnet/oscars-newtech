@@ -1,5 +1,8 @@
 package net.es.oscars.topo.ent;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.enums.DeviceModel;
@@ -13,8 +16,10 @@ import java.util.Set;
 @Data
 @Entity
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor(suppressConstructorProperties=true)
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+                  property = "urn")
 public class Device {
 
     @Id
