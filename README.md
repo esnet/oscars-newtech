@@ -12,7 +12,6 @@ Make sure the following are installed on your system:
 * [Java](https://www.java.com) 1.8
 * [Maven](http://maven.apache.org) 3.1+
 
-
 ### Building using maven
 
 Run the following commands from the main project directory (oscars-newtech):
@@ -35,6 +34,14 @@ mvn install
 ```
 ## Running OSCARS
 
+### Preparation
+You will need to install and run a PostgreSQL server.
+
+You will also need to, one time, set up the database tables by running the following script from the core directory; 
+```bash
+./bin/install_db.sh
+```
+
 ### Starting OSCARS
 
 You may start all OSCARS services (core and webui) with the following command:
@@ -55,7 +62,7 @@ It has the following dependencies:
 OSCARS should now be running on your local machine. The webui can be accessed at: https://localhost:8001. You will be presented with a login screen. The admin username is **admin** and the default password is **oscars**. 
 
 ## Project Structure
-The new OSCARS is a [Springboot](http://projects.spring.io/spring-boot/) application, made up of two major components: The main application ("core"), and the web interface ("webui"). 
+The new OSCARS is a [Springboot](http://projects.spring.io/spring-boot/) application, made up of two major components: The main application ("core"), and the path setup subsystem ("pss"). 
 The main project directory is structured as follows:
 ### bin
 Contains script(s) for running OSCARS.
@@ -70,7 +77,7 @@ The main application. Handles reservation requests, determines which path (if an
 * **conf** - Retrieves configurations, specified in "oscars-newtech/core/config", for each OSCARS module on startup.
 * **helpers** - Functions useful for dealing with Instants and VLAN expression parsing.
 * **pce** - The Path Computation Engine. It takes a requested reservation's parameters, evaluates the current topology, determines the (shortest) path, if any, and decides which network resources must be reserved.
-* **pss** - Sets up, tears down, modifies and verifies network paths. Handles templates for network devices.
+* **pss** - Decides router command parameters, contacts the PSS component, and persists generated configuration.
 * **resv** - Tracks reservations, and receives user parameters for reservation requests.
 * **servicetopo** - Abstracts the network topology to create unique "Service Level" views of the topology for a given request.
 * **tasks** - Services which run in the background and perform tasks at certain intervals (e.g. Select a submitted request to begin the reservation process).
@@ -84,4 +91,4 @@ A collection of shared classes used by the different modules.
 The Path Setup Subsystem. The core sends commands to it, and it generates appropriate config and then commits it to network devices through rancid. 
 
 ### topo
-Topology-related scripts and utilities; currently ESnet-specific Python code. 
+Topology-related scripts and utilities; currently mostly ESnet-specific Python code. 
