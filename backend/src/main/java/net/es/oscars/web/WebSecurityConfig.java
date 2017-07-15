@@ -82,8 +82,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
                 .authorizeRequests()
+                .antMatchers("/login").permitAll()
                 // allow everyone to public API
                 .antMatchers("/api/**").permitAll()
+                // allow everyone to pages
+                .antMatchers("/pages/**").permitAll()
 
                 .anyRequest().authenticated()
                 // only allow authenticated users to get /protected pages or API endpoints
