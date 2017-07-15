@@ -2,7 +2,6 @@ package net.es.oscars.topo.pop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.StartupComponent;
 import net.es.oscars.app.StartupException;
@@ -18,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.ManyToOne;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -46,10 +43,8 @@ public class TopoPopulator implements StartupComponent {
     }
 
     public void startup() throws StartupException {
-        log.info("Startup. Will attempt import from files set in topo.[devices|adcjies].filename properties.");
         if (topoProperties == null) {
-            log.error("No 'topo' stanza in application properties! Skipping topology import.");
-            return;
+            throw new StartupException("No topo stanza in application properties");
         }
         String devicesFilename = "./config/topo/" + topoProperties.getPrefix() + "-devices.json";
         String adjciesFilename = "./config/topo/" + topoProperties.getPrefix() + "-adjcies.json";
@@ -71,22 +66,18 @@ public class TopoPopulator implements StartupComponent {
         }
 
         List<Device> fileDevices = importDevicesFromFile(devicesFilename);
-        log.info("Devices defined in file " + devicesFilename + " : " + fileDevices.size());
 
 
 //        ObjectMapper mapper = new ObjectMapper();
 //        log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(fileDevices));
 
         if (deviceRepo.count() == 0) {
-            log.info("Device db empty. Will replace with input from file " + devicesFilename);
 
             deviceRepo.save(fileDevices);
             int ports = 0;
-            log.info("Devices: " + fileDevices.size());
             for (Device dev : fileDevices) {
                 ports += dev.getPorts().size();
             }
-            log.info("Total ports : " + ports);
         } else {
             log.info("Devices DB is not empty; skipping import");
         }
@@ -95,19 +86,13 @@ public class TopoPopulator implements StartupComponent {
     @Transactional
     public void importAdjacencies(boolean overwrite, String adjciesFilename) throws IOException {
         if (overwrite) {
-            log.info("Overwrite set; deleting adjacency entries.");
             adjcyRepo.deleteAll();
         }
 
         List<PortAdjcy> adjcies = importPortAdjciesFromFile(adjciesFilename);
 
         if (adjcyRepo.count() == 0) {
-            log.info("Adjacency DB empty. Will replace with input from file " + adjciesFilename);
-
             adjcyRepo.save(adjcies);
-            log.info("Adjacencies defined from file : " + adjcies.size());
-        } else {
-            log.info("Adjacency DB is not empty; skipping import");
         }
 
     }

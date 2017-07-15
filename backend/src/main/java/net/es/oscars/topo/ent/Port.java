@@ -1,9 +1,6 @@
 package net.es.oscars.topo.ent;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.enums.Layer;
@@ -18,7 +15,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor(suppressConstructorProperties=true)
 @NoArgsConstructor
-@EqualsAndHashCode(exclude="device")
+@EqualsAndHashCode(exclude={"device", "adjciesWhereA", "adjciesWhereZ"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
                   property = "urn")
 public class Port {
@@ -30,10 +27,6 @@ public class Port {
     @Column(unique = true)
     private String urn;
 
-    @Column
-    @NonNull
-    private Integer reservableIngressBw;
-
     @NonNull
     @ManyToOne
     @JsonBackReference(value="device")
@@ -41,20 +34,35 @@ public class Port {
 
     @Column
     @NonNull
+    private Integer reservableIngressBw;
+
+    @Column
+    @NonNull
     private Integer reservableEgressBw;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String ipv4Address;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String ipv6Address;
 
     @ElementCollection
     @CollectionTable
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<IntRange> reservableVlans = new HashSet<>();
 
     @ElementCollection
     @CollectionTable
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Layer> capabilities = new HashSet<>();
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @OneToMany(mappedBy = "a", cascade = CascadeType.ALL)
+    private Set<PortAdjcy> adjciesWhereA = new HashSet<>();
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @OneToMany(mappedBy = "z", cascade = CascadeType.ALL)
+    private Set<PortAdjcy> adjciesWhereZ = new HashSet<>();
 
 
 }

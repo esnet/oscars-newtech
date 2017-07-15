@@ -9,7 +9,7 @@ Feature: vlans logic
     Given I set this vlan baseline
       | A:1 | 10:50 |
       | A:2 | 20:30 |
-    Given I set these vlan reservations
+    Given I set these eternal vlan reservations
       | A:1 | 10 |
       | A:1 | 15 |
       | A:1 | 50 |

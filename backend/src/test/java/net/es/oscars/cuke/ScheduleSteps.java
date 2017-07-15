@@ -6,7 +6,7 @@ import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.resv.ent.Schedule;
 import net.es.oscars.resv.enums.Phase;
-import net.es.oscars.resv.svc.ResvService;
+import net.es.oscars.resv.svc.ResvLibrary;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
@@ -46,7 +46,7 @@ public class ScheduleSteps extends CucumberSteps {
     @Then("^a schedule between (\\d+) and (\\d+) does overlap$")
     public void a_schedule_between_and_overlap(int b, int e, List<String> connectionIds) throws Throwable {
         List<Schedule> overlapping =
-                ResvService.schedulesOverlapping(this.schedules, Instant.ofEpochSecond(b), Instant.ofEpochSecond(e));
+                ResvLibrary.schedulesOverlapping(this.schedules, Instant.ofEpochSecond(b), Instant.ofEpochSecond(e));
 
         List<String> overlappingConnectionIds = overlapping.stream()
                 .map(Schedule::getConnectionId).collect(Collectors.toList());
@@ -57,7 +57,7 @@ public class ScheduleSteps extends CucumberSteps {
     @Then("^a schedule between (\\d+) and (\\d+) does not overlap$")
     public void a_schedule_between_and_overlap(int b, int e) throws Throwable {
         List<Schedule> overlapping =
-                ResvService.schedulesOverlapping(this.schedules, Instant.ofEpochSecond(b), Instant.ofEpochSecond(e));
+                ResvLibrary.schedulesOverlapping(this.schedules, Instant.ofEpochSecond(b), Instant.ofEpochSecond(e));
 
         List<String> overlappingConnectionIds = overlapping.stream()
                 .map(Schedule::getConnectionId).collect(Collectors.toList());

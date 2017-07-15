@@ -4,9 +4,10 @@ import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.resv.ent.PeriodBandwidth;
-import net.es.oscars.resv.svc.ResvService;
-import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.resv.beans.PeriodBandwidth;
+import net.es.oscars.resv.enums.BwDirection;
+import net.es.oscars.resv.svc.ResvLibrary;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
@@ -15,49 +16,52 @@ import java.util.*;
 @Slf4j
 @Transactional
 public class BandwidthSteps extends CucumberSteps {
-    private Map<String, Integer> baseline ;
-    private Map<String, List<PeriodBandwidth>> periodBandwidthMap;
+    @Autowired
+    private CucumberWorld world;
 
-    @Given("^I set this bandwidth baseline$")
-    public void i_set_this_bandwidth_baseline(Map<String, Integer> baselineBws) throws Throwable {
-        baseline = baselineBws;
+    @Given("^I set this \"([^\"]*)\" bandwidth baseline$")
+    public void i_set_this_bandwidth_baseline(BwDirection direction, Map<String, Integer> baselineBws)
+            throws Throwable {
+        world.bwBaseline.put(direction, baselineBws);
     }
 
-    @Given("^I set these bandwidth reservations$")
-    public void i_set_these_bandwidth_reservations(DataTable table) throws Throwable {
-        periodBandwidthMap = new HashMap<>();
+    @Given("^I set these \"([^\"]*)\" bandwidth reservations$")
+    public void i_set_these_bandwidth_reservations(BwDirection direction, DataTable table) throws Throwable {
+        Map<String, List<PeriodBandwidth>> resvs = new HashMap<>();
         List<List<String>> data = table.raw();
         for (List<String> row :data) {
 
             String urn = row.get(0);
-            if (!periodBandwidthMap.keySet().contains(urn)) {
-                periodBandwidthMap.put(urn, new ArrayList<>());
-            }
             Integer bw = Integer.parseInt(row.get(1));
             Integer beg = Integer.parseInt(row.get(2));
             Integer end = Integer.parseInt(row.get(3));
+
             PeriodBandwidth periodBw = PeriodBandwidth.builder()
                     .bandwidth(bw)
                     .beginning(Instant.ofEpochSecond(beg))
                     .ending(Instant.ofEpochSecond(end))
                     .build();
-            periodBandwidthMap.get(urn).add(periodBw);
+            if (!resvs.containsKey(urn)) {
+                resvs.put(urn, new ArrayList<>());
+            }
+            resvs.get(urn).add(periodBw);
         }
+        world.bwMaps.put(direction, resvs);
     }
 
-    @Then("^the available bandwidth for \"([^\"]*)\" at (\\d+) is (\\d+)$")
-    public void the_available_bandwidth_for_at_is(String urn, int when, int bw) throws Throwable {
-        List<PeriodBandwidth> periodBws = periodBandwidthMap.get(urn);
-        Integer baselineBw = this.baseline.get(urn);
+    @Then("^the available \"([^\"]*)\" bandwidth for \"([^\"]*)\" at (\\d+) is (\\d+)$")
+    public void the_available_bandwidth_for_at_is(BwDirection dir, String urn, int when, int bw) throws Throwable {
+        List<PeriodBandwidth> periodBws = world.bwMaps.get(dir).get(urn);
+        Integer baselineBw = world.bwBaseline.get(dir).get(urn);
 
-        assert ResvService.availBandwidth(baselineBw, periodBws, Instant.ofEpochSecond(when)) == bw;
+        assert ResvLibrary.availBandwidth(baselineBw, periodBws, Instant.ofEpochSecond(when)) == bw;
     }
 
-    @Then("^the overall available bw for \"([^\"]*)\" is (\\d+)$")
-    public void the_overall_available_bw_for_is(String urn, int bw) throws Throwable {
-        List<PeriodBandwidth> periodBws = periodBandwidthMap.get(urn);
-        Integer baselineBw = this.baseline.get(urn);
-        assert ResvService.overallAvailBandwidth(baselineBw, periodBws) == bw;
+    @Then("^the overall available \"([^\"]*)\" bw for \"([^\"]*)\" is (\\d+)$")
+    public void the_overall_available_bw_for_is(BwDirection dir, String urn, int bw) throws Throwable {
+        List<PeriodBandwidth> periodBws = world.bwMaps.get(dir).get(urn);
+        Integer baselineBw = world.bwBaseline.get(dir).get(urn);
+        assert ResvLibrary.overallAvailBandwidth(baselineBw, periodBws) == bw;
     }
 
 

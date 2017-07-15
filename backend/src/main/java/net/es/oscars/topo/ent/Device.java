@@ -1,6 +1,7 @@
 package net.es.oscars.topo.ent;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
@@ -39,20 +40,25 @@ public class Device {
     private DeviceType type;
 
     @NonNull
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String ipv4Address;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String ipv6Address;
 
     @ElementCollection
     @CollectionTable
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<IntRange> reservableVlans = new HashSet<>();
 
     @ElementCollection
     @CollectionTable
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Layer> capabilities = new HashSet<>();
 
     @NonNull
-    @OneToMany (cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Port> ports = new HashSet<>();
 
 

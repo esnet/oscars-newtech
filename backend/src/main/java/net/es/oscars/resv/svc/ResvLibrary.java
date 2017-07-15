@@ -1,56 +1,21 @@
 package net.es.oscars.resv.svc;
 
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.resv.db.BlueprintRepository;
-import net.es.oscars.resv.db.FixtureRepository;
-import net.es.oscars.resv.db.ScheduleRepository;
-import net.es.oscars.resv.db.VlanRepository;
+import net.es.oscars.resv.beans.PeriodBandwidth;
 import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.BwDirection;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.ReservableCommandParam;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.enums.Layer;
-import net.es.oscars.topo.svc.TopoService;
-import org.hashids.Hashids;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import net.es.oscars.topo.enums.UrnType;
 
 import java.time.Instant;
 import java.util.*;
 
-@Component
 @Slf4j
-public class ResvService {
-    @Autowired
-    TopoService topoService;
-    @Autowired
-    BlueprintRepository blueprintRepo;
-
-    @Autowired
-    VlanRepository vlanRepo;
-
-    @Autowired
-    FixtureRepository fixtureRepo;
-
-    @Autowired
-    ScheduleRepository scheduleRepo;
-
-
-    public static String randomHashid() {
-        Random rand = new Random();
-        Integer randInt = rand.nextInt();
-        randInt = randInt < 0 ? -1 * randInt : randInt;
-
-        Hashids hashids = new Hashids("oscars");
-        return hashids.encode(randInt);
-    }
-
-    public Blueprint designToHeld(Blueprint design) {
-        return new Blueprint();
-
-    }
-
+public class ResvLibrary {
 
 
     public static List<Schedule> schedulesOverlapping(List<Schedule> all, Instant b, Instant e) {
@@ -66,6 +31,45 @@ public class ResvService {
         return overlapping;
     }
 
+    public static List<PeriodBandwidth> pbwsOverlapping(List<PeriodBandwidth> candidates, Instant b, Instant e) {
+        List<PeriodBandwidth> result = new ArrayList<>();
+        for (PeriodBandwidth pbw : candidates) {
+            log.info("evaluating a pbw: "+pbw.toString());
+            boolean add = true;
+            if (pbw.getEnding().isBefore(b) || pbw.getBeginning().isAfter(e)) {
+                add = false;
+            }
+            if (add) {
+                log.info("adding a pbw: "+pbw.toString());
+                result.add(pbw);
+            }
+        }
+
+        return result;
+    }
+
+
+    public static Map<String, Integer> availableBandwidthMap(BwDirection dir, Map<String, TopoUrn> baseline,
+                                                          Map<String, List<PeriodBandwidth>> reservedBandwidths) {
+        Map<String, Integer> result = new HashMap<>();
+        for (String urn: baseline.keySet()) {
+            if (baseline.get(urn).getUrnType().equals(UrnType.PORT)) {
+                Integer reservable = 0;
+                switch (dir) {
+                    case INGRESS:
+                        reservable = baseline.get(urn).getReservableIngressBw();
+                        break;
+                    case EGRESS:
+                        reservable = baseline.get(urn).getReservableEgressBw();
+                        break;
+                }
+                Integer availableBw = overallAvailBandwidth(reservable, reservedBandwidths.get(urn));
+                result.put(urn, availableBw);
+            }
+        }
+        return result;
+
+    }
 
     public static Map<String, Set<IntRange>> availableVlanMap(Map<String, TopoUrn> baseline, Collection<Vlan> reservedVlans) {
 
@@ -95,7 +99,7 @@ public class ResvService {
         return IntRange.fromSet(available);
     }
 
-    public static Map<String, TopoUrn> constructAvailabilityMap(
+    public static Map<String, TopoUrn> constructAvailabilityMap (
             Map<String, TopoUrn> urnMap,
             Map<String, Set<IntRange>> availVlanMap,
             Map<String, Integer> availIngressBwMap,
@@ -125,7 +129,11 @@ public class ResvService {
         return result;
 
     }
-    public static Integer availBandwidth(Integer reservableBw, List<PeriodBandwidth> periodBandwidths, Instant when) {
+
+
+    public static Integer availBandwidth(Integer reservableBw,
+                                         Collection<PeriodBandwidth> periodBandwidths,
+                                         Instant when) {
         Integer result = reservableBw;
         for (PeriodBandwidth pbw: periodBandwidths) {
             if (pbw.getBeginning().isBefore(when) && pbw.getEnding().isAfter(when)) {
@@ -135,8 +143,12 @@ public class ResvService {
 
         return result;
     }
-    public static Integer overallAvailBandwidth(Integer reservableBw, List<PeriodBandwidth> periodBandwidths) {
+    public static Integer overallAvailBandwidth(Integer reservableBw,
+                                                Collection<PeriodBandwidth> periodBandwidths) {
         Map<Instant, Set<Integer>> timeline = new HashMap<>();
+        if (periodBandwidths == null) {
+            periodBandwidths = new ArrayList<>();
+        }
         for (PeriodBandwidth pbw: periodBandwidths) {
             if (!timeline.containsKey(pbw.getBeginning())) {
                 timeline.put(pbw.getBeginning(), new HashSet<>());

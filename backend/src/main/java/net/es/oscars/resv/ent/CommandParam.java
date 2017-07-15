@@ -27,8 +27,6 @@ public class CommandParam {
     @NonNull
     private String urn;
 
-    private String refId;
-
     @NonNull
     @ManyToOne
     private Schedule schedule;
@@ -39,6 +37,9 @@ public class CommandParam {
     @NonNull
     private CommandParamType paramType;
 
+    private String refId;
+
+    @NonNull
     private Integer resource;
 
 }
