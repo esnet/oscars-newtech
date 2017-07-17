@@ -1,6 +1,7 @@
 package net.es.oscars.cuke;
 
 import net.es.oscars.resv.beans.PeriodBandwidth;
+import net.es.oscars.resv.ent.Design;
 import net.es.oscars.resv.ent.Vlan;
 import net.es.oscars.resv.enums.BwDirection;
 import net.es.oscars.topo.beans.TopoUrn;
@@ -20,7 +21,8 @@ public class CucumberWorld {
     Map<BwDirection, Map<String, Integer>> bwBaseline = new HashMap<>();
 
     List<Vlan> reservedVlans;
-    Map<String, TopoUrn> vlanBaseline ;
+    Map<String, TopoUrn> topoBaseline ;
+    Design design;
 
 
     public void expectException() {

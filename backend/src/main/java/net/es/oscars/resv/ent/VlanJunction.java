@@ -18,7 +18,7 @@ public class VlanJunction {
     @JsonCreator
     public VlanJunction(@JsonProperty("connectionId") String connectionId,
                         @JsonProperty("deviceUrn") @NonNull String deviceUrn,
-                        @JsonProperty("vlan") Vlan vlan,
+                        @JsonProperty("vlanId") Vlan vlan,
                         @JsonProperty("schedule") Schedule schedule,
                         @JsonProperty("commandParams") Set<CommandParam> commandParams) {
         this.connectionId = connectionId;
@@ -54,7 +54,7 @@ public class VlanJunction {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<CommandParam> commandParams;
 
-    // really only for reserving a vlan at a switch
+    // really only for reserving a vlanId at a switch
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Vlan vlan;

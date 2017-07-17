@@ -59,7 +59,7 @@ public class SharedSteps {
         if (repoName.equals("fixture")) {
             assert fixtureRepo.findAll().size() == num;
         }
-        if (repoName.equals("vlan")) {
+        if (repoName.equals("vlanId")) {
             assert vlanRepo.findAll().size() == num;
         }
         if (repoName.equals("design")) {
@@ -91,7 +91,7 @@ public class SharedSteps {
         if (repoName.equals("fixture")) {
             fixtureRepo.deleteAll();
         }
-        if (repoName.equals("vlan")) {
+        if (repoName.equals("vlanId")) {
             vlanRepo.deleteAll();
         }
         if (repoName.equals("design")) {
@@ -114,7 +114,7 @@ public class SharedSteps {
     @Given("^I have initialized the world$")
     public void i_have_initialized_the_world() throws Throwable {
         this.world.getExceptions().clear();
-        this.world.vlanBaseline = new HashMap<>();
+        this.world.topoBaseline = new HashMap<>();
         this.world.reservedVlans = new ArrayList<>();
         this.world.bwMaps = new HashMap<>();
         this.world.bwBaseline = new HashMap<>();

@@ -78,7 +78,7 @@ public class ResvLibrary {
             if (!reservedVlanMap.keySet().contains(v.getUrn())) {
                 reservedVlanMap.put(v.getUrn(), new HashSet<>());
             }
-            reservedVlanMap.get(v.getUrn()).add(v.getVlan());
+            reservedVlanMap.get(v.getUrn()).add(v.getVlanId());
         });
 
         Map<String, Set<IntRange>> availableVlanMap = new HashMap<>();

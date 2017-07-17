@@ -62,6 +62,7 @@ public class IntRange {
         return result;
     }
 
+
     public static Set<IntRange> fromSet(Set<Integer> ints) {
         Set<IntRange> result = new HashSet<>();
         List<Integer> sortedInts = new ArrayList<>();

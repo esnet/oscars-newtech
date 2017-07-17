@@ -1,6 +1,7 @@
 {
   "designId": "xyzzy",
   "username": "joe_user",
+  "description": "some text",
   "cmp": {
     "junctions": [
       {
@@ -23,7 +24,7 @@
         "ingressBandwidth": 100,
         "egressBandwidth": 100,
         "vlan": {
-          "vlanExpression": "2000"
+          "vlanId": 2000
         }
       },
       {
@@ -33,7 +34,7 @@
         "egressBandwidth": 100,
 
         "vlan": {
-          "vlanExpression": "2000"
+          "vlanId": 2000
         }
       }
     ],

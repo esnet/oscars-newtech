@@ -2,6 +2,7 @@ package net.es.oscars.topo.svc;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoException;
 import net.es.oscars.topo.beans.TopoUrn;
@@ -35,17 +36,25 @@ public class TopoService {
         Map<String, TopoUrn> urns = new HashMap<>();
 
         devices.forEach(d -> {
+            // make a copy of the IntRanges otherwise it'd be set by reference
+            Set<IntRange> drv = new HashSet<>();
+            drv.addAll(IntRange.mergeIntRanges(d.getReservableVlans()));
+
             TopoUrn deviceUrn = TopoUrn.builder()
                     .urn(d.getUrn())
                     .urnType(UrnType.DEVICE)
                     .device(d)
-                    .reservableVlans(d.getReservableVlans())
+                    .reservableVlans(drv)
                     .capabilities(d.getCapabilities())
                     .build();
             urns.put(d.getUrn(), deviceUrn);
 
 
             d.getPorts().forEach(p -> {
+                // make a copy of the IntRanges otherwise it'd be set by reference
+                Set<IntRange> prv = new HashSet<>();
+                prv.addAll(IntRange.mergeIntRanges(p.getReservableVlans()));
+
                 TopoUrn portUrn = TopoUrn.builder()
                         .urn(p.getUrn())
                         .urnType(UrnType.PORT)
@@ -54,7 +63,7 @@ public class TopoService {
                         .port(p)
                         .reservableIngressBw(p.getReservableIngressBw())
                         .reservableEgressBw(p.getReservableEgressBw())
-                        .reservableVlans(p.getReservableVlans())
+                        .reservableVlans(prv)
                         .build();
 
                 urns.put(p.getUrn(), portUrn);

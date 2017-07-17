@@ -17,14 +17,12 @@ public class Vlan {
 
     @JsonCreator
     public Vlan(@JsonProperty("connectionId") String connectionId,
-                @JsonProperty("vlanExpression") @NonNull String vlanExpression,
                 @JsonProperty("schedule") Schedule schedule,
                 @JsonProperty("urn") String urn,
-                @JsonProperty("vlan") Integer vlan) {
+                @JsonProperty("vlanId") @NonNull Integer vlanId) {
         this.connectionId = connectionId;
         this.urn = urn;
-        this.vlan = vlan;
-        this.vlanExpression = vlanExpression;
+        this.vlanId = vlanId;
         this.schedule = schedule;
     }
 
@@ -34,9 +32,9 @@ public class Vlan {
     private Long id;
 
     // mandatory; must be set even if empty
-    @NonNull
-    private String vlanExpression;
 
+    @NonNull
+    private Integer vlanId;
 
     // these will be populated by the system when designing
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -49,7 +47,5 @@ public class Vlan {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String urn;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private Integer vlan;
 
 }

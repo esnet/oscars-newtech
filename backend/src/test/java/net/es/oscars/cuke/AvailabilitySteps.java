@@ -24,12 +24,6 @@ import java.util.Map;
 @Transactional
 public class AvailabilitySteps extends CucumberSteps {
 
-    @Autowired
-    TopoService topoService;
-    @Autowired
-    private DeviceRepository deviceRepo;
-    @Autowired
-    private PortAdjcyRepository adjcyRepo;
 
 
     @Autowired
@@ -37,6 +31,8 @@ public class AvailabilitySteps extends CucumberSteps {
 
     @Autowired
     private CucumberWorld world;
+
+
 
     @Then("^the \"([^\"]*)\" bw availability map between (\\d+) and (\\d+) is$")
     public void the_bw_avail_map_between_and_is(BwDirection dir, int b, int e, Map<String, Integer> table) throws Throwable {
@@ -53,10 +49,8 @@ public class AvailabilitySteps extends CucumberSteps {
             filtered.put(urn, overlapping);
 
         }
-        topoService.updateTopo(deviceRepo.findAll(), adjcyRepo.findAll());
-        Map<String, TopoUrn> baseline = topoService.getTopoUrnMap();
 
-        Map<String, Integer> availMap = ResvLibrary.availableBandwidthMap(dir, baseline, filtered);
+        Map<String, Integer> availMap = ResvLibrary.availableBandwidthMap(dir, world.topoBaseline, filtered);
 
         for (String urn : availMap.keySet()) {
             log.info("avail "+urn);

@@ -20,13 +20,13 @@ public class VlanSteps extends CucumberSteps {
     private CucumberWorld world;
 
 
-    @Given("^I set this vlan baseline$")
-    public void i_set_this_vlan_baseline(Map<String, String> baselineVlans) throws Throwable {
-        world.vlanBaseline = new HashMap<>();
+    @Given("^I set this topology baseline$")
+    public void i_set_this_topology_baseline(Map<String, String> baselineVlans) throws Throwable {
+        world.topoBaseline = new HashMap<>();
         baselineVlans.forEach((urn, vlanExpr)-> {
             Set<IntRange> reservable = IntRange.fromExpression(vlanExpr);
             TopoUrn tu = TopoUrn.builder().urn(urn).reservableVlans(reservable).build();
-            world.vlanBaseline.put(urn, tu);
+            world.topoBaseline.put(urn, tu);
         });
     }
 
@@ -38,7 +38,7 @@ public class VlanSteps extends CucumberSteps {
 
             String urn = row.get(0);
             Integer vlan = Integer.parseInt(row.get(1));
-            Vlan v = Vlan.builder().vlanExpression("").vlan(vlan).urn(urn).build();
+            Vlan v = Vlan.builder().vlanId(vlan).urn(urn).build();
             world.reservedVlans.add(v);
         }
 
@@ -46,7 +46,7 @@ public class VlanSteps extends CucumberSteps {
 
     @Then("^the available vlans for \"([^\"]*)\" are \"([^\"]*)\"$")
     public void the_available_vlans_for_are(String portUrn, String expr) throws Throwable {
-        Map<String, Set<IntRange>> availVlanMap = ResvLibrary.availableVlanMap(world.vlanBaseline, world.reservedVlans);
+        Map<String, Set<IntRange>> availVlanMap = ResvLibrary.availableVlanMap(world.topoBaseline, world.reservedVlans);
         assert IntRange.asString(availVlanMap.get(portUrn)).equals(expr);
 
     }

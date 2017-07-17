@@ -1,0 +1,35 @@
+{
+  "designId": "xyzzy",
+  "username": "joe_user",
+  "description": "some text",
+  "cmp": {
+    "junctions": [
+      {
+        "refId": "A",
+        "deviceUrn": "A"
+      }
+    ],
+    "fixtures": [
+      {
+        "junction": "A",
+        "portUrn": "A:1",
+        "ingressBandwidth": 200,
+        "egressBandwidth": 10,
+        "vlan": {
+          "vlanId": 150
+        }
+      },
+      {
+        "junction": "A",
+        "portUrn": "A:2",
+        "ingressBandwidth": 10,
+        "egressBandwidth": 10,
+
+        "vlan": {
+          "vlanId": 150
+        }
+      }
+    ],
+    "pipes": []
+  }
+}

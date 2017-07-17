@@ -6,7 +6,7 @@ Feature: vlans logic
 
   Scenario: Basic availability calculation
     Given I have initialized the world
-    Given I set this vlan baseline
+    Given I set this topology baseline
       | A:1 | 10:50 |
       | A:2 | 20:30 |
     Given I set these eternal vlan reservations

@@ -5,8 +5,10 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.resv.beans.DesignResponse;
 import net.es.oscars.resv.ent.Design;
 import net.es.oscars.resv.db.*;
+import net.es.oscars.resv.svc.DesignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -27,14 +29,15 @@ public class DesignSteps extends CucumberSteps {
     @Autowired
     private CucumberWorld world;
 
-    private Design design;
+    @Autowired
+    private DesignService designService;
 
     @Given("^I load a design from \"([^\"]*)\"$")
     public void my_JSON_formatted_design_is_at(String path) {
         ObjectMapper mapper = builder.build();
         File f = new File(path);
         try {
-            design = mapper.readValue(f, Design.class);
+            world.design = mapper.readValue(f, Design.class);
             // log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(design));
         } catch (Exception ex) {
             // log.error("caught: "+ex.getMessage());
@@ -45,16 +48,27 @@ public class DesignSteps extends CucumberSteps {
 
     @Then("^I can persist the design")
     public void i_can_persist_the_design() throws Throwable {
-        designRepo.save(design);
+        designRepo.save(world.design);
     }
 
     @When("^I load the design from the repository$")
     public void i_load_the_design() throws Throwable {
-        Optional<Design> maybeDesign = designRepo.findByDesignId(design.getDesignId());
+        Optional<Design> maybeDesign = designRepo.findByDesignId(world.design.getDesignId());
         assert maybeDesign.isPresent();
 
         // ObjectMapper mapper = builder.build();
         // log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(design));
+    }
+
+
+    @Then("^I \"([^\"]*)\" verify the design against baseline$")
+    public void i_verify_the_design_against_baseline(String maybe) throws Throwable {
+        DesignResponse resp = designService.verifyDesign(world.design);
+        if (maybe.equals("can")) {
+            assert resp.isValid();
+        } else {
+            assert !resp.isValid();
+        }
     }
 
 

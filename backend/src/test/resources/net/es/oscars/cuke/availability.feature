@@ -12,6 +12,7 @@ Feature: availability calculations
     Given I import adjacencies from "config/test/topo/adj_a_b_mpls.json"
     Then the "devices" repository has 2 entries
     Then the "adjacencies" repository has 2 entries
+    Given I update the topology URN map after import
     Given I set these "INGRESS" bandwidth reservations
 #     | urn | bw | beg | end |
       | A:1 | 10 | 100 | 250 |
