@@ -42,11 +42,7 @@ public class AdminController {
     @RequestMapping(value = "/admin/users", method = RequestMethod.GET)
     @ResponseBody
     public List<User> admin_users_all() {
-        log.info("all users");
 
-        userRepo.findAll().forEach(u -> {
-            log.info(u.getUsername());
-        });
         return userRepo.findAll();
     }
 

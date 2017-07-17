@@ -12,6 +12,7 @@ public interface DesignRepository extends CrudRepository<Design, Long> {
 
     List<Design> findAll();
     Optional<Design> findByDesignId(String designId);
+    List<Design> findByUsername(String username);
 
 
 }

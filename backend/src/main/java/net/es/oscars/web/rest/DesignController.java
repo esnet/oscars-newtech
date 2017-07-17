@@ -44,10 +44,24 @@ public class DesignController {
         DesignResponse dr = designService.verifyDesign(newDesign);
         if (dr.isValid()) {
             Optional<Design> maybeDesign = designRepo.findByDesignId(designId);
-            maybeDesign.ifPresent(design -> designRepo.delete(design));
+            if (maybeDesign.isPresent()) {
+
+                log.info("overwriting previous design " + designId);
+                maybeDesign.ifPresent(design -> designRepo.delete(design));
+            } else {
+                log.info("saving new design " + designId);
+
+            }
             designRepo.save(newDesign);
         }
         return dr;
+    }
+
+
+    @RequestMapping(value = "/protected/designs/", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Design> designs_all() {
+        return designRepo.findAll();
     }
 
 

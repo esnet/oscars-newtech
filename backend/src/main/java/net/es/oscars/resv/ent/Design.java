@@ -19,7 +19,10 @@ public class Design {
     @JsonCreator
     public Design(@JsonProperty("designId") @NonNull String designId,
                   @JsonProperty("cmp") @NonNull Components cmp,
+                  @JsonProperty("description") String description,
                   @JsonProperty("username") String username) {
+
+        this.description = description;
         this.designId = designId;
         this.cmp = cmp;
         this.username = username;
@@ -34,6 +37,8 @@ public class Design {
     @Column(unique = true)
     @NonNull
     private String designId;
+
+    private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @NonNull
