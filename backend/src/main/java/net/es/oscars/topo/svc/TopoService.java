@@ -32,6 +32,7 @@ public class TopoService {
     }
 
 
+
     private Map<String, TopoUrn> urnsFromDevices(List<Device> devices) throws TopoException {
         Map<String, TopoUrn> urns = new HashMap<>();
 
