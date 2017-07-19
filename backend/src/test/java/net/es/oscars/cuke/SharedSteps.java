@@ -1,0 +1,140 @@
+package net.es.oscars.cuke;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import net.es.oscars.AbstractBackendTest;
+import net.es.oscars.resv.db.*;
+import net.es.oscars.topo.db.DeviceRepository;
+import net.es.oscars.topo.db.PortAdjcyRepository;
+import net.es.oscars.topo.db.PortRepository;
+import org.junit.Before;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+@Transactional
+public class SharedSteps {
+    @Autowired
+    private CucumberWorld world;
+
+    @Autowired
+    private ScheduleRepository schedRepo;
+    @Autowired
+    private PipeRepository pipeRepo;
+    @Autowired
+    private FixtureRepository fixtureRepo;
+    @Autowired
+    private JunctionRepository junctionRepo;
+    @Autowired
+    private VlanRepository vlanRepo;
+    @Autowired
+    private DesignRepository designRepo;
+    @Autowired
+    private DeviceRepository deviceRepo;
+    @Autowired
+    private PortAdjcyRepository adjcyRepo;
+    @Autowired
+    private PortRepository portRepo;
+
+
+    @Then("^the \"([^\"]*)\" repository has (\\d+) entries$")
+    public void the_repository_has_entries(String repoName, int num) throws Throwable {
+        if (repoName.equals("junction")) {
+        }
+        if (repoName.equals("pipe")) {
+            assert pipeRepo.findAll().size() == num;
+        }
+        if (repoName.equals("schedule")) {
+            assert schedRepo.findAll().size() == num;
+        }
+        if (repoName.equals("fixture")) {
+            assert fixtureRepo.findAll().size() == num;
+        }
+        if (repoName.equals("vlanId")) {
+            assert vlanRepo.findAll().size() == num;
+        }
+        if (repoName.equals("design")) {
+            assert designRepo.findAll().size() == num;
+        }
+        if (repoName.equals("adjacency")) {
+            assert adjcyRepo.findAll().size() == num;
+        }
+        if (repoName.equals("device")) {
+            assert deviceRepo.findAll().size() == num;
+        }
+        if (repoName.equals("port")) {
+            assert portRepo.findAll().size() == num;
+        }
+
+    }
+
+    @When("^I clear the \"([^\"]*)\" repository$")
+    public void i_clear_the_repo(String repoName) throws Throwable {
+        if (repoName.equals("junction")) {
+            junctionRepo.deleteAll();
+        }
+        if (repoName.equals("pipe")) {
+            pipeRepo.deleteAll();
+        }
+        if (repoName.equals("schedule")) {
+            schedRepo.deleteAll();
+        }
+        if (repoName.equals("fixture")) {
+            fixtureRepo.deleteAll();
+        }
+        if (repoName.equals("vlanId")) {
+            vlanRepo.deleteAll();
+        }
+        if (repoName.equals("design")) {
+            designRepo.deleteAll();
+        }
+        if (repoName.equals("adjacency")) {
+            adjcyRepo.deleteAll();
+        }
+        if (repoName.equals("device")) {
+            deviceRepo.deleteAll();
+        }
+        if (repoName.equals("port")) {
+            portRepo.deleteAll();
+        }
+
+    }
+
+
+
+    @Given("^I have initialized the world$")
+    public void i_have_initialized_the_world() throws Throwable {
+        this.world.getExceptions().clear();
+        this.world.topoBaseline = new HashMap<>();
+        this.world.reservedVlans = new ArrayList<>();
+        this.world.bwMaps = new HashMap<>();
+        this.world.bwBaseline = new HashMap<>();
+    }
+
+    @Given("^The world is expecting an exception$")
+    public void the_world_is_expecting_an_exception() throws Throwable {
+        this.world.expectException();
+    }
+
+    @Then("^I did not receive an exception$")
+    public void i_did_not_receive_an_exception() throws Throwable {
+        assertThat(this.world.getExceptions().isEmpty(), is(true));
+    }
+
+    @Then("^I did receive an exception$")
+    public void i_did_receive_an_exception() throws Throwable {
+        assertThat(this.world.getExceptions().isEmpty(), is(false));
+    }
+
+
+}
+

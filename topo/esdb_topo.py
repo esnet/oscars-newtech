@@ -27,7 +27,6 @@ ESDB_URL = "https://esdb.es.net/esdb_api/v1"
 
 OUTPUT_DEVICES = "output/devices.json"
 OUTPUT_ADJCIES = "output/adjacencies.json"
-OUTPUT_ADDRS = "output/addrs.json"
 
 
 def get_token(opts):
@@ -74,8 +73,6 @@ def main():
                         help="Path to devices output file")
     parser.add_argument('--output-adjacencies', default=OUTPUT_ADJCIES,
                         help="Path to IS-IS adjacencies output file")
-    parser.add_argument('--output-entryMap', default=OUTPUT_ADDRS,
-                        help="Path to entryMap file")
 
     opts = parser.parse_args()
 
@@ -115,7 +112,7 @@ def main():
 
     merge_phy_ports(oscars_devices=oscars_devices, ports=in_ports, igp_portmap=igp_portmap)
 
-    urn_addrs = make_urn_addrs(addrs=addrs, isis_adjcies=isis_adjcies)
+    merge_addrs(oscars_devices=oscars_devices, addrs=addrs, isis_adjcies=isis_adjcies)
 
     # Dump output files
     with open(opts.output_devices, 'w') as outfile:
@@ -124,11 +121,8 @@ def main():
     with open(opts.output_adjacencies, 'w') as outfile:
         json.dump(oscars_adjcies, outfile, indent=2)
 
-    with open(opts.output_addresses, 'w') as outfile:
-        json.dump(urn_addrs, outfile, indent=2)
 
-
-def make_urn_addrs(addrs=None, isis_adjcies=None):
+def merge_addrs(oscars_devices=None, addrs=None, isis_adjcies=None):
     urn_addrs_dict = {}
     for addr in addrs:
         int_name = addr["int_name"]
@@ -138,6 +132,7 @@ def make_urn_addrs(addrs=None, isis_adjcies=None):
         if int_name == "lo0.0" or int_name == "system":
             urn = router
             urn_addrs_dict[urn] = address
+
     for isis_adjcy in isis_adjcies:
         address = isis_adjcy["a_addr"]
         router = isis_adjcy["a"]
@@ -145,15 +140,14 @@ def make_urn_addrs(addrs=None, isis_adjcies=None):
         urn = router + ":" + port
         urn_addrs_dict[urn] = address
 
-    urn_addrs = []
     for urn in urn_addrs_dict.keys():
-        entry = {
-            "urn": urn,
-            "ipv4Address": urn_addrs_dict[urn]
-        }
-        urn_addrs.append(entry)
-
-    return urn_addrs
+        for device in oscars_devices:
+            if device["urn"] == urn:
+                device["ipv4Address"] = urn_addrs_dict[urn]
+            else:
+                for port in device["ports"]:
+                    if port["urn"] == urn:
+                        port["ipv4Address"] = urn_addrs_dict[urn]
 
 
 def filter_out_not_igp(igp_portmap=None, oscars_devices=None):
@@ -174,6 +168,10 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None):
                 for port in ports[device_name].keys():
                     port_ifces = ports[device_name][port]
                     mbps = 0
+
+
+                    # TODO: examine VLANs, remove used vlans, create correct reservable VLANs for output
+                    # TODO: add alias information to port tags
                     for ifce_data in port_ifces:
                         mbps = ifce_data["mbps"]
 
@@ -184,21 +182,34 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None):
 
                     ifce_data = {
                         "urn": device_name + ":" + port,
-                        "reservableBw": mbps
+                        "reservableIngressBw": mbps,
+                        "reservableEgressBw": mbps
                     }
 
                     if port_in_igp:
                         ifce_data["capabilities"] = ["MPLS"]
                     else:
                         ifce_data["capabilities"] = ["ETHERNET"]
+
+                    # TODO: put correct reservable VLANs in output
                         ifce_data["reservableVlans"] = [
                             {
                                 "floor": 2000,
                                 "ceiling": 2999
                             }
                         ]
+                    found_port = False
+                    for out_port in device["ports"]:
+                        if out_port["urn"] == ifce_data["urn"]:
+                            found_port = True
 
-                    device["ifces"].append(ifce_data)
+                            out_port["capabilities"] = ifce_data["capabilities"]
+                            out_port["reservableIngressBw"] = ifce_data["reservableIngressBw"]
+                            out_port["reservableEgressBw"] = ifce_data["reservableEgressBw"]
+                            if "reservableVlans" in ifce_data.keys():
+                                out_port["reservableVlans"] = ifce_data["reservableVlans"]
+                    if not found_port:
+                        device["ports"].append(ifce_data)
 
 
 def merge_isis_ports(oscars_devices=None, igp_portmap=None):
@@ -211,7 +222,7 @@ def merge_isis_ports(oscars_devices=None, igp_portmap=None):
                     mbps = igp_portmap[device_name][port_name]["mbps"]
                     port_urn = device_name + ":" + port_name
                     found_port = False
-                    for ifce_data in device["ifces"]:
+                    for ifce_data in device["ports"]:
                         if ifce_data["urn"] == port_urn:
                             found_port = True
                             if "MPLS" not in ifce_data["capabilities"]:
@@ -221,9 +232,10 @@ def merge_isis_ports(oscars_devices=None, igp_portmap=None):
                         new_ifce_data = {
                             "urn": port_urn,
                             "capabilities": ["MPLS"],
-                            "reservableBw": mbps
+                            "reservableIngressBw": mbps,
+                            "reservableEgressBw": mbps
                         }
-                        device["ifces"].append(new_ifce_data)
+                        device["ports"].append(new_ifce_data)
         if not found_device:
             raise ValueError("can't find device %s" % device_name)
 
@@ -237,7 +249,7 @@ def transform_devices(in_devices=None):
             "model": model,
             "type": "ROUTER",
             "capabilities": ["ETHERNET", "MPLS"],
-            "ifces": [],
+            "ports": [],
             "reservableVlans": []
         }
         out_routers.append(out_router)

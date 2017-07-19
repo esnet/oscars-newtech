@@ -184,14 +184,14 @@
   {
     "a": "eqx-ash-cr5:10/2/2", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 15
     }, 
     "z": "star-cr5:9/1/2"
   }, 
   {
     "a": "star-cr5:9/1/2", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 15
     }, 
     "z": "eqx-ash-cr5:10/2/2"
   }, 
@@ -268,14 +268,14 @@
   {
     "a": "forr-rt2:ge-0/0/1", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "doe-gtn-rt2:ge-0/0/0"
   }, 
   {
     "a": "doe-gtn-rt2:ge-0/0/0", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "forr-rt2:ge-0/0/1"
   }, 
@@ -341,13 +341,6 @@
       "MPLS": 4
     }, 
     "z": "sacr-cr5:10/2/4"
-  }, 
-  {
-    "a": "forr-rt2:ge-0/0/0", 
-    "metrics": {
-      "MPLS": 2
-    }, 
-    "z": "wash-ar1:ge-0/1/0"
   }, 
   {
     "a": "nash-cr5:3/1/1", 
@@ -576,14 +569,14 @@
   {
     "a": "eqx-ash-cr5:10/1/1", 
     "metrics": {
-      "MPLS": 2
+      "MPLS": 1
     }, 
     "z": "doe-gtn-rt2:ge-0/1/0"
   }, 
   {
     "a": "doe-gtn-rt2:ge-0/1/0", 
     "metrics": {
-      "MPLS": 2
+      "MPLS": 1
     }, 
     "z": "eqx-ash-cr5:10/1/1"
   }, 
@@ -600,13 +593,6 @@
       "MPLS": 16
     }, 
     "z": "nash-cr5:3/1/1"
-  }, 
-  {
-    "a": "wash-ar1:ge-0/1/0", 
-    "metrics": {
-      "MPLS": 2
-    }, 
-    "z": "forr-rt2:ge-0/0/0"
   }, 
   {
     "a": "lsvn-cr1:xe-1/2/0", 
@@ -686,11 +672,11 @@
     "z": "denv-cr5:2/1/1"
   }, 
   {
-    "a": "llnl-mr2:xe-0/2/0", 
+    "a": "denv-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 4
+      "MPLS": 21
     }, 
-    "z": "sacr-cr5:10/2/6"
+    "z": "sacr-cr5:2/1/1"
   }, 
   {
     "a": "sacr-cr5:10/2/6", 
@@ -863,14 +849,14 @@
   {
     "a": "star-cr5:10/1/2", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 15
     }, 
     "z": "eqx-ash-cr5:10/1/2"
   }, 
   {
     "a": "eqx-ash-cr5:10/1/2", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 15
     }, 
     "z": "star-cr5:10/1/2"
   }, 
@@ -994,11 +980,11 @@
     "z": "lond-cr5:4/1/1"
   }, 
   {
-    "a": "pppl-rt5:xe-0/2/0", 
+    "a": "chic-cr5:10/1/4", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
-    "z": "aofa-cr5:9/1/1"
+    "z": "fnal-mr2:xe-0/0/0"
   }, 
   {
     "a": "chic-cr5:7/1/1", 
@@ -1017,7 +1003,7 @@
   {
     "a": "eqx-chi-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 16
     }, 
     "z": "eqx-ash-cr5:2/1/1"
   }, 
@@ -1031,7 +1017,7 @@
   {
     "a": "eqx-ash-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 16
     }, 
     "z": "eqx-chi-cr5:2/1/1"
   }, 
@@ -1045,14 +1031,14 @@
   {
     "a": "ga-rt2:ge-1/1/3", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 120
     }, 
     "z": "lsvn-cr1:ge-1/1/5"
   }, 
   {
     "a": "lsvn-cr1:ge-1/1/5", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 120
     }, 
     "z": "ga-rt2:ge-1/1/3"
   }, 
@@ -1106,11 +1092,11 @@
     "z": "sunn-cr5:10/2/3"
   }, 
   {
-    "a": "denv-cr5:2/1/1", 
+    "a": "llnl-mr2:xe-0/2/0", 
     "metrics": {
-      "MPLS": 21
+      "MPLS": 4
     }, 
-    "z": "sacr-cr5:2/1/1"
+    "z": "sacr-cr5:10/2/6"
   }, 
   {
     "a": "sunn-cr5:10/2/3", 
@@ -1267,25 +1253,11 @@
     "z": "star-cr5:9/1/4"
   }, 
   {
-    "a": "wash-cr5:10/1/3", 
+    "a": "pppl-rt5:xe-0/2/0", 
     "metrics": {
       "MPLS": 1
     }, 
-    "z": "wash-ar1:ae0"
-  }, 
-  {
-    "a": "wash-ar1:ae0", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "wash-cr5:10/1/3"
-  }, 
-  {
-    "a": "chic-cr5:10/1/4", 
-    "metrics": {
-      "MPLS": 2
-    }, 
-    "z": "fnal-mr2:xe-0/0/0"
+    "z": "aofa-cr5:9/1/1"
   }, 
   {
     "a": "denv-cr5:10/1/4", 

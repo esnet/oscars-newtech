@@ -1,0 +1,17 @@
+[
+  {
+    "a": "A:2",
+    "metrics": {
+      "ETHERNET": 1
+    },
+    "z": "B:2"
+  },
+  {
+    "a": "B:2",
+    "metrics": {
+      "ETHERNET": 1
+    },
+    "z": "A:2"
+  }
+
+]

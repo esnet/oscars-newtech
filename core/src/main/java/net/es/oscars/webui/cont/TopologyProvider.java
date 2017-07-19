@@ -53,7 +53,10 @@ public class TopologyProvider {
     }
 
     public Map<String, Position> getPositions() {
-        return uiPopulator.getPositions().getPositions();
+        if (uiPopulator.getStarted()) {
+            return uiPopulator.getPositions().getPositions();
+        }
+        return new HashMap<>();
     }
 
     public List<ReservableBandwidth> getPortCapacities() {

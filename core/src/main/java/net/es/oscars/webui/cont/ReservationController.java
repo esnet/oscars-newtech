@@ -506,6 +506,7 @@ public class ReservationController {
     public Connection holdConnection(Connection connection) throws PCEException, PSSException {
         connection = defineDefaults(connection);
         ConnectionE connE = modelMapper.map(connection, ConnectionE.class);
+        log.info(connE.toString());
 
         resvService.hold(connE);
 

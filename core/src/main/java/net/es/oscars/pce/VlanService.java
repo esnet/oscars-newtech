@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static net.es.oscars.helpers.IntRangeParsing.intRangesFromIntegers;
+
 @Slf4j
 @Service
 @Component
@@ -116,13 +118,9 @@ public class VlanService {
 
         // Get map of all reserved VLAN IDs per URN
         Map<String, Set<Integer>> reservedVlanIdMap = buildReservedVlanIdMap(urnMap, reservedVlans);
-        String stringifyVlanMap = stringifyVlanMap(reservedVlanIdMap);
-        //log.info("Reserved VLAN ID Map: " + stringifyVlanMap);
 
         // Get map of all reservable VLAN IDs per URN
         Map<String, Set<Integer>> reservableVlanIdMap = buildReservableVlanIdMap(urnMap);
-        stringifyVlanMap = stringifyVlanMap(reservableVlanIdMap);
-        //log.info("Reservable VLAN ID Map: " + stringifyVlanMap);
 
         if (urnMap == null) {
             log.error("null URN map!");
@@ -158,49 +156,11 @@ public class VlanService {
                     }
                 });
 
-        stringifyVlanMap = stringifyVlanMap(availableVlanIdMap);
         //log.info("Available VLAN ID Map: " + stringifyVlanMap);
 
         return availableVlanIdMap;
     }
 
-    public String stringifyVlanMap(Map<String, Set<Integer>> input) {
-        Map<String, String> output = new HashMap<>();
-        input.keySet().forEach(urn -> {
-            List<Integer> availVlans = new ArrayList<>();
-            availVlans.addAll(input.get(urn));
-            Collections.sort(availVlans);
-            Set<IntRange> ranges = new HashSet<>();
-
-            IntRange range = IntRange.builder().floor(0).ceiling(0).build();
-            for (Integer idx = 0; idx < availVlans.size(); idx++) {
-                Integer vlan = availVlans.get(idx);
-                if (range.getCeiling() == 0) {
-                    range.setFloor(vlan);
-                    range.setCeiling(vlan);
-                }
-                if (idx == availVlans.size() - 1) {
-                    range.setCeiling(vlan);
-                    ranges.add(range);
-                } else {
-                    if (range.getCeiling() + 1 == vlan) {
-                        range.setCeiling(vlan);
-                    } else {
-                        ranges.add(range);
-                        range = IntRange.builder().floor(vlan).ceiling(vlan).build();
-                    }
-                }
-            }
-
-            String row = ranges.toString();
-
-
-            output.put(urn, row);
-        });
-
-        return output.toString();
-
-    }
 
 
     private Map<String, Set<Integer>> buildReservableVlanIdMap(Map<String, UrnE> urnMap) {
@@ -224,7 +184,9 @@ public class VlanService {
         for (ReservedVlanE rsvVlan : reservedVlans) {
             Integer vlanId = rsvVlan.getVlan();
             String urn = rsvVlan.getUrn();
-            reservedVlanIdMap.get(urn).add(vlanId);
+            if (reservedVlanIdMap.keySet().contains(urn)) {
+                reservedVlanIdMap.get(urn).add(vlanId);
+            }
         }
         return reservedVlanIdMap;
     }
@@ -446,9 +408,13 @@ public class VlanService {
         // Use the ports' available vlans
         else {
             Map<String, Set<Integer>> vlanIdPerPort = new HashMap<>();
-            Map<String, Set<Integer>> availableVlanMap = reqFixtures.stream()
-                    .map(RequestedVlanFixtureE::getPortUrn)
-                    .collect(Collectors.toMap(urn -> urn, urn -> getAvailableVlanIds(urn, rsvVlanMap, deviceToPortMap, urnMap)));
+
+            Map<String, Set<Integer>> availableVlanMap = new HashMap<>();
+            for (RequestedVlanFixtureE reqFixture : reqFixtures) {
+                Set<Integer> availableVlans = getAvailableVlanIds(reqFixture.getPortUrn(), rsvVlanMap, deviceToPortMap, urnMap);
+                availableVlanMap.put(reqFixture.getPortUrn(), availableVlans);
+            }
+
             reqVlanMap = buildRequestedVlanIdMap(reqFixtures, availableVlanMap);
             // Get all of the requested VLANs per URN that are available
             for (String urn : reqVlanMap.keySet()) {

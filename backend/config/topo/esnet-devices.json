@@ -1,0 +1,5841 @@
+[
+  {
+    "ipv4Address": "134.55.200.125",
+    "urn": "pppl-rt5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.134",
+        "reservableEgressBw": 10000,
+        "urn": "pppl-rt5:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.219.85",
+        "reservableEgressBw": 10000,
+        "urn": "pppl-rt5:xe-1/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "pppl-rt5:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "pppl-rt5:ge-0/0/2",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "pppl-rt5:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "pppl-rt5:ge-0/0/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "pppl-rt5:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "pppl-rt5:xe-2/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.134",
+    "urn": "chic-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.36.74",
+        "reservableEgressBw": 10000,
+        "urn": "chic-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.41.213",
+        "reservableEgressBw": 10000,
+        "urn": "chic-cr5:10/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.45",
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:6/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.161",
+        "reservableEgressBw": 10000,
+        "urn": "chic-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.40.201",
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.218.61",
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:7/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.81",
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:6/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.45",
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.81",
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.41",
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.217.109",
+        "reservableEgressBw": 10000,
+        "urn": "chic-cr5:9/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "chic-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "chic-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:3/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "chic-cr5:10/1/9",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:5/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:8/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "chic-cr5:8/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.118",
+    "urn": "srs-rt3",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.220.78",
+        "reservableEgressBw": 1000,
+        "urn": "srs-rt3:ge-0/1/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.220.82",
+        "reservableEgressBw": 1000,
+        "urn": "srs-rt3:ge-1/1/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "srs-rt3:ge-0/0/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "srs-rt3:ge-1/0/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100,
+        "urn": "srs-rt3:fe-0/3/3",
+        "reservableIngressBw": 100,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100,
+        "urn": "srs-rt3:fe-0/3/1",
+        "reservableIngressBw": 100,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.114",
+    "urn": "anl-mr2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.41.210",
+        "reservableEgressBw": 10000,
+        "urn": "anl-mr2:xe-2/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.41.214",
+        "reservableEgressBw": 10000,
+        "urn": "anl-mr2:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "anl-mr2:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 20000,
+        "urn": "anl-mr2:ae0",
+        "reservableIngressBw": 20000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "anl-mr2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "anl-mr2:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.155",
+    "urn": "orau-rt3",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.43.30",
+        "reservableEgressBw": 1000,
+        "urn": "orau-rt3:ge-1/2/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "orau-rt3:ge-0/3/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.5",
+        "reservableIngressBw": 1000,
+        "urn": "orau-rt3:ge-0/2/0",
+        "capabilities": [
+          "ETHERNET"
+        ],
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100,
+        "urn": "orau-rt3:fe-0/0/0",
+        "reservableIngressBw": 100,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "orau-rt3:ge-0/1/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.86",
+    "urn": "llnldc-rt4",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.219.114",
+        "reservableEgressBw": 45,
+        "urn": "llnldc-rt4:t3-0/3/0",
+        "reservableIngressBw": 45,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "llnldc-rt4:ge-0/2/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100,
+        "urn": "llnldc-rt4:fe-0/0/3",
+        "reservableIngressBw": 100,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "llnldc-rt4:ge-0/1/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.130",
+    "urn": "albq-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.37.73",
+        "reservableEgressBw": 100000,
+        "urn": "albq-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.113",
+        "reservableEgressBw": 100000,
+        "urn": "albq-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.17",
+        "reservableEgressBw": 10000,
+        "urn": "albq-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.217.162",
+        "reservableEgressBw": 10000,
+        "urn": "albq-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "albq-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "albq-cr5:10/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "albq-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.141",
+    "urn": "newy-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.220.22",
+        "reservableEgressBw": 100000,
+        "urn": "newy-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.221.134",
+        "reservableEgressBw": 10000,
+        "urn": "newy-cr5:10/1/6",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.209.34",
+        "reservableEgressBw": 100000,
+        "urn": "newy-cr5:4/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.78",
+        "reservableEgressBw": 100000,
+        "urn": "newy-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "newy-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "newy-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "newy-cr5:10/1/9",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "newy-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "newy-cr5:9/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "newy-cr5:9/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.107",
+    "urn": "eqx-ash-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.181",
+        "reservableEgressBw": 10000,
+        "urn": "eqx-ash-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.66",
+        "reservableEgressBw": 10000,
+        "urn": "eqx-ash-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.221.69",
+        "reservableEgressBw": 10000,
+        "urn": "eqx-ash-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.219.2",
+        "reservableEgressBw": 100000,
+        "urn": "eqx-ash-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.207.53",
+        "reservableEgressBw": 100000,
+        "urn": "eqx-ash-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.221.73",
+        "reservableEgressBw": 10000,
+        "urn": "eqx-ash-cr5:10/2/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.102",
+        "reservableEgressBw": 10000,
+        "urn": "eqx-ash-cr5:10/2/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-ash-cr5:10/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "eqx-ash-cr5:1/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-ash-cr5:BLANK",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-ash-cr5:10/2/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.142",
+    "urn": "ornl-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.37.34",
+        "reservableEgressBw": 10000,
+        "urn": "ornl-cr5:9/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.42",
+        "reservableEgressBw": 100000,
+        "urn": "ornl-cr5:6/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.29",
+        "reservableEgressBw": 10000,
+        "urn": "ornl-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.6",
+        "reservableIngressBw": 10000,
+        "urn": "ornl-cr5:10/1/2",
+        "capabilities": [
+          "ETHERNET"
+        ],
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "ornl-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "ornl-cr5:7/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.79",
+    "urn": "wash-ar1",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.219.113",
+        "reservableEgressBw": 45,
+        "urn": "wash-ar1:t3-1/3/1",
+        "reservableIngressBw": 45,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.41.1",
+        "reservableIngressBw": 2000,
+        "urn": "wash-ar1:ae0",
+        "capabilities": [
+          "ETHERNET"
+        ],
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 2000
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 45,
+        "urn": "wash-ar1:t3-0/3/0",
+        "reservableIngressBw": 45,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.57",
+    "urn": "forr-rt2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.217.166",
+        "reservableEgressBw": 1000,
+        "urn": "forr-rt2:ge-0/0/1",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "forr-rt2:ge-0/0/6",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "forr-rt2:ge-0/0/5",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "forr-rt2:ge-0/0/4",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "forr-rt2:ge-0/0/3",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "forr-rt2:ge-0/0/2",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.222.10",
+        "reservableIngressBw": 1000,
+        "urn": "forr-rt2:ge-0/0/0",
+        "capabilities": [
+          "ETHERNET"
+        ],
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.97",
+    "urn": "osti-rt2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.37.33",
+        "reservableEgressBw": 10000,
+        "urn": "osti-rt2:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.18",
+        "reservableIngressBw": 20000,
+        "urn": "osti-rt2:ae0",
+        "capabilities": [
+          "ETHERNET"
+        ],
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 20000
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.120",
+    "urn": "pantex-rt3",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.217.161",
+        "reservableEgressBw": 1000,
+        "urn": "pantex-rt3:ge-1/2/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "pantex-rt3:ge-0/2/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "pantex-rt3:ge-0/1/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "pantex-rt3:ge-1/0/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.143",
+    "urn": "pnwg-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.42.37",
+        "reservableEgressBw": 100000,
+        "urn": "pnwg-cr5:2/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.102",
+        "reservableEgressBw": 10000,
+        "urn": "pnwg-cr5:10/1/6",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.21",
+        "reservableEgressBw": 100000,
+        "urn": "pnwg-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.53",
+        "reservableEgressBw": 10000,
+        "urn": "pnwg-cr5:10/1/9",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.162",
+        "reservableEgressBw": 10000,
+        "urn": "pnwg-cr5:10/1/10",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "pnwg-cr5:10/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "pnwg-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "pnwg-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "pnwg-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "pnwg-cr5:9/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "pnwg-cr5:9/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.136",
+    "urn": "elpa-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.40.197",
+        "reservableEgressBw": 100000,
+        "urn": "elpa-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.42",
+        "reservableEgressBw": 100000,
+        "urn": "elpa-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.74",
+        "reservableEgressBw": 100000,
+        "urn": "elpa-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "elpa-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "elpa-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.132",
+    "urn": "aofa-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.43.97",
+        "reservableEgressBw": 100000,
+        "urn": "aofa-cr5:6/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.133",
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:9/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.170",
+        "reservableEgressBw": 100000,
+        "urn": "aofa-cr5:5/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.219.46",
+        "reservableEgressBw": 100000,
+        "urn": "aofa-cr5:5/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.33",
+        "reservableEgressBw": 100000,
+        "urn": "aofa-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.77",
+        "reservableEgressBw": 100000,
+        "urn": "aofa-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.29",
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:9/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.221.137",
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:10/1/12",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.5",
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:9/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.220.73",
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:10/1/11",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:10/1/8",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:10/1/9",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "aofa-cr5:4/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "aofa-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "aofa-cr5:9/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "127.0.0.1",
+    "urn": "bois-cr1",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.39.6",
+        "reservableEgressBw": 10000,
+        "urn": "bois-cr1:xe-7/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.54",
+        "reservableEgressBw": 10000,
+        "urn": "bois-cr1:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bois-cr1:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bois-cr1:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bois-cr1:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bois-cr1:xe-7/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bois-cr1:xe-7/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bois-cr1:xe-1/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.144",
+    "urn": "sacr-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.40.5",
+        "reservableEgressBw": 100000,
+        "urn": "sacr-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.22",
+        "reservableEgressBw": 100000,
+        "urn": "sacr-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.50.201",
+        "reservableEgressBw": 100000,
+        "urn": "sacr-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.49.117",
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/2/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.49",
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/2/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.9",
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/2/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.222.33",
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/2/6",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.209",
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/2/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.157",
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/2/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/1/6",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sacr-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.242",
+    "urn": "cern-272-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.209.58",
+        "reservableEgressBw": 100000,
+        "urn": "cern-272-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.220.45",
+        "reservableEgressBw": 100000,
+        "urn": "cern-272-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "cern-272-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "cern-272-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "cern-272-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 20000,
+        "urn": "cern-272-cr5:BLANK",
+        "reservableIngressBw": 20000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.148",
+    "urn": "snla-rt3",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.36.18",
+        "reservableEgressBw": 10000,
+        "urn": "snla-rt3:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "snla-rt3:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "snla-rt3:ge-1/1/3",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "snla-rt3:ge-1/1/2",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "snla-rt3:ge-1/1/1",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "snla-rt3:ge-1/0/2",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "snla-rt3:ge-1/0/3",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.110",
+    "urn": "slac-mr2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.210",
+        "reservableEgressBw": 10000,
+        "urn": "slac-mr2:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.22",
+        "reservableEgressBw": 10000,
+        "urn": "slac-mr2:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.40.14",
+        "reservableEgressBw": 10000,
+        "urn": "slac-mr2:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "slac-mr2:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "slac-mr2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "slac-mr2:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.150",
+    "urn": "ameslab-rt3",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.217.110",
+        "reservableEgressBw": 10000,
+        "urn": "ameslab-rt3:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.217.114",
+        "reservableEgressBw": 10000,
+        "urn": "ameslab-rt3:xe-1/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "ameslab-rt3:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "ameslab-rt3:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "ameslab-rt3:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "ameslab-rt3:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.139",
+    "urn": "nash-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.39.121",
+        "reservableEgressBw": 10000,
+        "urn": "nash-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.41.149",
+        "reservableEgressBw": 10000,
+        "urn": "nash-cr5:10/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.220.81",
+        "reservableEgressBw": 10000,
+        "urn": "nash-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.82",
+        "reservableEgressBw": 100000,
+        "urn": "nash-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.40.202",
+        "reservableEgressBw": 100000,
+        "urn": "nash-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.50",
+        "reservableEgressBw": 100000,
+        "urn": "nash-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.74",
+        "reservableEgressBw": 100000,
+        "urn": "nash-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.178",
+        "reservableEgressBw": 100000,
+        "urn": "nash-cr5:4/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "nash-cr5:10/1/6",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "nash-cr5:1/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.137",
+    "urn": "hous-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.40.198",
+        "reservableEgressBw": 100000,
+        "urn": "hous-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.49",
+        "reservableEgressBw": 100000,
+        "urn": "hous-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.109",
+        "reservableEgressBw": 100000,
+        "urn": "hous-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "hous-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "hous-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "hous-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.64",
+    "urn": "eqx-sj-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.146",
+        "reservableEgressBw": 10000,
+        "urn": "eqx-sj-cr5:10/2/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-sj-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "eqx-sj-cr5:1/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-sj-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-sj-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "eqx-sj-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-sj-cr5:BLANK",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-sj-cr5:10/2/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.94",
+    "urn": "eqx-chi-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.162",
+        "reservableEgressBw": 10000,
+        "urn": "eqx-chi-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.218.62",
+        "reservableEgressBw": 100000,
+        "urn": "eqx-chi-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.207.54",
+        "reservableEgressBw": 100000,
+        "urn": "eqx-chi-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "eqx-chi-cr5:1/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-chi-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-chi-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "eqx-chi-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.146",
+    "urn": "sunn-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.36.21",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.57",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:10/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.40.13",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.93",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.41",
+        "reservableEgressBw": 100000,
+        "urn": "sunn-cr5:5/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.40.6",
+        "reservableEgressBw": 100000,
+        "urn": "sunn-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.217.154",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:10/2/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.145",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:10/2/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.49.1",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:9/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.89",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:9/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.13",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:9/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.29",
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:10/2/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "sunn-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "sunn-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "sunn-cr5:7/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "sunn-cr5:8/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "sunn-cr5:7/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:10/2/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:10/1/6",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "sunn-cr5:5/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sunn-cr5:9/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "sunn-cr5:8/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.135",
+    "urn": "denv-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.39.101",
+        "reservableEgressBw": 10000,
+        "urn": "denv-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.5",
+        "reservableEgressBw": 10000,
+        "urn": "denv-cr5:10/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.161",
+        "reservableEgressBw": 10000,
+        "urn": "denv-cr5:10/1/6",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.38",
+        "reservableEgressBw": 100000,
+        "urn": "denv-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.49.57",
+        "reservableEgressBw": 100000,
+        "urn": "denv-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.114",
+        "reservableEgressBw": 100000,
+        "urn": "denv-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.50.202",
+        "reservableEgressBw": 100000,
+        "urn": "denv-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.41.17",
+        "reservableEgressBw": 10000,
+        "urn": "denv-cr5:10/1/10",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "denv-cr5:10/1/7",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "denv-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "denv-cr5:9/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 20000,
+        "urn": "denv-cr5:BLANK",
+        "reservableIngressBw": 20000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 9953,
+        "urn": "denv-cr5:9/1/3",
+        "reservableIngressBw": 9953,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "denv-cr5:10/1/12",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "denv-cr5:10/1/11",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.240.161",
+    "urn": "lsvn-cr1",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.36.30",
+        "reservableEgressBw": 10000,
+        "urn": "lsvn-cr1:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.41",
+        "reservableEgressBw": 1000,
+        "urn": "lsvn-cr1:ge-1/1/5",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.41.18",
+        "reservableEgressBw": 10000,
+        "urn": "lsvn-cr1:xe-2/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lsvn-cr1:xe-2/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lsvn-cr1:xe-2/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lsvn-cr1:ge-1/1/1",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lsvn-cr1:ge-1/1/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lsvn-cr1:ge-1/0/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lsvn-cr1:ge-1/0/1",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.240.162",
+    "urn": "ga-rt2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.42",
+        "reservableEgressBw": 1000,
+        "urn": "ga-rt2:ge-1/1/3",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.218.18",
+        "reservableEgressBw": 10000,
+        "urn": "ga-rt2:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "ga-rt2:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "ga-rt2:xe-0/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "ga-rt2:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "ga-rt2:ge-1/0/5",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "ga-rt2:ge-1/0/3",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.108",
+    "urn": "llnl-mr2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.222.34",
+        "reservableEgressBw": 10000,
+        "urn": "llnl-mr2:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.14",
+        "reservableEgressBw": 10000,
+        "urn": "llnl-mr2:xe-3/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.219.78",
+        "reservableEgressBw": 10000,
+        "urn": "llnl-mr2:xe-2/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.219.65",
+        "reservableEgressBw": 10000,
+        "urn": "llnl-mr2:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "llnl-mr2:xe-2/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "llnl-mr2:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "llnl-mr2:ge-3/1/5",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "llnl-mr2:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "llnl-mr2:ge-3/1/2",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "llnl-mr2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "llnl-mr2:ge-3/0/7",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "llnl-mr2:ge-3/0/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "llnl-mr2:ge-3/0/1",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "llnl-mr2:xe-1/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.240",
+    "urn": "lond-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.39.169",
+        "reservableEgressBw": 100000,
+        "urn": "lond-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.57",
+        "reservableEgressBw": 100000,
+        "urn": "lond-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.220.21",
+        "reservableEgressBw": 100000,
+        "urn": "lond-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.222.14",
+        "reservableEgressBw": 100000,
+        "urn": "lond-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lond-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "lond-cr5:1/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lond-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lond-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "lond-cr5:2/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.133",
+    "urn": "atla-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.73",
+        "reservableEgressBw": 100000,
+        "urn": "atla-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.69",
+        "reservableEgressBw": 100000,
+        "urn": "atla-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.41",
+        "reservableEgressBw": 100000,
+        "urn": "atla-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.220.77",
+        "reservableEgressBw": 10000,
+        "urn": "atla-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "atla-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "atla-cr5:10/1/8",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "atla-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.113",
+    "urn": "fnal-mr2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.36.73",
+        "reservableEgressBw": 10000,
+        "urn": "fnal-mr2:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.220.5",
+        "reservableEgressBw": 10000,
+        "urn": "fnal-mr2:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.49.98",
+        "reservableEgressBw": 10000,
+        "urn": "fnal-mr2:xe-8/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "fnal-mr2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "fnal-mr2:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "fnal-mr2:xe-8/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.147",
+    "urn": "wash-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.219.86",
+        "reservableEgressBw": 10000,
+        "urn": "wash-cr5:10/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.221.74",
+        "reservableEgressBw": 10000,
+        "urn": "wash-cr5:10/1/7",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.221.70",
+        "reservableEgressBw": 10000,
+        "urn": "wash-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.177",
+        "reservableEgressBw": 100000,
+        "urn": "wash-cr5:5/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.62",
+        "reservableEgressBw": 100000,
+        "urn": "wash-cr5:5/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.98",
+        "reservableEgressBw": 100000,
+        "urn": "wash-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.46",
+        "reservableEgressBw": 100000,
+        "urn": "wash-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.70",
+        "reservableEgressBw": 100000,
+        "urn": "wash-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.34",
+        "reservableEgressBw": 100000,
+        "urn": "wash-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.219.1",
+        "reservableEgressBw": 100000,
+        "urn": "wash-cr5:4/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "wash-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.41.2",
+        "reservableIngressBw": 10000,
+        "urn": "wash-cr5:10/1/3",
+        "capabilities": [
+          "ETHERNET"
+        ],
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "wash-cr5:10/1/8",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "wash-cr5:10/1/9",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "wash-cr5:6/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "wash-cr5:10/1/10",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.243",
+    "urn": "amst-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.217.65",
+        "reservableEgressBw": 40000,
+        "urn": "amst-cr5:4/1/1",
+        "reservableIngressBw": 40000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.209.57",
+        "reservableEgressBw": 100000,
+        "urn": "amst-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.222.13",
+        "reservableEgressBw": 100000,
+        "urn": "amst-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "amst-cr5:1/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "amst-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "amst-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "amst-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "amst-cr5:10/2/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.154",
+    "urn": "doe-gtn-rt2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.182",
+        "reservableEgressBw": 1000,
+        "urn": "doe-gtn-rt2:ge-0/1/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.217.165",
+        "reservableEgressBw": 1000,
+        "urn": "doe-gtn-rt2:ge-0/0/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "doe-gtn-rt2:ge-0/0/3",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "doe-gtn-rt2:ge-0/0/2",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "doe-gtn-rt2:ge-0/0/1",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "doe-gtn-rt2:ge-0/1/2",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "doe-gtn-rt2:ge-0/1/3",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100,
+        "urn": "doe-gtn-rt2:ge-0/1/1",
+        "reservableIngressBw": 100,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.105",
+    "urn": "sdsc-sdn2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.218.17",
+        "reservableEgressBw": 10000,
+        "urn": "sdsc-sdn2:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.217.153",
+        "reservableEgressBw": 10000,
+        "urn": "sdsc-sdn2:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sdsc-sdn2:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sdsc-sdn2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "sdsc-sdn2:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.84",
+    "urn": "snll-rt2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.158",
+        "reservableEgressBw": 1000,
+        "urn": "snll-rt2:ge-0/1/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 45,
+        "urn": "snll-rt2:t3-0/0/0",
+        "reservableIngressBw": 45,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.241",
+    "urn": "cern-513-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.220.46",
+        "reservableEgressBw": 100000,
+        "urn": "cern-513-cr5:1/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.61",
+        "reservableEgressBw": 100000,
+        "urn": "cern-513-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.58",
+        "reservableEgressBw": 100000,
+        "urn": "cern-513-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "cern-513-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "cern-513-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 20000,
+        "urn": "cern-513-cr5:BLANK",
+        "reservableIngressBw": 20000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "cern-513-cr5:5/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "cern-513-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.111",
+    "urn": "nersc-mr2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.36.10",
+        "reservableEgressBw": 10000,
+        "urn": "nersc-mr2:xe-2/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.94",
+        "reservableEgressBw": 10000,
+        "urn": "nersc-mr2:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "nersc-mr2:xe-7/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "nersc-mr2:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "nersc-mr2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "nersc-mr2:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "nersc-mr2:xe-7/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "nersc-mr2:xe-7/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.145",
+    "urn": "star-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.41.209",
+        "reservableEgressBw": 10000,
+        "urn": "star-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.65",
+        "reservableEgressBw": 10000,
+        "urn": "star-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.46",
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:5/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.42",
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:4/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.218.190",
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.219.45",
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:4/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.49.97",
+        "reservableEgressBw": 10000,
+        "urn": "star-cr5:9/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.217.113",
+        "reservableEgressBw": 10000,
+        "urn": "star-cr5:8/1/6",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.220.6",
+        "reservableEgressBw": 10000,
+        "urn": "star-cr5:8/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.36.101",
+        "reservableEgressBw": 10000,
+        "urn": "star-cr5:9/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "star-cr5:10/1/7",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:1/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:6/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:3/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "star-cr5:10/1/8",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:2/2/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:6/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 100000,
+        "urn": "star-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "star-cr5:8/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.102",
+    "urn": "bnl-mr2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.220.74",
+        "reservableEgressBw": 10000,
+        "urn": "bnl-mr2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.30",
+        "reservableEgressBw": 10000,
+        "urn": "bnl-mr2:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.221.138",
+        "reservableEgressBw": 10000,
+        "urn": "bnl-mr2:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.221.133",
+        "reservableEgressBw": 10000,
+        "urn": "bnl-mr2:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.6",
+        "reservableEgressBw": 10000,
+        "urn": "bnl-mr2:xe-2/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bnl-mr2:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bnl-mr2:xe-2/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bnl-mr2:xe-2/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bnl-mr2:xe-1/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.109",
+    "urn": "snll-mr2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.38.157",
+        "reservableEgressBw": 10000,
+        "urn": "snll-mr2:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.39.158",
+        "reservableEgressBw": 10000,
+        "urn": "snll-mr2:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.58",
+        "reservableEgressBw": 10000,
+        "urn": "snll-mr2:xe-2/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.219.77",
+        "reservableEgressBw": 10000,
+        "urn": "snll-mr2:xe-2/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.219.66",
+        "reservableEgressBw": 10000,
+        "urn": "snll-mr2:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "snll-mr2:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "snll-mr2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "snll-mr2:xe-0/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "snll-mr2:xe-2/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.103",
+    "urn": "ornl-rt4",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.39.122",
+        "reservableEgressBw": 10000,
+        "urn": "ornl-rt4:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.41.150",
+        "reservableEgressBw": 10000,
+        "urn": "ornl-rt4:xe-1/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.29",
+        "reservableEgressBw": 1000,
+        "urn": "ornl-rt4:ge-0/0/1",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.38.30",
+        "reservableEgressBw": 10000,
+        "urn": "ornl-rt4:xe-1/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "ornl-rt4:ge-0/0/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.42.17",
+        "reservableIngressBw": 10000,
+        "urn": "ornl-rt4:xe-2/3/0",
+        "capabilities": [
+          "ETHERNET"
+        ],
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.119",
+    "urn": "bost-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.217.66",
+        "reservableEgressBw": 40000,
+        "urn": "bost-cr5:5/1/1",
+        "reservableIngressBw": 40000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.209.33",
+        "reservableEgressBw": 100000,
+        "urn": "bost-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.218.189",
+        "reservableEgressBw": 100000,
+        "urn": "bost-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bost-cr5:10/1/5",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bost-cr5:10/1/6",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bost-cr5:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 40000,
+        "urn": "bost-cr5:5/1/3",
+        "reservableIngressBw": 40000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "bost-cr5:10/2/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.112",
+    "urn": "jgi-mr2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.49.118",
+        "reservableEgressBw": 10000,
+        "urn": "jgi-mr2:xe-2/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.90",
+        "reservableEgressBw": 10000,
+        "urn": "jgi-mr2:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "jgi-mr2:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "jgi-mr2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.106",
+    "urn": "lbl-mr2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.49.2",
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-1/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.37.50",
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-7/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-7/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/1/8",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-7/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 20000,
+        "urn": "lbl-mr2:ae0",
+        "reservableIngressBw": 20000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/1/3",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/1/2",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/1/0",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/0/6",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/0/7",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/0/4",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/0/5",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/0/2",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/0/3",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/1/9",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 1000,
+        "urn": "lbl-mr2:ge-9/0/1",
+        "reservableIngressBw": 1000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-9/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-8/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-2/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-0/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-2/3/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-2/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-0/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-8/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "lbl-mr2:xe-9/2/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  },
+  {
+    "ipv4Address": "134.55.200.138",
+    "urn": "kans-cr5",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "134.55.43.82",
+        "reservableEgressBw": 100000,
+        "urn": "kans-cr5:1/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.43.110",
+        "reservableEgressBw": 100000,
+        "urn": "kans-cr5:3/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "134.55.49.58",
+        "reservableEgressBw": 100000,
+        "urn": "kans-cr5:2/1/1",
+        "reservableIngressBw": 100000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "kans-cr5:10/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "kans-cr5:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      },
+      {
+        "reservableVlans": [
+          {
+            "ceiling": 2999,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000,
+        "urn": "kans-cr5:10/1/3",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "ETHERNET"
+        ]
+      }
+    ]
+  }
+]

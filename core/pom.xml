@@ -44,6 +44,11 @@
         </dependency>
 
         <dependency>
+            <groupId>net.es.oscars</groupId>
+            <artifactId>frontend</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>net.jodah</groupId>
             <artifactId>concurrentunit</artifactId>
         </dependency>

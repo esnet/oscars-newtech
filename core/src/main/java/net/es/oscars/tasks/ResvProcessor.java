@@ -45,10 +45,8 @@ public class ResvProcessor {
     @Transactional
     public void processingLoop() {
         if (!started) {
-            log.info("processing loop not started");
             return;
         }
-        log.info("entering processing loop");
 
         // process aborting reservations
         resvService.ofResvState(ResvState.ABORTING).forEach(c -> {
