@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class NextHop {
     private String urn;
     private String to;
+    private String through;
 }

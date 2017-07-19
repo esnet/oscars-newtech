@@ -19,6 +19,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor(suppressConstructorProperties=true)
 @NoArgsConstructor
+@EqualsAndHashCode(exclude={"capabilities", "reservableVlans"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
                   property = "urn")
 public class Device {
