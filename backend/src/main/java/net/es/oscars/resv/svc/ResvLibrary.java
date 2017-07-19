@@ -95,7 +95,9 @@ public class ResvLibrary {
         for (IntRange range : reservable) {
             available.addAll(range.asSet());
         }
-        available.removeAll(reserved);
+        if (reserved != null) {
+            available.removeAll(reserved);
+        }
         return IntRange.fromSet(available);
     }
 

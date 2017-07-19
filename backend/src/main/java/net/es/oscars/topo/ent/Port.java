@@ -6,6 +6,7 @@ import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.enums.Layer;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,10 @@ public class Port {
     @NonNull
     @Column(unique = true)
     private String urn;
+
+    @Basic
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private ArrayList<String> tags;
 
     @NonNull
     @ManyToOne

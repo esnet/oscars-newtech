@@ -40,13 +40,15 @@ public class TopoService {
             // make a copy of the IntRanges otherwise it'd be set by reference
             Set<IntRange> drv = new HashSet<>();
             drv.addAll(IntRange.mergeIntRanges(d.getReservableVlans()));
+            Set<Layer> dCaps = new HashSet<>();
+            dCaps.addAll(d.getCapabilities());
 
             TopoUrn deviceUrn = TopoUrn.builder()
                     .urn(d.getUrn())
                     .urnType(UrnType.DEVICE)
                     .device(d)
                     .reservableVlans(drv)
-                    .capabilities(d.getCapabilities())
+                    .capabilities(dCaps)
                     .build();
             urns.put(d.getUrn(), deviceUrn);
 
@@ -55,11 +57,13 @@ public class TopoService {
                 // make a copy of the IntRanges otherwise it'd be set by reference
                 Set<IntRange> prv = new HashSet<>();
                 prv.addAll(IntRange.mergeIntRanges(p.getReservableVlans()));
+                Set<Layer> pCaps = new HashSet<>();
+                pCaps.addAll(p.getCapabilities());
 
                 TopoUrn portUrn = TopoUrn.builder()
                         .urn(p.getUrn())
                         .urnType(UrnType.PORT)
-                        .capabilities(p.getCapabilities())
+                        .capabilities(pCaps)
                         .device(d)
                         .port(p)
                         .reservableIngressBw(p.getReservableIngressBw())

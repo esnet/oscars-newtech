@@ -168,6 +168,10 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None):
                 for port in ports[device_name].keys():
                     port_ifces = ports[device_name][port]
                     mbps = 0
+
+
+                    # TODO: examine VLANs, remove used vlans, create correct reservable VLANs for output
+                    # TODO: add alias information to port tags
                     for ifce_data in port_ifces:
                         mbps = ifce_data["mbps"]
 
@@ -186,6 +190,8 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None):
                         ifce_data["capabilities"] = ["MPLS"]
                     else:
                         ifce_data["capabilities"] = ["ETHERNET"]
+
+                    # TODO: put correct reservable VLANs in output
                         ifce_data["reservableVlans"] = [
                             {
                                 "floor": 2000,

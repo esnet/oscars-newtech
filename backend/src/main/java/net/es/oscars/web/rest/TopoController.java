@@ -2,11 +2,16 @@ package net.es.oscars.web.rest;
 
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.resv.enums.BwDirection;
+import net.es.oscars.resv.svc.ResvLibrary;
+import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.NextHop;
+import net.es.oscars.topo.beans.PortBwVlan;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.db.PortAdjcyRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoLibrary;
 import net.es.oscars.topo.svc.TopoService;
@@ -73,9 +78,42 @@ public class TopoController {
 
             });
         }
-
         return nextHops;
-
     }
+
+
+    @RequestMapping(value = "/api/topo/reservables", method = RequestMethod.GET)
+    @ResponseBody
+    public  Map<String, PortBwVlan> reservables() {
+        log.info("urns in topology: "+topoService.getTopoUrnMap().entrySet().size());
+
+        // grab everything available, no matter the reservations
+        Map<String, Set<IntRange>> availableVlanMap = ResvLibrary.availableVlanMap(topoService.getTopoUrnMap(), new HashSet<>());
+        Map<String, Integer> availableIngressBw = ResvLibrary.availableBandwidthMap(BwDirection.INGRESS, topoService.getTopoUrnMap(), new HashMap<>());
+        Map<String, Integer> availableEgressBw = ResvLibrary.availableBandwidthMap(BwDirection.EGRESS, topoService.getTopoUrnMap(), new HashMap<>());
+
+        Map<String, PortBwVlan> reservables = new HashMap<>();
+        topoService.getTopoUrnMap().forEach((urn, topoUrn) -> {
+            if (topoUrn.getUrnType().equals(UrnType.PORT) && topoUrn.getCapabilities().contains(Layer.ETHERNET)) {
+                Integer ingBw = availableIngressBw.get(urn);
+                Integer egBw = availableEgressBw.get(urn);
+                Set<IntRange> intRanges = availableVlanMap.get(urn);
+                String vlanExpr = IntRange.asString(intRanges);
+
+                PortBwVlan pbw = PortBwVlan.builder()
+                        .vlanRanges(intRanges)
+                        .ingressBandwidth(ingBw)
+                        .egressBandwidth(egBw)
+                        .vlanExpression(vlanExpr)
+                        .build();
+                reservables.put(urn, pbw);
+            }
+
+        });
+        return reservables;
+    }
+
+
+
 
 }
