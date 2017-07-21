@@ -13,18 +13,18 @@ while true; do
     esac
 done
 
-psql -lqt | cut -d \| -f 1 | grep -qw oscars_db
+psql -lqt | cut -d \| -f 1 | grep -qw oscars_backend
 DB_FOUND_CODE=$?
 # need to drop the DB before the role
 if [ ${DB_FOUND_CODE} -eq 0 ]; then
     read -p "Found existing OSCARS backend db, press enter to drop it..."
-    dropdb oscars_db
+    dropdb oscars_backend
 else
     echo "OSCARS backend DB not found"
 fi
 
 
-psql -lqt | cut -d \| -f 1 | grep -qw oscars_backend
+psql -lqt | cut -d \| -f 1 | grep -qw oscars_db
 DB_FOUND_CODE=$?
 # need to drop the DB before the role
 if [ ${DB_FOUND_CODE} -eq 0 ]; then
