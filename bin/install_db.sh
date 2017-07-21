@@ -17,11 +17,23 @@ psql -lqt | cut -d \| -f 1 | grep -qw oscars_db
 DB_FOUND_CODE=$?
 # need to drop the DB before the role
 if [ ${DB_FOUND_CODE} -eq 0 ]; then
-    read -p "Found old OSCARS db, press enter to drop it..."
+    read -p "Found existing OSCARS backend db, press enter to drop it..."
     dropdb oscars_db
 else
-    echo "OSCARS DB not found"
+    echo "OSCARS backend DB not found"
 fi
+
+
+psql -lqt | cut -d \| -f 1 | grep -qw oscars_backend
+DB_FOUND_CODE=$?
+# need to drop the DB before the role
+if [ ${DB_FOUND_CODE} -eq 0 ]; then
+    read -p "Found existing OSCARS core db, press enter to drop it..."
+    dropdb oscars_db
+else
+    echo "OSCARS core DB not found"
+fi
+
 
 psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='oscars'" | grep -q 1
 USER_FOUND_CODE=$?
@@ -46,8 +58,9 @@ psql template1 -c "CREATE ROLE oscars WITH LOGIN CREATEDB PASSWORD '${password}'
 
 echo "creating new database"
 createdb -O oscars oscars_db
+createdb -O oscars oscars_backend
 
-echo "Configured Postgres. Please, edit core/config/application.properties and set"
+echo "Configured Postgres. Please, edit backend and core application.properties and set"
 echo "the password in the 'spring.datasource.password' line, if you haven't already."
 read -p " Press enter to create OSCARS tables.. "
 
@@ -57,4 +70,9 @@ java -jar target/core-1.0.0-beta.jar \
     --spring.jpa.hibernate.ddl-auto=update \
     --startup.exit=true spring.datasource.password=${password}
 
+cd ../backend
+
+java -jar target/backend-1.0.0-beta.jar \
+    --spring.jpa.hibernate.ddl-auto=update \
+    --startup.exit=true spring.datasource.password=${password}
 
