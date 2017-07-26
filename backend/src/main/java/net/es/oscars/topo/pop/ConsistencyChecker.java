@@ -3,7 +3,7 @@ package net.es.oscars.topo.pop;
 import lombok.extern.slf4j.Slf4j;
 
 import net.es.oscars.app.StartupComponent;
-import net.es.oscars.app.StartupException;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.topo.beans.TopoException;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;

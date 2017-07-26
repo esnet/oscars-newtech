@@ -18,4 +18,8 @@ public class TopoAdjcy {
 
     private Map<Layer, Long> metrics = new HashMap<>();
 
+    public String asLogString() {
+        return a.getUrn()+" -- "+z.getUrn();
+    }
+
 }

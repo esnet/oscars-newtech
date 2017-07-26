@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.StartupComponent;
-import net.es.oscars.app.StartupException;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.TopoProperties;
 import net.es.oscars.topo.beans.DevicePositions;
 import org.springframework.beans.factory.annotation.Autowired;

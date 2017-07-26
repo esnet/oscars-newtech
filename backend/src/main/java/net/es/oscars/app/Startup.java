@@ -1,6 +1,7 @@
 package net.es.oscars.app;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
 import net.es.oscars.security.db.UserPopulator;
 import net.es.oscars.topo.pop.ConsistencyChecker;

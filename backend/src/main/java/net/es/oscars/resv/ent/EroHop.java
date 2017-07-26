@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import net.es.oscars.resv.enums.EroHopType;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,10 +16,8 @@ import javax.persistence.Id;
 @Entity
 public class EroHop {
     @JsonCreator
-    public EroHop(@JsonProperty("connectionId") @NonNull String urn,
-                  @JsonProperty("archived") EroHopType type) {
+    public EroHop(@JsonProperty("urn") @NonNull String urn) {
         this.urn = urn;
-        this.type = type;
     }
 
     @Id
@@ -28,7 +25,6 @@ public class EroHop {
     @JsonIgnore
     private Long id;
 
-    private EroHopType type;
 
     @NonNull
     private String urn;

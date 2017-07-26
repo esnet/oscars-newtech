@@ -87,9 +87,14 @@ public class TopoService {
                     this.topoUrnMap.containsKey(pa.getZ().getUrn())) {
 
                 TopoUrn aUrn = this.topoUrnMap.get(pa.getA().getUrn());
-                TopoUrn zUrn = this.topoUrnMap.get(pa.getA().getUrn());
+                TopoUrn zUrn = this.topoUrnMap.get(pa.getZ().getUrn());
+                Map<Layer, Long> metrics = new HashMap<>();
 
-                TopoAdjcy adjcy = TopoAdjcy.builder().a(aUrn).z(zUrn).metrics(pa.getMetrics()).build();
+                pa.getMetrics().entrySet().forEach(e -> {
+                    metrics.put(e.getKey(), e.getValue());
+                });
+
+                TopoAdjcy adjcy = TopoAdjcy.builder().a(aUrn).z(zUrn).metrics(metrics).build();
                 adjcies.add(adjcy);
 
             } else {

@@ -1,4 +1,3 @@
-@wip
 @unit
 Feature: schedules logic
 
