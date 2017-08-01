@@ -4,27 +4,41 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.util.HashidMaker;
 import net.es.oscars.resv.beans.DesignResponse;
 import net.es.oscars.resv.db.DesignRepository;
+import net.es.oscars.resv.db.FixtureRepository;
+import net.es.oscars.resv.db.HeldRepository;
+import net.es.oscars.resv.db.VlanRepository;
 import net.es.oscars.resv.ent.Design;
+import net.es.oscars.resv.ent.Held;
 import net.es.oscars.resv.svc.DesignService;
+import net.es.oscars.resv.svc.ResvService;
+import net.es.oscars.web.beans.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 
 @RestController
 @Slf4j
-public class DesignController {
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
+public class HeldController {
 
     @Autowired
-    private DesignRepository designRepo;
+    private HeldRepository heldRepo;
+    @Autowired
+    private VlanRepository vlanRepo;
+    @Autowired
+    private ResvService resvService;
+
 
     @Autowired
-    private DesignService designService;
+    private FixtureRepository fixtureRepo;
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -32,71 +46,46 @@ public class DesignController {
         log.warn("requested an item which did not exist", ex);
     }
 
-    @RequestMapping(value = "/protected/design/verify", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/protected/held/{connectionId}", method = RequestMethod.POST)
     @ResponseBody
-    public DesignResponse design_verify(@RequestBody Design newDesign) {
-        return designService.verifyDesign(newDesign);
-    }
+    public Instant held_create_or_update(@RequestBody Held held, @PathVariable String connectionId) {
+        if (held == null) {
+            throw new IllegalArgumentException("null held!");
 
-    @RequestMapping(value = "/protected/designs/{designId}", method = RequestMethod.POST)
-    @ResponseBody
-    public DesignResponse design_update_if_valid(@RequestBody Design newDesign, @PathVariable String designId) {
-        DesignResponse dr = designService.verifyDesign(newDesign);
-        if (dr.isValid()) {
-            Optional<Design> maybeDesign = designRepo.findByDesignId(designId);
-            if (maybeDesign.isPresent()) {
-
-                log.info("overwriting previous design " + designId);
-                maybeDesign.ifPresent(design -> designRepo.delete(design));
-            } else {
-                log.info("saving new design " + designId);
-
-            }
-            designRepo.save(newDesign);
         }
-        return dr;
-    }
+        Optional<Held> maybeHeld = heldRepo.findByConnectionId(connectionId);
+        if (maybeHeld.isPresent()) {
 
+//            log.info("overwriting previous held for " + connectionId);
+            maybeHeld.ifPresent(h -> heldRepo.delete(h));
+        } else {
+            log.info("saving new held " + connectionId);
 
-    @RequestMapping(value = "/protected/designs/", method = RequestMethod.GET)
-    @ResponseBody
-    public List<Design> designs_all() {
-        return designRepo.findAll();
-    }
-
-
-    @RequestMapping(value = "/protected/designs/{designId}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public void designs_delete(@PathVariable String designId) {
-        Design design = designRepo.findByDesignId(designId).orElseThrow(NoSuchElementException::new);
-        designRepo.delete(design);
-    }
-
-
-    @RequestMapping(value = "/protected/designs/{designId}", method = RequestMethod.GET)
-    @ResponseBody
-    public Design designs_get(@PathVariable String designId) {
-        return designRepo.findByDesignId(designId).orElseThrow(NoSuchElementException::new);
-    }
-
-
-    @RequestMapping(value = "/protected/designs/generateId", method = RequestMethod.GET)
-    @ResponseBody
-    public String generateDesignId() {
-        boolean found = false;
-        String result = "";
-        while (!found) {
-            String candidate = HashidMaker.randomHashid();
-            Optional<Design> d = designRepo.findByDesignId(candidate);
-            if (!d.isPresent()) {
-                found = true;
-                result = candidate;
-            }
         }
-        return result;
+        Instant exp = Instant.now().plus(15L, ChronoUnit.MINUTES);
+        held.setExpiration(exp);
+        heldRepo.save(held);
+        vlanRepo.findAll().forEach(v -> {
+            if (v.getSchedule() != null) {
+                log.info(v.getUrn()+' '+v.getSchedule().getPhase()+' '+v.getVlanId());
+            }
+        });
+        fixtureRepo.findAll().forEach(f -> {
+            if (f.getSchedule() != null) {
+                log.info(f.getPortUrn() + ' ' + f.getSchedule().getPhase() + ' ' + f.getIngressBandwidth() + " / " + f.getEgressBandwidth());
+            }
+        });
 
+        Interval interval = Interval.builder()
+                .beginning(held.getSchedule().getBeginning())
+                .ending(held.getSchedule().getEnding())
+                .build();
 
+        Map<String, Integer> availIngressBw = resvService.availableIngBws(interval);
+        Map<String, Integer> availEgressBw = resvService.availableEgBws(interval);
+
+        return exp;
     }
-
 
 }

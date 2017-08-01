@@ -14,11 +14,14 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor(suppressConstructorProperties=true)
-public class PceResponse {
+public class PcePath {
+    private List<EroHop> azEro;
+    private List<EroHop> zaEro;
+    private Integer azAvailable;
+    private Integer zaAvailable;
 
+    private Integer azBaseline;
+    private Integer zaBaseline;
 
-    private Map<EroDirection, List<EroHop>> eros;
-    private Map<EroDirection, Integer> available;
-    private Map<EroDirection, Integer> baseline;
 
 }

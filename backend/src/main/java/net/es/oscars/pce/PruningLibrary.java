@@ -19,11 +19,11 @@ public class PruningLibrary {
         for (TopoAdjcy adjcy : topoAdjcies) {
             // internal adjacencies are port-to-device; always acceptable
             if (adjcy.getMetrics().containsKey(Layer.INTERNAL)) {
-                log.info("adding "+adjcy.asLogString());
+                // log.info("adding "+adjcy.asLogString());
                 pruned.add(adjcy);
             } else {
                 // this is a port-to-port adjacency. we accept it if it can satisfy either going the A-Z direction or Z-A.
-                // A-Z direction:      min(aEgress, zIngress) > azBw && min (aIngress, zEgress) >= zaBw
+                // A-Z direction:      min(aEgress, zIngress) >= azBw && min (aIngress, zEgress) >= zaBw
 
                 Integer aIngress = availIngressBw.get(adjcy.getA().getUrn());
                 Integer aEgress = availEgressBw.get(adjcy.getA().getUrn());
@@ -31,14 +31,17 @@ public class PruningLibrary {
                 Integer zEgress = availEgressBw.get(adjcy.getZ().getUrn());
 
                 // first of all, aIngress SHOULD == zEgress and zEgress == zIngress
+                // TODO: catch this in topology import
                 if (aEgress > zIngress || aEgress < zIngress) {
-                    log.error("mismatch in available capacity over internal link");
+                    // log.error("mismatch in available capacity over internal link");
+                    // log.error(adjcy.getA().getUrn() + " -- "+adjcy.getZ().getUrn());
                 }
                 if (aIngress > zEgress || aIngress < zEgress) {
-                    log.error("mismatch in available capacity over internal link");
+                    // log.error("mismatch in available capacity over internal link");
+                    // log.error(adjcy.getA().getUrn() + " -- "+adjcy.getZ().getUrn());
                 }
 
-                //
+                // but, just in case this is not the case, use the minimum of the two
                 Integer azCapacity = aEgress;
                 if (zIngress < aEgress) {
                     azCapacity = zIngress;
@@ -55,7 +58,7 @@ public class PruningLibrary {
                     fits = true;
                 }
                 if (fits) {
-                    log.info("adding "+adjcy.asLogString());
+//                    log.info("adding "+adjcy.asLogString());
                     pruned.add(adjcy);
                 }
             }

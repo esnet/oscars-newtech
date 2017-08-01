@@ -1,143 +1,243 @@
-package net.es.oscars.topo.svc;
+package net.es.oscars.resv.svc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.topo.beans.IntRange;
-import net.es.oscars.topo.beans.TopoAdjcy;
-import net.es.oscars.topo.beans.TopoException;
-import net.es.oscars.topo.beans.TopoUrn;
-import net.es.oscars.topo.ent.Device;
-import net.es.oscars.topo.ent.Port;
-import net.es.oscars.topo.ent.PortAdjcy;
-import net.es.oscars.topo.enums.Layer;
-import net.es.oscars.topo.enums.UrnType;
+import net.es.oscars.resv.beans.PeriodBandwidth;
+import net.es.oscars.resv.db.FixtureRepository;
+import net.es.oscars.resv.db.PipeRepository;
+import net.es.oscars.resv.db.ScheduleRepository;
+import net.es.oscars.resv.db.VlanRepository;
+import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.BwDirection;
+import net.es.oscars.resv.enums.Phase;
+import net.es.oscars.topo.beans.*;
+import net.es.oscars.topo.svc.TopoService;
+import net.es.oscars.web.beans.Interval;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.*;
 
 @Service
 @Slf4j
 @Data
-public class TopoService {
-    private Map<String, TopoUrn> topoUrnMap;
-    private List<TopoAdjcy> topoAdjcies;
+public class ResvService {
+    @Autowired
+    private Jackson2ObjectMapperBuilder builder;
 
-    public void updateTopo(List<Device> devices, List<PortAdjcy> portAdjcies) throws TopoException  {
-        this.topoUrnMap = this.urnsFromDevices(devices);
+    @Autowired
+    private ScheduleRepository scheduleRepo;
+    @Autowired
+    private VlanRepository vlanRepo;
 
-        this.topoAdjcies = new ArrayList<>();
-        this.topoAdjcies.addAll(adjciesFromDevices(devices));
-        this.topoAdjcies.addAll(transformToTopoAdjcies(portAdjcies));
+    @Autowired
+    private FixtureRepository fixtureRepo;
+    @Autowired
+    private PipeRepository pipeRepo;
 
-    }
+    @Autowired
+    private TopoService topoService;
 
-
-
-    private Map<String, TopoUrn> urnsFromDevices(List<Device> devices) throws TopoException {
-        Map<String, TopoUrn> urns = new HashMap<>();
-
-        devices.forEach(d -> {
-            // make a copy of the IntRanges otherwise it'd be set by reference
-            Set<IntRange> drv = new HashSet<>();
-            drv.addAll(IntRange.mergeIntRanges(d.getReservableVlans()));
-            Set<Layer> dCaps = new HashSet<>();
-            dCaps.addAll(d.getCapabilities());
-
-            TopoUrn deviceUrn = TopoUrn.builder()
-                    .urn(d.getUrn())
-                    .urnType(UrnType.DEVICE)
-                    .device(d)
-                    .reservableVlans(drv)
-                    .capabilities(dCaps)
-                    .build();
-            urns.put(d.getUrn(), deviceUrn);
+    public Map<String, List<PeriodBandwidth>> reservedIngBws(Interval interval) {
+        List<Schedule> scheds = scheduleRepo.findOverlapping(interval.getBeginning(), interval.getEnding());
+        Map<String, List<PeriodBandwidth>> reservedIngBws = new HashMap<>();
 
 
-            d.getPorts().forEach(p -> {
-                // make a copy of the IntRanges otherwise it'd be set by reference
-                Set<IntRange> prv = new HashSet<>();
-                prv.addAll(IntRange.mergeIntRanges(p.getReservableVlans()));
-                Set<Layer> pCaps = new HashSet<>();
-                pCaps.addAll(p.getCapabilities());
+        for (Schedule sch : scheds) {
+            if (sch.getPhase().equals(Phase.HELD) || sch.getPhase().equals(Phase.RESERVED)) {
+                List<VlanFixture> fixtures = fixtureRepo.findBySchedule(sch);
+                List<VlanPipe> pipes = pipeRepo.findBySchedule(sch);
+                for (VlanFixture f : fixtures) {
+                    String urn = f.getPortUrn();
+                    PeriodBandwidth iPbw = PeriodBandwidth.builder()
+                            .bandwidth(f.getIngressBandwidth())
+                            .beginning(sch.getBeginning())
+                            .ending(sch.getEnding())
+                            .build();
+                    addTo(reservedIngBws, urn, iPbw);
+                }
 
-                TopoUrn portUrn = TopoUrn.builder()
-                        .urn(p.getUrn())
-                        .urnType(UrnType.PORT)
-                        .capabilities(pCaps)
-                        .device(d)
-                        .port(p)
-                        .reservableIngressBw(p.getReservableIngressBw())
-                        .reservableEgressBw(p.getReservableEgressBw())
-                        .reservableVlans(prv)
-                        .build();
+                for (VlanPipe pipe : pipes) {
+                    // hops go:
+                    // device, outPort, inPort, device, outPort, inPort, device
+                    // hops will always be empty, or 1 modulo 3
+                    // bandwidth gets applied per direction i.e.
+                    // az as egress on outPort, as ingress on inPort
+                    if (pipe.getAzERO() != null) {
 
-                urns.put(p.getUrn(), portUrn);
+                        for (int i = 0; i < pipe.getAzERO().size(); i++) {
+                            EroHop hop = pipe.getAzERO().get(i);
+                            String urn = hop.getUrn();
+                            PeriodBandwidth pbw = PeriodBandwidth.builder()
+                                    .bandwidth(pipe.getAzBandwidth())
+                                    .beginning(sch.getBeginning())
+                                    .ending(sch.getEnding())
+                                    .build();
 
-            });
-        });
+                            if (i % 3 == 2) {
+                                addTo(reservedIngBws, urn, pbw);
+                            }
+                        }
+                    }
 
-        return urns;
+                    if (pipe.getZaERO() != null ) {
 
-    }
-    private List<TopoAdjcy> transformToTopoAdjcies(List<PortAdjcy> portAdjcies) throws TopoException {
-        List<TopoAdjcy> adjcies = new ArrayList<>();
+                        for (int i = 0; i < pipe.getZaERO().size(); i++) {
+                            EroHop hop = pipe.getZaERO().get(i);
+                            String urn = hop.getUrn();
 
-        for (PortAdjcy pa : portAdjcies) {
-            if (this.topoUrnMap.containsKey(pa.getA().getUrn()) &&
-                    this.topoUrnMap.containsKey(pa.getZ().getUrn())) {
+                            PeriodBandwidth pbw = PeriodBandwidth.builder()
+                                    .bandwidth(pipe.getZaBandwidth())
+                                    .beginning(sch.getBeginning())
+                                    .ending(sch.getEnding())
+                                    .build();
 
-                TopoUrn aUrn = this.topoUrnMap.get(pa.getA().getUrn());
-                TopoUrn zUrn = this.topoUrnMap.get(pa.getZ().getUrn());
-                Map<Layer, Long> metrics = new HashMap<>();
-
-                pa.getMetrics().entrySet().forEach(e -> {
-                    metrics.put(e.getKey(), e.getValue());
-                });
-
-                TopoAdjcy adjcy = TopoAdjcy.builder().a(aUrn).z(zUrn).metrics(metrics).build();
-                adjcies.add(adjcy);
-
-            } else {
-                throw new TopoException("missing a port urn!");
-            }
-
-        }
-        return adjcies;
-
-    }
-
-    private List<TopoAdjcy> adjciesFromDevices(List<Device> devices) throws TopoException {
-        List<TopoAdjcy> adjcies = new ArrayList<>();
-        for (Device d: devices) {
-            if (this.topoUrnMap.containsKey(d.getUrn())) {
-                TopoUrn deviceUrn = this.topoUrnMap.get(d.getUrn());
-                for (Port p : d.getPorts()) {
-                    if (this.topoUrnMap.containsKey(p.getUrn())) {
-                        TopoUrn portUrn = this.topoUrnMap.get(p.getUrn());
-                        TopoAdjcy az = TopoAdjcy.builder()
-                                .a(deviceUrn)
-                                .z(portUrn)
-                                .metrics(new HashMap<>())
-                                .build();
-                        az.getMetrics().put(Layer.INTERNAL, 1L);
-                        TopoAdjcy za = TopoAdjcy.builder()
-                                .a(portUrn)
-                                .z(deviceUrn)
-                                .metrics(new HashMap<>())
-                                .build();
-                        za.getMetrics().put(Layer.INTERNAL, 1L);
-                        adjcies.add(az);
-                        adjcies.add(za);
-                    } else {
-                        throw new TopoException("missing a port urn!");
+                            if (i % 3 == 2) {
+                                addTo(reservedIngBws, urn, pbw);
+                            }
+                        }
                     }
                 }
-            } else {
-                throw new TopoException("missing a device urn!");
             }
         }
-
-        return adjcies;
+        return reservedIngBws;
     }
+
+    public Map<String, List<PeriodBandwidth>> reservedEgBws(Interval interval) {
+        List<Schedule> scheds = scheduleRepo.findOverlapping(interval.getBeginning(), interval.getEnding());
+        Map<String, TopoUrn> urnMap = topoService.getTopoUrnMap();
+        Map<String, List<PeriodBandwidth>> reservedEgBws = new HashMap<>();
+
+        for (Schedule sch : scheds) {
+            if (sch.getPhase().equals(Phase.HELD) || sch.getPhase().equals(Phase.RESERVED)) {
+                List<VlanFixture> fixtures = fixtureRepo.findBySchedule(sch);
+                List<VlanPipe> pipes = pipeRepo.findBySchedule(sch);
+
+                for (VlanFixture f : fixtures) {
+                    String urn = f.getPortUrn();
+                    PeriodBandwidth ePbw = PeriodBandwidth.builder()
+                            .bandwidth(f.getEgressBandwidth())
+                            .beginning(sch.getBeginning())
+                            .ending(sch.getEnding())
+                            .build();
+
+                    addTo(reservedEgBws, urn, ePbw);
+                }
+
+                for (VlanPipe pipe : pipes) {
+                    // hops go:
+                    // device, outPort, inPort, device, outPort, inPort, device
+                    // hops will always be empty, or 1 modulo 3
+                    // bandwidth gets applied per direction i.e.
+                    // az as egress on outPort, as ingress on inPort
+                    if (pipe.getAzERO() != null) {
+
+                        for (int i = 0; i < pipe.getAzERO().size(); i++) {
+
+                            EroHop hop = pipe.getAzERO().get(i);
+                            String urn = hop.getUrn();
+                            PeriodBandwidth pbw = PeriodBandwidth.builder()
+                                    .bandwidth(pipe.getAzBandwidth())
+                                    .beginning(sch.getBeginning())
+                                    .ending(sch.getEnding())
+                                    .build();
+
+                            if (i % 3 == 1) {
+                                addTo(reservedEgBws, urn, pbw);
+                            }
+                        }
+                    }
+                    if (pipe.getZaERO() != null) {
+                        for (int i = 0; i < pipe.getZaERO().size(); i++) {
+                            EroHop hop = pipe.getZaERO().get(i);
+                            String urn = hop.getUrn();
+
+                            PeriodBandwidth pbw = PeriodBandwidth.builder()
+                                    .bandwidth(pipe.getZaBandwidth())
+                                    .beginning(sch.getBeginning())
+                                    .ending(sch.getEnding())
+                                    .build();
+
+                            if (i % 3 == 1) {
+
+                                addTo(reservedEgBws, urn, pbw);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return reservedEgBws;
+    }
+
+    public Collection<Vlan> reservedVlans(Interval interval) {
+        List<Schedule> scheds = scheduleRepo.findOverlapping(interval.getBeginning(), interval.getEnding());
+        HashSet<Vlan> reservedVlans = new HashSet<>();
+
+        for (Schedule sch : scheds) {
+            if (sch.getPhase().equals(Phase.HELD) || sch.getPhase().equals(Phase.RESERVED)) {
+
+                List<Vlan> vlans = vlanRepo.findBySchedule(sch);
+                reservedVlans.addAll(vlans);
+
+            }
+        }
+        return reservedVlans;
+    }
+
+    public Map<String, Integer> availableIngBws(Interval interval) {
+        Map<String, List<PeriodBandwidth>> reservedIngBws = reservedIngBws(interval);
+
+        /*
+        try {
+            ObjectMapper mapper = builder.build();
+            log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(reservedIngBws));
+        } catch (JsonProcessingException ex) {
+            log.error(ex.getMessage());
+        }
+        */
+
+
+
+
+        Map<String, TopoUrn> baseline = topoService.getTopoUrnMap();
+        return ResvLibrary.availableBandwidthMap(BwDirection.INGRESS, baseline, reservedIngBws);
+
+    }
+
+    public Map<String, Integer> availableEgBws(Interval interval) {
+        Map<String, List<PeriodBandwidth>> reservedEgBws = reservedEgBws(interval);
+        /*
+        try {
+            ObjectMapper mapper = builder.build();
+            log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(reservedEgBws));
+        } catch (JsonProcessingException ex) {
+            log.error(ex.getMessage());
+        }
+        */
+
+        Map<String, TopoUrn> baseline = topoService.getTopoUrnMap();
+        return ResvLibrary.availableBandwidthMap(BwDirection.EGRESS, baseline, reservedEgBws);
+    }
+
+    public Map<String, PortBwVlan> available(Interval interval) {
+        Collection<Vlan> reservedVlans = reservedVlans(interval);
+        Map<String, List<PeriodBandwidth>> reservedEgBws = reservedEgBws(interval);
+        Map<String, List<PeriodBandwidth>> reservedIngBws = reservedIngBws(interval);
+
+        return ResvLibrary.portBwVlans(topoService.getTopoUrnMap(), reservedVlans, reservedIngBws, reservedEgBws);
+    }
+
+    static private void addTo(Map<String, List<PeriodBandwidth>> bwMap, String urn, PeriodBandwidth pbw) {
+        if (!bwMap.containsKey(urn)) {
+            bwMap.put(urn, new ArrayList<>());
+        }
+        bwMap.get(urn).add(pbw);
+    }
+
 
 }

@@ -1,16 +1,17 @@
 package net.es.oscars.resv.db;
 
-import net.es.oscars.resv.ent.Reserved;
+import net.es.oscars.resv.ent.Connection;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface ReservedRepository extends CrudRepository<Reserved, Long> {
+public interface ConnectionRepository extends CrudRepository<Connection, Long> {
 
-    List<Reserved> findAll();
-    List<Reserved> findByConnectionId(String connectionId);
+    List<Connection> findAll();
+    Optional<Connection> findByConnectionId(String connectionId);
 
 
 }

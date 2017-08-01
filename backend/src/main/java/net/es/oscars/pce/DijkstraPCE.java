@@ -1,66 +1,152 @@
 package net.es.oscars.pce;
 
-import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.util.EdgeType;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.resv.ent.EroHop;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoUrn;
-import org.apache.commons.collections15.Transformer;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
 public class DijkstraPCE {
+    @Autowired
+    FloydWarshall floydWarshall;
 
-    public List<EroHop> computeShortestPathEdges(List<TopoAdjcy> adjcies, TopoUrn src, TopoUrn dst) {
+    public List<EroHop> shortestPath(List<TopoAdjcy> adjcies, TopoUrn src, TopoUrn dst) {
 
-        Graph<TopoUrn, TopoAdjcy> graph = new DirectedSparseMultigraph<>();
+        Map<TopoAdjcy, Double> costs = new HashMap<>();
 
-        Transformer<TopoAdjcy, Long> wtTransformer = edge -> {
-            Long max = 0L;
-            for (Long metric : edge.getMetrics().values()) {
-                if (metric > max) {
-                    max = metric;
+        for (TopoAdjcy adjcy : adjcies) {
+            double cost = 0;
+            for (Long metric : adjcy.getMetrics().values()) {
+                if (metric > cost) {
+                    cost = metric.doubleValue();
                 }
             }
-            return max;
-        };
+            costs.put(adjcy, cost);
+        }
+
+        DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> graph = PceLibrary.makeGraph(adjcies, costs);
+        DijkstraShortestPath<TopoUrn, TopoAdjcy> alg = new DijkstraShortestPath<>(graph);
+        GraphPath<TopoUrn, TopoAdjcy> path = alg.getPath(src, dst);
+        return this.toEro(path);
+    }
+
+    @Deprecated
+    private List<EroHop> floyd(List<TopoAdjcy> adjcies, TopoUrn src, TopoUrn dst,
+                                   Map<String, Integer> availIngressBw,
+                                   Map<String, Integer> availEgressBw) {
+
+        DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> graph = PceLibrary.makeGraph(adjcies, new HashMap<>());
+        Map<TopoAdjcy, Integer> capacityMap = new HashMap<>();
         for (TopoAdjcy adjcy : adjcies) {
-            if (!graph.containsVertex(adjcy.getA())) {
-                graph.addVertex(adjcy.getA());
+            Integer aIngress = availIngressBw.get(adjcy.getA().getUrn());
+            Integer aEgress = availEgressBw.get(adjcy.getA().getUrn());
+            Integer zIngress = availIngressBw.get(adjcy.getZ().getUrn());
+            Integer zEgress = availEgressBw.get(adjcy.getA().getUrn());
+
+            if (aIngress == null) aIngress = Integer.MAX_VALUE;
+            if (aEgress == null) aEgress = Integer.MAX_VALUE;
+            if (zIngress == null) zIngress = Integer.MAX_VALUE;
+            if (zEgress == null) zEgress = Integer.MAX_VALUE;
+
+            Integer azCapacity = aEgress;
+            if (zIngress < azCapacity) {
+                azCapacity = zIngress;
             }
-            if (!graph.containsVertex(adjcy.getZ())) {
-                graph.addVertex(adjcy.getZ());
+            Integer zaCapacity = zEgress;
+            if (aIngress < azCapacity) {
+                zaCapacity = aIngress;
             }
-            graph.addEdge(adjcy, adjcy.getA(), adjcy.getZ(), EdgeType.DIRECTED);
+            capacityMap.put(adjcy, azCapacity+zaCapacity);
+
+
         }
 
+        floydWarshall.prepare(graph, capacityMap);
+        List<EroHop> ero = new ArrayList<>();
+        ero.add(EroHop.builder().urn(src.getUrn()).build());
 
-
-        DijkstraShortestPath<TopoUrn, TopoAdjcy> alg = new DijkstraShortestPath<>(graph, wtTransformer);
-
-        List<TopoAdjcy> path = alg.getPath(src, dst);
-
-        List<EroHop> result = new ArrayList<>();
-        if (path.isEmpty()) {
-            return result;
-        } else {
-            TopoUrn a = path.get(0).getA();
-            EroHop aDeviceHop = EroHop.builder().urn(a.getUrn()).build();
-            result.add(aDeviceHop);
-
-            path.forEach(ta -> {
-                EroHop nextZ = EroHop.builder().urn(ta.getZ().getUrn()).build();
-                result.add(nextZ);
-            });
-            return result;
-        }
+        floydWarshall.tracePath(src.getUrn(), dst.getUrn()).forEach(h -> {
+            ero.add(EroHop.builder().urn(h).build());
+        });
+        ero.add(EroHop.builder().urn(dst.getUrn()).build());
+        return ero;
 
     }
+
+
+    @Deprecated
+    private List<EroHop> kruskal(List<TopoAdjcy> adjcies, TopoUrn src, TopoUrn dst,
+                                   Map<String, Integer> availIngressBw,
+                                   Map<String, Integer> availEgressBw) {
+
+
+        Map<TopoAdjcy, Double> weights = new HashMap<>();
+        for (TopoAdjcy adjcy : adjcies) {
+            Integer aIngress = availIngressBw.get(adjcy.getA().getUrn());
+            Integer aEgress = availEgressBw.get(adjcy.getA().getUrn());
+            Integer zIngress = availIngressBw.get(adjcy.getZ().getUrn());
+            Integer zEgress = availEgressBw.get(adjcy.getA().getUrn());
+
+            if (aIngress == null) aIngress = Integer.MAX_VALUE;
+            if (aEgress == null) aEgress = Integer.MAX_VALUE;
+            if (zIngress == null) zIngress = Integer.MAX_VALUE;
+            if (zEgress == null) zEgress = Integer.MAX_VALUE;
+
+            Integer azCapacity = aEgress;
+            if (zIngress < azCapacity) {
+                azCapacity = zIngress;
+            }
+            Integer zaCapacity = zEgress;
+            if (aIngress < azCapacity) {
+                zaCapacity = aIngress;
+            }
+            Integer totalCapacity = azCapacity + zaCapacity;
+            Double weight = 1000 / totalCapacity.doubleValue();
+
+            weights.put(adjcy, weight);
+
+
+        }
+        DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> graph = PceLibrary.makeGraph(adjcies, weights);
+        KruskalMinimumSpanningTree<TopoUrn, TopoAdjcy> mstAlg = new KruskalMinimumSpanningTree<>(graph);
+        DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> mst = new DirectedWeightedMultigraph<>(TopoAdjcy.class);
+
+        mstAlg.getSpanningTree().getEdges().forEach(e -> {
+            mst.addVertex(e.getA());
+            mst.addVertex(e.getZ());
+            mst.addEdge(e.getA(), e.getZ(), e);
+            mst.setEdgeWeight(e, 1);
+        });
+
+
+        DijkstraShortestPath<TopoUrn, TopoAdjcy> alg = new DijkstraShortestPath<>(mst);
+        GraphPath<TopoUrn, TopoAdjcy> path = alg.getPath(src, dst);
+        return this.toEro(path);
+
+    }
+
+
+    private List<EroHop> toEro(GraphPath<TopoUrn, TopoAdjcy> path) {
+        List<EroHop> ero = new ArrayList<>();
+        if (path != null && path.getEdgeList().size() > 0) {
+            path.getVertexList().forEach(v -> {
+                ero.add(EroHop.builder().urn(v.getUrn()).build());
+            });
+        }
+        return ero;
+
+    }
+
 }

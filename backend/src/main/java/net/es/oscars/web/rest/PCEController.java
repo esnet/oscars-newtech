@@ -4,6 +4,7 @@ package net.es.oscars.web.rest;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.pce.PalindromicalPCE;
+import net.es.oscars.pce.PceService;
 import net.es.oscars.resv.beans.PeriodBandwidth;
 import net.es.oscars.resv.db.FixtureRepository;
 import net.es.oscars.resv.db.ScheduleRepository;
@@ -13,6 +14,7 @@ import net.es.oscars.resv.enums.BwDirection;
 import net.es.oscars.resv.enums.EroDirection;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ResvLibrary;
+import net.es.oscars.resv.svc.ResvService;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.NextHop;
 import net.es.oscars.topo.beans.PortBwVlan;
@@ -27,6 +29,7 @@ import net.es.oscars.topo.svc.TopoLibrary;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.Interval;
 import net.es.oscars.web.beans.PceRequest;
+import net.es.oscars.web.beans.PceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -40,11 +43,12 @@ public class PCEController {
     @Autowired
     private TopoService topoService;
 
+
     @Autowired
     private PortAdjcyRepository portAdjcyRepository;
 
     @Autowired
-    private PalindromicalPCE palindromicalPCE;
+    private PceService pceService;
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -96,37 +100,16 @@ public class PCEController {
     }
 
 
-    @RequestMapping(value = "/api/pce/shortestPath", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/pce/paths", method = RequestMethod.POST)
     @ResponseBody
-    public Map<EroDirection, List<EroHop>> shortestPath(@RequestBody PceRequest request) throws PCEException {
+    public PceResponse paths(@RequestBody PceRequest request) throws PCEException {
+        return pceService.calculatePaths(request);
 
-        VlanJunction aj = VlanJunction.builder()
-                .refId(request.getA())
-                .deviceUrn(request.getA())
-                .build();
-        VlanJunction zj = VlanJunction.builder()
-                .refId(request.getZ())
-                .deviceUrn(request.getZ())
-                .build();
-
-        VlanPipe vp = VlanPipe.builder()
-                .a(aj)
-                .z(zj)
-                .azBandwidth(request.getAzBw())
-                .zaBandwidth(request.getZaBw()).build();
-
-        Map<String, Integer> availIngressBw;
-        Map<String, Integer> availEgressBw;
-        Map<String, Set<IntRange>> availVlans;
-        Map<String, TopoUrn > baseline = topoService.getTopoUrnMap();
-
-
-        availIngressBw = ResvLibrary.availableBandwidthMap(BwDirection.INGRESS, baseline, new HashMap<>());
-        availEgressBw = ResvLibrary.availableBandwidthMap(BwDirection.EGRESS, baseline, new HashMap<>());
-        availVlans = ResvLibrary.availableVlanMap(baseline, new HashSet<>());
-
-        return palindromicalPCE.palindromicERO(vp, availIngressBw, availEgressBw, availVlans);
     }
+
+
+
+
 
 
 }

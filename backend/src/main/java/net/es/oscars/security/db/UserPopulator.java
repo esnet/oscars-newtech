@@ -50,6 +50,9 @@ public class UserPopulator implements StartupComponent {
             User admin = User.builder()
                     .username(username)
                     .password(encoded)
+                    .fullName("Default admin user")
+                    .email("oscars@localhost")
+                    .institution("OSCARS")
                     .permissions(new Permissions())
                     .build();
             admin.getPermissions().setAdminAllowed(true);

@@ -17,8 +17,6 @@ import java.util.*;
 @RestController
 @Slf4j
 public class DesignController {
-    @Autowired
-    private Jackson2ObjectMapperBuilder builder;
 
     @Autowired
     private DesignRepository designRepo;

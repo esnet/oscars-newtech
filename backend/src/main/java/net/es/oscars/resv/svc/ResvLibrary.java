@@ -6,6 +6,7 @@ import net.es.oscars.resv.ent.*;
 import net.es.oscars.resv.enums.BwDirection;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.topo.beans.IntRange;
+import net.es.oscars.topo.beans.PortBwVlan;
 import net.es.oscars.topo.beans.ReservableCommandParam;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.enums.Layer;
@@ -17,6 +18,44 @@ import java.util.*;
 @Slf4j
 public class ResvLibrary {
 
+
+
+
+    public static Map<String, PortBwVlan> portBwVlans(Map<String, TopoUrn> urnMap,
+                                                      Collection<Vlan> reservedVlans,
+                                                      Map<String, List<PeriodBandwidth>> reservedIngBws,
+                                                      Map<String, List<PeriodBandwidth>> reservedEgBws) {
+
+        Map<String, Set<IntRange>> availableVlanMap = ResvLibrary.availableVlanMap(urnMap, reservedVlans);
+        Map<String, Integer> availableIngressBw = ResvLibrary.availableBandwidthMap(BwDirection.INGRESS, urnMap, reservedIngBws);
+        Map<String, Integer> availableEgressBw = ResvLibrary.availableBandwidthMap(BwDirection.EGRESS, urnMap, reservedEgBws);
+
+        Map<String, PortBwVlan> available = new HashMap<>();
+        urnMap.forEach((urn, topoUrn) -> {
+            if (topoUrn.getUrnType().equals(UrnType.PORT)) {
+                Integer ingBw = availableIngressBw.get(urn);
+                Integer egBw = availableEgressBw.get(urn);
+
+                Set<IntRange> intRanges = new HashSet<>();
+                String vlanExpr = "";
+
+                if (topoUrn.getCapabilities().contains(Layer.ETHERNET)) {
+                    intRanges = availableVlanMap.get(urn);
+                    vlanExpr = IntRange.asString(intRanges);
+                }
+
+                PortBwVlan pbw = PortBwVlan.builder()
+                        .vlanRanges(intRanges)
+                        .ingressBandwidth(ingBw)
+                        .egressBandwidth(egBw)
+                        .vlanExpression(vlanExpr)
+                        .build();
+                available.put(urn, pbw);
+            }
+
+        });
+        return available;
+    }
 
     public static List<Schedule> schedulesOverlapping(List<Schedule> all, Instant b, Instant e) {
         List<Schedule> overlapping = new ArrayList<>();
@@ -34,13 +73,13 @@ public class ResvLibrary {
     public static List<PeriodBandwidth> pbwsOverlapping(List<PeriodBandwidth> candidates, Instant b, Instant e) {
         List<PeriodBandwidth> result = new ArrayList<>();
         for (PeriodBandwidth pbw : candidates) {
-            log.info("evaluating a pbw: "+pbw.toString());
+            log.info("evaluating a pbw: " + pbw.toString());
             boolean add = true;
             if (pbw.getEnding().isBefore(b) || pbw.getBeginning().isAfter(e)) {
                 add = false;
             }
             if (add) {
-                log.info("adding a pbw: "+pbw.toString());
+                log.info("adding a pbw: " + pbw.toString());
                 result.add(pbw);
             }
         }
@@ -50,9 +89,9 @@ public class ResvLibrary {
 
 
     public static Map<String, Integer> availableBandwidthMap(BwDirection dir, Map<String, TopoUrn> baseline,
-                                                          Map<String, List<PeriodBandwidth>> reservedBandwidths) {
+                                                             Map<String, List<PeriodBandwidth>> reservedBandwidths) {
         Map<String, Integer> result = new HashMap<>();
-        for (String urn: baseline.keySet()) {
+        for (String urn : baseline.keySet()) {
             if (baseline.get(urn).getUrnType().equals(UrnType.PORT)) {
                 Integer reservable = 0;
                 switch (dir) {
@@ -82,7 +121,7 @@ public class ResvLibrary {
         });
 
         Map<String, Set<IntRange>> availableVlanMap = new HashMap<>();
-        for (String urn: baseline.keySet()) {
+        for (String urn : baseline.keySet()) {
             Set<IntRange> reservable = baseline.get(urn).getReservableVlans();
             Set<IntRange> availableVlans = availableInts(reservable, reservedVlanMap.get(urn));
             availableVlanMap.put(urn, availableVlans);
@@ -101,7 +140,7 @@ public class ResvLibrary {
         return IntRange.fromSet(available);
     }
 
-    public static Map<String, TopoUrn> constructAvailabilityMap (
+    public static Map<String, TopoUrn> constructAvailabilityMap(
             Map<String, TopoUrn> urnMap,
             Map<String, Set<IntRange>> availVlanMap,
             Map<String, Integer> availIngressBwMap,
@@ -137,7 +176,7 @@ public class ResvLibrary {
                                          Collection<PeriodBandwidth> periodBandwidths,
                                          Instant when) {
         Integer result = reservableBw;
-        for (PeriodBandwidth pbw: periodBandwidths) {
+        for (PeriodBandwidth pbw : periodBandwidths) {
             if (pbw.getBeginning().isBefore(when) && pbw.getEnding().isAfter(when)) {
                 result -= pbw.getBandwidth();
             }
@@ -145,13 +184,14 @@ public class ResvLibrary {
 
         return result;
     }
+
     public static Integer overallAvailBandwidth(Integer reservableBw,
                                                 Collection<PeriodBandwidth> periodBandwidths) {
         Map<Instant, Set<Integer>> timeline = new HashMap<>();
         if (periodBandwidths == null) {
             periodBandwidths = new ArrayList<>();
         }
-        for (PeriodBandwidth pbw: periodBandwidths) {
+        for (PeriodBandwidth pbw : periodBandwidths) {
             if (!timeline.containsKey(pbw.getBeginning())) {
                 timeline.put(pbw.getBeginning(), new HashSet<>());
             }
@@ -177,6 +217,17 @@ public class ResvLibrary {
             }
         }
         return reservableBw - maxReserved;
+    }
+
+    public static Integer minBwOverPath(List<TopoUrn> topoUrns, Map<String, Integer> availableBws) {
+        Integer min = Integer.MAX_VALUE;
+        for (TopoUrn topoUrn: topoUrns) {
+            Integer thisBw = availableBws.get(topoUrn.getUrn());
+            if (thisBw != null && thisBw < min) {
+                min = thisBw;
+            }
+        }
+        return min;
     }
 
 

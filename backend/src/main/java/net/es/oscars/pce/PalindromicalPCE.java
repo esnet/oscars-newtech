@@ -26,6 +26,7 @@ public class PalindromicalPCE {
     @Autowired
     private DijkstraPCE dijkstraPCE;
 
+
     public Map<EroDirection, List<EroHop>> palindromicERO(VlanPipe requestPipe,
                                                           Map<String, Integer> availIngressBw,
                                                           Map<String, Integer> availEgressBw,
@@ -40,17 +41,30 @@ public class PalindromicalPCE {
         List<TopoAdjcy> pruned = PruningLibrary.pruneAdjacencies(topoAdjcies,
                 requestPipe.getAzBandwidth(), requestPipe.getZaBandwidth(),
                 availIngressBw, availEgressBw);
+        /*
+        log.info("smartest: ");
 
-        List<EroHop> azERO = dijkstraPCE.computeShortestPathEdges(pruned, src, dst);
+        List<EroHop> smartest = dijkstraPCE.smartestPath(pruned, src, dst, availIngressBw, availEgressBw);
+        smartest.forEach(h -> {
+            log.info(h.getUrn());
+        });
+        */
+        /*
+        log.info("widest: ");
+        List<EroHop> widest = dijkstraPCE.widestPath(pruned, src, dst, availIngressBw, availEgressBw);
+        widest.forEach(h -> {
+            log.info(h.getUrn());
+        });
+        */
 
-        if (azERO.isEmpty()) {
-            throw new PCEException("Empty path from Palindromical PCE");
-        }
+
+        List<EroHop> azERO = dijkstraPCE.shortestPath(pruned, src, dst);
 
         List<EroHop> zaEro = new ArrayList<>();
         for (EroHop hop : azERO) {
             zaEro.add(EroHop.builder().urn(hop.getUrn()).build());
         }
+
         Collections.reverse(zaEro);
 
         result.put(EroDirection.A_TO_Z, azERO);

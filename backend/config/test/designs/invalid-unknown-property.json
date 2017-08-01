@@ -20,7 +20,9 @@
         "ingressBandwidth": 100,
         "egressBandwidth": 100,
         "vlan": {
-          "vlanId": 2000
+          "vlanId": 2000,
+          "urn":  "denv-cr5:1/1/1"
+
         }
       },
       {
@@ -30,7 +32,9 @@
         "egressBandwidth": 100,
 
         "vlan": {
-          "vlanId": 2000
+          "vlanId": 2000,
+          "urn":  "albq-cr5:1/2/1"
+
         }
       }
     ],
