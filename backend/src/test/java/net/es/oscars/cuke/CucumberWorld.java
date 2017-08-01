@@ -2,8 +2,10 @@ package net.es.oscars.cuke;
 
 import net.es.oscars.resv.beans.PeriodBandwidth;
 import net.es.oscars.resv.ent.Design;
+import net.es.oscars.resv.ent.EroHop;
 import net.es.oscars.resv.ent.Vlan;
 import net.es.oscars.resv.enums.BwDirection;
+import net.es.oscars.resv.enums.EroDirection;
 import net.es.oscars.topo.beans.TopoUrn;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,7 @@ public class CucumberWorld {
     List<Vlan> reservedVlans;
     Map<String, TopoUrn> topoBaseline ;
     Design design;
+    Map<EroDirection, List<EroHop>> pipeEros;
 
 
     public void expectException() {

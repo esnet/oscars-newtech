@@ -24,6 +24,8 @@ import java.util.Set;
                   property = "urn")
 public class Device {
 
+
+
     @Id
     @GeneratedValue
     private Long id;

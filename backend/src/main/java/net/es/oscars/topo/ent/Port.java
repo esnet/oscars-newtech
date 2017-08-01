@@ -14,6 +14,7 @@ import java.util.Set;
 @Data
 @Entity
 @Builder
+@ToString(exclude={"device", "adjciesWhereA", "adjciesWhereZ"})
 @AllArgsConstructor(suppressConstructorProperties=true)
 @NoArgsConstructor
 @EqualsAndHashCode(exclude={"device", "adjciesWhereA", "adjciesWhereZ"})

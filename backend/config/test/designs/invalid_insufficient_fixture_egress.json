@@ -16,7 +16,8 @@
         "ingressBandwidth": 10,
         "egressBandwidth": 200,
         "vlan": {
-          "vlanId": 150
+          "vlanId": 150,
+          "urn": "A:1"
         }
       },
       {
@@ -26,7 +27,8 @@
         "egressBandwidth": 10,
 
         "vlan": {
-          "vlanId": 150
+          "vlanId": 150,
+          "urn": "A:2"
         }
       }
     ],

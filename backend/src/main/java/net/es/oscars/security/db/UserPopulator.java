@@ -2,7 +2,7 @@ package net.es.oscars.security.db;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.StartupComponent;
-import net.es.oscars.app.StartupException;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.security.SecProperties;
 import net.es.oscars.security.ent.Permissions;
 import net.es.oscars.security.ent.User;
@@ -50,6 +50,9 @@ public class UserPopulator implements StartupComponent {
             User admin = User.builder()
                     .username(username)
                     .password(encoded)
+                    .fullName("Default admin user")
+                    .email("oscars@localhost")
+                    .institution("OSCARS")
                     .permissions(new Permissions())
                     .build();
             admin.getPermissions().setAdminAllowed(true);

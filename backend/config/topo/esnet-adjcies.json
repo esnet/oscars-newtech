@@ -310,14 +310,14 @@
   {
     "a": "pnwg-cr5:10/1/10",
     "metrics": {
-      "MPLS": 25
+      "MPLS": 24
     },
     "z": "denv-cr5:10/1/6"
   },
   {
     "a": "denv-cr5:10/1/6",
     "metrics": {
-      "MPLS": 25
+      "MPLS": 24
     },
     "z": "pnwg-cr5:10/1/10"
   },
