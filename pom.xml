@@ -25,7 +25,6 @@
     </pluginRepositories>
 
     <modules>
-        <module>core</module>
         <module>shared</module>
         <module>pss</module>
         <module>backend</module>
@@ -86,7 +85,7 @@
             <dependency>
                 <groupId>net.es.oscars</groupId>
                 <artifactId>frontend</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
             </dependency>
 
             <dependency>
@@ -141,6 +140,11 @@
                 <artifactId>jjwt</artifactId>
                 <version>0.7.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.jgrapht</groupId>
+                <artifactId>jgrapht-core</artifactId>
+                <version>1.0.1</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.statemachine</groupId>
@@ -156,16 +160,6 @@
                 <groupId>net.jodah</groupId>
                 <artifactId>concurrentunit</artifactId>
                 <version>0.4.2</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sf.jung</groupId>
-                <artifactId>jung-graph-impl</artifactId>
-                <version>2.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sf.jung</groupId>
-                <artifactId>jung-algorithms</artifactId>
-                <version>2.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.thymeleaf.extras</groupId>
