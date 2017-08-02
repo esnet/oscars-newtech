@@ -32,17 +32,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
+        String username = null;
         String authToken = request.getHeader(header);
-        // authToken.startsWith("Bearer ")
-        // String authToken = header.substring(7);
-        String username = jwtTokenUtil.getUsernameFromToken(authToken);
-
-        if (username == null) {
-            log.debug("could not determine username from token");
-
-        } else {
-            log.debug("determined username from token: " + username);
-
+        if (authToken != null) {
+            username = jwtTokenUtil.getUsernameFromToken(authToken);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -57,7 +50,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                                 userDetails.getAuthorities());
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                log.debug("authenticated user " + username + ", setting security context");
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
