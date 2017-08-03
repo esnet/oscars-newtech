@@ -10,6 +10,7 @@
     </parent>
     <properties>
         <cucumber.options>--tags @unit --strict</cucumber.options>
+	<app.home>/usr/local/esnet/oscars-pss</app.home>
     </properties>
 
 
@@ -185,6 +186,106 @@
                         <cucumber.options>${cucumber.options}</cucumber.options>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>rpm-maven-plugin</artifactId>
+              <version>2.1.5</version>
+	      <executions>
+		<execution>
+		  <id>generate-rpm</id>
+		  <goals>
+		    <goal>rpm</goal>
+		  </goals>
+		</execution>
+	      </executions>
+              <configuration>
+		<name>oscars-pss</name>
+                <group>Unspecified</group>
+		<description>OSCARS PSS</description>
+                <prefix>${app.home}</prefix>
+                <organization>
+                  <name>ESnet</name>
+                  <url>https://www.github.com/esnet/oscars-newtech</url>
+                </organization>
+		<license>BSD</license>
+
+                <defineStatements>
+                  <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+                </defineStatements>
+                <mappings>
+                  <mapping>
+                    <directory>${app.home}/lib</directory>
+		    <artifact/>
+                  </mapping>
+                  <mapping>
+                    <directory>${app.home}/config</directory>
+		    <configuration>noreplace</configuration>
+		    <sources>
+		      <source>
+			<location>${project.basedir}/config/application.properties</location>
+		      </source>
+		      <source>
+			<location>${project.basedir}/config/oscars.jks</location>
+		      </source>
+		      <source>
+			<location>${project.basedir}/config/cloginrc.txt</location>
+		      </source>
+		      <source>
+			<location>${project.basedir}/config/</location>
+			<includes>
+			  <include>*.json</include>
+			</includes>
+		      </source>
+		    </sources>
+                  </mapping>
+                  <mapping>
+                    <directory>${app.home}/config/templates/alu</directory>
+		    <sources>
+		      <source>
+			<location>${project.basedir}/config/templates/alu</location>
+			<includes>
+			  <include>*</include>
+			</includes>
+		      </source>
+		    </sources>
+                  </mapping>
+                  <mapping>
+                    <directory>${app.home}/config/templates/ex</directory>
+		    <sources>
+		      <source>
+			<location>${project.basedir}/config/templates/ex</location>
+			<includes>
+			  <include>*</include>
+			</includes>
+		      </source>
+		    </sources>
+                  </mapping>
+                  <mapping>
+                    <directory>${app.home}/config/templates/mx</directory>
+		    <sources>
+		      <source>
+			<location>${project.basedir}/config/templates/mx</location>
+			<includes>
+			  <include>*</include>
+			</includes>
+		      </source>
+		    </sources>
+                  </mapping>
+                  <mapping>
+                    <directory>${app.home}/config/templates</directory>
+		    <sources>
+		      <source>
+			<location>${project.basedir}/config/templates/top.ftl</location>
+		      </source>
+		    </sources>
+                  </mapping>
+                  <mapping>
+                    <directory>${app.home}/logs</directory>
+                  </mapping>
+                </mappings>
+              </configuration>
             </plugin>
         </plugins>
     </build>
