@@ -192,14 +192,6 @@
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>rpm-maven-plugin</artifactId>
               <version>2.1.5</version>
-	      <executions>
-		<execution>
-		  <id>generate-rpm</id>
-		  <goals>
-		    <goal>rpm</goal>
-		  </goals>
-		</execution>
-	      </executions>
               <configuration>
 		<name>oscars-pss</name>
                 <group>Unspecified</group>
@@ -217,7 +209,11 @@
                 <mappings>
                   <mapping>
                     <directory>${app.home}/lib</directory>
-		    <artifact/>
+		    <sources>
+		      <source>
+			<location>${project.basedir}/target/${project.artifactId}-${project.version}.jar</location>
+		      </source>
+		    </sources>
                   </mapping>
                   <mapping>
                     <directory>${app.home}/config</directory>
