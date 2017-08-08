@@ -291,6 +291,15 @@
                   <mapping>
                     <directory>${app.home}/logs</directory>
                   </mapping>
+		  <mapping>
+                    <directory>/etc/systemd/system</directory>
+		    <directoryIncluded>false</directoryIncluded>
+		    <sources>
+		      <source>
+			<location>${project.basedir}/oscars-backend.service</location>
+		      </source>
+		    </sources>
+		  </mapping>
                 </mappings>
               </configuration>
             </plugin>
