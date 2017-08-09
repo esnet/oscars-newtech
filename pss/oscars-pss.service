@@ -1,0 +1,15 @@
+[Unit]
+Description=OSCARS PSS service process
+After=postgresql.service oscars-backend.service
+Requires=postgresql.service oscars-backend.service
+
+[Service]
+Type=simple
+User=nobody
+Group=nobody
+WorkingDirectory=/usr/local/esnet/oscars-pss
+ExecStart=/usr/bin/java -jar /usr/local/esnet/oscars-pss/lib/pss-1.0.0-beta.jar
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
