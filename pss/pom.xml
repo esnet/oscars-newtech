@@ -10,6 +10,7 @@
     </parent>
     <properties>
         <cucumber.options>--tags @unit --strict</cucumber.options>
+	<rpm.home>/usr/local/esnet/oscars-pss</rpm.home>
     </properties>
 
 

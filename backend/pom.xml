@@ -12,6 +12,7 @@
     <artifactId>backend</artifactId>
     <properties>
         <cucumber.options>--tags @unit --strict</cucumber.options>
+	<rpm.home>/usr/local/esnet/oscars-backend</rpm.home>
     </properties>
 
 
