@@ -10,7 +10,7 @@
     </parent>
     <properties>
         <cucumber.options>--tags @unit --strict</cucumber.options>
-	<app.home>/usr/local/esnet/oscars-pss</app.home>
+	<rpm.home>/usr/local/esnet/oscars-pss</rpm.home>
     </properties>
 
 
@@ -196,19 +196,19 @@
 		<name>oscars-pss</name>
                 <group>Unspecified</group>
 		<description>OSCARS PSS</description>
-                <prefix>${app.home}</prefix>
+                <prefix>${rpm.home}</prefix>
                 <organization>
-                  <name>ESnet</name>
-                  <url>https://www.github.com/esnet/oscars-newtech</url>
+                  <name>${rpm.organization.name}</name>
+                  <url>${rpm.organization.url}</url>
                 </organization>
-		<license>BSD</license>
+		<license>${rpm.license}</license>
 
                 <defineStatements>
                   <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
                 </defineStatements>
                 <mappings>
                   <mapping>
-                    <directory>${app.home}/lib</directory>
+                    <directory>${rpm.home}/lib</directory>
 		    <sources>
 		      <source>
 			<location>${project.basedir}/target/${project.artifactId}-${project.version}.jar</location>
@@ -216,7 +216,7 @@
 		    </sources>
                   </mapping>
                   <mapping>
-                    <directory>${app.home}/config</directory>
+                    <directory>${rpm.home}/config</directory>
 		    <configuration>noreplace</configuration>
 		    <sources>
 		      <source>
@@ -237,7 +237,7 @@
 		    </sources>
                   </mapping>
                   <mapping>
-                    <directory>${app.home}/config/templates/alu</directory>
+                    <directory>${rpm.home}/config/templates/alu</directory>
 		    <sources>
 		      <source>
 			<location>${project.basedir}/config/templates/alu</location>
@@ -248,7 +248,7 @@
 		    </sources>
                   </mapping>
                   <mapping>
-                    <directory>${app.home}/config/templates/ex</directory>
+                    <directory>${rpm.home}/config/templates/ex</directory>
 		    <sources>
 		      <source>
 			<location>${project.basedir}/config/templates/ex</location>
@@ -259,7 +259,7 @@
 		    </sources>
                   </mapping>
                   <mapping>
-                    <directory>${app.home}/config/templates/mx</directory>
+                    <directory>${rpm.home}/config/templates/mx</directory>
 		    <sources>
 		      <source>
 			<location>${project.basedir}/config/templates/mx</location>
@@ -270,7 +270,7 @@
 		    </sources>
                   </mapping>
                   <mapping>
-                    <directory>${app.home}/config/templates</directory>
+                    <directory>${rpm.home}/config/templates</directory>
 		    <sources>
 		      <source>
 			<location>${project.basedir}/config/templates/top.ftl</location>
@@ -278,7 +278,7 @@
 		    </sources>
                   </mapping>
                   <mapping>
-                    <directory>${app.home}/logs</directory>
+                    <directory>${rpm.home}/logs</directory>
                   </mapping>
 		  <mapping>
                     <directory>/etc/systemd/system</directory>

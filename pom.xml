@@ -15,6 +15,12 @@
         <java.version>1.8</java.version>
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
+
+	<rpm.home>/usr/local/esnet/oscars-backend</rpm.home>
+	<rpm.prefix></rpm.prefix>
+	<rpm.organization.name>ESnet</rpm.organization.name>
+	<rpm.organization.url>https://www.github.com/esnet/oscars-newtech</rpm.organization.url>
+	<rpm.license>BSD</rpm.license>
     </properties>
 
     <pluginRepositories>
