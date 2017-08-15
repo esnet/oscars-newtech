@@ -12,7 +12,6 @@
     <artifactId>backend</artifactId>
     <properties>
         <cucumber.options>--tags @unit --strict</cucumber.options>
-	<app.home>/usr/local/esnet/oscars-backend</app.home>
     </properties>
 
 
@@ -245,19 +244,19 @@
 		<name>oscars-backend</name>
                 <group>Unspecified</group>
 		<description>OSCARS</description>
-                <prefix>${app.home}</prefix>
+                <prefix>${rpm.home}</prefix>
                 <organization>
-                  <name>ESnet</name>
-                  <url>https://www.github.com/esnet/oscars-newtech</url>
+                  <name>${rpm.organization.name}</name>
+                  <url>${rpm.organization.url}</url>
                 </organization>
-		<license>BSD</license>
+		<license>${rpm.license}</license>
 
                 <defineStatements>
                   <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
                 </defineStatements>
                 <mappings>
                   <mapping>
-                    <directory>${app.home}/lib</directory>
+                    <directory>${rpm.home}/lib</directory>
 		    <sources>
 		      <source>
 			<location>${project.basedir}/target/${project.artifactId}-${project.version}.jar</location>
@@ -265,7 +264,7 @@
 		    </sources>
                   </mapping>
                   <mapping>
-                    <directory>${app.home}/config</directory>
+                    <directory>${rpm.home}/config</directory>
 		    <configuration>noreplace</configuration>
 		    <sources>
 		      <source>
@@ -277,7 +276,7 @@
 		    </sources>
                   </mapping>
                   <mapping>
-                    <directory>${app.home}/config/topo</directory>
+                    <directory>${rpm.home}/config/topo</directory>
 		    <configuration>true</configuration>
 		    <sources>
 		      <source>
@@ -289,7 +288,7 @@
 		    </sources>
                   </mapping>
                   <mapping>
-                    <directory>${app.home}/logs</directory>
+                    <directory>${rpm.home}/logs</directory>
                   </mapping>
 		  <mapping>
                     <directory>/etc/systemd/system</directory>
