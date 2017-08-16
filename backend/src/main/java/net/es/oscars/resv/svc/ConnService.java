@@ -8,6 +8,7 @@ import net.es.oscars.resv.db.HeldRepository;
 import net.es.oscars.resv.db.ReservedRepository;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.resv.enums.Phase;
+import net.es.oscars.resv.enums.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,7 @@ public class ConnService {
         Connection c = Connection.builder()
                 .connectionId(connectionId)
                 .phase(Phase.HELD)
+                .state(State.WAITING)
                 .username(username)
                 .build();
         if (archivedRepo.findByConnectionId(connectionId).isPresent()) {

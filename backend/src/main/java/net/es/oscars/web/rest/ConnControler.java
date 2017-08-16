@@ -6,11 +6,14 @@ import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ConnService;
+import net.es.oscars.web.beans.ConnectionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -74,6 +77,13 @@ public class ConnControler {
         } else {
             return connSvc.uncommit(d.get());
         }
+    }
+
+    @RequestMapping(value = "/api/conn/list", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Connection> list(@RequestBody ConnectionFilter filter) {
+
+        return connRepo.findAll();
     }
 
 

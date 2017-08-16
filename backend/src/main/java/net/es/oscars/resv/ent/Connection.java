@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import net.es.oscars.resv.enums.Phase;
+import net.es.oscars.resv.enums.State;
 
 import javax.persistence.*;
 
@@ -18,13 +19,17 @@ public class Connection {
     @JsonCreator
     public Connection(@JsonProperty("connectionId") @NonNull String connectionId,
                       @JsonProperty("phase") @NonNull Phase phase,
+                      @JsonProperty("state") @NonNull State state,
                       @JsonProperty("username") @NonNull String username,
+                      @JsonProperty("description") @NonNull String description,
                       @JsonProperty("reserved") Reserved reserved,
                       @JsonProperty("held") Held held,
                       @JsonProperty("archived") Archived archived) {
         this.connectionId = connectionId;
         this.phase = phase;
+        this.state = state;
         this.username = username;
+        this.description = description;
         this.reserved = reserved;
         this.held = held;
         this.archived = archived;
@@ -42,6 +47,12 @@ public class Connection {
 
     @NonNull
     private Phase phase;
+
+    @NonNull
+    private State state;
+
+    @NonNull
+    private String description;
 
     @NonNull
     private String username;
