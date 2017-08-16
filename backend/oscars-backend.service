@@ -1,0 +1,15 @@
+[Unit]
+Description=OSCARS backend service process
+After=postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=nobody
+Group=nobody
+WorkingDirectory=/usr/local/esnet/oscars-backend
+ExecStart=/usr/bin/java -jar /usr/local/esnet/oscars-backend/lib/backend-1.0.0-beta.jar
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
