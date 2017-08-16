@@ -5,12 +5,13 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReservedRepository extends CrudRepository<Reserved, Long> {
 
     List<Reserved> findAll();
-    List<Reserved> findByConnectionId(String connectionId);
+    Optional<Reserved> findByConnectionId(String connectionId);
 
 
 }

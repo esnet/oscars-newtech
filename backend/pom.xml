@@ -7,12 +7,18 @@
         <groupId>net.es.oscars</groupId>
         <version>1.0.0-beta</version>
     </parent>
+
+    <organization>
+        <name>${rpm.organization.name}</name>
+        <url>${rpm.organization.url}</url>
+    </organization>
+
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>backend</artifactId>
     <properties>
         <cucumber.options>--tags @unit --strict</cucumber.options>
-	<rpm.home>/usr/local/esnet/oscars-backend</rpm.home>
+        <rpm.home>/usr/local/esnet/oscars-backend</rpm.home>
     </properties>
 
 
@@ -107,10 +113,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -238,70 +246,67 @@
             </plugin>
 
             <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>rpm-maven-plugin</artifactId>
-              <version>2.1.5</version>
-              <configuration>
-		<name>oscars-backend</name>
-                <group>Unspecified</group>
-		<description>OSCARS</description>
-                <prefix>${rpm.home}</prefix>
-                <organization>
-                  <name>${rpm.organization.name}</name>
-                  <url>${rpm.organization.url}</url>
-                </organization>
-		<license>${rpm.license}</license>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>rpm-maven-plugin</artifactId>
+                <version>2.1.5</version>
+                <configuration>
+                    <name>oscars-backend</name>
+                    <group>Unspecified</group>
+                    <description>OSCARS</description>
+                    <prefix>${rpm.home}</prefix>
+                    <license>${rpm.license}</license>
 
-                <defineStatements>
-                  <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
-                </defineStatements>
-                <mappings>
-                  <mapping>
-                    <directory>${rpm.home}/lib</directory>
-		    <sources>
-		      <source>
-			<location>${project.basedir}/target/${project.artifactId}-${project.version}.jar</location>
-		      </source>
-		    </sources>
-                  </mapping>
-                  <mapping>
-                    <directory>${rpm.home}/config</directory>
-		    <configuration>noreplace</configuration>
-		    <sources>
-		      <source>
-			<location>${project.basedir}/config/application.properties</location>
-		      </source>
-		      <source>
-			<location>${project.basedir}/config/oscars.jks</location>
-		      </source>
-		    </sources>
-                  </mapping>
-                  <mapping>
-                    <directory>${rpm.home}/config/topo</directory>
-		    <configuration>true</configuration>
-		    <sources>
-		      <source>
-			<location>${project.basedir}/config/topo/</location>
-			<includes>
-			  <include>*.json</include>
-			</includes>
-		      </source>
-		    </sources>
-                  </mapping>
-                  <mapping>
-                    <directory>${rpm.home}/logs</directory>
-                  </mapping>
-		  <mapping>
-                    <directory>/etc/systemd/system</directory>
-		    <directoryIncluded>false</directoryIncluded>
-		    <sources>
-		      <source>
-			<location>${project.basedir}/oscars-backend.service</location>
-		      </source>
-		    </sources>
-		  </mapping>
-                </mappings>
-              </configuration>
+                    <defineStatements>
+                        <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+                    </defineStatements>
+                    <mappings>
+                        <mapping>
+                            <directory>${rpm.home}/lib</directory>
+                            <sources>
+                                <source>
+                                    <location>${project.basedir}/target/${project.artifactId}-${project.version}.jar
+                                    </location>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>${rpm.home}/config</directory>
+                            <configuration>noreplace</configuration>
+                            <sources>
+                                <source>
+                                    <location>${project.basedir}/config/application.properties</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/config/oscars.jks</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>${rpm.home}/config/topo</directory>
+                            <configuration>true</configuration>
+                            <sources>
+                                <source>
+                                    <location>${project.basedir}/config/topo/</location>
+                                    <includes>
+                                        <include>*.json</include>
+                                    </includes>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>${rpm.home}/logs</directory>
+                        </mapping>
+                        <mapping>
+                            <directory>/etc/systemd/system</directory>
+                            <directoryIncluded>false</directoryIncluded>
+                            <sources>
+                                <source>
+                                    <location>${project.basedir}/oscars-backend.service</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                    </mappings>
+                </configuration>
             </plugin>
 
         </plugins>
