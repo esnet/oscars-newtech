@@ -84,6 +84,20 @@ public class ConnService {
 
     }
 
+    public Phase cancel(Connection c) {
+        c.setPhase(Phase.ARCHIVED);
+
+        c.setHeld(null);
+        c.setReserved(null);
+
+        // TODO: tear it down
+
+        c.setState(State.FINISHED);
+
+        connRepo.save(c);
+        return Phase.ARCHIVED;
+    }
+
     public void reservedFromHeld(Connection c) {
 
         Components cmp = c.getHeld().getCmp();
