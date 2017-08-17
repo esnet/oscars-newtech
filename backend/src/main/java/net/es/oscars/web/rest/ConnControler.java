@@ -103,14 +103,7 @@ public class ConnControler {
     @RequestMapping(value = "/api/conn/list", method = RequestMethod.POST)
     @ResponseBody
     public List<Connection> list(@RequestBody ConnectionFilter filter) {
-        List<Connection> results = new ArrayList<>();
-        connRepo.findAll().forEach(c -> {
-            if (c.getArchived() != null) {
-                results.add(c);
-            }
-        });
-
-        return results;
+        return connSvc.filter(filter);
     }
 
 

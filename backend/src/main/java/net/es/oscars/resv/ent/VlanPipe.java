@@ -24,8 +24,7 @@ public class VlanPipe {
                     @JsonProperty("zaBandwidth") @NonNull Integer zaBandwidth,
                     @JsonProperty("azERO") List<EroHop> azERO,
                     @JsonProperty("zaERO") List<EroHop> zaERO,
-                    @JsonProperty("schedule") Schedule schedule,
-                    @JsonProperty("commandParams") Set<CommandParam> commandParams) {
+                    @JsonProperty("schedule") Schedule schedule) {
         this.connectionId = connectionId;
         this.azBandwidth = azBandwidth;
         this.zaBandwidth = zaBandwidth;
@@ -34,7 +33,6 @@ public class VlanPipe {
         this.a = a;
         this.z = z;
         this.schedule = schedule;
-        this.commandParams = commandParams;
     }
 
 
@@ -72,10 +70,6 @@ public class VlanPipe {
     @ManyToOne
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Schedule schedule;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private Set<CommandParam> commandParams;
 
 
 }

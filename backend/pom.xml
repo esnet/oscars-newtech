@@ -49,6 +49,11 @@
             <groupId>net.es.oscars</groupId>
             <artifactId>frontend</artifactId>
         </dependency>
+        <dependency>
+            <version>${project.version}</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>shared</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>net.jodah</groupId>
