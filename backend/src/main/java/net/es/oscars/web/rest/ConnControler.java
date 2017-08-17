@@ -79,11 +79,38 @@ public class ConnControler {
         }
     }
 
+
+    @RequestMapping(value = "/protected/conn/cancel", method = RequestMethod.POST)
+    @ResponseBody
+    public Phase cancel(@RequestBody String connectionId) {
+
+        Optional<Connection> c = connRepo.findByConnectionId(connectionId);
+        if (!c.isPresent()) {
+            throw new NoSuchElementException();
+        } else {
+            return connSvc.cancel(c.get());
+        }
+    }
+
+
+    @RequestMapping(value = "/api/conn/info/{connectionId}", method = RequestMethod.GET)
+    @ResponseBody
+    public Connection info(@PathVariable String connectionId) {
+        return connRepo.findByConnectionId(connectionId).orElseThrow(NoSuchElementException::new);
+    }
+
+
     @RequestMapping(value = "/api/conn/list", method = RequestMethod.POST)
     @ResponseBody
     public List<Connection> list(@RequestBody ConnectionFilter filter) {
+        List<Connection> results = new ArrayList<>();
+        connRepo.findAll().forEach(c -> {
+            if (c.getArchived() != null) {
+                results.add(c);
+            }
+        });
 
-        return connRepo.findAll();
+        return results;
     }
 
 
