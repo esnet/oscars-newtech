@@ -213,9 +213,12 @@
                             <directory>${rpm.home}/lib</directory>
                             <sources>
                                 <source>
-                                    <location>${project.basedir}/target/${project.artifactId}-${project.version}.jar
-                                    </location>
+                                    <location>${project.basedir}/target/${project.artifactId}-${project.version}.jar</location>
                                 </source>
+				<softlinkSource>
+				    <destination>${project.artifactId}.jar</destination>
+				    <location>${project.artifactId}-${project.version}.jar</location>
+				</softlinkSource>
                             </sources>
                         </mapping>
                         <mapping>
