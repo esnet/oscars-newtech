@@ -55,6 +55,9 @@ public class ConnControler {
     @RequestMapping(value = "/protected/conn/commit", method = RequestMethod.POST)
     @ResponseBody
     public Phase commit(Authentication authentication, @RequestBody String connectionId) {
+        if (connectionId == null || connectionId.equals("")) {
+            throw new IllegalArgumentException("empty or null connectionid!");
+        }
 
         String username = authentication.getName();
         Optional<Connection> d = connRepo.findByConnectionId(connectionId);
@@ -70,6 +73,9 @@ public class ConnControler {
     @RequestMapping(value = "/protected/conn/uncommit", method = RequestMethod.POST)
     @ResponseBody
     public Phase uncommit(@RequestBody String connectionId) {
+        if (connectionId == null || connectionId.equals("")) {
+            throw new IllegalArgumentException("empty or null connectionid!");
+        }
 
         Optional<Connection> d = connRepo.findByConnectionId(connectionId);
         if (!d.isPresent()) {
@@ -83,6 +89,9 @@ public class ConnControler {
     @RequestMapping(value = "/protected/conn/cancel", method = RequestMethod.POST)
     @ResponseBody
     public Phase cancel(@RequestBody String connectionId) {
+        if (connectionId == null || connectionId.equals("")) {
+            throw new IllegalArgumentException("empty or null connectionid!");
+        }
 
         Optional<Connection> c = connRepo.findByConnectionId(connectionId);
         if (!c.isPresent()) {
@@ -96,6 +105,9 @@ public class ConnControler {
     @RequestMapping(value = "/api/conn/info/{connectionId}", method = RequestMethod.GET)
     @ResponseBody
     public Connection info(@PathVariable String connectionId) {
+        if (connectionId == null || connectionId.equals("")) {
+            throw new IllegalArgumentException("empty or null connectionid!");
+        }
         return connRepo.findByConnectionId(connectionId).orElseThrow(NoSuchElementException::new);
     }
 
