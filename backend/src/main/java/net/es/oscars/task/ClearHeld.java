@@ -29,8 +29,6 @@ public class ClearHeld {
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void processingLoop() {
-        List<Held> held = heldRepo.findAll();
-
 
         List<Connection> conns = connRepo.findAll();
         List<Connection> deleteThese = new ArrayList<>();
@@ -43,13 +41,6 @@ public class ClearHeld {
             }
         }
         connRepo.delete(deleteThese);
-
-        for (Held h : held) {
-            if (h.getExpiration().isBefore(Instant.now())) {
-                log.info("will delete expired held resources: "+h.getConnectionId());
-                heldRepo.delete(h);
-            }
-        }
 
 
     }
