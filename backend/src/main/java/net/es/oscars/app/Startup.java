@@ -3,6 +3,8 @@ package net.es.oscars.app;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
+import net.es.oscars.app.util.GitRepositoryState;
+import net.es.oscars.app.util.GitRepositoryStatePopulator;
 import net.es.oscars.security.db.UserPopulator;
 import net.es.oscars.topo.pop.ConsistencyChecker;
 import net.es.oscars.topo.pop.TopoPopulator;
@@ -23,6 +25,7 @@ public class Startup {
 
     private List<StartupComponent> components;
     private StartupProperties startupProperties;
+    private GitRepositoryStatePopulator gitRepositoryStatePopulator;
 
     @Bean
     public Executor taskExecutor() {
@@ -34,13 +37,16 @@ public class Startup {
                    TopoPopulator topoPopulator,
                    UserPopulator userPopulator,
                    UIPopulator uiPopulator,
-                   ConsistencyChecker consistencyChecker) {
+                   ConsistencyChecker consistencyChecker,
+                   GitRepositoryStatePopulator gitRepositoryStatePopulator) {
         this.startupProperties = startupProperties;
+        this.gitRepositoryStatePopulator = gitRepositoryStatePopulator;
         components = new ArrayList<>();
         components.add(userPopulator);
         components.add(topoPopulator);
         components.add(uiPopulator);
         components.add(consistencyChecker);
+        components.add(gitRepositoryStatePopulator);
     }
 
     public void onStart() throws IOException {
@@ -58,6 +64,11 @@ public class Startup {
             System.out.println("Exiting..");
             System.exit(1);
         }
+
+        GitRepositoryState gitRepositoryState = this.gitRepositoryStatePopulator.getGitRepositoryState();
+        log.info("OSCARS backend (" + gitRepositoryState.getDescribe() + " on " + gitRepositoryState.getBranch() + ")");
+        log.info("Built by " + gitRepositoryState.getBuildUserEmail() + " on " + gitRepositoryState.getBuildHost() + " at " + gitRepositoryState.getBuildTime());
+
         log.info("OSCARS startup successful.");
 
     }
