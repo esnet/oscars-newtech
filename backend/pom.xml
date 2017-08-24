@@ -221,6 +221,32 @@
 
     <build>
         <plugins>
+
+	    <plugin>
+	        <groupId>pl.project13.maven</groupId>
+		<artifactId>git-commit-id-plugin</artifactId>
+		<version>2.2.1</version>
+		<executions>
+		    <execution>
+		        <id>get-git-info</id>
+			<goals>
+			    <goal>revision</goal>
+			</goals>
+		    </execution>
+<!--
+		    <execution>
+		        <id>validate-git-info</id>
+			<goals>
+			    <goal>validateRevision</goal>
+			</goals>
+		    </execution>
+-->
+		</executions>
+		<configuration>
+		    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+		</configuration>
+	    </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -269,9 +295,12 @@
                             <directory>${rpm.home}/lib</directory>
                             <sources>
                                 <source>
-                                    <location>${project.basedir}/target/${project.artifactId}-${project.version}.jar
-                                    </location>
+                                    <location>${project.basedir}/target/${project.artifactId}-${project.version}.jar</location>
                                 </source>
+				<softlinkSource>
+				    <destination>${project.artifactId}.jar</destination>
+				    <location>${project.artifactId}-${project.version}.jar</location>
+				</softlinkSource>
                             </sources>
                         </mapping>
                         <mapping>

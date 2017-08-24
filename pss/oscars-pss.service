@@ -8,7 +8,7 @@ Type=simple
 User=nobody
 Group=nobody
 WorkingDirectory=/usr/local/esnet/oscars-pss
-ExecStart=/usr/bin/java -jar /usr/local/esnet/oscars-pss/lib/pss-1.0.0-beta.jar
+ExecStart=/usr/bin/java -jar /usr/local/esnet/oscars-pss/lib/pss.jar
 KillMode=process
 
 [Install]
