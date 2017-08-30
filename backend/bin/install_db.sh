@@ -51,11 +51,6 @@ echo "Configured Postgres. Please, edit backend/config/application.properties an
 echo "the password in the 'spring.datasource.password' line, if you haven't already."
 read -p " Press enter to create OSCARS tables.. "
 
-
-cd backend
-
-java -jar target/backend-1.0.0-beta.jar \
+java -jar lib/backend.jar \
     --spring.jpa.hibernate.ddl-auto=update \
     --startup.exit=true spring.datasource.password=${password}
-
-cd ..
