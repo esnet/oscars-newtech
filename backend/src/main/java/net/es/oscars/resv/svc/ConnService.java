@@ -9,6 +9,7 @@ import net.es.oscars.resv.db.ReservedRepository;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
+import net.es.oscars.web.beans.ConnectionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,41 @@ public class ConnService {
 
     @Autowired
     private ReservedRepository reservedRepo;
+
+    public List<Connection> filter(ConnectionFilter filter) {
+
+        List<Connection> candidates = new ArrayList<>();
+        // first we don't take into account anything that doesn't have any archived
+        // i.e. we discount any temporarily held
+        connRepo.findAll().forEach(c -> {
+            if (c.getArchived() != null) {
+                candidates.add(c);
+            }
+        });
+        List<Connection> descFiltered = new ArrayList<>();
+        if (filter.getDescription() != null) {
+            for (Connection c: candidates) {
+                if (c.getDescription().matches(filter.getDescription())) {
+                    descFiltered.add(c);
+                }
+            }
+        } else {
+            descFiltered.addAll(candidates);
+        }
+        List<Connection> phaseFiltered = new ArrayList<>();
+        if (filter.getPhase() != null) {
+            for (Connection c: descFiltered) {
+                if (c.getPhase().equals(filter.getPhase())) {
+                    phaseFiltered.add(c);
+                }
+            }
+        } else {
+            phaseFiltered.addAll(descFiltered);
+        }
+
+        return phaseFiltered;
+
+    }
 
     public Connection connectionFromBits(String connectionId, String username) {
         archivedRepo.findByConnectionId(connectionId);
@@ -194,7 +230,6 @@ public class ConnService {
                     .z(jmap.get(p.getZ().getDeviceUrn()))
                     .azBandwidth(p.getAzBandwidth())
                     .zaBandwidth(p.getZaBandwidth())
-                    .commandParams(copyCommandParams(p.getCommandParams(), sch))
                     .connectionId(p.getConnectionId())
                     .schedule(sch)
                     .azERO(copyEro(p.getAzERO()))

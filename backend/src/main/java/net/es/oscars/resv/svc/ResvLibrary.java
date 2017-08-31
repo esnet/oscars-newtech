@@ -9,6 +9,7 @@ import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
 import net.es.oscars.topo.beans.ReservableCommandParam;
 import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.enums.UrnType;
 
@@ -108,6 +109,47 @@ public class ResvLibrary {
         }
         return result;
 
+    }
+    public static Map<String, Set<ReservableCommandParam>>
+            availableCommandParams(Map<String, TopoUrn> baseline, Map<String, Set<CommandParam>> reservedParams) {
+        Map<String, Set<ReservableCommandParam>> result = new HashMap<>();
+        for (String urn: baseline.keySet()) {
+            if (!result.containsKey(urn)) {
+                result.put(urn, new HashSet<>());
+            }
+
+
+            Set<ReservableCommandParam> reservable = baseline.get(urn).getReservableCommandParams();
+            Set<CommandParam> reservedOnUrn = reservedParams.get(urn);
+            Set<CommandParamType> cpts = new HashSet<>();
+            reservable.forEach(r -> {
+                cpts.add(r.getType());
+            });
+            for (CommandParamType cpt: cpts) {
+                Set<IntRange> reservableOfType = new HashSet<>();
+                for (ReservableCommandParam rcp : reservable) {
+                    if (rcp.getType().equals(cpt)) {
+                        reservableOfType.addAll(rcp.getReservableRanges());
+                    }
+                }
+                Set<Integer> reservedOfType = new HashSet<>();
+                for (CommandParam cp : reservedOnUrn) {
+                    if (cp.getParamType().equals(cpt)) {
+                        reservedOfType.add(cp.getResource());
+                    }
+                }
+                Set<IntRange> availableofType = availableInts(reservableOfType, reservedOfType);
+                ReservableCommandParam rcp = ReservableCommandParam.builder()
+                        .type(cpt)
+                        .reservableRanges(availableofType)
+                        .build();
+                result.get(urn).add(rcp);
+            }
+        }
+
+
+
+        return result;
     }
 
     public static Map<String, Set<IntRange>> availableVlanMap(Map<String, TopoUrn> baseline, Collection<Vlan> reservedVlans) {

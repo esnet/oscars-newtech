@@ -1,6 +1,12 @@
 # oscars-newtech
 ## Synopsis
-Short for "On-demand Secure Circuits and Advance Reservation System," OSCARS is a freely available open-source product. As developed by the Department of Energy’s high-performance science network ESnet, OSCARS was designed by network engineers who specialize in supporting the U.S. national laboratory system and its data-intensive collaborations. This project is a complete redesign of the original OSCARS to improve performance and maintainability. 
+Short for "On-demand Secure Circuits and Advance Reservation System," OSCARS is 
+a freely available open-source product. As developed by the Department of 
+Energy’s high-performance science network ESnet, OSCARS was designed by 
+network engineers who specialize in supporting the U.S. national laboratory 
+system and its data-intensive collaborations. 
+
+This project is a complete redesign of the original OSCARS to improve performance and maintainability. 
 
 
 ## Building OSCARS
@@ -11,16 +17,68 @@ Make sure the following are installed on your system:
 
 * [Java](https://www.java.com) 1.8
 * [Maven](http://maven.apache.org) 3.1+
+* [Postgres](https://www.postgresql.org/) 9.1+
 
-### Building using maven
+## Running OSCARS
 
+### Preparation
+You will need to be running the PostgreSQL server.
+
+Before running OSCARS for the first time, set up the database tables by 
+executing the following script from the core directory; 
+```bash
+./bin/install_db.sh
+```
+### Building
 Run the following commands from the main project directory (oscars-newtech):
 
-```bash
-mvn -DskipTests install
+```
+ mvn -DskipTests package 
 ```
 
-## Testing OSCARS
+### Starting OSCARS
+
+You may start the OSCARS services (backend and pss) with the following command:
+
+```bash
+./bin/start.sh
+```
+
+If on windows, an alternative [Python (2.7 / 3.6+)](https://www.python.org/)script can be used.
+```bash
+ python ./bin/win_start.py
+```
+### Accessing the Web User Interface 
+
+OSCARS should now be running on your local machine.
+ 
+The web UI can be accessed at: ``https://localhost:8201`` . 
+
+You will be presented with a login screen. The default username is **admin** with a default password of **oscars**. 
+
+
+### Accessing REST endpoints
+
+You can see the Swagger REST endpoint documentation at 
+``https://localhost:8201/documentation/swagger-ui.html``
+
+We have three classes of endpoints:
+ * Public endpoints, under the ``/api/`` prefix
+ * Protected endpoints for registered users, under ``/protected``
+ * Administrative endpoints, under ``/admin``
+
+The protected and admin use JWT for security; when accessing them you must 
+provide a token in the REST request's headers:
+```
+Authentication: eyJhbGciOiJIUzUxMiJ9.....ziNCEPd753usnwlPwBeA
+```
+
+To receive a token, use the login endpoint at ``api/account/login`` .
+
+## Development notes
+You should be familiar with the Maven build environment. Thsi project follows its conventions closely.
+
+### Testing 
 You can run the unit tests with the command:
 
 ```bash
@@ -32,63 +90,42 @@ You may also install only if the tests pass by running:
 ```bash
 mvn install
 ```
-## Running OSCARS
 
-### Preparation
-You will need to install and run a PostgreSQL server.
 
-You will also need to, one time, set up the database tables by running the following script from the core directory; 
-```bash
-./bin/install_db.sh
-```
 
-### Starting OSCARS
+### Project Structure
+The new OSCARS is a [Spring Boot](http://projects.spring.io/spring-boot/) application, made up of three major components: 
+ * The main application (the "backend" module), 
+ * the path setup subsystem ("pss"),
+ * and the web UI; 
+   * note: this is a node.js application and exists in a separate Github repo: [oscars-frontend](https://github.com/esnet/oscars-frontend). The backend module pulls this in as a dependency and serves out the packaged web UI javascript application.
 
-You may start all OSCARS services (core and webui) with the following command:
-
-```bash
-./bin/start.sh
-```
-
-If on windows, an alternative python script can be used.
-It has the following dependencies:
-* [Python](https://www.python.org/) 2.7+ or 3.6+
-
-```bash
- python ./bin/win_start.py
-```
-### Accessing the Web User Interface (webui)
-
-OSCARS should now be running on your local machine. The webui can be accessed at: https://localhost:8001. You will be presented with a login screen. The admin username is **admin** and the default password is **oscars**. 
-
-## Project Structure
-The new OSCARS is a [Springboot](http://projects.spring.io/spring-boot/) application, made up of two major components: The main application ("core"), and the path setup subsystem ("pss"). 
 The main project directory is structured as follows:
-### bin
-Contains script(s) for running OSCARS.
-### doc
-Auto-generated documentation; use `bin/generatedocs.sh` at the top-level distribution directory to update.  You will need a working installation of javasphinx.
+#### bin
+Contains script(s) for running and maintaining OSCARS.
 
-### core
+#### doc
+Auto-generated documentation; use `./bin/generatedocs.sh` at the top-level distribution directory to update.  You will need a working installation of javasphinx.
+
+### backend
 The main application. Handles reservation requests, determines which path (if any) is available to satisfy the request, and reserves the network resources. Key modules include:
-* **acct** - Maintains list of customers and handles storing, editing, and retrieving account information.
-* **bwavail** - Calculates the minimum amount of bandwidth available between a given source and destination within a given time duration. Returns a series of time points and corresponding changes in bandwidth availability, based on reservations in the system. 
-* **authnz** - Tracks permissions/authorization associated with user accounts. 
-* **conf** - Retrieves configurations, specified in "oscars-newtech/core/config", for each OSCARS module on startup.
-* **helpers** - Functions useful for dealing with Instants and VLAN expression parsing.
+* **app** - Application-wide entities: startup classes, exceptions, configuration properties, serialization utilities,
 * **pce** - The Path Computation Engine. It takes a requested reservation's parameters, evaluates the current topology, determines the (shortest) path, if any, and decides which network resources must be reserved.
 * **pss** - Decides router command parameters, contacts the PSS component, and persists generated configuration.
 * **resv** - Tracks reservations, and receives user parameters for reservation requests.
-* **servicetopo** - Abstracts the network topology to create unique "Service Level" views of the topology for a given request.
-* **tasks** - Services which run in the background and perform tasks at certain intervals (e.g. Select a submitted request to begin the reservation process).
-* **topo** - Maintain topology information.
-* **whatif** - Generate reservation suggestion for users on-demand.
+* **security** - Authentication and authorization-related classes
+* **task** - Tasks that are scheduled to run at certain intervals (e.g. scheduled router configs, topology updates, etc).
+* **topo** - Topology-related classes, persistence, loading, and utility libraries.
+* **web** - REST endpoints 
 
-### shared 
+#### shared 
 A collection of shared classes used by the different modules. 
 
-### pss
+#### pss
 The Path Setup Subsystem. The core sends commands to it, and it generates appropriate config and then commits it to network devices through rancid. 
 
-### topo
+#### topo
 Topology-related scripts and utilities; currently mostly ESnet-specific Python code. 
+
+#### core
+Deprecated

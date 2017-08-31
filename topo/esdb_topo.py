@@ -18,15 +18,24 @@ import argparse
 import os
 import sys
 import requests
+from operator import itemgetter
+from itertools import groupby
+
 from esnet.topology.today_to_devices import get_devices
 from esnet.topology.today_to_isis_graph import get_isis_neighbors, make_isis_graph
 from esnet.topology.today_to_ports import get_ports_by_rtr
 from esnet.topology.today_to_ip_addresses import get_ip_addrs
+from esnet.topology.today_to_vlan import get_vlans
 
 ESDB_URL = "https://esdb.es.net/esdb_api/v1"
 
 OUTPUT_DEVICES = "output/devices.json"
 OUTPUT_ADJCIES = "output/adjacencies.json"
+
+pp = pprint.PrettyPrinter(indent=4)
+
+UNKNOWN_VLAN_RANGE = "2000-2999"
+VLAN_RANGE = "2-4095"
 
 
 def get_token(opts):
@@ -60,8 +69,6 @@ def get_token(opts):
 
 
 def main():
-    pp = pprint.PrettyPrinter(indent=4)
-
     parser = argparse.ArgumentParser(description='OSCARS today topology importer')
     parser.add_argument('-v', '--verbose', action='count', default=0,
                         help="set verbosity level")
@@ -101,6 +108,7 @@ def main():
     in_ports = get_ports_by_rtr(today['ipv4net'])
 
     addrs = get_ip_addrs(today['ipv4net'])
+    vlans = get_vlans(today['VLAN'])
 
     oscars_devices = transform_devices(in_devices=in_devices)
 
@@ -110,8 +118,8 @@ def main():
 
     merge_isis_ports(oscars_devices=oscars_devices, igp_portmap=igp_portmap)
 
-    merge_phy_ports(oscars_devices=oscars_devices, ports=in_ports, igp_portmap=igp_portmap)
-
+    merge_phy_ports(oscars_devices=oscars_devices, ports=in_ports, igp_portmap=igp_portmap, vlans=vlans)
+#    pp.pprint(oscars_devices)
     merge_addrs(oscars_devices=oscars_devices, addrs=addrs, isis_adjcies=isis_adjcies)
 
     # Dump output files
@@ -161,7 +169,59 @@ def filter_out_not_igp(igp_portmap=None, oscars_devices=None):
         oscars_devices.remove(device)
 
 
-def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None):
+def find_vlan_of(ifce_data=None, vlans=None, device=None):
+    for entry in vlans:
+        if entry["router"] == device["urn"]:
+            if entry["int_name"] == ifce_data["int_name"]:
+                #                print "found vlan for "+device["urn"]+":"+entry["int_name"]+" - it is %d " % entry["vlan_id"]
+                return entry["vlan_id"]
+
+    int_name = ifce_data["int_name"]
+    parts = int_name.split(".")
+    if len(parts) == 2:
+        #        print "found vlan for "+device["urn"]+":"+int_name+" - it is "+parts[1]
+        return parts[1]
+    return None
+
+
+def make_reservable_vlans(used_vlans=None, used_vlans_known=None):
+    if not used_vlans_known:
+        parts = UNKNOWN_VLAN_RANGE.split("-")
+        return [
+            {
+                "floor": parts[0],
+                "ceiling": parts[1]
+            }
+        ]
+
+    parts = VLAN_RANGE.split("-")
+    used_vlan_set = set(used_vlans)
+    all_vlans = set()
+    for i in range(int(parts[0]), int(parts[1])):
+        all_vlans.add(i)
+
+    avail_vlans = all_vlans - used_vlan_set
+    avail_vlans = list(avail_vlans)
+    avail_vlans.sort()
+
+    if avail_vlans is not None:
+        ranges = []
+        for k, g in groupby(enumerate(avail_vlans), lambda (i, x): i - x):
+            group = map(itemgetter(1), g)
+            ranges.append((group[0], group[-1]))
+
+        result = []
+        for entry in ranges:
+            result.append({
+                "floor": entry[0],
+                "ceiling": entry[1]
+            })
+        return result
+    else:
+        print "could not decide available vlans!"
+
+
+def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=None):
     for device_name in ports.keys():
         for device in oscars_devices:
             if device["urn"] == device_name:
@@ -169,11 +229,23 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None):
                     port_ifces = ports[device_name][port]
                     mbps = 0
 
-
-                    # TODO: examine VLANs, remove used vlans, create correct reservable VLANs for output
-                    # TODO: add alias information to port tags
+                    all_names = []
+                    all_vlans = []
+                    all_vlans_known = True
+                    untagged = False
                     for ifce_data in port_ifces:
                         mbps = ifce_data["mbps"]
+                        all_names.append(ifce_data["alias"])
+                        all_names.append(ifce_data["int_name"])
+
+                        vlan = find_vlan_of(ifce_data, vlans, device)
+                        if vlan is None:
+                            all_vlans_known = False
+                        #                            print "could not find vlan id for "+device["urn"]+":"+names["name"]
+                        elif vlan == 0:
+                            untagged = True
+                        else:
+                            all_vlans.append(vlan)
 
                     port_in_igp = False
                     if device_name in igp_portmap.keys():
@@ -183,21 +255,17 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None):
                     ifce_data = {
                         "urn": device_name + ":" + port,
                         "reservableIngressBw": mbps,
-                        "reservableEgressBw": mbps
+                        "reservableEgressBw": mbps,
+                        "tags": all_names
                     }
 
                     if port_in_igp:
                         ifce_data["capabilities"] = ["MPLS"]
-                    else:
+                    elif not untagged:
                         ifce_data["capabilities"] = ["ETHERNET"]
 
-                    # TODO: put correct reservable VLANs in output
-                        ifce_data["reservableVlans"] = [
-                            {
-                                "floor": 2000,
-                                "ceiling": 2999
-                            }
-                        ]
+                        ifce_data["reservableVlans"] = make_reservable_vlans(all_vlans, all_vlans_known)
+
                     found_port = False
                     for out_port in device["ports"]:
                         if out_port["urn"] == ifce_data["urn"]:

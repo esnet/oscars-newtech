@@ -16,8 +16,8 @@ try:
     top_dir = os.getcwd()
 
     # Launch core
-    os.chdir(os.path.join(top_dir, "core"))
-    core_proc = subprocess.Popen(['java', "-jar", os.path.join("target", "core-1.0.0-beta.jar")])
+    os.chdir(os.path.join(top_dir, "backend"))
+    core_proc = subprocess.Popen(['java', "-jar", os.path.join("target", "backend-1.0.0-beta.jar")])
     processes.append(core_proc)
 
     # Launch PSS

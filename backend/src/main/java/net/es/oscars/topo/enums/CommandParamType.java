@@ -7,6 +7,5 @@ public enum CommandParamType {
     ALU_INGRESS_POLICY_ID,
     ALU_EGRESS_POLICY_ID,
     ALU_SVC_ID,
-    ALU_SDP_ID;
 
 }

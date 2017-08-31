@@ -203,9 +203,59 @@ public class IntRange {
 
         result.add(prev);
         return result;
-
-
     }
 
+    public static Integer minFloor(Collection<IntRange> ranges) {
+        Integer floor = Integer.MAX_VALUE;
+        for (IntRange r: ranges) {
+            if (r.getFloor() < floor) {
+                floor = r.getFloor();
+            }
+        }
+        return floor;
+    }
+    public static Integer maxCeil(Collection<IntRange> ranges) {
+        Integer ceiling = Integer.MIN_VALUE;
+        for (IntRange r: ranges) {
+            if (r.getCeiling() > ceiling) {
+                ceiling = r.getCeiling();
+            }
+        }
+        return ceiling;
+    }
+
+    public static boolean setContains(Set<IntRange> rangeSet, Integer i) {
+
+        for (IntRange range: rangeSet) {
+            if (range.contains(i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Integer leastInAll(Map<String, Set<IntRange>> rangeMapOfSets) {
+        Set<IntRange> allRanges = new HashSet<>();
+        for (Set<IntRange> rangeSet : rangeMapOfSets.values()) {
+            allRanges.addAll(rangeSet);
+        }
+
+        Integer floor = minFloor(allRanges);
+        Integer ceiling = maxCeil(allRanges);
+        for (Integer i = floor; i <= ceiling; i++) {
+            boolean containedInAll = true;
+            for (Set<IntRange> rangeSet : rangeMapOfSets.values()) {
+                if (!setContains(rangeSet, i)) {
+                    containedInAll = false;
+                }
+            }
+            if (containedInAll) {
+                return i;
+            }
+
+        }
+        return null;
+
+    }
 
 }
