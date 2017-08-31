@@ -122,9 +122,9 @@ public class ConnControler {
     @ResponseBody
     public Connection info(@PathVariable String connectionId) {
         if (connectionId == null || connectionId.equals("")) {
-            throw new IllegalArgumentException("empty or null connectionid!");
+            return null;
         }
-        return connRepo.findByConnectionId(connectionId).orElseThrow(NoSuchElementException::new);
+        return connRepo.findByConnectionId(connectionId).orElse(null);
     }
 
 
