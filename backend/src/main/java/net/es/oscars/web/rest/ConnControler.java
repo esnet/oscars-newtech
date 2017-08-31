@@ -12,10 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.IntStream;
 
 
 @RestController
@@ -37,10 +35,12 @@ public class ConnControler {
     @RequestMapping(value = "/protected/conn/generateId", method = RequestMethod.GET)
     @ResponseBody
     public String generateConnectionId() {
+
+
         boolean found = false;
         String result = "";
         while (!found) {
-            String candidate = HashidMaker.randomHashid();
+            String candidate = this.connectionIdGenerator();
             Optional<Connection> d = connRepo.findByConnectionId(candidate);
             if (!d.isPresent()) {
                 found = true;
@@ -49,6 +49,22 @@ public class ConnControler {
         }
         return result;
 
+
+    }
+    private String connectionIdGenerator() {
+        String SAFE_ALPHABET_STRING = "234679CDFGHJKMNPRTWXYZ";
+        char[] SAFE_ALPHABET = SAFE_ALPHABET_STRING.toCharArray();
+        Random random = new Random();
+
+        int max = SAFE_ALPHABET.length;
+        int totalNumber = 4;
+
+        StringBuilder b = new StringBuilder();
+        IntStream stream = random.ints(totalNumber, 0, max);
+        stream.forEach(i -> {
+            b.append(SAFE_ALPHABET[i]);
+        });
+        return b.toString();
 
     }
 
