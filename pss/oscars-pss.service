@@ -10,6 +10,7 @@ Group=nobody
 WorkingDirectory=/usr/local/esnet/oscars-pss
 ExecStart=/usr/bin/java -jar /usr/local/esnet/oscars-pss/lib/pss.jar
 KillMode=process
+SuccessExitStatus=143
 
 [Install]
 WantedBy=multi-user.target
