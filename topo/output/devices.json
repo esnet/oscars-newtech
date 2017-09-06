@@ -4440,7 +4440,7 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "llnl-mr2->lanl(as68):10ge:site_conn-c_tertiary_v4:show:intercloud", 
+          "llnl-mr2->lanl-discom(as68):10ge:site_conn-c_tertiary_v4:show:intercloud", 
           "xe-2/2/0.1140"
         ], 
         "urn": "llnl-mr2:xe-2/2/0", 
