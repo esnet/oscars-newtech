@@ -975,7 +975,7 @@
   {
     "a": "eqx-chi-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 15
     }, 
     "z": "eqx-ash-cr5:2/1/1"
   }, 
@@ -989,7 +989,7 @@
   {
     "a": "eqx-ash-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 15
     }, 
     "z": "eqx-chi-cr5:2/1/1"
   }, 
