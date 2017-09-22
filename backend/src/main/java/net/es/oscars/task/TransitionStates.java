@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class ClearHeld {
+public class TransitionStates {
 
     @Autowired
     private ConnectionRepository connRepo;
@@ -29,6 +29,8 @@ public class ClearHeld {
 
         List<Connection> conns = connRepo.findAll();
         List<Connection> deleteThese = new ArrayList<>();
+        List<Connection> archiveThese = new ArrayList<>();
+
         for (Connection c : conns) {
             if (c.getPhase().equals(Phase.HELD)) {
                 if (c.getHeld().getExpiration().isBefore(Instant.now())) {
@@ -36,8 +38,20 @@ public class ClearHeld {
                     deleteThese.add(c);
                 }
             }
+            if (c.getPhase().equals(Phase.RESERVED)) {
+                if (c.getReserved().getSchedule().getEnding().isBefore(Instant.now())) {
+                    archiveThese.add(c);
+                }
+            }
         }
         connRepo.delete(deleteThese);
+
+        archiveThese.forEach(c -> {
+            c.setPhase(Phase.ARCHIVED);
+            c.setReserved(null);
+            connRepo.save(c);
+        });
+
 
 
     }

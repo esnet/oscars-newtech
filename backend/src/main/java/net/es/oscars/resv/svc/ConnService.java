@@ -7,12 +7,14 @@ import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.db.HeldRepository;
 import net.es.oscars.resv.db.ReservedRepository;
 import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.web.beans.ConnectionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -20,10 +22,14 @@ import java.util.*;
 @Service
 @Slf4j
 @Data
+@Transactional
 public class ConnService {
 
     @Autowired
     private ConnectionRepository connRepo;
+
+    @Autowired
+    private LogService logService;
 
     @Autowired
     private HeldRepository heldRepo;
@@ -98,12 +104,19 @@ public class ConnService {
         this.reservedFromHeld(c);
         this.archiveFromReserved(c);
 
-        Held h = c.getHeld();
-
         c.setHeld(null);
         connRepo.save(c);
-        heldRepo.delete(h);
 
+        // TODO: set the user
+        Event ev = Event.builder()
+                .connectionId(c.getConnectionId())
+                .description("committed")
+                .type(EventType.COMMITTED)
+                .at(Instant.now())
+                .username("")
+                .build();
+
+        logService.logEvent(c.getConnectionId(), ev);
 
         return Phase.RESERVED;
 
@@ -111,11 +124,10 @@ public class ConnService {
 
     public Phase uncommit(Connection c) {
 
-        connRepo.delete(c);
-
         Held h = this.heldFromReserved(c);
-        heldRepo.save(h);
-
+        c.setReserved(null);
+        c.setHeld(h);
+        connRepo.save(c);
         return Phase.HELD;
 
     }
@@ -125,6 +137,16 @@ public class ConnService {
 
         c.setHeld(null);
         c.setReserved(null);
+
+        // TODO: set the user
+        Event ev = Event.builder()
+                .connectionId(c.getConnectionId())
+                .description("cancelled")
+                .type(EventType.CANCELLED)
+                .at(Instant.now())
+                .username("")
+                .build();
+        logService.logEvent(c.getConnectionId(), ev);
 
         // TODO: tear it down
 

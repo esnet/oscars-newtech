@@ -32,6 +32,9 @@ public class ResvLibrary {
         Map<String, Integer> availableEgressBw = ResvLibrary.availableBandwidthMap(BwDirection.EGRESS, urnMap, reservedEgBws);
 
         Map<String, PortBwVlan> available = new HashMap<>();
+        if (urnMap == null) {
+            return new HashMap<>();
+        }
         urnMap.forEach((urn, topoUrn) -> {
             if (topoUrn.getUrnType().equals(UrnType.PORT)) {
                 Integer ingBw = availableIngressBw.get(urn);
@@ -92,6 +95,11 @@ public class ResvLibrary {
     public static Map<String, Integer> availableBandwidthMap(BwDirection dir, Map<String, TopoUrn> baseline,
                                                              Map<String, List<PeriodBandwidth>> reservedBandwidths) {
         Map<String, Integer> result = new HashMap<>();
+        if (baseline == null) {
+            log.info("no baseline available; possibly still starting up.");
+            return new HashMap<>();
+        }
+
         for (String urn : baseline.keySet()) {
             if (baseline.get(urn).getUrnType().equals(UrnType.PORT)) {
                 Integer reservable = 0;
@@ -163,6 +171,10 @@ public class ResvLibrary {
         });
 
         Map<String, Set<IntRange>> availableVlanMap = new HashMap<>();
+        if (baseline == null) {
+            log.info("no baseline available; possibly still starting up.");
+            return new HashMap<>();
+        }
         for (String urn : baseline.keySet()) {
             Set<IntRange> reservable = baseline.get(urn).getReservableVlans();
             Set<IntRange> availableVlans = availableInts(reservable, reservedVlanMap.get(urn));

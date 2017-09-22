@@ -1,7 +1,6 @@
 package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.app.util.HashidMaker;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.enums.Phase;
