@@ -3,6 +3,9 @@ package net.es.oscars.web.rest;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.ent.Connection;
+import net.es.oscars.resv.ent.Event;
+import net.es.oscars.resv.enums.EventType;
+import net.es.oscars.resv.svc.LogService;
 import net.es.oscars.resv.svc.ResvService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,8 @@ import java.util.Optional;
 @RestController
 @Slf4j
 public class HeldController {
+    @Autowired
+    private LogService logService;
 
     @Autowired
     private ConnectionRepository connRepo;
@@ -48,12 +53,25 @@ public class HeldController {
             maybeConnection.ifPresent(c -> connRepo.delete(c));
         } else {
             log.info("saving new connection " + connectionId);
+            Event ev = Event.builder()
+                    .connectionId(connectionId)
+                    .description("created")
+                    .type(EventType.CREATED)
+                    .at(Instant.now())
+                    .username("")
+                    .build();
+            logService.logEvent(conn.getConnectionId(), ev);
+
+
         }
 
         Instant exp = Instant.now().plus(15L, ChronoUnit.MINUTES);
         conn.getHeld().setExpiration(exp);
         conn.setUsername(username);
         connRepo.save(conn);
+
+
+
         /*
         vlanRepo.findAll().forEach(v -> {
             if (v.getSchedule() != null) {
