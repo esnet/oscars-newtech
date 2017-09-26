@@ -38,12 +38,15 @@ public class ConsistencyChecker implements StartupComponent {
         this.ts = ts;
     }
 
+    // TODO: check version
+
+
     public void startup() throws StartupException {
         try {
             this.checkConsistency();
 
-            ts.updateTopo(deviceRepo.findAll(), adjcyRepo.findAll());
-        } catch (ConsistencyException|TopoException ex) {
+            ts.updateTopo();
+        } catch (ConsistencyException | TopoException ex) {
             log.error(ex.getMessage());
             throw new StartupException(ex.getMessage());
         }

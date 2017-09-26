@@ -25,6 +25,11 @@ public class Port {
     @GeneratedValue
     private Long id;
 
+
+    @ManyToOne
+    private Version version;
+
+
     @NonNull
     @Column(unique = true)
     private String urn;

@@ -1,7 +1,6 @@
 package net.es.oscars.topo.ent;
 
 import lombok.*;
-import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.enums.Layer;
 
 import javax.persistence.*;
@@ -31,6 +30,9 @@ public class PortAdjcy {
 
     @ElementCollection
     private Map<Layer, Long> metrics = new HashMap<>();
+
+    @ManyToOne
+    private Version version;
 
     public Integer minimalReservableBandwidth() {
         Set<Integer> reservableBandwidths = new HashSet<>();
