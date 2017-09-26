@@ -1,6 +1,7 @@
 package net.es.oscars.task;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.Startup;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.db.HeldRepository;
 import net.es.oscars.resv.ent.Connection;
@@ -22,10 +23,16 @@ public class TransitionStates {
 
     @Autowired
     private ConnectionRepository connRepo;
+    @Autowired
+    private Startup startup;
 
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void processingLoop() {
+        if (startup.isInStartup() || startup.isInShutdown()) {
+            log.info("application in startup or shutdown; skipping state transitions");
+            return;
+        }
 
         List<Connection> conns = connRepo.findAll();
         List<Connection> deleteThese = new ArrayList<>();

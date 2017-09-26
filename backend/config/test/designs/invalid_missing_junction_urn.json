@@ -6,7 +6,7 @@
     "junctions": [
       {
         "refId": "A",
-        "deviceUrn": "B"
+        "deviceUrn": "MISSING"
       }
     ],
     "fixtures": [

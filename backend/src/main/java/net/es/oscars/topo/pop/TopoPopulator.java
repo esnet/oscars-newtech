@@ -6,40 +6,42 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.StartupComponent;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.TopoProperties;
+import net.es.oscars.topo.beans.Delta;
+import net.es.oscars.topo.beans.Topology;
+import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;
 import net.es.oscars.topo.db.PortRepository;
+import net.es.oscars.topo.db.VersionRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.Layer;
+import net.es.oscars.topo.svc.TopoLibrary;
+import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 
 @Slf4j
 @Service
 public class TopoPopulator implements StartupComponent {
-    private DeviceRepository deviceRepo;
-    private PortRepository portRepo;
     private TopoProperties topoProperties;
-    private PortAdjcyRepository adjcyRepo;
+    private TopoService topoService;
 
 
     @Autowired
-    public TopoPopulator(DeviceRepository deviceRepo,
-                         PortRepository portRepo,
-                         PortAdjcyRepository adjcyRepo,
+    public TopoPopulator(TopoService topoService,
                          TopoProperties topoProperties) {
-        this.deviceRepo = deviceRepo;
-        this.portRepo = portRepo;
-        this.adjcyRepo = adjcyRepo;
         this.topoProperties = topoProperties;
+        this.topoService = topoService;
     }
 
     public void startup() throws StartupException {
@@ -50,55 +52,47 @@ public class TopoPopulator implements StartupComponent {
         String adjciesFilename = "./config/topo/" + topoProperties.getPrefix() + "-adjcies.json";
 
         try {
-            this.importDevices(false, devicesFilename);
-            this.importAdjacencies(false, adjciesFilename);
-        } catch (IOException ex) {
+            Topology current = topoService.currentTopology();
+            Topology incoming = this.loadTopology(devicesFilename, adjciesFilename);
+            VersionDelta vd = TopoLibrary.compare(current, incoming);
+            if (vd.isChanged()) {
+                Version newVersion = topoService.nextVersion();
+                // TODO: check how the delta affects existing connections
+                topoService.mergeVersionDelta(vd, newVersion);
+
+            }
+
+        } catch (IOException | ConsistencyException ex) {
             throw new StartupException("Import failed! " + ex.getMessage());
         }
     }
 
-    @Transactional
-    public void importDevices(boolean overwrite, String devicesFilename) throws IOException {
+    public Topology loadTopology(String devicesFilename, String adjciesFilename) throws IOException {
 
-        if (overwrite) {
-            log.info("Overwrite set; deleting device entries.");
-            deviceRepo.deleteAll();
-        }
+        List<Device> devices = loadDevicesFromFile(devicesFilename);
+        Map<String, Port> portMap = new HashMap<>();
+        devices.forEach(d -> {
+            d.getPorts().forEach(p -> {
+                portMap.put(p.getUrn(), p);
+            });
+        });
 
-        List<Device> fileDevices = importDevicesFromFile(devicesFilename);
+        List<PortAdjcy> adjcies = loadPortAdjciesFromFile(adjciesFilename, portMap);
+        List<Port> ports = new ArrayList<>();
+        devices.forEach(d -> {
+            ports.addAll(d.getPorts());
+        });
 
-
-//        ObjectMapper mapper = new ObjectMapper();
-//        log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(fileDevices));
-
-        if (deviceRepo.count() == 0) {
-
-            deviceRepo.save(fileDevices);
-            int ports = 0;
-            for (Device dev : fileDevices) {
-                ports += dev.getPorts().size();
-            }
-        } else {
-            log.info("Devices DB is not empty; skipping import");
-        }
-    }
-
-    @Transactional
-    public void importAdjacencies(boolean overwrite, String adjciesFilename) throws IOException {
-        if (overwrite) {
-            adjcyRepo.deleteAll();
-        }
-
-        List<PortAdjcy> adjcies = importPortAdjciesFromFile(adjciesFilename);
-
-        if (adjcyRepo.count() == 0) {
-            adjcyRepo.save(adjcies);
-        }
+        return Topology.builder()
+                .adjcies(adjcies)
+                .devices(devices)
+                .ports(ports)
+                .build();
 
     }
 
 
-    private List<Device> importDevicesFromFile(String filename) throws IOException {
+    private List<Device> loadDevicesFromFile(String filename) throws IOException {
         File jsonFile = new File(filename);
         ObjectMapper mapper = new ObjectMapper();
         List<Device> devices = Arrays.asList(mapper.readValue(jsonFile, Device[].class));
@@ -110,25 +104,26 @@ public class TopoPopulator implements StartupComponent {
         return devices;
     }
 
-    private List<PortAdjcy> importPortAdjciesFromFile(String filename) throws IOException {
+    private List<PortAdjcy> loadPortAdjciesFromFile(String filename, Map<String, Port> portMap) throws IOException {
         File jsonFile = new File(filename);
         ObjectMapper mapper = new ObjectMapper();
         List<PortAdjcyForImport> fromFile = Arrays.asList(mapper.readValue(jsonFile, PortAdjcyForImport[].class));
         List<PortAdjcy> result = new ArrayList<>();
         fromFile.forEach(t -> {
-            Optional<Port> maybeA = portRepo.findByUrn(t.getA());
-            Optional<Port> maybeZ = portRepo.findByUrn(t.getZ());
-            if (maybeA.isPresent() && maybeZ.isPresent()) {
-                Port a = maybeA.get();
-                Port z = maybeZ.get();
+            if (portMap.containsKey(t.getA()) && portMap.containsKey(t.getZ())) {
+                Port a = portMap.get(t.getA());
+                Port z = portMap.get(t.getZ());
                 Map<Layer, Long> metrics = t.getMetrics();
                 PortAdjcy adjcy = PortAdjcy.builder().a(a).z(z).metrics(metrics).build();
                 result.add(adjcy);
+            } else {
+                log.error("could not import adjcy: " + t.getA() + " -- " + t.getZ());
             }
         });
         return result;
 
     }
+
 
     @Data
     private static class PortAdjcyForImport {

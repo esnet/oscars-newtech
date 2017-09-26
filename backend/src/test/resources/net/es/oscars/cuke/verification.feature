@@ -5,8 +5,10 @@ Feature: design verification
 
   Scenario: Parameters verification
     Given I have initialized the world
+    Given I clear the "adjacencies" repository
     Given I clear the "devices" repository
-    Given I import devices from "config/test/topo/one.json"
+    Given I load topology from "config/test/topo/one.json" and "config/test/topo/adj_none.json"
+    When I merge the new topology
     Given I update the topology URN map after import
     Given I load a design from "config/test/designs/one_router.json"
     Then I "can" verify the design against baseline
@@ -24,4 +26,6 @@ Feature: design verification
     Then I "can not" verify the design against baseline
     Given I load a design from "config/test/designs/invalid_nonreservable_fixture_vlan.json"
     Then I "can not" verify the design against baseline
+    Given I clear the "adjacencies" repository
+    Given I clear the "devices" repository
     Then I did not receive an exception

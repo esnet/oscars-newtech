@@ -1,6 +1,7 @@
 package net.es.oscars.task;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.pss.db.RouterCommandsRepository;
 import net.es.oscars.pss.svc.PSSAdapter;
@@ -24,6 +25,8 @@ public class GenerateConfigs {
     private ConnectionRepository connRepo;
     @Autowired
     private RouterCommandsRepository rcRepo;
+    @Autowired
+    private Startup startup;
 
     @Autowired
     private PSSAdapter pssAdapter;
@@ -31,6 +34,10 @@ public class GenerateConfigs {
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void processingLoop() {
+        if (startup.isInStartup() || startup.isInShutdown()) {
+            log.info("application in startup or shutdown; skipping config generation");
+            return;
+        }
 
         List<Connection> conns = connRepo.findAll();
 
@@ -42,6 +49,8 @@ public class GenerateConfigs {
                 }
             }
         }
+
+        // TODO: reactivate this..
         /*
         for (Connection c: needConfigs) {
 
