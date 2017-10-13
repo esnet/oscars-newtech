@@ -48,6 +48,18 @@ def topo_xml(lines):
     start.text = '2017-10-13T00:00:00.000Z'
     end = SubElement(lifetime , NSI_BASE+'end')
     end.text = '2017-11-13T00:00:00.000Z'
+
+
+    for line in lines:
+        port = NSA_ID+'::'+line.strip()+':+'
+
+        bp = SubElement(top, NSI_BASE+'BidirectionalPort')
+        bp.set('id', port)
+        bpi = SubElement(bp, NSI_BASE+'PortGroup')
+        bpi.set('id', port+':in')
+        bpo = SubElement(bp, NSI_BASE+'PortGroup')
+        bpo.set('id', port+':out')
+
     sd = SubElement(top, NSI_SVC+'serviceDefinition')
     sd.set('id', 'urn:ogf:network:es.net:2013::ServiceDefinition:EVTS.A-GOLE')
     name = SubElement(sd, 'name')
@@ -62,8 +74,6 @@ def topo_xml(lines):
     ss.set('id', GOLE)
     ss.set('labelSwapping', 'true')
     ss.set('labelType', NML_VLAN)
-    sd = SubElement(ss, NSI_SVC+'serviceDefinition')
-    sd.set('id', GOLE)
     ss_hip = SubElement(ss, NSI_BASE+'Relation')
     ss_hip.set('type', NML_INBOUND)
     ss_hop = SubElement(ss, NSI_BASE+'Relation')
@@ -77,13 +87,6 @@ def topo_xml(lines):
 
     for line in lines:
         port = NSA_ID+'::'+line.strip()+':+'
-
-        bp = SubElement(top, NSI_BASE+'BidirectionalPort')
-        bp.set('id', port)
-        bpi = SubElement(bp, NSI_BASE+'PortGroup')
-        bpi.set('id', port+':in')
-        bpo = SubElement(bp, NSI_BASE+'PortGroup')
-        bpo.set('id', port+':out')
 
         ss_hip_pg = SubElement(ss_hip, NSI_BASE+'PortGroup')
         ss_hip_pg.set('id', port+':in')
@@ -120,6 +123,9 @@ def topo_xml(lines):
         ho_cp.text = '100000000000'
         ho_mn = SubElement(ho_pg, NSI_ETH+'granularity')
         ho_mn.text = '1000000'
+
+    sd = SubElement(ss, NSI_SVC+'serviceDefinition')
+    sd.set('id', GOLE)
 
     f = open(XML_OUT, "w")
     f.write(prettify(top))
