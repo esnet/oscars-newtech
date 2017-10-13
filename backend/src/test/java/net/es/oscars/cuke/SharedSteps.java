@@ -3,20 +3,16 @@ package net.es.oscars.cuke;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import net.es.oscars.AbstractBackendTest;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;
 import net.es.oscars.topo.db.PortRepository;
-import org.junit.Before;
+import net.es.oscars.topo.db.VersionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -44,6 +40,8 @@ public class SharedSteps {
     private PortAdjcyRepository adjcyRepo;
     @Autowired
     private PortRepository portRepo;
+    @Autowired
+    private VersionRepository versionRepo;
 
 
     @Then("^the \"([^\"]*)\" repository has (\\d+) entries$")
@@ -73,6 +71,9 @@ public class SharedSteps {
         }
         if (repoName.equals("port")) {
             assert portRepo.findAll().size() == num;
+        }
+        if (repoName.equals("version")) {
+            assert versionRepo.findAll().size() == num;
         }
 
     }
@@ -106,6 +107,10 @@ public class SharedSteps {
         if (repoName.equals("port")) {
             portRepo.deleteAll();
         }
+        if (repoName.equals("version")) {
+            versionRepo.deleteAll();
+        }
+
 
     }
 

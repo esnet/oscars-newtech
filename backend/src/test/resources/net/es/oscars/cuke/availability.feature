@@ -4,11 +4,12 @@ Feature: availability calculations
   I want to verify that I can apply reservations to baseline topology
 
 
-  Scenario: Two routers loading
+  Scenario: availability over two routers
     Given I have initialized the world
-    Given I clear the "devices" repository
-    Given I import devices from "config/test/topo/two_routers.json"
-    Given I import adjacencies from "config/test/topo/adj_a_b_mpls.json"
+    Given I clear the topology
+    Then the current topology is empty
+    Given I load topology from "config/test/topo/two_routers.json" and "config/test/topo/adj_a_b_mpls.json"
+    When I merge the new topology
     Then the "devices" repository has 2 entries
     Then the "adjacencies" repository has 2 entries
     Given I update the topology URN map after import
@@ -37,3 +38,5 @@ Feature: availability calculations
 #     | urn | bw          |
       | A:1 | 100,102:200 |
       | B:1 | 100,102:200 |
+
+    Then I did not receive an exception

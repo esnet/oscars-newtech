@@ -1,5 +1,6 @@
 package net.es.oscars.app;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
@@ -27,6 +28,27 @@ public class Startup {
     private StartupProperties startupProperties;
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
 
+    private boolean inStartup = false;
+    private boolean inShutdown = false;
+
+    public void setInStartup(boolean inStartup) {
+        this.inStartup = inStartup;
+    }
+
+    public boolean isInShutdown() {
+        return inShutdown;
+    }
+
+    public void setInShutdown(boolean inShutdown) {
+        this.inShutdown = inShutdown;
+    }
+
+    public boolean isInStartup() {
+        return this.inStartup;
+    }
+
+
+
     @Bean
     public Executor taskExecutor() {
         return new SimpleAsyncTaskExecutor();
@@ -50,10 +72,14 @@ public class Startup {
     }
 
     public void onStart() throws IOException {
+        this.setInStartup(true);
         if (startupProperties.getExit()) {
-            System.out.println("Exiting..");
+            this.setInStartup(false);
+            this.setInShutdown(true);
+            System.out.println("Exiting (startup.exit is true)");
             System.exit(0);
         }
+
         System.out.println(startupProperties.getBanner());
         try {
             for (StartupComponent sc : this.components) {
@@ -70,6 +96,7 @@ public class Startup {
         log.info("Built by " + gitRepositoryState.getBuildUserEmail() + " on " + gitRepositoryState.getBuildHost() + " at " + gitRepositoryState.getBuildTime());
 
         log.info("OSCARS startup successful.");
+        this.setInStartup(false);
 
     }
 

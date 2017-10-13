@@ -22,6 +22,13 @@ public class Backend {
         ConfigurableApplicationContext app = SpringApplication.run(Backend.class, args);
         Startup startup = (Startup) app.getBean("startup");
 
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                startup.setInStartup(false);
+                startup.setInShutdown(true);
+            }
+        });
+
         try {
             startup.onStart();
         } catch (Exception ex) {

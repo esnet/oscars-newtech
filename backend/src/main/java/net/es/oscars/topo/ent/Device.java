@@ -22,12 +22,14 @@ import java.util.Set;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
                   property = "urn")
 public class Device {
-
-
-
     @Id
     @GeneratedValue
     private Long id;
+
+
+    @ManyToOne
+    private Version version;
+
 
     @NonNull
     @Column(unique = true)
