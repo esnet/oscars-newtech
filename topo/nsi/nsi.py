@@ -61,7 +61,7 @@ def topo_xml(lines):
         bpo.set('id', port+':out')
 
     sd = SubElement(top, NSI_SVC+'serviceDefinition')
-    sd.set('id', 'urn:ogf:network:es.net:2013::ServiceDefinition:EVTS.A-GOLE')
+    sd.set('id', 'urn:ogf:network:tb.es.net:2013::ServiceDefinition:EVTS.A-GOLE')
     name = SubElement(sd, 'name')
     name.text = 'GLIF Automated GOLE Ethernet VLAN Transfer Service'
     st = SubElement(sd, 'serviceType')
@@ -86,7 +86,8 @@ def topo_xml(lines):
     ho.set('type', NML_OUTBOUND)
 
     for line in lines:
-        port = NSA_ID+'::'+line.strip()+':+'
+        nsi_port = line.strip().replace('/', '_')
+        port = NSA_ID+'::'+nsi_port+':+'
 
         ss_hip_pg = SubElement(ss_hip, NSI_BASE+'PortGroup')
         ss_hip_pg.set('id', port+':in')
@@ -140,10 +141,11 @@ def nsa_json(lines):
         "stps": []
     }
     for line in lines:
-        nsi_port = NSA_ID+'::'+line.strip()+':+'
+        nsi_port = line.strip().replace('/', '_')
+        port = NSA_ID+'::'+nsi_port+':+'
         oscars_port = "urn:ogf:network:tb.es.net:"+line.strip()+":*"
         stp = {
-            "stpId": nsi_port,
+            "stpId": port,
             "oscarsId": oscars_port
         }
         nsa['stps'].append(stp)
