@@ -1,201 +1,201 @@
 <?xml version="1.0" ?>
-<ns0:Topology id="urn:ogf:network:tb.es.net:2013" version="2017-10-13T00:00:00.000Z" xmlns:ns0="http://schemas.ogf.org/nml/2013/05/base#" xmlns:ns1="http://schemas.ogf.org/nsi/2013/12/services/definition" xmlns:ns2="http://schemas.ogf.org/nml/2012/10/ethernet">
+<ns0:Topology id="urn:ogf:network:tb.es.net:2013:" version="2017-10-13T00:00:00.000Z" xmlns:ns0="http://schemas.ogf.org/nml/2013/05/base#" xmlns:ns1="http://schemas.ogf.org/nsi/2013/12/services/definition" xmlns:ns2="http://schemas.ogf.org/nml/2012/10/ethernet">
   <ns0:name>tb.es.net</ns0:name>
   <ns0:Lifetime>
     <ns0:start>2017-10-13T00:00:00.000Z</ns0:start>
     <ns0:end>2017-11-13T00:00:00.000Z</ns0:end>
   </ns0:Lifetime>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0/0/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0/0/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0/0/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0_0_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0_0_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0_0_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0/0/2:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0/0/2:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0/0/2:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0_0_2:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0_0_2:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0_0_2:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0/0/3:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0/0/3:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0/0/3:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0_0_3:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0_0_3:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::xo-osf-rt1:xe-0_0_3:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:2/1/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:2/1/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:2/1/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:2_1_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:2_1_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:2_1_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/1/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/1/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/1/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_1_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_1_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_1_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/1/2:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/1/2:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/1/2:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_1_2:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_1_2:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_1_2:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/1/3:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/1/3:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/1/3:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_1_3:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_1_3:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_1_3:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/2/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/2/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/2/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_2_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_2_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_2_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/2/2:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/2/2:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/2/2:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_2_2:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_2_2:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_2_2:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/2/3:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/2/3:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3/2/3:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_2_3:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_2_3:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:3_2_3:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4/1/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4/1/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4/1/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4_1_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4_1_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4_1_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4/1/2:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4/1/2:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4/1/2:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4_1_2:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4_1_2:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4_1_2:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4/1/3:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4/1/3:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4/1/3:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4_1_3:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4_1_3:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:4_1_3:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/2:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/2:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/2:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_2:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_2:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_2:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/3:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/3:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/3:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_3:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_3:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_3:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/4:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/4:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/4:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_4:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_4:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_4:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/5:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/5:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9/1/5:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_5:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_5:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:9_1_5:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/2:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/2:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/2:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_2:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_2:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_2:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/3:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/3:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/3:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_3:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_3:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_3:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/4:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/4:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/4:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_4:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_4:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_4:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/5:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/5:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/5:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_5:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_5:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_5:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/6:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/6:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/6:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_6:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_6:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_6:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/7:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/7:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/7:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_7:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_7:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_7:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/8:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/8:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/8:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_8:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_8:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_8:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/9:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/9:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/9:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_9:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_9:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_9:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/10:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/10:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/10:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_10:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_10:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_10:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/11:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/11:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/11:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_11:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_11:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_11:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/12:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/12:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10/1/12:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_12:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_12:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::nersc-tb1:10_1_12:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:1/1/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:1/1/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:1/1/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:1_1_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:1_1_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:1_1_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:3/1/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:3/1/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:3/1/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:3_1_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:3_1_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:3_1_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:3/2/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:3/2/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:3/2/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:3_2_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:3_2_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:3_2_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:6/1/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6/1/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6/1/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:6_1_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6_1_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6_1_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:6/1/2:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6/1/2:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6/1/2:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:6_1_2:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6_1_2:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6_1_2:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:6/2/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6/2/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6/2/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:6_2_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6_2_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:6_2_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/1:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/1:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/1:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_1:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_1:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_1:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/2:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/2:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/2:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_2:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_2:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_2:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/3:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/3:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/3:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_3:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_3:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_3:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/4:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/4:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9/1/4:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_4:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_4:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:9_1_4:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/3:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/3:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/3:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_3:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_3:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_3:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/4:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/4:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/4:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_4:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_4:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_4:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/5:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/5:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/5:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_5:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_5:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_5:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/6:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/6:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/6:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_6:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_6:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_6:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/7:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/7:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/7:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_7:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_7:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_7:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/8:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/8:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/8:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_8:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_8:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_8:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/9:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/9:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/9:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_9:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_9:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_9:+:out"/>
   </ns0:BidirectionalPort>
-  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/10:+">
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/10:+:in"/>
-    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10/1/10:+:out"/>
+  <ns0:BidirectionalPort id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_10:+">
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_10:+:in"/>
+    <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_10:+:out"/>
   </ns0:BidirectionalPort>
   <ns1:serviceDefinition id="urn:ogf:network:tb.es.net:2013::ServiceDefinition:EVTS.A-GOLE">
     <name>GLIF Automated GOLE Ethernet VLAN Transfer Service</name>
@@ -303,7 +303,7 @@
         <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_9:+:out"/>
         <ns0:PortGroup id="urn:ogf:network:tb.es.net:2013::star-tb1:10_1_10:+:out"/>
       </ns0:Relation>
-      <ns1:serviceDefinition id="urn:ogf:network:tb.es.net:2013::ServiceDomain:EVTS.A-GOLE"/>
+      <ns1:serviceDefinition id="urn:ogf:network:tb.es.net:2013::ServiceDefinition:EVTS.A-GOLE"/>
     </ns0:SwitchingService>
   </ns0:Relation>
   <ns0:Relation type="http://schemas.ogf.org/nml/2013/05/base#hasInboundPort">

@@ -1,7 +1,7 @@
 {
-  "networkId": "urn:ogf:network:tb.es.net:2013", 
+  "networkId": "urn:ogf:network:tb.es.net:2013:", 
   "serviceType": "http://services.ogf.org/nsi/2013/07/definitions/EVTS.A-GOLE", 
-  "nsaId": "urn:ogf:network:tb.es.net:2013:nsa", 
+  "nsaId": "urn:ogf:network:tb.es.net:2013::nsa", 
   "stps": [
     {
       "oscarsId": "urn:ogf:network:tb.es.net:xo-osf-rt1:xe-0/0/1:*", 

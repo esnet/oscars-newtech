@@ -14,8 +14,14 @@ NSI_BASE = "{http://schemas.ogf.org/nml/2013/05/base#}"
 NSI_ETH = "{http://schemas.ogf.org/nml/2012/10/ethernet}"
 NSI_SVC = "{http://schemas.ogf.org/nsi/2013/12/services/definition}"
 
-NSA_ID = "urn:ogf:network:tb.es.net:2013"
-GOLE = NSA_ID+"::ServiceDomain:EVTS.A-GOLE"
+NSA_ID = "urn:ogf:network:tb.es.net:2013:"
+NSA_DOMAIN = NSA_ID+":ServiceDomain:EVTS.A-GOLE"
+NSA_SD = NSA_ID+":ServiceDefinition:EVTS.A-GOLE"
+
+GOLE_SERVICETYPE = "http://services.ogf.org/nsi/2013/07/definitions/EVTS.A-GOLE"
+GOLE_VLAN_ST = 'http://services.ogf.org/nsi/2013/12/descriptions/EVTS.A-GOLE'
+
+PROTO_VERSION = "application/vnd.ogf.nsi.cs.v2.provider+soap"
 NML_SVC = "http://schemas.ogf.org/nml/2013/05/base#hasService"
 NML_VLAN = "http://schemas.ogf.org/nml/2012/10/ethernet#vlan"
 NML_ETHERNET = "http://schemas.ogf.org/nml/2012/10/ethernet"
@@ -49,9 +55,8 @@ def topo_xml(lines):
     end = SubElement(lifetime , NSI_BASE+'end')
     end.text = '2017-11-13T00:00:00.000Z'
 
-
     for line in lines:
-        port = NSA_ID+'::'+line.strip()+':+'
+        port = NSA_ID+':'+line.strip().replace('/', '_')+':+'
 
         bp = SubElement(top, NSI_BASE+'BidirectionalPort')
         bp.set('id', port)
@@ -61,17 +66,17 @@ def topo_xml(lines):
         bpo.set('id', port+':out')
 
     sd = SubElement(top, NSI_SVC+'serviceDefinition')
-    sd.set('id', 'urn:ogf:network:tb.es.net:2013::ServiceDefinition:EVTS.A-GOLE')
+    sd.set('id', NSA_SD)
     name = SubElement(sd, 'name')
     name.text = 'GLIF Automated GOLE Ethernet VLAN Transfer Service'
     st = SubElement(sd, 'serviceType')
-    st.text = 'http://services.ogf.org/nsi/2013/12/descriptions/EVTS.A-GOLE'
+    st.text = GOLE_VLAN_ST
 
     hs = SubElement(top, NSI_BASE+'Relation')
     hs.set('type', NML_SVC)
     ss = SubElement(hs, NSI_BASE+'SwitchingService')
     ss.set('encoding', NML_ETHERNET)
-    ss.set('id', GOLE)
+    ss.set('id', NSA_DOMAIN)
     ss.set('labelSwapping', 'true')
     ss.set('labelType', NML_VLAN)
     ss_hip = SubElement(ss, NSI_BASE+'Relation')
@@ -87,7 +92,7 @@ def topo_xml(lines):
 
     for line in lines:
         nsi_port = line.strip().replace('/', '_')
-        port = NSA_ID+'::'+nsi_port+':+'
+        port = NSA_ID+':'+nsi_port+':+'
 
         ss_hip_pg = SubElement(ss_hip, NSI_BASE+'PortGroup')
         ss_hip_pg.set('id', port+':in')
@@ -126,7 +131,7 @@ def topo_xml(lines):
         ho_mn.text = '1000000'
 
     sd = SubElement(ss, NSI_SVC+'serviceDefinition')
-    sd.set('id', GOLE)
+    sd.set('id', NSA_SD)
 
     f = open(XML_OUT, "w")
     f.write(prettify(top))
@@ -135,14 +140,14 @@ def topo_xml(lines):
 def nsa_json(lines):
     nsa = {
         "nsaId": NSA_ID+":nsa",
-        "protocolVersion": "application/vnd.ogf.nsi.cs.v2.provider+soap",
-        "serviceType": "http://services.ogf.org/nsi/2013/07/definitions/EVTS.A-GOLE",
+        "protocolVersion": PROTO_VERSION,
+        "serviceType": GOLE_SERVICETYPE,
         "networkId": NSA_ID,
         "stps": []
     }
     for line in lines:
         nsi_port = line.strip().replace('/', '_')
-        port = NSA_ID+'::'+nsi_port+':+'
+        port = NSA_ID+':'+nsi_port+':+'
         oscars_port = "urn:ogf:network:tb.es.net:"+line.strip()+":*"
         stp = {
             "stpId": port,
