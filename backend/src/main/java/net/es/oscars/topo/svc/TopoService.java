@@ -53,6 +53,7 @@ public class TopoService {
             this.topoAdjcies = new ArrayList<>();
             this.topoAdjcies.addAll(adjciesFromDevices(devices));
             this.topoAdjcies.addAll(transformToTopoAdjcies(adjcies));
+            log.info("updated with "+this.topoAdjcies.size()+" topo adjacencies");
         } else  {
             throw new TopoException("no valid topology version!");
         }

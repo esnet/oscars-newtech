@@ -66,6 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/**/*.html",
                 "/**/*.css",
                 "/**/*.js",
+                "/services/**",
                 "/documentation/**",
                 "/swagger-ui.html/**",
                 "/swagger-resources/**",
@@ -86,6 +87,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login").permitAll()
                 // allow everyone to public API
                 .antMatchers("/api/**").permitAll()
+                // allow everyone to web services (for now..)
+                .antMatchers("/services/**").permitAll()
                 // allow everyone to pages
                 .antMatchers("/pages/**").permitAll()
 

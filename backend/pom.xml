@@ -54,6 +54,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>shared</artifactId>
         </dependency>
+        <dependency>
+            <version>${project.version}</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>nsilib</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>net.jodah</groupId>
@@ -142,6 +147,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-features-logging</artifactId>
         </dependency>
 
         <dependency>
@@ -275,6 +288,7 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

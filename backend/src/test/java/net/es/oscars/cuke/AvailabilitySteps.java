@@ -53,12 +53,12 @@ public class AvailabilitySteps extends CucumberSteps {
         Map<String, Integer> availMap = ResvLibrary.availableBandwidthMap(dir, world.topoBaseline, filtered);
 
         for (String urn : availMap.keySet()) {
-            log.info("avail "+urn);
+            // log.info("avail "+urn);
             assert table.keySet().contains(urn);
             assert table.get(urn).equals(availMap.get(urn));
         }
         for (String urn : table.keySet()) {
-            log.info("table "+urn);
+            // log.info("table "+urn);
             assert availMap.keySet().contains(urn);
             assert availMap.get(urn).equals(table.get(urn));
         }
