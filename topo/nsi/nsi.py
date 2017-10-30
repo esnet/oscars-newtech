@@ -56,7 +56,11 @@ def topo_xml(lines):
     end.text = '2017-11-13T00:00:00.000Z'
 
     for line in lines:
-        port = NSA_ID+':'+line.strip().replace('/', '_')+':+'
+        parts = line.strip().split(',')
+        ifce_parts = parts[0].split(':')
+        router = ifce_parts[0]
+        ifce = ifce_parts[1]
+        port = NSA_ID+':'+router+':'+ifce.replace('/', '_')+':+'
 
         bp = SubElement(top, NSI_BASE+'BidirectionalPort')
         bp.set('id', port)
@@ -91,8 +95,13 @@ def topo_xml(lines):
     ho.set('type', NML_OUTBOUND)
 
     for line in lines:
-        nsi_port = line.strip().replace('/', '_')
-        port = NSA_ID+':'+nsi_port+':+'
+        parts = line.strip().split(',')
+        vlans = parts[1]
+        bw = parts[2]
+        ifce_parts = parts[0].split(':')
+        router = ifce_parts[0]
+        ifce = ifce_parts[1]
+        port = NSA_ID+':'+router+':'+ifce.replace('/', '_')+':+'
 
         ss_hip_pg = SubElement(ss_hip, NSI_BASE+'PortGroup')
         ss_hip_pg.set('id', port+':in')
@@ -105,13 +114,18 @@ def topo_xml(lines):
         hi_pg.set('id', port+':in')
         hi_lg = SubElement(hi_pg, NSI_BASE+'LabelGroup')
         hi_lg.set('labeltype', NML_VLAN)
-        hi_lg.text = '2-4094'
+        hi_lg.text = vlans
+        if len(parts) == 4:
+            hi_al = SubElement(hi_pg, NSI_BASE+'isAlias')
+            hi_al_pg = SubElement(hi_al, NSI_BASE+'PortGroup')
+            hi_al_pg.set('id', parts[3]+':out')
+
         hi_mx = SubElement(hi_pg, NSI_ETH+'maximumReservableCapacity')
-        hi_mx.text = '100000000000'
+        hi_mx.text = bw+ '00000000'
         hi_mn = SubElement(hi_pg, NSI_ETH+'minimumReservableCapacity')
         hi_mn.text = '1000000'
         hi_cp = SubElement(hi_pg, NSI_ETH+'capacity')
-        hi_cp.text = '100000000000'
+        hi_cp.text = bw+ '00000000'
         hi_mn = SubElement(hi_pg, NSI_ETH+'granularity')
         hi_mn.text = '1000000'
 
@@ -120,13 +134,19 @@ def topo_xml(lines):
         ho_pg.set('id', port+':out')
         ho_lg = SubElement(ho_pg, NSI_BASE+'LabelGroup')
         ho_lg.set('labeltype', NML_VLAN)
-        ho_lg.text = '2-4094'
+        ho_lg.text = vlans
+
+        if len(parts) == 4:
+            ho_al = SubElement(ho_pg, NSI_BASE+'isAlias')
+            ho_al_pg = SubElement(ho_al, NSI_BASE+'PortGroup')
+            ho_al_pg.set('id', parts[3]+':in')
+
         ho_mx = SubElement(ho_pg, NSI_ETH+'maximumReservableCapacity')
-        ho_mx.text = '100000000000'
+        ho_mx.text = bw+ '00000000'
         ho_mn = SubElement(ho_pg, NSI_ETH+'minimumReservableCapacity')
         ho_mn.text = '1000000'
         ho_cp = SubElement(ho_pg, NSI_ETH+'capacity')
-        ho_cp.text = '100000000000'
+        ho_cp.text = bw+ '00000000'
         ho_mn = SubElement(ho_pg, NSI_ETH+'granularity')
         ho_mn.text = '1000000'
 
@@ -146,24 +166,31 @@ def nsa_json(lines):
         "stps": []
     }
     for line in lines:
-        nsi_port = line.strip().replace('/', '_')
-        port = NSA_ID+':'+nsi_port+':+'
-        oscars_port = "urn:ogf:network:tb.es.net:"+line.strip()+":*"
+        parts = line.strip().split(',')
+        ifce_parts = parts[0].split(':')
+        router = ifce_parts[0]
+        ifce = ifce_parts[1]
+        port = NSA_ID+':'+router+':'+ifce.replace('/', '_')+':+'
+
+        oscars_port = "urn:ogf:network:tb.es.net:"+parts[0].strip()
         stp = {
             "stpId": port,
             "oscarsId": oscars_port
         }
         nsa['stps'].append(stp)
+    local = {
+        "local": nsa
+    }
     # Dump output files
     with open(JSON_OUT, 'w') as outfile:
-        json.dump(nsa, outfile, indent=2)
+        json.dump(local, outfile, indent=2)
 
 
 def main():
     file = open(INPUT, "r")
     lines = file.readlines()
-    topo_xml(lines=lines)
     nsa_json(lines=lines)
+    topo_xml(lines=lines)
 
 
 if __name__ == '__main__':
