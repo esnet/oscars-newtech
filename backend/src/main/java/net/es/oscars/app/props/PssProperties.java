@@ -17,6 +17,9 @@ public class PssProperties {
     private String url;
 
     @NonNull
+    private String community;
+
+    @NonNull
     private String vcidRange;
 
     @NonNull

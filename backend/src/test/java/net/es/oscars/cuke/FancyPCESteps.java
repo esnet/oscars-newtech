@@ -1,17 +1,8 @@
 package net.es.oscars.cuke;
 
-import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.pce.PalindromicalPCE;
 import net.es.oscars.pce.PceLibrary;
-import net.es.oscars.resv.ent.EroHop;
-import net.es.oscars.resv.ent.VlanJunction;
-import net.es.oscars.resv.ent.VlanPipe;
-import net.es.oscars.resv.enums.BwDirection;
-import net.es.oscars.resv.enums.EroDirection;
-import net.es.oscars.resv.svc.ResvLibrary;
-import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.svc.TopoService;
@@ -29,11 +20,6 @@ import java.util.*;
 @Slf4j
 @Transactional
 public class FancyPCESteps extends CucumberSteps {
-    @Autowired
-    private CucumberWorld world;
-
-    @Autowired
-    private PalindromicalPCE palindromicalPCE;
     @Autowired
     private TopoService topoService;
 

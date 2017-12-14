@@ -1,6 +1,6 @@
 <#-- @ftlvariable name="mxLsps" type="java.util.List<net.es.oscars.dto.pss.params.mx.MxLsp>" -->
 <#-- @ftlvariable name="vpls" type="net.es.oscars.dto.pss.params.mx.MxVpls" -->
-<#assign communityMembers = "65000:672277L:"+vpls.communityId>
+<#assign communityMembers = "65000:"+vpls.community+":"+vpls.vcId>
 <#assign mesh_group = "sdp-"+vpls.vcId >
 
 set policy-options community "${vpls.community}" members ${communityMembers}

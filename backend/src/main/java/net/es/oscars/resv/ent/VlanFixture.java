@@ -45,7 +45,7 @@ public class VlanFixture {
 
     // mandatory; a fixture is always associated with a junction
     @NonNull
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     private VlanJunction junction;
 
     // mandatory; a fixture is always associated with a specific port

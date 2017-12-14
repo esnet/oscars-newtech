@@ -13,8 +13,6 @@ public class MxVpls {
 
     private Integer vcId;
 
-    private Integer communityId;
-
     private String serviceName;
 
     private String description;

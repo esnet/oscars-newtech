@@ -19,6 +19,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Transactional
@@ -108,7 +109,8 @@ public class TopologySteps extends CucumberSteps {
     @When("^I merge the new topology$")
     public void i_merge_the_new_topology() throws Throwable {
         Version newVersion = topoService.nextVersion();
-        topoService.mergeVersionDelta(vd, newVersion);
+        Version current = topoService.currentVersion().orElseThrow(NoSuchElementException::new);
+        topoService.mergeVersionDelta(vd, current, newVersion);
     }
 
 }

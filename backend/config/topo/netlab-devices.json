@@ -1,7 +1,7 @@
 [
   {
     "ipv4Address": "134.55.200.125",
-    "urn": "pppl-rt5",
+    "urn": "dev-mx960-rt1-es1",
     "capabilities": [
       "ETHERNET",
       "MPLS"

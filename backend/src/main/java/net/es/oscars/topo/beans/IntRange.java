@@ -205,6 +205,15 @@ public class IntRange {
         return result;
     }
 
+    public static Set<IntRange> subtractFromSet(Set<IntRange> ranges, Integer i) {
+        Set<Integer> all = new HashSet<>();
+        for (IntRange range: ranges) {
+            all.addAll(range.asSet());
+        }
+        all.remove(i);
+        return fromSet(all);
+    }
+
     public static Integer minFloor(Collection<IntRange> ranges) {
         Integer floor = Integer.MAX_VALUE;
         for (IntRange r: ranges) {

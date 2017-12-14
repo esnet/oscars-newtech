@@ -15,6 +15,7 @@ import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.ReservableCommandParam;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.ent.Device;
+import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
@@ -38,26 +39,31 @@ public class PssResourceService {
     private ResvService resvService;
 
     @Autowired
-    private FixtureRepository fixtureRepo;
+    private FixtureRepository fixRepo;
 
     @Autowired
     private JunctionRepository jnctRepo;
 
-    @Autowired
-    private PssProperties props;
-
-
     public void reserve(Connection conn) throws PSSException {
         log.info("starting PSS resource reservation");
 
-        this.reserveGlobals(conn.getReserved().getCmp(), conn.getReserved().getSchedule());
 
-        for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
-
-            this.reserveByJunction(j, conn.getReserved().getCmp(), conn.getReserved().getSchedule());
-        }
+        Schedule sched = conn.getReserved().getSchedule();
+        Interval interval = Interval.builder()
+                .beginning(sched.getBeginning())
+                .ending(sched.getEnding())
+                .build();
 
         try {
+            Map<String, Set<ReservableCommandParam>> availableParams = resvService.availableParams(interval);
+            log.debug("available params:");
+
+            this.reserveGlobals(conn , sched, availableParams);
+
+            for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
+                this.reserveByJunction(j, conn, sched, availableParams);
+            }
+
             log.debug("allocated PSS resources, connection is now:");
             String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(conn);
             log.debug(pretty);
@@ -65,19 +71,18 @@ public class PssResourceService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        log.info("finished reserving pss");
+
     }
 
-    private void reserveGlobals(Components cmp, Schedule sched) throws PSSException {
-        Interval interval = Interval.builder()
-                .beginning(sched.getBeginning())
-                .ending(sched.getEnding())
-                .build();
+    @Transactional
+    public void reserveGlobals(Connection conn, Schedule sched,
+                                Map<String, Set<ReservableCommandParam>> availableParams) throws PSSException {
 
-        Map<String, Set<ReservableCommandParam>> availableParams = resvService.availableParams(interval);
-
+        log.info("reserving globals..");
 
         List<TopoUrn> topoUrns = new ArrayList<>();
-        for (VlanJunction j : cmp.getJunctions()) {
+        for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
             TopoUrn urn = topoService.getTopoUrnMap().get(j.getDeviceUrn());
             if (!urn.getUrnType().equals(UrnType.DEVICE)) {
                 throw new PSSException("invalid URN type");
@@ -86,54 +91,99 @@ public class PssResourceService {
         }
 
         Map<String, Set<IntRange>> availVcIds = new HashMap<>();
-        Set<IntRange> allRanges = new HashSet<>();
+//        Set<IntRange> allRanges = new HashSet<>();
         for (TopoUrn urn : topoUrns) {
-            for (ReservableCommandParam rcp : availableParams.get(urn)) {
+            for (ReservableCommandParam rcp : availableParams.get(urn.getUrn())) {
                 if (rcp.getType().equals(CommandParamType.VC_ID)) {
                     availVcIds.put(urn.getUrn(), rcp.getReservableRanges());
-                    allRanges.addAll(rcp.getReservableRanges());
+//                    allRanges.addAll(rcp.getReservableRanges());
                 }
             }
         }
+
         Integer vcid = IntRange.leastInAll(availVcIds);
         if (vcid == null) {
             throw new PSSException("no vcid found!");
         }
 
+        log.info("found vc id "+ vcid);
 
-        for (VlanJunction j : cmp.getJunctions()) {
+        for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
             CommandParam vcCp = CommandParam.builder()
-                    .connectionId(j.getConnectionId())
+                    .connectionId(conn.getConnectionId())
                     .paramType(CommandParamType.VC_ID)
                     .resource(vcid)
                     .schedule(sched)
                     .urn(j.getDeviceUrn())
                     .build();
-
-            // same VC id as SVC id for ALUs
-            CommandParam svcCp = CommandParam.builder()
-                    .connectionId(j.getConnectionId())
-                    .paramType(CommandParamType.ALU_SVC_ID)
-                    .resource(vcid)
-                    .schedule(sched)
-                    .urn(j.getDeviceUrn())
-                    .build();
-
             j.getCommandParams().add(vcCp);
-            j.getCommandParams().add(svcCp);
+
+            // for ALUs we also need to reserve an SVC ID globally. Right now: === the VC id
+            // TODO: consider VC & SVC id for backup
+            TopoUrn devUrn = topoService.getTopoUrnMap().get(j.getDeviceUrn());
+            if (devUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
+                CommandParam svcCp = CommandParam.builder()
+                        .connectionId(conn.getConnectionId())
+                        .paramType(CommandParamType.ALU_SVC_ID)
+                        .resource(vcid)
+                        .schedule(sched)
+                        .urn(j.getDeviceUrn())
+                        .build();
+                j.getCommandParams().add(svcCp);
+            }
             jnctRepo.save(j);
         }
 
     }
 
-
-    private void reserveByJunction(VlanJunction j, Components cmp, Schedule sched) throws PSSException {
+    @Transactional
+    public void reserveByJunction(VlanJunction j, Connection conn, Schedule sched,
+                                   Map<String, Set<ReservableCommandParam>> availableParams) throws PSSException {
         log.info("reserving PSS resources by junction : " + j.getDeviceUrn());
         TopoUrn urn = topoService.getTopoUrnMap().get(j.getDeviceUrn());
         if (!urn.getUrnType().equals(UrnType.DEVICE)) {
             throw new PSSException("invalid URN type");
         }
         Device d = urn.getDevice();
+        // for ALUs we need one qos id per fixture; QoS ids are reserved on each device
+        if (d.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
+
+            // first find available QOS ids
+            Set<IntRange> availQosIds = new HashSet<>();
+            for (ReservableCommandParam rcp: availableParams.get(d.getUrn())) {
+                if (rcp.getType().equals(CommandParamType.ALU_QOS_POLICY_ID)) {
+                    availQosIds = rcp.getReservableRanges();
+                }
+            }
+
+            for (VlanFixture f: conn.getReserved().getCmp().getFixtures()) {
+                if (f.getJunction().getDeviceUrn().equals(urn.getUrn())) {
+                    // this fixture does belong to this junction
+                    if (f.getCommandParams() == null) {
+                        f.setCommandParams(new HashSet<>());
+                    }
+
+                    if (availQosIds.size() == 0) {
+                        throw new PSSException("No ALU QOS ids available");
+                    }
+
+                    Integer picked = IntRange.minFloor(availQosIds);
+                    CommandParam qosCp = CommandParam.builder()
+                            .connectionId(conn.getConnectionId())
+                            .paramType(CommandParamType.ALU_QOS_POLICY_ID)
+                            .resource(picked)
+                            .schedule(sched)
+                            .urn(d.getUrn())
+                            .build();
+                    f.getCommandParams().add(qosCp);
+
+                    availQosIds = IntRange.subtractFromSet(availQosIds, picked);
+                    jnctRepo.save(f.getJunction());
+                    fixRepo.save(f);
+                }
+             }
+        }
+
     }
 
 }

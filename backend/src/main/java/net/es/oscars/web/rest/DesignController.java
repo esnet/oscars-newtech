@@ -1,6 +1,8 @@
 package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.Startup;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.util.HashidMaker;
 import net.es.oscars.resv.beans.DesignResponse;
 import net.es.oscars.resv.db.DesignRepository;
@@ -17,6 +19,8 @@ import java.util.*;
 @RestController
 @Slf4j
 public class DesignController {
+    @Autowired
+    private Startup startup;
 
     @Autowired
     private DesignRepository designRepo;
@@ -32,13 +36,29 @@ public class DesignController {
 
     @RequestMapping(value = "/protected/design/verify", method = RequestMethod.POST)
     @ResponseBody
-    public DesignResponse design_verify(@RequestBody Design newDesign) {
+    public DesignResponse design_verify(@RequestBody Design newDesign) throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
+
+
         return designService.verifyDesign(newDesign);
     }
 
     @RequestMapping(value = "/protected/designs/{designId}", method = RequestMethod.POST)
     @ResponseBody
-    public DesignResponse design_update_if_valid(@RequestBody Design newDesign, @PathVariable String designId) {
+    public DesignResponse design_update_if_valid(@RequestBody Design newDesign, @PathVariable String designId)
+    throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
+
         DesignResponse dr = designService.verifyDesign(newDesign);
         if (dr.isValid()) {
             Optional<Design> maybeDesign = designRepo.findByDesignId(designId);
@@ -58,14 +78,28 @@ public class DesignController {
 
     @RequestMapping(value = "/protected/designs/", method = RequestMethod.GET)
     @ResponseBody
-    public List<Design> designs_all() {
+    public List<Design> designs_all() throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
+
+
         return designRepo.findAll();
     }
 
 
     @RequestMapping(value = "/protected/designs/{designId}", method = RequestMethod.DELETE)
     @ResponseBody
-    public void designs_delete(@PathVariable String designId) {
+    public void designs_delete(@PathVariable String designId) throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
         Design design = designRepo.findByDesignId(designId).orElseThrow(NoSuchElementException::new);
         designRepo.delete(design);
     }
@@ -73,14 +107,27 @@ public class DesignController {
 
     @RequestMapping(value = "/protected/designs/{designId}", method = RequestMethod.GET)
     @ResponseBody
-    public Design designs_get(@PathVariable String designId) {
+    public Design designs_get(@PathVariable String designId) throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
         return designRepo.findByDesignId(designId).orElseThrow(NoSuchElementException::new);
     }
 
 
     @RequestMapping(value = "/protected/designs/generateId", method = RequestMethod.GET)
     @ResponseBody
-    public String generateDesignId() {
+    public String generateDesignId() throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
+
         boolean found = false;
         String result = "";
         while (!found) {

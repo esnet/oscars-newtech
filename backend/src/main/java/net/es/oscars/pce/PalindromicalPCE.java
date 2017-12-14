@@ -9,6 +9,8 @@ import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.svc.TopoService;
+import net.es.oscars.web.beans.PcePath;
+import net.es.oscars.web.beans.PceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,49 +29,36 @@ public class PalindromicalPCE {
     private DijkstraPCE dijkstraPCE;
 
 
-    public Map<EroDirection, List<EroHop>> palindromicERO(VlanPipe requestPipe,
-                                                          Map<String, Integer> availIngressBw,
-                                                          Map<String, Integer> availEgressBw,
-                                                          Map<String, Set<IntRange>> availVlans) throws PCEException {
-        Map<EroDirection, List<EroHop>> result = new HashMap<>();
+    public PceResponse shortestAndFits(VlanPipe requestPipe,
+                                      Map<String, Integer> availIngressBw,
+                                      Map<String, Integer> availEgressBw) {
 
         List<TopoAdjcy> topoAdjcies = topoService.getTopoAdjcies();
+        Map<String, TopoUrn> baseline = topoService.getTopoUrnMap();
+
 
         TopoUrn src = topoService.getTopoUrnMap().get(requestPipe.getA().getDeviceUrn());
         TopoUrn dst = topoService.getTopoUrnMap().get(requestPipe.getZ().getDeviceUrn());
 
+        PcePath shortest = dijkstraPCE.shortestPath(topoAdjcies, src, dst);
+
+
         List<TopoAdjcy> pruned = PruningLibrary.pruneAdjacencies(topoAdjcies,
                 requestPipe.getAzBandwidth(), requestPipe.getZaBandwidth(),
                 availIngressBw, availEgressBw);
-        /*
-        log.info("smartest: ");
-
-        List<EroHop> smartest = dijkstraPCE.smartestPath(pruned, src, dst, availIngressBw, availEgressBw);
-        smartest.forEach(h -> {
-            log.info(h.getUrn());
-        });
-        */
-        /*
-        log.info("widest: ");
-        List<EroHop> widest = dijkstraPCE.widestPath(pruned, src, dst, availIngressBw, availEgressBw);
-        widest.forEach(h -> {
-            log.info(h.getUrn());
-        });
-        */
 
 
-        List<EroHop> azERO = dijkstraPCE.shortestPath(pruned, src, dst);
+        PcePath fits = dijkstraPCE.shortestPath(pruned, src, dst);
 
-        List<EroHop> zaEro = new ArrayList<>();
-        for (EroHop hop : azERO) {
-            zaEro.add(EroHop.builder().urn(hop.getUrn()).build());
-        }
+        PceLibrary.pathBandwidths(fits, baseline, availIngressBw, availEgressBw);
+        PceLibrary.pathBandwidths(shortest, baseline, availIngressBw, availEgressBw);
 
-        Collections.reverse(zaEro);
 
-        result.put(EroDirection.A_TO_Z, azERO);
-        result.put(EroDirection.Z_TO_A, zaEro);
-        return result;
+        return PceResponse.builder()
+                .fits(fits)
+                .shortest(shortest)
+                .build();
+
 
     }
 }

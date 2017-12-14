@@ -2,7 +2,9 @@ package net.es.oscars.web.rest;
 
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.PCEException;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.pce.PalindromicalPCE;
 import net.es.oscars.pce.PceService;
 import net.es.oscars.resv.beans.PeriodBandwidth;
@@ -42,6 +44,8 @@ public class PCEController {
 
     @Autowired
     private TopoService topoService;
+    @Autowired
+    private Startup startup;
 
 
     @Autowired
@@ -58,7 +62,13 @@ public class PCEController {
 
     @RequestMapping(value = "/api/pce/nextHopsForEro", method = RequestMethod.POST)
     @ResponseBody
-    public List<NextHop> nextHopsForEro(@RequestBody List<String> ero) {
+    public List<NextHop> nextHopsForEro(@RequestBody List<String> ero) throws StartupException{
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
         List<NextHop> nextHops = new ArrayList<>();
         Set<Device> devicesCrossed = new HashSet<>();
         List<PortAdjcy> portAdjcies = portAdjcyRepository.findAll();
@@ -102,7 +112,13 @@ public class PCEController {
 
     @RequestMapping(value = "/api/pce/paths", method = RequestMethod.POST)
     @ResponseBody
-    public PceResponse paths(@RequestBody PceRequest request) throws PCEException {
+    public PceResponse paths(@RequestBody PceRequest request) throws PCEException, StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
         return pceService.calculatePaths(request);
 
     }

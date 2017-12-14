@@ -1,6 +1,9 @@
 package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.Startup;
+import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.enums.Phase;
@@ -18,6 +21,8 @@ import java.util.stream.IntStream;
 @RestController
 @Slf4j
 public class ConnControler {
+    @Autowired
+    private Startup startup;
 
     @Autowired
     private ConnectionRepository connRepo;
@@ -33,7 +38,12 @@ public class ConnControler {
 
     @RequestMapping(value = "/protected/conn/generateId", method = RequestMethod.GET)
     @ResponseBody
-    public String generateConnectionId() {
+    public String generateConnectionId() throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
 
 
         boolean found = false;
@@ -69,7 +79,14 @@ public class ConnControler {
 
     @RequestMapping(value = "/protected/conn/commit", method = RequestMethod.POST)
     @ResponseBody
-    public Phase commit(Authentication authentication, @RequestBody String connectionId) {
+    public Phase commit(Authentication authentication, @RequestBody String connectionId)
+            throws StartupException, PSSException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
         if (connectionId == null || connectionId.equals("")) {
             throw new IllegalArgumentException("empty or null connectionid!");
         }
@@ -87,7 +104,13 @@ public class ConnControler {
 
     @RequestMapping(value = "/protected/conn/uncommit", method = RequestMethod.POST)
     @ResponseBody
-    public Phase uncommit(@RequestBody String connectionId) {
+    public Phase uncommit(@RequestBody String connectionId) throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
         if (connectionId == null || connectionId.equals("")) {
             throw new IllegalArgumentException("empty or null connectionid!");
         }
@@ -103,7 +126,13 @@ public class ConnControler {
 
     @RequestMapping(value = "/protected/conn/cancel", method = RequestMethod.POST)
     @ResponseBody
-    public Phase cancel(@RequestBody String connectionId) {
+    public Phase cancel(@RequestBody String connectionId) throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
         if (connectionId == null || connectionId.equals("")) {
             throw new IllegalArgumentException("empty or null connectionid!");
         }
@@ -119,7 +148,13 @@ public class ConnControler {
 
     @RequestMapping(value = "/api/conn/info/{connectionId}", method = RequestMethod.GET)
     @ResponseBody
-    public Connection info(@PathVariable String connectionId) {
+    public Connection info(@PathVariable String connectionId) throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
         if (connectionId == null || connectionId.equals("")) {
             return null;
         }
@@ -129,7 +164,13 @@ public class ConnControler {
 
     @RequestMapping(value = "/api/conn/list", method = RequestMethod.POST)
     @ResponseBody
-    public List<Connection> list(@RequestBody ConnectionFilter filter) {
+    public List<Connection> list(@RequestBody ConnectionFilter filter) throws StartupException{
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
         return connSvc.filter(filter);
     }
 

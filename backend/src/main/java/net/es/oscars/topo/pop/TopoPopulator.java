@@ -5,8 +5,10 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.StartupComponent;
 import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.app.props.TopoProperties;
 import net.es.oscars.topo.beans.Delta;
+import net.es.oscars.topo.beans.TopoException;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.db.DeviceRepository;
@@ -44,7 +46,9 @@ public class TopoPopulator implements StartupComponent {
         this.topoService = topoService;
     }
 
+    @Transactional
     public void startup() throws StartupException {
+        log.info("starting topo populator");
         if (topoProperties == null) {
             throw new StartupException("No topo stanza in application properties");
         }
@@ -52,19 +56,30 @@ public class TopoPopulator implements StartupComponent {
         String adjciesFilename = "./config/topo/" + topoProperties.getPrefix() + "-adjcies.json";
 
         try {
+            if (!topoService.currentVersion().isPresent()) {
+                log.info("first topology import");
+                // no version, so make an empty first one
+                topoService.nextVersion();
+            }
+
             Topology current = topoService.currentTopology();
+            log.info("previous topo: dev: "+current.getDevices().size()+" adj: "+current.getAdjcies().size());
             Topology incoming = this.loadTopology(devicesFilename, adjciesFilename);
             VersionDelta vd = TopoLibrary.compare(current, incoming);
             if (vd.isChanged()) {
+
+                Version currentVersion = topoService.currentVersion().get();
                 Version newVersion = topoService.nextVersion();
+                log.info("found topology changes; new valid version will be: "+newVersion.getId());
+
                 // TODO: check how the delta affects existing connections
-                topoService.mergeVersionDelta(vd, newVersion);
+                topoService.mergeVersionDelta(vd, currentVersion, newVersion);
 
             }
-
         } catch (IOException | ConsistencyException ex) {
             throw new StartupException("Import failed! " + ex.getMessage());
         }
+        log.info("topo populator finished");
     }
 
     public Topology loadTopology(String devicesFilename, String adjciesFilename) throws IOException {

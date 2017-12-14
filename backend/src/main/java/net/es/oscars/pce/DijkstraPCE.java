@@ -2,8 +2,10 @@ package net.es.oscars.pce;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.resv.ent.EroHop;
+import net.es.oscars.resv.enums.EroDirection;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.web.beans.PcePath;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
@@ -11,10 +13,7 @@ import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -22,7 +21,7 @@ public class DijkstraPCE {
     @Autowired
     FloydWarshall floydWarshall;
 
-    public List<EroHop> shortestPath(List<TopoAdjcy> adjcies, TopoUrn src, TopoUrn dst) {
+    public PcePath shortestPath(List<TopoAdjcy> adjcies, TopoUrn src, TopoUrn dst) {
 
         Map<TopoAdjcy, Double> costs = new HashMap<>();
 
@@ -39,7 +38,22 @@ public class DijkstraPCE {
         DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> graph = PceLibrary.makeGraph(adjcies, costs);
         DijkstraShortestPath<TopoUrn, TopoAdjcy> alg = new DijkstraShortestPath<>(graph);
         GraphPath<TopoUrn, TopoAdjcy> path = alg.getPath(src, dst);
-        return this.toEro(path);
+        double w = alg.getPathWeight(src,dst);
+        log.info("shortest path weight: "+w);
+        List<EroHop> azEro = PceLibrary.toEro(path);
+        List<EroHop> zaEro = new ArrayList<>();
+        for (EroHop hop : azEro) {
+            zaEro.add(EroHop.builder().urn(hop.getUrn()).build());
+        }
+
+        Collections.reverse(zaEro);
+
+        return PcePath.builder()
+                .azEro(azEro)
+                .zaEro(zaEro)
+                .weight(w)
+                .build();
+
     }
 
     @Deprecated
@@ -133,20 +147,10 @@ public class DijkstraPCE {
 
         DijkstraShortestPath<TopoUrn, TopoAdjcy> alg = new DijkstraShortestPath<>(mst);
         GraphPath<TopoUrn, TopoAdjcy> path = alg.getPath(src, dst);
-        return this.toEro(path);
+        return PceLibrary.toEro(path);
 
     }
 
 
-    private List<EroHop> toEro(GraphPath<TopoUrn, TopoAdjcy> path) {
-        List<EroHop> ero = new ArrayList<>();
-        if (path != null && path.getEdgeList().size() > 0) {
-            path.getVertexList().forEach(v -> {
-                ero.add(EroHop.builder().urn(v.getUrn()).build());
-            });
-        }
-        return ero;
-
-    }
 
 }

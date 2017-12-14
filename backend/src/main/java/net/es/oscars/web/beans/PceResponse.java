@@ -15,11 +15,12 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor(suppressConstructorProperties=true)
 public class PceResponse {
+    private Integer evaluated;
 
     private PcePath shortest;
     private PcePath fits;
-    private PcePath widest;
-    private PcePath azBest;
-    private PcePath zaBest;
+    private PcePath widestSum;
+    private PcePath widestAZ;
+    private PcePath widestZA;
 
 }

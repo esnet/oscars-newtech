@@ -120,6 +120,9 @@ public class MxCommandGenerator {
         if (params.getPaths() == null) {
             params.setPaths(new ArrayList<>());
         }
+        if (params.getQos() == null) {
+            params.setQos(new ArrayList<>());
+        }
         if (params.getLsps() == null) {
             params.setLsps(new ArrayList<>());
         }
@@ -162,8 +165,13 @@ public class MxCommandGenerator {
 
 
         Set<String> qosFilters = new HashSet<>();
-        for (MxQos qos : params.getQos()) {
-            qosFilters.add(qos.getFilterName());
+        if (params.getQos() == null) {
+            hasError = true;
+            errorStr.append("Null QoS");
+        } else {
+            for (MxQos qos : params.getQos()) {
+                qosFilters.add(qos.getFilterName());
+            }
         }
 
 
@@ -233,8 +241,12 @@ public class MxCommandGenerator {
         }
 
         MxVpls vpls = params.getMxVpls();
-        if (vpls.getCommunityId() < 1 || vpls.getCommunityId() > 65534) {
-            errorStr.append("VPLS community ID out of range (1-65535)\n");
+        if (vpls.getCommunity() == null) {
+
+            errorStr.append("VPLS community null\n");
+            hasError = true;
+        } else if (vpls.getCommunity().length() == 0) {
+            errorStr.append("VPLS community is empty\n");
             hasError = true;
         }
         // this is allowed to be null
