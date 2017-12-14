@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.dto.pss.params.MplsPath;
-import net.es.oscars.dto.pss.params.Policing;
 import net.es.oscars.dto.pss.params.mx.*;
 import net.es.oscars.resv.ent.CommandParam;
 import net.es.oscars.resv.ent.Connection;
@@ -26,6 +25,7 @@ public class MxParamsAdapter {
 
     @Autowired
     private TopoService topoService;
+
     @Autowired
     private PssProperties pssProperties;
 
@@ -47,7 +47,6 @@ public class MxParamsAdapter {
                 .policyName("oscars-policy-"+c.getConnectionId())
                 .statsFilter("oscars-stats-"+c.getConnectionId())
                 .serviceName("oscars-service-"+c.getConnectionId())
-                .community(pssProperties.getCommunity())
                 .build();
 
 

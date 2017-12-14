@@ -31,4 +31,11 @@ public class PssProperties {
     @NonNull
     private String aluQosidRange;
 
+
+    @NonNull
+    private Integer controlPlaneCheckRandom;
+
+    @NonNull
+    private Boolean controlPlaneCheckOnStart;
+
 }

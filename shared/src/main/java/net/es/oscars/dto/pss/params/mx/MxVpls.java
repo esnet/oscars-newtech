@@ -19,8 +19,6 @@ public class MxVpls {
 
     private String loopback;
 
-    private String community;
-
     private String policyName;
 
     private String statsFilter;

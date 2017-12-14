@@ -241,14 +241,6 @@ public class MxCommandGenerator {
         }
 
         MxVpls vpls = params.getMxVpls();
-        if (vpls.getCommunity() == null) {
-
-            errorStr.append("VPLS community null\n");
-            hasError = true;
-        } else if (vpls.getCommunity().length() == 0) {
-            errorStr.append("VPLS community is empty\n");
-            hasError = true;
-        }
         // this is allowed to be null
         if (vpls.getLoopback() != null) {
             KeywordWithContext kwc_vpls_loopback = KeywordWithContext.builder()

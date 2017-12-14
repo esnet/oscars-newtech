@@ -45,7 +45,7 @@ public class RestPssServer implements PSSProxy {
     public CommandStatus status(String commandId) {
         log.info("status - cmd id "+commandId);
         String pssUrl = props.getUrl();
-        String submitUrl = "/status?commandId="+commandId;
+        String submitUrl = "/status/"+commandId;
         String restPath = pssUrl + submitUrl;
         return restTemplate.getForObject(restPath, CommandStatus.class);
     }
