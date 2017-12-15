@@ -54,8 +54,6 @@
       "vcId": 91112,
       "serviceName": "NKJSBD-12",
       "description": "my description",
-      "community": "NKJSBD",
-      "communityId": 39001,
       "policyName": "asddfasd",
       "statsFilter": "OSCARS-stats-filter"
     }

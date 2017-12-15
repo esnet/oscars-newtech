@@ -7,6 +7,7 @@ import net.es.oscars.resv.db.HeldRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.Held;
 import net.es.oscars.resv.enums.Phase;
+import net.es.oscars.resv.enums.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -47,7 +48,11 @@ public class TransitionStates {
             }
             if (c.getPhase().equals(Phase.RESERVED)) {
                 if (c.getReserved().getSchedule().getEnding().isBefore(Instant.now())) {
-                    archiveThese.add(c);
+                    if (c.getState().equals(State.ACTIVE)) {
+                        log.info(c.getConnectionId() + " : state is active, will not archive until dismantled");
+                    } else {
+                        archiveThese.add(c);
+                    }
                 }
             }
         }

@@ -37,6 +37,7 @@ public class RouterConfigBuilder {
             case CONFIG_STATUS:
                 break;
             case OPERATIONAL_STATUS:
+                result = opStatus(command).getRouterConfig();
                 break;
             case CONTROL_PLANE_STATUS:
                 result = controlPlaneCheck(command.getDevice(), command.getModel()).getRouterConfig();
@@ -62,6 +63,33 @@ public class RouterConfigBuilder {
             case JUNIPER_MX:
             case JUNIPER_EX:
                 routerConfig = "show chassis hardware";
+                break;
+            default:
+                throw new ConfigException("unknown model");
+        }
+
+        return buildRouterConfig(routerConfig, deviceUrn, model);
+    }
+
+    public RancidArguments opStatus(Command command)
+            throws ConfigException, UrnMappingException  {
+        String routerConfig;
+        DeviceModel model = command.getModel();
+        String deviceUrn = command.getDevice();
+
+        switch (model) {
+            case ALCATEL_SR7750:
+                Integer svcId = command.getAlu().getAluVpls().getSvcId();
+                routerConfig = "show service id "+svcId+" all\n";
+                break;
+            case JUNIPER_MX:
+            case JUNIPER_EX:
+                routerConfig = "show mpls lsp\n";
+                routerConfig += "show mpls path\n";
+                routerConfig += "show vpls connections\n";
+                routerConfig += "show interface xe-1/2/0.113 detail\n";
+                routerConfig += "show firewall counter filter XYZ\n";
+
                 break;
             default:
                 throw new ConfigException("unknown model");

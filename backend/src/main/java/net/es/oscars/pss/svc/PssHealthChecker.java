@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.StartupComponent;
+import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.app.props.TopoProperties;
 import net.es.oscars.dto.pss.cmd.CommandStatus;
+import net.es.oscars.dto.pss.st.LifecycleStatus;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.ent.Device;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 
@@ -43,6 +46,39 @@ public class PssHealthChecker implements StartupComponent {
         this.topoProperties = topoProperties;
         this.topoService = topoService;
         this.deviceRepo = deviceRepo;
+    }
+
+
+    public void checkControlPlane(String deviceUrn) throws PSSException {
+        if (!topoService.getTopoUrnMap().containsKey(deviceUrn)) {
+            throw new PSSException("could not find device! "+deviceUrn);
+        }
+        TopoUrn urn = topoService.getTopoUrnMap().get(deviceUrn);
+        if (!urn.getUrnType().equals(UrnType.DEVICE)) {
+            throw new PSSException("urn : "+deviceUrn+ " is "+urn.getUrnType()+", should be device");
+        }
+
+        boolean shouldCheck = false;
+
+        if (statuses.containsKey(deviceUrn)) {
+            CommandStatus cs = statuses.get(deviceUrn);
+            if (cs.getLifecycleStatus().equals(LifecycleStatus.DONE)) {
+                // if we have a complete record, if it's younger than 30 sec use that one
+                Instant now = Instant.now();
+                Instant lastUpdated = Instant.ofEpochMilli(cs.getLastUpdated().getTime());
+                if (!lastUpdated.plusSeconds(30).isAfter(now)) {
+                    log.debug("stale CP check for "+deviceUrn);
+                    shouldCheck = true;
+                }
+            }
+        } else {
+            log.debug("no checks yet for "+deviceUrn);
+            shouldCheck = true;
+        }
+        if (shouldCheck) {
+            log.debug("will need to check "+deviceUrn);
+            this.devicesToCheck.add(urn.getDevice());
+        }
     }
 
     public void startup() throws StartupException {
@@ -102,7 +138,7 @@ public class PssHealthChecker implements StartupComponent {
             }
 
 
-        }catch (ConsistencyException | IOException ex) {
+        } catch (ConsistencyException | IOException ex) {
             throw new StartupException("PSS health check failed! " + ex.getMessage());
         }
 

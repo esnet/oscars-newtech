@@ -6,14 +6,18 @@ import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
+import net.es.oscars.resv.enums.BuildMode;
 import net.es.oscars.resv.enums.Phase;
+import net.es.oscars.resv.enums.State;
 import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.web.beans.ConnectionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -145,6 +149,31 @@ public class ConnControler {
         }
     }
 
+    @RequestMapping(value = "/protected/conn/mode/{connectionId}", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public Connection setMode(@PathVariable String connectionId, @RequestBody String mode)
+            throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+        Optional<Connection> cOpt = connRepo.findByConnectionId(connectionId);
+        if (!cOpt.isPresent()) {
+            throw new NoSuchElementException();
+        } else {
+            Connection c = cOpt.get();
+            if (!c.getPhase().equals(Phase.RESERVED)) {
+                throw new IllegalArgumentException("invalid phase: "+c.getPhase());
+            }
+            log.info(c.getConnectionId()+ " setting build mode to "+mode);
+            c.setMode(BuildMode.valueOf(mode));
+            connRepo.save(c);
+            return c;
+        }
+
+    }
 
     @RequestMapping(value = "/api/conn/info/{connectionId}", method = RequestMethod.GET)
     @ResponseBody

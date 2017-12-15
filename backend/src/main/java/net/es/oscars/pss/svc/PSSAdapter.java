@@ -1,5 +1,7 @@
 package net.es.oscars.pss.svc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.dto.pss.cmd.*;
@@ -13,6 +15,7 @@ import net.es.oscars.resv.enums.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -41,8 +44,9 @@ public class PSSAdapter {
         List<Command> commands = new ArrayList<>();
         commands.addAll(this.buildCommands(conn));
         commands.addAll(this.dismantleCommands(conn));
+        commands.addAll(this.opCheckCommands(conn));
         for (Command cmd : commands) {
-            log.info("asking PSS to gen config for device " + cmd.getDevice());
+            log.info("asking PSS to gen config for device " + cmd.getDevice()+" connId: "+conn.getConnectionId());
             GenerateResponse resp = pssProxy.generate(cmd);
             log.info(resp.getGenerated());
             RouterCommands rce = RouterCommands.builder()
@@ -202,10 +206,34 @@ public class PSSAdapter {
 
     public List<Command> dismantleCommands(Connection conn) throws PSSException {
         log.info("gathering dismantle commands for " + conn.getConnectionId());
+
+        try {
+            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(conn);
+            log.debug(pretty);
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+
+        }
+
         List<Command> commands = new ArrayList<>();
 
         for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
             commands.add(paramsAdapter.command(CommandType.DISMANTLE, conn, j));
+        }
+
+        log.info("gathered "+commands.size()+" commands");
+
+
+        return commands;
+    }
+
+    public List<Command> opCheckCommands(Connection conn) throws PSSException {
+        log.info("gathering op check commands for " + conn.getConnectionId());
+        List<Command> commands = new ArrayList<>();
+
+        for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
+            commands.add(paramsAdapter.command(CommandType.OPERATIONAL_STATUS, conn, j));
         }
 
         log.info("gathered "+commands.size()+" commands");

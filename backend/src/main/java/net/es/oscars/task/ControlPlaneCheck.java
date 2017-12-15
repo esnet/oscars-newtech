@@ -7,6 +7,7 @@ import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.dto.pss.cmd.CommandResponse;
 import net.es.oscars.dto.pss.cmd.CommandStatus;
 import net.es.oscars.dto.pss.cmd.CommandType;
+import net.es.oscars.dto.pss.st.LifecycleStatus;
 import net.es.oscars.pss.svc.PSSProxy;
 import net.es.oscars.pss.svc.PssHealthChecker;
 import net.es.oscars.topo.ent.Device;
@@ -42,17 +43,20 @@ public class ControlPlaneCheck {
             return;
         }
 
-        // first, pull status for previously submitted commands
-
+        // first, pull the status for previously submitted commands
         for (String commandId: waitingForStatus) {
             try {
                 CommandStatus cs = pssProxy.status(commandId);
-                gotStatus.put(cs.getDevice(), cs);
+                if (cs.getLifecycleStatus().equals(LifecycleStatus.DONE)) {
+                    log.debug("done with command: "+commandId);
+                    gotStatus.put(commandId, cs);
+                }
+                checker.getStatuses().put(cs.getDevice(), cs);
             } catch (PSSException ex) {
                 log.error("error getting status for "+commandId, ex);
             }
         }
-        for (String commandId : gotStatus.keySet()) {
+        for (String commandId: gotStatus.keySet()) {
             waitingForStatus.remove(commandId);
         }
 
@@ -74,6 +78,7 @@ public class ControlPlaneCheck {
             }
         }
         for (Device d: submittedOk) {
+            log.debug("submitted a cp check for: "+d.getUrn());
             checker.getDevicesToCheck().remove(d);
         }
 
