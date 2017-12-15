@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>nsilib</artifactId>
+    <artifactId>nsi</artifactId>
 
     <!--
     generate class files again with
