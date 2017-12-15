@@ -4,4 +4,4 @@ function tabname {
 }
 tabname "oscars backend"
 
-java -Xmx512m -jar target/backend-1.0.0-beta5.jar $1 $2 $3 $4 $5
+java -Xmx512m -jar target/backend-1.0.0-beta6.jar $1 $2 $3 $4 $5
