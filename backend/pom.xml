@@ -57,7 +57,7 @@
         <dependency>
             <version>${project.version}</version>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nsilib</artifactId>
+            <artifactId>nsi</artifactId>
         </dependency>
 
         <dependency>
