@@ -1,6 +1,8 @@
 package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.Startup;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.Event;
@@ -23,6 +25,8 @@ import java.util.Optional;
 public class HeldController {
     @Autowired
     private LogService logService;
+    @Autowired
+    private Startup startup;
 
     @Autowired
     private ConnectionRepository connRepo;
@@ -36,7 +40,18 @@ public class HeldController {
 
     @RequestMapping(value = "/protected/held/{connectionId}", method = RequestMethod.POST)
     @ResponseBody
-    public Instant held_create_or_update(Authentication authentication, @RequestBody Connection conn, @PathVariable String connectionId) {
+    public Instant held_create_or_update(Authentication authentication,
+                                         @RequestBody Connection conn,
+                                         @PathVariable String connectionId)
+            throws StartupException {
+
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
+
         String username = authentication.getName();
         if (conn == null) {
             throw new IllegalArgumentException("null connection!");

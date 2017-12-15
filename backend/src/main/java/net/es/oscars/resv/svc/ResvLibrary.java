@@ -128,7 +128,10 @@ public class ResvLibrary {
 
 
             Set<ReservableCommandParam> reservable = baseline.get(urn).getReservableCommandParams();
-            Set<CommandParam> reservedOnUrn = reservedParams.get(urn);
+            Set<CommandParam> reservedOnUrn = new HashSet<>();
+            if (reservedParams.containsKey(urn)) {
+                reservedOnUrn = reservedParams.get(urn);
+            }
             Set<CommandParamType> cpts = new HashSet<>();
             reservable.forEach(r -> {
                 cpts.add(r.getType());

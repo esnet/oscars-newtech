@@ -43,7 +43,7 @@ public class VlanJunction {
     private String deviceUrn;
 
     // these will be populated by the system after designing is complete
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Schedule schedule;
 

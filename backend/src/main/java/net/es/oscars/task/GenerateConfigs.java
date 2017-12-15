@@ -50,8 +50,6 @@ public class GenerateConfigs {
             }
         }
 
-        // TODO: reactivate this..
-        /*
         for (Connection c: needConfigs) {
 
             try {
@@ -60,7 +58,6 @@ public class GenerateConfigs {
                 e.printStackTrace();
             }
         }
-        */
 
 
     }

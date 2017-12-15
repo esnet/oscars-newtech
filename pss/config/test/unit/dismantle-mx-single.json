@@ -47,10 +47,8 @@
     ],
     "mxVpls": {
       "vcId": 91112,
-      "communityId": 39001,
       "serviceName": "NKJSBD-12",
       "description": "my description",
-      "community": "NKJSBD",
       "policyName": "asddfasd",
       "statsFilter": "stats-Filter"
     }

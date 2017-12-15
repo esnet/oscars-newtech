@@ -1,0 +1,16 @@
+[
+  {
+    "a": "star-tb1:2/1/1",
+    "z": "nersc-tb1:1/1/1",
+    "metrics": {
+      "MPLS": 10
+    }
+  },
+  {
+    "a": "nersc-tb1:1/1/1",
+    "z": "star-tb1:2/1/1",
+    "metrics": {
+      "MPLS": 10
+    }
+  }
+]

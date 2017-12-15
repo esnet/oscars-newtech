@@ -1,5 +1,7 @@
 package net.es.oscars.resv.svc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.resv.beans.PeriodBandwidth;
@@ -211,6 +213,16 @@ public class ResvService {
     public Map<String, Set<ReservableCommandParam>> availableParams(Interval interval) {
         List<Schedule> scheds = scheduleRepo.findOverlapping(interval.getBeginning(), interval.getEnding());
         Map<String, Set<CommandParam>> reservedParams = this.reservedCommandParams(scheds);
+        /*
+        try {
+            log.info("reserved:");
+            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(reservedParams);
+            log.debug(pretty);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        */
+
         Map<String, TopoUrn> baseline = topoService.getTopoUrnMap();
         return ResvLibrary.availableCommandParams(baseline, reservedParams);
 
@@ -221,16 +233,20 @@ public class ResvService {
         Map<String, Set<CommandParam>> result = new HashMap<>();
         for (Schedule sched: scheds) {
             for (VlanFixture f: fixtureRepo.findBySchedule(sched)) {
-                if (!result.containsKey(f.getPortUrn())) {
-                    result.put(f.getPortUrn(), new HashSet<>());
+                for (CommandParam cp : f.getCommandParams()) {
+                    if (!result.containsKey(cp.getUrn())) {
+                        result.put(cp.getUrn(), new HashSet<>());
+                    }
+                    result.get(cp.getUrn()).add(cp);
                 }
-                result.get(f.getPortUrn()).addAll(f.getCommandParams());
             }
             for (VlanJunction j: jnctRepo.findBySchedule(sched)) {
-                if (!result.containsKey(j.getDeviceUrn())) {
-                    result.put(j.getDeviceUrn(), new HashSet<>());
+                for (CommandParam cp : j.getCommandParams()) {
+                    if (!result.containsKey(cp.getUrn())) {
+                        result.put(cp.getUrn(), new HashSet<>());
+                    }
+                    result.get(cp.getUrn()).add(cp);
                 }
-                result.get(j.getDeviceUrn()).addAll(j.getCommandParams());
             }
         }
         return result;

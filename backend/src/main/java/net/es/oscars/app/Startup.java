@@ -6,6 +6,7 @@ import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
 import net.es.oscars.app.util.GitRepositoryState;
 import net.es.oscars.app.util.GitRepositoryStatePopulator;
+import net.es.oscars.pss.svc.PssHealthChecker;
 import net.es.oscars.security.db.UserPopulator;
 import net.es.oscars.topo.pop.ConsistencyChecker;
 import net.es.oscars.topo.pop.TopoPopulator;
@@ -27,6 +28,7 @@ public class Startup {
     private List<StartupComponent> components;
     private StartupProperties startupProperties;
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
+    private PssHealthChecker pssHealthChecker;
 
     private boolean inStartup = false;
     private boolean inShutdown = false;
@@ -60,6 +62,7 @@ public class Startup {
                    UserPopulator userPopulator,
                    UIPopulator uiPopulator,
                    ConsistencyChecker consistencyChecker,
+                   PssHealthChecker pssHealthChecker,
                    GitRepositoryStatePopulator gitRepositoryStatePopulator) {
         this.startupProperties = startupProperties;
         this.gitRepositoryStatePopulator = gitRepositoryStatePopulator;
@@ -69,6 +72,7 @@ public class Startup {
         components.add(uiPopulator);
         components.add(consistencyChecker);
         components.add(gitRepositoryStatePopulator);
+        components.add(pssHealthChecker);
     }
 
     public void onStart() throws IOException {

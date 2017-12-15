@@ -42,6 +42,7 @@ public class ConsistencyChecker implements StartupComponent {
 
 
     public void startup() throws StartupException {
+        log.info("starting consistency checker");
         try {
             this.checkConsistency();
 
@@ -50,6 +51,7 @@ public class ConsistencyChecker implements StartupComponent {
             log.error(ex.getMessage());
             throw new StartupException(ex.getMessage());
         }
+        log.info("consistency checker finished");
     }
 
     public void checkConsistency() throws ConsistencyException {

@@ -17,6 +17,9 @@ public class PssProperties {
     private String url;
 
     @NonNull
+    private String community;
+
+    @NonNull
     private String vcidRange;
 
     @NonNull
@@ -27,5 +30,12 @@ public class PssProperties {
 
     @NonNull
     private String aluQosidRange;
+
+
+    @NonNull
+    private Integer controlPlaneCheckRandom;
+
+    @NonNull
+    private Boolean controlPlaneCheckOnStart;
 
 }

@@ -3,7 +3,9 @@ package net.es.oscars.topo.svc;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.app.props.TopoProperties;
+import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;
@@ -13,6 +15,7 @@ import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
 import net.es.oscars.topo.ent.Version;
+import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.pop.ConsistencyException;
@@ -39,20 +42,29 @@ public class TopoService {
     @Autowired
     private VersionRepository versionRepo;
 
+    @Autowired
+    private PssProperties pssProperties;
+
 
     public void updateTopo() throws ConsistencyException, TopoException {
         Optional<Version> maybeCurrent = currentVersion();
 
         if (maybeCurrent.isPresent()) {
             Version current = maybeCurrent.get();
+            log.info("updating topo to version: "+current.getId());
             List<Device> devices = deviceRepo.findByVersion(current);
             List<PortAdjcy> adjcies = adjcyRepo.findByVersion(current);
 
+            // first add all devices (and ports) to the urn map
             this.topoUrnMap = this.urnsFromDevices(devices);
 
-            this.topoAdjcies = new ArrayList<>();
-            this.topoAdjcies.addAll(adjciesFromDevices(devices));
-            this.topoAdjcies.addAll(transformToTopoAdjcies(adjcies));
+            // now process all adjacencies
+            this.topoAdjcies = topoAdjciesFromDevices(devices);
+            this.topoAdjcies.addAll(topoAdjciesFromPortAdjcies(adjcies));
+
+
+
+            log.info("updated with "+this.topoAdjcies.size()+" topo adjacencies");
         } else  {
             throw new TopoException("no valid topology version!");
         }
@@ -78,6 +90,7 @@ public class TopoService {
         if (maybeCurrent.isPresent()) {
             Version noLongerValid = maybeCurrent.get();
             noLongerValid.setValid(false);
+            log.info("setting version to invalid: "+noLongerValid.getId());
             versionRepo.save(noLongerValid);
         }
 
@@ -86,8 +99,8 @@ public class TopoService {
     }
 
     @Transactional
-    public void mergeVersionDelta(VersionDelta vd, Version newVersion) throws ConsistencyException {
-        // log.info("merging version delta w/ timestamp: "+newVersion.getUpdated());
+    public void mergeVersionDelta(VersionDelta vd, Version currentVersion, Version newVersion) throws ConsistencyException {
+        log.info("merging version delta w/ timestamp: "+newVersion.getUpdated());
         Delta<Device> dd = vd.getDeviceDelta();
         Delta<PortAdjcy> ad = vd.getAdjcyDelta();
         Delta<Port> pd = vd.getPortDelta();
@@ -96,10 +109,10 @@ public class TopoService {
 
         // now modify existing ones
         for (PortAdjcy pa: ad.getModified()) {
-            // log.warn("modifying an adjcy: "+pa.getA().getUrn()+ " -- "+pa.getZ().getUrn());
+            log.warn("modifying an adjcy: "+pa.getA().getUrn()+ " -- "+pa.getZ().getUrn());
             boolean found = false;
             PortAdjcy prev = null;
-            for (PortAdjcy candidate : adjcyRepo.findAll()) {
+            for (PortAdjcy candidate : adjcyRepo.findByVersion(currentVersion)) {
                 if (candidate.getA().getUrn().equals(pa.getA().getUrn()) &&
                         candidate.getZ().getUrn().equals(pa.getZ().getUrn())) {
                     prev = candidate;
@@ -110,11 +123,20 @@ public class TopoService {
             if (!found) {
                 throw new ConsistencyException("adjcy found in delta does not exist in repo");
             }
-            prev.setMetrics(pa.getMetrics());
+            for (Layer l : prev.getMetrics().keySet()) {
+                if (!pa.getMetrics().keySet().contains(l)) {
+                    log.debug("removing a metric for "+l.toString());
+                    prev.getMetrics().remove(l);
+                }
+            }
+            for (Layer l : pa.getMetrics().keySet()) {
+                log.debug("setting metric for "+l.toString());
+                prev.getMetrics().put(l, pa.getMetrics().get(l));
+            }
+
             prev.setVersion(newVersion);
             adjcyRepo.save(prev);
         }
-
 
         // to delete gone devices, we don't do anything; we just won't update their version
 
@@ -197,8 +219,7 @@ public class TopoService {
         }
 
 
-
-        // finally add new adjacencies; this is done last to make sure the ports we refer to are
+        // finally add new adjacencies; this is done last to make sure the ports we refer to have been added already
         for (PortAdjcy pa: ad.getAdded()) {
             // log.info("adding an adjcy: "+pa.getA().getUrn()+ " -- "+pa.getZ().getUrn());
             // fix port object refs
@@ -211,7 +232,6 @@ public class TopoService {
         }
 
     }
-
 
     public Topology currentTopology() throws ConsistencyException {
         List<Device> devices = new ArrayList<>();
@@ -230,8 +250,8 @@ public class TopoService {
             }
             devices = deviceRepo.findByVersion(versions.get(0));
             adjcies = adjcyRepo.findByVersion(versions.get(0));
-            // log.info("found "+devices.size()+" devices in version "+versions.get(0).getUpdated());
-            // log.info("found "+adjcies.size()+" adjcies in version "+versions.get(0).getUpdated());
+            log.info("found "+devices.size()+" devices in version "+versions.get(0).getId());
+            log.info("found "+adjcies.size()+" adjcies in version "+versions.get(0).getId());
             t.setDevices(devices);
             t.setAdjcies(adjcies);
             devices.forEach(d -> {
@@ -247,7 +267,7 @@ public class TopoService {
 
 
 
-    private Map<String, TopoUrn> urnsFromDevices(List<Device> devices) throws TopoException {
+    private Map<String, TopoUrn> urnsFromDevices(List<Device> devices) {
         Map<String, TopoUrn> urns = new HashMap<>();
 
         devices.forEach(d -> {
@@ -263,9 +283,36 @@ public class TopoService {
                     .device(d)
                     .reservableVlans(drv)
                     .capabilities(dCaps)
+                    .reservableCommandParams(new HashSet<>())
                     .build();
-            urns.put(d.getUrn(), deviceUrn);
 
+            // for all devices, if this is MPLS-capable, reserve a VC id
+            if (d.getCapabilities().contains(Layer.MPLS)) {
+                Set<IntRange> vcIdRanges = IntRange.fromExpression(pssProperties.getVcidRange());
+                ReservableCommandParam vcCp = ReservableCommandParam.builder()
+                        .type(CommandParamType.VC_ID)
+                        .reservableRanges(vcIdRanges)
+                        .build();
+                deviceUrn.getReservableCommandParams().add(vcCp);
+            }
+
+            // for ALUs, add SVC ids and QOS ids as reservable
+            if (d.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
+                Set<IntRange> svcIdRanges = IntRange.fromExpression(pssProperties.getAluSvcidRange());
+                ReservableCommandParam aluSvcCp = ReservableCommandParam.builder()
+                        .type(CommandParamType.ALU_SVC_ID)
+                        .reservableRanges(svcIdRanges)
+                        .build();
+                deviceUrn.getReservableCommandParams().add(aluSvcCp);
+
+                Set<IntRange> qosIdRanges = IntRange.fromExpression(pssProperties.getAluQosidRange());
+                ReservableCommandParam aluQosCp = ReservableCommandParam.builder()
+                        .type(CommandParamType.ALU_QOS_POLICY_ID)
+                        .reservableRanges(qosIdRanges)
+                        .build();
+                deviceUrn.getReservableCommandParams().add(aluQosCp);
+            }
+            urns.put(d.getUrn(), deviceUrn);
 
             d.getPorts().forEach(p -> {
                 // make a copy of the IntRanges otherwise it'd be set by reference
@@ -283,7 +330,9 @@ public class TopoService {
                         .reservableIngressBw(p.getReservableIngressBw())
                         .reservableEgressBw(p.getReservableEgressBw())
                         .reservableVlans(prv)
+                        .reservableCommandParams(new HashSet<>())
                         .build();
+
 
                 urns.put(p.getUrn(), portUrn);
 
@@ -293,13 +342,23 @@ public class TopoService {
         return urns;
 
     }
-    private List<TopoAdjcy> transformToTopoAdjcies(List<PortAdjcy> portAdjcies) throws TopoException {
+    private List<TopoAdjcy> topoAdjciesFromPortAdjcies(List<PortAdjcy> portAdjcies) throws TopoException {
         List<TopoAdjcy> adjcies = new ArrayList<>();
 
         for (PortAdjcy pa : portAdjcies) {
-            if (this.topoUrnMap.containsKey(pa.getA().getUrn()) &&
-                    this.topoUrnMap.containsKey(pa.getZ().getUrn())) {
+            // all our adjcies should point to ports in the topoUrnMap
 
+            if (!this.topoUrnMap.containsKey(pa.getA().getUrn())) {
+                log.error(pa.getA().getUrn()+" -- "+pa.getZ().getUrn());
+
+                throw new TopoException("missing A "+pa.getA().getUrn());
+
+            } else if (!this.topoUrnMap.containsKey(pa.getZ().getUrn())) {
+
+                log.error(pa.getA().getUrn()+" -- "+pa.getZ().getUrn());
+                throw new TopoException("missing Z "+pa.getZ().getUrn());
+
+            } else {
                 TopoUrn aUrn = this.topoUrnMap.get(pa.getA().getUrn());
                 TopoUrn zUrn = this.topoUrnMap.get(pa.getZ().getUrn());
                 Map<Layer, Long> metrics = new HashMap<>();
@@ -310,9 +369,6 @@ public class TopoService {
 
                 TopoAdjcy adjcy = TopoAdjcy.builder().a(aUrn).z(zUrn).metrics(metrics).build();
                 adjcies.add(adjcy);
-
-            } else {
-                throw new TopoException("missing a port urn!");
             }
 
         }
@@ -320,7 +376,7 @@ public class TopoService {
 
     }
 
-    private List<TopoAdjcy> adjciesFromDevices(List<Device> devices) throws TopoException {
+    private List<TopoAdjcy> topoAdjciesFromDevices(List<Device> devices) throws TopoException {
         List<TopoAdjcy> adjcies = new ArrayList<>();
         for (Device d: devices) {
             if (this.topoUrnMap.containsKey(d.getUrn())) {

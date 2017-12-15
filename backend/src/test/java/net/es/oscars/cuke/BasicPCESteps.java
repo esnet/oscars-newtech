@@ -13,6 +13,7 @@ import net.es.oscars.resv.svc.ResvLibrary;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.svc.TopoService;
+import net.es.oscars.web.beans.PcePath;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
@@ -49,15 +50,18 @@ public class BasicPCESteps extends CucumberSteps {
 
         Map<String, Integer> availIngressBw;
         Map<String, Integer> availEgressBw;
-        Map<String, Set<IntRange>> availVlans;
         Map<String, TopoUrn > baseline = topoService.getTopoUrnMap();
 
 
         availIngressBw = ResvLibrary.availableBandwidthMap(BwDirection.INGRESS, baseline, new HashMap<>());
         availEgressBw = ResvLibrary.availableBandwidthMap(BwDirection.EGRESS, baseline, new HashMap<>());
-        availVlans = ResvLibrary.availableVlanMap(baseline, new HashSet<>());
 
-        world.pipeEros = palindromicalPCE.palindromicERO(vp, availIngressBw, availEgressBw, availVlans);
+        PcePath shortest = palindromicalPCE.shortestAndFits(vp, availIngressBw, availEgressBw).getShortest();
+
+        world.pipeEros = new HashMap<>();
+        world.pipeEros.put(EroDirection.A_TO_Z, shortest.getAzEro());
+        world.pipeEros.put(EroDirection.Z_TO_A, shortest.getZaEro());
+
 
     }
 

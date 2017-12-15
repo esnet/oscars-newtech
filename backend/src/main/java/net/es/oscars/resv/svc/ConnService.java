@@ -2,6 +2,9 @@ package net.es.oscars.resv.svc;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.pss.svc.PSSAdapter;
+import net.es.oscars.pss.svc.PssResourceService;
 import net.es.oscars.resv.db.ArchivedRepository;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.db.HeldRepository;
@@ -32,6 +35,8 @@ public class ConnService {
     private LogService logService;
 
     @Autowired
+    private PssResourceService pssResourceService;
+    @Autowired
     private HeldRepository heldRepo;
 
     @Autowired
@@ -39,6 +44,9 @@ public class ConnService {
 
     @Autowired
     private ReservedRepository reservedRepo;
+
+    @Autowired
+    private PSSAdapter pssAdapter;
 
     public List<Connection> filter(ConnectionFilter filter) {
 
@@ -98,10 +106,12 @@ public class ConnService {
 
     }
 
-    public Phase commit(Connection c) {
+    public Phase commit(Connection c) throws PSSException {
         c.setPhase(Phase.RESERVED);
 
         this.reservedFromHeld(c);
+        this.pssResourceService.reserve(c);
+
         this.archiveFromReserved(c);
 
         c.setHeld(null);
@@ -115,12 +125,12 @@ public class ConnService {
                 .at(Instant.now())
                 .username("")
                 .build();
-
         logService.logEvent(c.getConnectionId(), ev);
-
         return Phase.RESERVED;
-
     }
+
+
+
 
     public Phase uncommit(Connection c) {
 
@@ -133,12 +143,23 @@ public class ConnService {
     }
 
     public Phase cancel(Connection c) {
-        c.setPhase(Phase.ARCHIVED);
+        // need to dismantle first, that part relies on Reserved components
+        try {
+            State s = pssAdapter.dismantle(c);
+            if (!s.equals(State.FAILED)) {
+                c.setState(State.FINISHED);
+            }
+        } catch (PSSException ex) {
+            c.setState(State.FAILED);
+            log.error(ex.getMessage(), ex);
+        }
 
+        // then, archive it
+        c.setPhase(Phase.ARCHIVED);
         c.setHeld(null);
         c.setReserved(null);
 
-        // TODO: set the user
+        // TODO: somehow set the user that cancelled
         Event ev = Event.builder()
                 .connectionId(c.getConnectionId())
                 .description("cancelled")
@@ -148,9 +169,6 @@ public class ConnService {
                 .build();
         logService.logEvent(c.getConnectionId(), ev);
 
-        // TODO: tear it down
-
-        c.setState(State.FINISHED);
 
         connRepo.save(c);
         return Phase.ARCHIVED;
@@ -202,6 +220,8 @@ public class ConnService {
                 .build();
         c.setArchived(archived);
     }
+
+
 
     private Schedule copySchedule(Schedule sch) {
         return Schedule.builder()

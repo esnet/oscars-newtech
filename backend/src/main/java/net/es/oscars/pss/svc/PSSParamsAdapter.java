@@ -5,6 +5,7 @@ import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.pss.params.alu.AluParams;
+import net.es.oscars.dto.pss.params.mx.MxParams;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.enums.UrnType;
@@ -19,10 +20,14 @@ public class PSSParamsAdapter {
 
     private TopoService topoService;
     private AluParamsAdapter aluParamsAdapter;
+    private MxParamsAdapter mxParamsAdapter;
 
     @Autowired
-    public PSSParamsAdapter(TopoService topoService, AluParamsAdapter aluParamsAdapter) {
+    public PSSParamsAdapter(TopoService topoService,
+                            MxParamsAdapter mxParamsAdapter,
+                            AluParamsAdapter aluParamsAdapter) {
         this.aluParamsAdapter = aluParamsAdapter;
+        this.mxParamsAdapter = mxParamsAdapter;
         this.topoService = topoService;
     }
 
@@ -39,6 +44,8 @@ public class PSSParamsAdapter {
             case JUNIPER_EX:
                 break;
             case JUNIPER_MX:
+                MxParams mxParams = mxParamsAdapter.params(c, j);
+                cmd.setMx(mxParams);
                 break;
         }
         return cmd;

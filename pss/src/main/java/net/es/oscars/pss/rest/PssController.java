@@ -3,14 +3,12 @@ package net.es.oscars.pss.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.dto.pss.cmd.Command;
-import net.es.oscars.dto.pss.cmd.CommandResponse;
-import net.es.oscars.dto.pss.cmd.CommandStatus;
-import net.es.oscars.dto.pss.cmd.GenerateResponse;
+import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.cp.ControlPlaneHealth;
 import net.es.oscars.pss.beans.ConfigException;
 import net.es.oscars.pss.beans.ControlPlaneException;
 import net.es.oscars.pss.beans.UrnMappingException;
+import net.es.oscars.pss.svc.CommandQueuer;
 import net.es.oscars.pss.svc.HealthService;
 import net.es.oscars.pss.svc.RouterConfigBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RestController
@@ -25,11 +24,15 @@ public class PssController {
 
     private HealthService healthService;
     private RouterConfigBuilder routerConfigBuilder;
+    private CommandQueuer commandQueuer;
 
     @Autowired
-    public PssController(HealthService healthService, RouterConfigBuilder routerConfigBuilder) {
+    public PssController(HealthService healthService,
+                         CommandQueuer commandQueuer,
+                         RouterConfigBuilder routerConfigBuilder) {
         this.healthService = healthService;
         this.routerConfigBuilder = routerConfigBuilder;
+        this.commandQueuer = commandQueuer;
     }
 
     @ExceptionHandler(NoSuchElementException.class)
@@ -51,9 +54,15 @@ public class PssController {
 
     @RequestMapping(value = "/command", method = RequestMethod.POST)
     public CommandResponse command(@RequestBody Command cmd) {
-        log.info("received a command, connId: " + cmd.getConnectionId() + " device: " + cmd.getDevice());
+        log.info("received a command, type: "+cmd.getType()+
+                 " connId: " + cmd.getConnectionId() + " device: " + cmd.getDevice());
 
-        return CommandResponse.builder().build();
+        String commandId = commandQueuer.newCommand(cmd);
+
+        return CommandResponse.builder()
+                .commandId(commandId)
+                .device(cmd.getDevice())
+                .build();
 
     }
 
@@ -75,9 +84,14 @@ public class PssController {
                 .build();
     }
 
-    @RequestMapping(value = "/status", method = RequestMethod.GET)
+    @RequestMapping(value = "/status/{commandId}", method = RequestMethod.GET)
     public CommandStatus commandStatus(@PathVariable("commandId") String commandId) {
-        return CommandStatus.builder().build();
+        if (commandQueuer.getStatus(commandId).isPresent()) {
+            return commandQueuer.getStatus(commandId).get();
+        } else {
+            log.error("no status for "+commandId);
+            throw new NoSuchElementException("command id not found: "+commandId);
+        }
     }
 
     @RequestMapping(value = "/health", method = RequestMethod.GET)

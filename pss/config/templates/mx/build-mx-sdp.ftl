@@ -1,13 +1,14 @@
 <#-- @ftlvariable name="mxLsps" type="java.util.List<net.es.oscars.dto.pss.params.mx.MxLsp>" -->
 <#-- @ftlvariable name="vpls" type="net.es.oscars.dto.pss.params.mx.MxVpls" -->
-<#assign communityMembers = "65000:672277L:"+vpls.communityId>
+<#assign communityMembers = "65000:672277L:"+vpls.vcId>
 <#assign mesh_group = "sdp-"+vpls.vcId >
+<#assign community = vpls.vcId >
 
-set policy-options community "${vpls.community}" members ${communityMembers}
+set policy-options community "${vpls.vcId}" members ${communityMembers}
 
 top
 edit policy-options policy-statement "${vpls.policyName}" term oscars
-set from community "${vpls.community}"
+set from community "$community}"
 <#list mxLsps as mxlsp>
 set then install-nexthop lsp "${mxlsp.lsp.name}"
 </#list>
@@ -22,7 +23,7 @@ edit routing-instances "${vpls.serviceName}" protocols vpls mesh-group "${mesh_g
 set vpls-id ${vpls.vcId}
 edit neighbor ${lsp_neighbor}
 set psn-tunnel-endpoint ${mxlsp.lsp.to}
-set community "${vpls.community}"
+set community "${community}"
 set encapsulation-type ethernet-vlan
 </#list>
 

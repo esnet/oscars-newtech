@@ -89,11 +89,11 @@ public class TopoLibrary {
                 if (!changed) {
                     unchanged.add(aDevice);
                 } else {
-                    // log.info("will modify "+aDevice.getUrn());
+                    log.info("will modify "+aDevice.getUrn());
                     modified.add(aDevice);
                 }
             } else {
-                // log.info("will remove "+aDevice.getUrn());
+                log.info("will remove "+aDevice.getUrn());
                 removed.add(aDevice);
             }
         }
@@ -106,7 +106,7 @@ public class TopoLibrary {
                 }
             }
             if (!found) {
-                // log.info("will add "+bDevice.getUrn());
+                log.info("will add "+bDevice.getUrn());
                 added.add(bDevice);
             }
         }

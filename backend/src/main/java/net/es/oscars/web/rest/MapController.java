@@ -1,14 +1,15 @@
 package net.es.oscars.web.rest;
 
-import net.es.oscars.topo.beans.MapEdge;
-import net.es.oscars.topo.beans.MapGraph;
-import net.es.oscars.topo.beans.MapNode;
-import net.es.oscars.topo.beans.Position;
+import net.es.oscars.app.Startup;
+import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.UIPopulator;
+import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,18 +27,30 @@ public class MapController {
     private DeviceRepository deviceRepo;
     @Autowired
     private PortAdjcyRepository adjcyRepo;
+    @Autowired
+    private TopoService topoService;
 
+    @Autowired
+    private Startup startup;
     @Autowired
     private UIPopulator uiPopulator;
 
     @RequestMapping(value = "/api/map", method = RequestMethod.GET)
     @ResponseBody
-    public MapGraph getMap() {
+    public MapGraph getMap() throws ConsistencyException, StartupException{
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
 
         MapGraph g = MapGraph.builder().edges(new ArrayList<>()).nodes(new ArrayList<>()).build();
         Map<String, Position> positionMap = uiPopulator.getPositions().getPositions();
 
-        for (Device d : deviceRepo.findAll()) {
+        Topology topology = topoService.currentTopology();
+
+        for (Device d : topology.getDevices()) {
             MapNode n = MapNode.builder()
                     .id(d.getUrn())
                     .label(d.getUrn())
@@ -58,7 +71,7 @@ public class MapController {
         }
 
         Set<String> added = new HashSet<>();
-        for (PortAdjcy pa : adjcyRepo.findAll()) {
+        for (PortAdjcy pa : topology.getAdjcies()) {
 
             String edgeId = pa.getA().getUrn() + " -- " + pa.getZ().getUrn();
             String reverseEdgeId = pa.getZ().getUrn() + " -- " + pa.getA().getUrn();

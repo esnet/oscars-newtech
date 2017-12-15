@@ -13,15 +13,11 @@ public class MxVpls {
 
     private Integer vcId;
 
-    private Integer communityId;
-
     private String serviceName;
 
     private String description;
 
     private String loopback;
-
-    private String community;
 
     private String policyName;
 

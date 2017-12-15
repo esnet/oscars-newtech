@@ -7,7 +7,7 @@
     <groupId>net.es.oscars</groupId>
     <artifactId>newtech</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-beta5</version>
+    <version>1.0.0-beta6</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,6 +34,7 @@
         <module>shared</module>
         <module>pss</module>
         <module>backend</module>
+        <module>nsi</module>
     </modules>
     <profiles>
         <profile>
@@ -221,11 +222,23 @@
                 <artifactId>cucumber-junit</artifactId>
                 <version>1.2.5</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+                <version>3.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-features-logging</artifactId>
+                <version>3.2.0</version>
+            </dependency>
+
             <dependency>
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>1.5.4.RELEASE</version>
+                <version>1.5.9.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -238,7 +251,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>1.5.4.RELEASE</version>
+                    <version>1.5.9.RELEASE</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

@@ -2,10 +2,7 @@ package net.es.oscars.pss.svc;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.props.PssProperties;
-import net.es.oscars.dto.pss.cmd.Command;
-import net.es.oscars.dto.pss.cmd.CommandResponse;
-import net.es.oscars.dto.pss.cmd.CommandStatus;
-import net.es.oscars.dto.pss.cmd.GenerateResponse;
+import net.es.oscars.dto.pss.cmd.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -26,7 +23,13 @@ public class RestPssServer implements PSSProxy {
     }
 
     public CommandResponse submitCommand(Command cmd) {
-        log.info("submit command - conn id "+cmd.getConnectionId());
+        if (cmd.getType().equals(CommandType.CONTROL_PLANE_STATUS)) {
+            log.info("submit command - device "+cmd.getDevice());
+
+        } else {
+            log.info("submit command - conn id: "+cmd.getConnectionId()+" , dev: "+cmd.getDevice());
+
+        }
         String pssUrl = props.getUrl();
         String submitUrl = "/command";
         String restPath = pssUrl + submitUrl;
@@ -45,7 +48,7 @@ public class RestPssServer implements PSSProxy {
     public CommandStatus status(String commandId) {
         log.info("status - cmd id "+commandId);
         String pssUrl = props.getUrl();
-        String submitUrl = "/status?commandId="+commandId;
+        String submitUrl = "/status/"+commandId;
         String restPath = pssUrl + submitUrl;
         return restTemplate.getForObject(restPath, CommandStatus.class);
     }

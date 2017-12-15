@@ -905,7 +905,7 @@
   {
     "a": "denv-cr5:4/1/1",
     "metrics": {
-      "MPLS": 25
+      "MPLS": 50
     },
     "z": "pnwg-cr5:2/2/1"
   },
@@ -933,7 +933,7 @@
   {
     "a": "pnwg-cr5:2/2/1",
     "metrics": {
-      "MPLS": 25
+      "MPLS": 50
     },
     "z": "denv-cr5:4/1/1"
   },

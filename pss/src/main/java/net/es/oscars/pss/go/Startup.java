@@ -31,11 +31,6 @@ public class Startup {
 
     public void onStart() throws IOException, UrnMappingException {
         urnMappingService.startup();
-        if (!props.getPerformControlPlaneCheck()) {
-            log.info("config declines start up control plane check");
-        } else {
-            healthService.queueControlPlaneCheck(queuer, props.getControlPlaneCheckFilename());
-        }
     }
 
 

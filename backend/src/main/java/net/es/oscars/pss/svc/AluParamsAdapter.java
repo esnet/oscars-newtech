@@ -46,10 +46,8 @@ public class AluParamsAdapter {
                 Integer egQosId = null;
                 Integer vlan = rvf.getVlan().getVlanId();
                 for (CommandParam cp : rvf.getCommandParams()) {
-                    if (cp.getParamType().equals(CommandParamType.ALU_INGRESS_POLICY_ID)) {
+                    if (cp.getParamType().equals(CommandParamType.ALU_QOS_POLICY_ID)) {
                         inQosId = cp.getResource();
-                    }
-                    if (cp.getParamType().equals(CommandParamType.ALU_EGRESS_POLICY_ID)) {
                         egQosId = cp.getResource();
                     }
                 }
@@ -107,6 +105,7 @@ public class AluParamsAdapter {
                 .svcId(aluSvcId)
                 .build();
 
+        // TODO: add paths and LSPs and whatnot!
         return AluParams.builder()
                 .applyQos(true)
                 .qoses(qoses)

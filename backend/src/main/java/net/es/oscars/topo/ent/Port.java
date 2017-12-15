@@ -35,6 +35,7 @@ public class Port {
     private String urn;
 
     @Basic
+    @Column(length = 65535)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private ArrayList<String> tags;
 
