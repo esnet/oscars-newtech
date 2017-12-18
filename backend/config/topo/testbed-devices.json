@@ -29,8 +29,8 @@
         ],
         "reservableVlans": [
           {
-            "ceiling": "2999",
-            "floor": "2000"
+            "ceiling": "3399",
+            "floor": "3300"
           }
         ],
         "reservableIngressBw": 100000,
@@ -68,8 +68,8 @@
         ],
         "reservableVlans": [
           {
-            "ceiling": "2999",
-            "floor": "2000"
+            "ceiling": "3399",
+            "floor": "3300"
           }
         ],
         "reservableIngressBw": 100000,
