@@ -44,7 +44,7 @@ public class CommandProcessor {
 
     @Scheduled(fixedDelay = 60000)
     public void sayHi() throws InterruptedException {
-        log.info("PSS is alive");
+        // log.info("PSS is alive");
 
     }
 

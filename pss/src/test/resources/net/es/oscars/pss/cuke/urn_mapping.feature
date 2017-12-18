@@ -17,7 +17,7 @@ Feature: Control plane URN to dns / ip mapping feature
     Given I have initialized the world
     Given I have cleared all mappings
     When I set the control plane addressing method to "URN_IS_HOSTNAME"
-    And I set the DNS suffix to "foo.net"
+    And I set the DNS suffix to ".foo.net"
     When I ask for the router address of "foobar"
     Then the router address of "foobar" is "foobar.foo.net"
     Then I did not receive an exception

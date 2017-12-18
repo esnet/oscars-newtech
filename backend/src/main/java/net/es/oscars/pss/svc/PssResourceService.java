@@ -145,6 +145,7 @@ public class PssResourceService {
             throw new PSSException("invalid URN type");
         }
         Device d = urn.getDevice();
+        Components cmp = conn.getReserved().getCmp();
         // for ALUs we need one qos id per fixture; QoS ids are reserved on each device
         if (d.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
 
@@ -156,7 +157,7 @@ public class PssResourceService {
                 }
             }
 
-            for (VlanFixture f: conn.getReserved().getCmp().getFixtures()) {
+            for (VlanFixture f: cmp.getFixtures()) {
                 if (f.getJunction().getDeviceUrn().equals(urn.getUrn())) {
                     // this fixture does belong to this junction
                     if (f.getCommandParams() == null) {
@@ -178,11 +179,55 @@ public class PssResourceService {
                     f.getCommandParams().add(qosCp);
 
                     availQosIds = IntRange.subtractFromSet(availQosIds, picked);
-                    jnctRepo.save(f.getJunction());
+                    jnctRepo.save(j);
                     fixRepo.save(f);
                 }
              }
+
+            // also, reserve one SDP id per pipe
+            // TODO: possibly more then one if protect paths
+
+
+            Set<IntRange> availSdpIds = new HashSet<>();
+            for (ReservableCommandParam rcp: availableParams.get(d.getUrn())) {
+                if (rcp.getType().equals(CommandParamType.ALU_SDP_ID)) {
+                    availSdpIds = rcp.getReservableRanges();
+                }
+            }
+
+            for (VlanPipe p : cmp.getPipes()) {
+                boolean junctionInPipe = false;
+                String intent = null;
+
+                // when looking at all pipes, if this junction is either an A or a Z, handle it
+                if (p.getA().getDeviceUrn().equals(j.getDeviceUrn())) {
+                    junctionInPipe = true;
+                    intent = p.getZ().getDeviceUrn();
+                } else if (p.getZ().getDeviceUrn().equals(j.getDeviceUrn())) {
+                    junctionInPipe = true;
+                    intent = p.getA().getDeviceUrn();
+                }
+                if (junctionInPipe) {
+                    Integer picked = IntRange.minFloor(availSdpIds);
+
+                    CommandParam sdpIdCp = CommandParam.builder()
+                            .connectionId(conn.getConnectionId())
+                            .paramType(CommandParamType.ALU_SDP_ID)
+                            .intent(intent)
+                            .resource(picked)
+                            .schedule(sched)
+                            .urn(d.getUrn())
+                            .build();
+
+                    j.getCommandParams().add(sdpIdCp);
+
+                    availSdpIds = IntRange.subtractFromSet(availSdpIds, picked);
+                    jnctRepo.save(j);
+                }
+            }
+
         }
+
 
     }
 

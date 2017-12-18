@@ -41,7 +41,10 @@ public class UrnMappingService {
                 }
                 throw new UrnMappingException("DNS name for device urn "+deviceUrn+" not found in file!");
             case URN_IS_HOSTNAME:
-                return deviceUrn+"."+properties.getDnsSuffix();
+                if (properties.getDnsSuffix() == null || properties.getDnsSuffix().length() == 0) {
+                    return deviceUrn;
+                }
+                return deviceUrn+properties.getDnsSuffix();
         }
         throw new UrnMappingException("Invalid URN mapping method");
     }
@@ -61,7 +64,7 @@ public class UrnMappingService {
                 break;
             case URN_IS_HOSTNAME:
                 log.info("control plane mapping: urn is the hostname");
-                if (properties.getDnsSuffix() == null || properties.getDnsSuffix().length() == 0) {
+                if (properties.getDnsSuffix() == null) {
                     throw new UrnMappingException("no DNS suffix set");
                 }
                 break;

@@ -296,14 +296,23 @@ public class TopoService {
                 deviceUrn.getReservableCommandParams().add(vcCp);
             }
 
-            // for ALUs, add SVC ids and QOS ids as reservable
+            // for ALUs, add SVC, SDP and QOS ids as reservable
             if (d.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
+
                 Set<IntRange> svcIdRanges = IntRange.fromExpression(pssProperties.getAluSvcidRange());
                 ReservableCommandParam aluSvcCp = ReservableCommandParam.builder()
                         .type(CommandParamType.ALU_SVC_ID)
                         .reservableRanges(svcIdRanges)
                         .build();
                 deviceUrn.getReservableCommandParams().add(aluSvcCp);
+
+
+                Set<IntRange> sdpIdRanges = IntRange.fromExpression(pssProperties.getAluSdpidRange());
+                ReservableCommandParam aluSdpCp = ReservableCommandParam.builder()
+                        .type(CommandParamType.ALU_SDP_ID)
+                        .reservableRanges(sdpIdRanges)
+                        .build();
+                deviceUrn.getReservableCommandParams().add(aluSdpCp);
 
                 Set<IntRange> qosIdRanges = IntRange.fromExpression(pssProperties.getAluQosidRange());
                 ReservableCommandParam aluQosCp = ReservableCommandParam.builder()

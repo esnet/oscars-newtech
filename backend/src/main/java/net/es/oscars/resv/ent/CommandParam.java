@@ -39,6 +39,8 @@ public class CommandParam {
 
     private String refId;
 
+    private String intent;
+
     @NonNull
     private Integer resource;
 

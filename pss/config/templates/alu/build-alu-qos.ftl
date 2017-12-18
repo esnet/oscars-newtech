@@ -11,16 +11,26 @@
     <#assign sapType = "sap-ingress" >
 </#if>
 
+<#-- pir / cir is expressed in kbps -->
 <#if qos.mbps gt 0>
-    <#assign bps = qos.mbps+"000" >
+    <#assign cir = qos.mbps+"000" >
 <#else>
-    <#assign bps = "0" >
+    <#assign cir = "0" >
 </#if>
 
-<#assign max = bps >
+<#assign pir = cir >
 <#if qos.policing == "SOFT" >
-    <#assign max = "max" >
+    <#assign pir = "max" >
+<#else>
+<#-- pir range is 1kbps and upwards, even if cir == 0-->
+    <#if pir == "0" >
+        <#assign pir = "1" >
+    </#if>
 </#if>
+
+
+
+
 
 <#-- shared for ingress and egress -->
 /configure qos ${sapType} ${qosId} create
@@ -45,7 +55,7 @@ exit
 <#-- ingress, only when we apply QoS-->
 <#if apply>
 /configure qos ${sapType} ${qosId} default-fc "ef"
-/configure qos ${sapType} ${qosId} queue 2 rate ${max} cir ${bps}
+/configure qos ${sapType} ${qosId} queue 2 rate ${pir} cir ${cir}
 <#else>
 /configure qos ${sapType} ${qosId} default-fc "l1"
 /configure qos ${sapType} ${qosId} queue 3 rate max cir 0
@@ -66,7 +76,7 @@ exit
 
 <#-- egress only, depending on whether we apply QoS -->
 <#if apply>
-/configure qos ${sapType} ${qosId} queue 2 rate ${max} cir ${bps}
+/configure qos ${sapType} ${qosId} queue 2 rate ${pir} cir ${cir}
 <#else>
 /configure qos ${sapType} ${qosId} queue 3 rate max cir 0
 </#if>
