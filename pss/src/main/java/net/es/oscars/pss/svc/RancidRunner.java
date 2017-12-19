@@ -72,32 +72,76 @@ public class RancidRunner {
 
 
         } else {
+            String username = props.getUsername();
+            String idFile = props.getIdentityFile();
 
             String remotePath = "/tmp/" + temp.getName();
+
+            if (username != null && username.length() > 0) {
+                host = username + "@" + host;
+            }
+
             String scpTo = host + ":" + remotePath;
+            String remoteDelete = "rm " + remotePath;
+            // run remote rancid..
+            String[] rancidArgs = {
+                    "ssh",
+                    host,
+                    arguments.getExecutable(),
+                    "-x", remotePath,
+                    "-f", cloginrc,
+                    arguments.getRouter()
+            };
+
+            String[] rmArgs = {
+                    "ssh", host, remoteDelete
+            };
+            String[] scpArgs = { "scp", tmpPath, scpTo };
+
+            if (idFile != null && idFile.length() > 0) {
+                String[] idScpArgs = {
+                        "scp",
+                        "-i", idFile,
+                        tmpPath, scpTo
+                };
+                String[] idRancidArgs = { "ssh",
+                        host,
+                        arguments.getExecutable(),
+                        "-x", remotePath,
+                        "-i", idFile,
+                        "-f", cloginrc,
+                        arguments.getRouter()
+                };
+                String[] idRmArgs = {
+                        "ssh",
+                        "-i", idFile,
+                        host, remoteDelete
+
+                };
+                scpArgs = idScpArgs;
+                rancidArgs = idRancidArgs;
+                rmArgs = idRmArgs;
+            }
+
 
             // scp the file to remote host: /tmp/
             try {
                 log.info("SCPing: " + tmpPath + " -> " + scpTo);
+
+
+                command_line = StringUtils.join(scpArgs, " ");
+                log.info("executing scp: " + command_line);
+
                 new ProcessExecutor()
-                        .command("scp", tmpPath, scpTo)
+                        .command(scpArgs)
                         .exitValues(0)
                         .execute();
 
-                // run remote rancid..
-                String[] rancidCliArgs = {
-                        "ssh",
-                        host,
-                        arguments.getExecutable(),
-                        "-x", remotePath,
-                        "-f", cloginrc,
-                        arguments.getRouter()
-                };
-                command_line = StringUtils.join(rancidCliArgs, " ");
-                log.info("executing rancid command line "+command_line);
+                command_line = StringUtils.join(rancidArgs, " ");
+                log.info("executing rancid command line " + command_line);
 
                 ProcessResult res = new ProcessExecutor()
-                        .command(rancidCliArgs)
+                        .command(rancidArgs)
                         .exitValue(0)
                         .readOutput(true)
                         .execute();
@@ -107,8 +151,7 @@ public class RancidRunner {
 
                 log.debug("deleting: " + scpTo);
 
-                String remoteDelete = "rm " + remotePath;
-                new ProcessExecutor().command("ssh", host, remoteDelete)
+                new ProcessExecutor().command(rmArgs)
                         .exitValue(0).execute();
 
 
