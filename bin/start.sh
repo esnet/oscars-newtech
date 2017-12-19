@@ -11,15 +11,15 @@ cd "$top_dir"
 top_dir=`pwd`
 
 # set a trap on SIGINT to kill the first background task (the core process) then exit
-trap 'kill %1; kill %2; kill %3; echo -e "\n\n######   Exiting all OSCARS tasks. ######\n\n"; exit' SIGINT
+trap 'kill %1; kill %2; echo -e "\n\n######   Exiting all OSCARS tasks. ######\n\n"; exit' SIGINT
 
 echo "Starting backend"
 cd "$top_dir/backend"
-java -jar target/backend-1.0.0-beta7.jar &
+java -jar target/backend-1.0.0-beta8.jar &
 
 echo "Starting PSS"
 cd "$top_dir/pss"
-java -jar target/pss-1.0.0-beta7.jar
+java -jar target/pss-1.0.0-beta8.jar
 
 kill %1; kill %2
 

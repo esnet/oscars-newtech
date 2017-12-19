@@ -4,6 +4,6 @@ function tabname {
 }
 tabname "oscars backend"
 
-java -Xmx512m -jar target/backend-1.0.0-beta7.jar \
+java -Xmx512m -jar target/backend-1.0.0-beta8.jar \
     --spring.jpa.hibernate.ddl-auto=create-drop \
      $1 $2 $3 $4 $5
