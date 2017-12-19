@@ -104,11 +104,12 @@ public class RancidRunner {
                         "-i", idFile,
                         tmpPath, scpTo
                 };
-                String[] idRancidArgs = { "ssh",
+                String[] idRancidArgs = {
+                        "ssh",
+                        "-i", idFile,
                         host,
                         arguments.getExecutable(),
                         "-x", remotePath,
-                        "-i", idFile,
                         "-f", cloginrc,
                         arguments.getRouter()
                 };
