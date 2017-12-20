@@ -81,7 +81,7 @@ public class AluParamsAdapter {
                         .mbps(rvf.getIngressBandwidth())
                         .policing(Policing.STRICT)
                         .policyId(inQosId)
-                        .policyName(c.getConnectionId() + "-" + configPortStr + "-in")
+                        .policyName("IN-"+c.getConnectionId() + "-" + configPortStr )
                         .type(AluQosType.SAP_INGRESS)
                         .build();
                 qoses.add(inQos);
@@ -90,7 +90,7 @@ public class AluParamsAdapter {
                         .mbps(rvf.getEgressBandwidth())
                         .policing(Policing.STRICT)
                         .policyId(egQosId)
-                        .policyName(c.getConnectionId() + "-" + configPortStr + "-eg")
+                        .policyName("EG"+c.getConnectionId() + "-" + configPortStr)
                         .type(AluQosType.SAP_EGRESS)
                         .build();
                 qoses.add(egQos);
