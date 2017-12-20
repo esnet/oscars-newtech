@@ -6,6 +6,8 @@ import lombok.NonNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @ConfigurationProperties(prefix = "rancid")
 @Data
 @Component
@@ -29,6 +31,8 @@ public class RancidProps {
     private String identityFile;
 
     private String username;
+
+    private ArrayList<String> sshOptions = new ArrayList<>();
 
     @NonNull
     private String controlPlaneAddressesFile;

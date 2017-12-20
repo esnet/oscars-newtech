@@ -67,7 +67,7 @@ public class AluParamsAdapter {
                         .mbps(rvf.getReservedBandwidth().getInBandwidth())
                         .policing(Policing.STRICT)
                         .policyId(inQosIdRes.getResource())
-                        .policyName(c.getConnectionId() + "-" + configPortStr + "-in")
+                        .policyName("IN-"+c.getConnectionId() + "-" + configPortStr)
                         .type(AluQosType.SAP_INGRESS)
                         .build();
                 qoses.add(qos);
@@ -82,7 +82,7 @@ public class AluParamsAdapter {
                         .mbps(rvf.getReservedBandwidth().getInBandwidth())
                         .policing(Policing.STRICT)
                         .policyId(egQosIdRes.getResource())
-                        .policyName(c.getConnectionId() + "-" + configPortStr + "-eg")
+                        .policyName("EG-"+c.getConnectionId() + "-" + configPortStr)
                         .type(AluQosType.SAP_EGRESS)
                         .build();
                 qoses.add(qos);
