@@ -248,6 +248,10 @@ public class MxCommandGenerator {
                     .build();
             keywordMap.put(kwc_vpls_loopback, ip_criteria);
         }
+        if (vpls.getVcId() <= 0 || vpls.getVcId() > 65534) {
+            errorStr.append("vcid out of range");
+            hasError = true;
+        }
 
         KeywordWithContext kwc_vpls_pol_name= KeywordWithContext.builder()
                 .context("VPLS policy name").keyword(vpls.getPolicyName())

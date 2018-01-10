@@ -1,5 +1,5 @@
 {
-  "device": "dev-mx960-rt1-es1",
+  "device": "dev-mx960-rt1",
   "model": "JUNIPER_MX",
   "shouldFail": false,
   "mxParams": {
@@ -51,7 +51,7 @@
       }
     ],
     "mxVpls": {
-      "vcId": 91112,
+      "vcId": 9112,
       "serviceName": "NKJSBD-12",
       "description": "my description",
       "policyName": "asddfasd",

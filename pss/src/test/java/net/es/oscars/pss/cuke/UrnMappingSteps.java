@@ -10,6 +10,7 @@ import net.es.oscars.dto.pss.st.LifecycleStatus;
 import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.ctg.UnitTests;
 import net.es.oscars.pss.help.PssTestConfig;
+import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.prop.UrnMappingProps;
 import net.es.oscars.pss.svc.CommandQueuer;
 import net.es.oscars.pss.svc.HealthService;
@@ -34,38 +35,7 @@ public class UrnMappingSteps extends CucumberSteps {
     private UrnMappingService mappingService;
 
     @Autowired
-    private UrnMappingProps properties;
-
-
-    @Given("^I have cleared all mappings$")
-    public void i_have_cleared_all_mappings() {
-        mappingService.getMapping().getEntryMap().clear();
-    }
-
-    @When("^I try to load URN mappings from \"([^\"]*)\"$")
-    public void i_try_to_load_URN_mappings_from(String filename) {
-        try {
-            mappingService.loadFrom(filename);
-        } catch (IOException ex) {
-            world.add(ex);
-        }
-
-    }
-
-    @Then("^I have loaded (\\d+) URN mappings$")
-    public void i_have_loaded_URN_mappings(int num) {
-        assertThat(mappingService.getMapping().getEntryMap().size(), is(num));
-    }
-
-    @When("^I set the control plane addressing method to \"([^\"]*)\"$")
-    public void i_set_the_control_plane_addressing_method_to(UrnMappingMethod method) {
-        properties.setMethod(method);
-    }
-
-    @When("^I set the DNS suffix to \"([^\"]*)\"$")
-    public void i_set_the_DNS_suffix_to(String suffix) {
-        properties.setDnsSuffix(suffix);
-    }
+    private PssProps properties;
 
     @Then("^the router address of \"([^\"]*)\" is \"([^\"]*)\"$")
     public void the_router_address_of_is(String urn, String addr) {
@@ -76,20 +46,39 @@ public class UrnMappingSteps extends CucumberSteps {
         }
     }
 
-    @Given("^I added a configured mapping from \"([^\"]*)\" to \"([^\"]*)\" \"([^\"]*)\"$")
-    public void i_added_a_configured_mapping_from_to(String urn, String dns, String addr) {
-        UrnMappingEntry entry = UrnMappingEntry.builder()
-                .ipv4Address(addr)
-                .dns(dns)
-                .build();
-        mappingService.getMapping().getEntryMap().put(urn, entry);
+
+    @When("^I set the suffix \"([^\"]*)\" on profile \"([^\"]*)\"$")
+    public void i_set_the_suffix_on_profile(String suffix, String profile) throws Throwable {
+        PssProfile pssProfile = PssProfile.findProfile(properties.getProfiles(), profile);
+        pssProfile.getUrnMapping().setSuffix(suffix);
+    }
+
+    @Given("^I added a mapping from \"([^\"]*)\" to \"([^\"]*)\" on profile \"([^\"]*)\"$")
+    public void i_added_a_mapping_from_to_on_profile(String urn, String addr, String profile) throws Throwable {
+        PssProfile pssProfile = PssProfile.findProfile(properties.getProfiles(), profile);
+        UrnMappingEntry e = UrnMappingEntry.builder().address(addr).urn(urn).build();
+        pssProfile.getUrnMapping().getMatch().add(e);
+    }
+
+
+    @Given("^I have cleared all mappings on profile \"([^\"]*)\"$")
+    public void i_have_cleared_all_mappings_on_profile(String profile) throws Throwable {
+        PssProfile pssProfile = PssProfile.findProfile(properties.getProfiles(), profile);
+        pssProfile.getUrnMapping().getMatch().clear();
+    }
+
+    @When("^I set the mapping method to \"([^\"]*)\" on profile \"([^\"]*)\"$")
+    public void i_set_the_mapping_method_to_on_profile(UrnMappingMethod method, String profile) throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        PssProfile pssProfile = PssProfile.findProfile(properties.getProfiles(), profile);
+        pssProfile.getUrnMapping().setMethod(method);
     }
 
     @When("^I ask for the router address of \"([^\"]*)\"$")
     public void i_ask_for_the_router_address_of(String urn) throws Throwable {
         try {
             mappingService.getRouterAddress(urn);
-        } catch (UrnMappingException ex) {
+        } catch (UrnMappingException | NoSuchElementException ex) {
             world.add(ex);
         }
     }

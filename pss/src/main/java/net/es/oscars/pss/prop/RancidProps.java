@@ -1,22 +1,20 @@
 package net.es.oscars.pss.prop;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-@ConfigurationProperties(prefix = "rancid")
 @Data
-@Component
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RancidProps {
 
 
     @NonNull
-    private Boolean execute;
+    private Boolean perform;
 
     @NonNull
     private String dir;
@@ -33,9 +31,6 @@ public class RancidProps {
     private String username;
 
     private ArrayList<String> sshOptions = new ArrayList<>();
-
-    @NonNull
-    private String controlPlaneAddressesFile;
 
 
 }

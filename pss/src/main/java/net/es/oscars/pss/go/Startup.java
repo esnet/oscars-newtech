@@ -2,7 +2,7 @@ package net.es.oscars.pss.go;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.pss.beans.UrnMappingException;
-import net.es.oscars.pss.prop.StartupProps;
+import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.svc.CommandQueuer;
 import net.es.oscars.pss.svc.UrnMappingService;
 import net.es.oscars.pss.svc.HealthService;
@@ -16,21 +16,17 @@ import java.io.IOException;
 public class Startup {
 
     private CommandQueuer queuer;
-    private StartupProps props;
+    private PssProps props;
     private HealthService healthService;
     private UrnMappingService urnMappingService;
 
     @Autowired
     public Startup(CommandQueuer queuer, HealthService healthService,
-                   UrnMappingService urnMappingService, StartupProps props) {
+                   UrnMappingService urnMappingService, PssProps props) {
         this.queuer = queuer;
         this.props = props;
         this.healthService = healthService;
         this.urnMappingService = urnMappingService;
-    }
-
-    public void onStart() throws IOException, UrnMappingException {
-        urnMappingService.startup();
     }
 
 

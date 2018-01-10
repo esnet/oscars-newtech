@@ -8,7 +8,7 @@ set policy-options community "${vpls.vcId}" members ${communityMembers}
 
 top
 edit policy-options policy-statement "${vpls.policyName}" term oscars
-set from community "$community}"
+set from community "${community}"
 <#list mxLsps as mxlsp>
 set then install-nexthop lsp "${mxlsp.lsp.name}"
 </#list>

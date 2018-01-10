@@ -6,7 +6,7 @@
     "ifces": [
       {
         "port": "xe-3/1/0",
-        "vlan": 9001,
+        "vlan": 3001,
         "description": "some desc"
       }
     ],
@@ -46,7 +46,7 @@
       }
     ],
     "mxVpls": {
-      "vcId": 9112,
+      "vcId": 91112,
       "serviceName": "NKJSBD-12",
       "description": "my description",
       "policyName": "asddfasd",

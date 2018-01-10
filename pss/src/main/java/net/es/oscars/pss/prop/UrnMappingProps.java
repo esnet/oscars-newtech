@@ -1,24 +1,25 @@
 package net.es.oscars.pss.prop;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
+import net.es.oscars.pss.beans.UrnMappingEntry;
 import net.es.oscars.pss.beans.UrnMappingMethod;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-@ConfigurationProperties(prefix = "controlplane")
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
-@Component
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class UrnMappingProps {
 
     @NonNull
     private UrnMappingMethod method;
 
-    private String addressesFile;
+    private String suffix;
 
-    private String dnsSuffix;
+    private List<UrnMappingEntry> match = new ArrayList<>();
+
 
 }
 

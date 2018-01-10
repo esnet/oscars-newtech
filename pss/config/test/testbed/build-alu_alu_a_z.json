@@ -6,16 +6,16 @@
   "aluParams": {
     "aluVpls": {
       "svcId": 6912,
+      "serviceName": "OKI9R5",
       "saps": [
         {
           "port": "3/1/1",
           "vlan": 1381,
           "ingressQosId": 7100,
-          "egressQosId": 7001,
+          "egressQosId": 7100,
           "description": "sap description"
         }
       ],
-      "serviceName": "OKI9R5",
       "description": "NERSC - STAR testing",
       "endpointName": "OKI9R5-endpoint",
       "sdpToVcIds": [
@@ -46,7 +46,7 @@
         "type": "SAP_EGRESS",
         "policing": "STRICT",
         "mbps": 100,
-        "policyId": 7001,
+        "policyId": 7100,
         "policyName": "OKI9R5-7001",
         "description": "OKI9R5"
       }

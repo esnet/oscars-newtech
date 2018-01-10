@@ -4,7 +4,9 @@ package net.es.oscars.pss.svc;
 import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.ConfigException;
+import net.es.oscars.pss.beans.PssProfile;
 import net.es.oscars.pss.beans.UrnMappingException;
+import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.prop.RancidProps;
 import net.es.oscars.pss.rancid.RancidArguments;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +14,19 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RouterConfigBuilder {
-    private RancidProps props;
+    private PssProps pssProps;
     private AluCommandGenerator acg;
     private MxCommandGenerator mcg;
     private ExCommandGenerator ecg;
     private UrnMappingService ums;
 
     @Autowired
-    public RouterConfigBuilder(RancidProps props,
+    public RouterConfigBuilder(PssProps pssProps,
                                AluCommandGenerator acg,
                                MxCommandGenerator mcg,
                                ExCommandGenerator ecg,
                                UrnMappingService ums) {
-        this.props = props;
+        this.pssProps = pssProps;
         this.acg = acg;
         this.mcg = mcg;
         this.ecg = ecg;
@@ -143,6 +145,9 @@ public class RouterConfigBuilder {
     public RancidArguments buildRouterConfig(String routerConfig, String deviceUrn, DeviceModel model)
             throws ConfigException, UrnMappingException {
         String execPath;
+        PssProfile pssProfile = PssProfile.profileFor(pssProps, deviceUrn);
+        RancidProps props = pssProfile.getRancid();
+
         String cloginrc = props.getCloginrc();
         String dir = props.getDir();
         String router = ums.getRouterAddress(deviceUrn);

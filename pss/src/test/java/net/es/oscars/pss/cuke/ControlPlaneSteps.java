@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.CommandStatus;
 import net.es.oscars.dto.pss.st.ControlPlaneStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
+import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.ControlPlaneException;
 import net.es.oscars.pss.beans.DeviceEntry;
+import net.es.oscars.pss.beans.PssProfile;
 import net.es.oscars.pss.ctg.UnitTests;
-import net.es.oscars.pss.help.PssTestConfig;
 import net.es.oscars.pss.svc.CommandQueuer;
 import net.es.oscars.pss.svc.HealthService;
 import org.apache.commons.lang3.StringUtils;
@@ -25,8 +26,6 @@ public class ControlPlaneSteps extends CucumberSteps {
     @Autowired
     private CommandQueuer queuer;
 
-    @Autowired
-    private PssTestConfig pssTestConfig;
 
     @Autowired
     private HealthService healthService;
@@ -35,31 +34,31 @@ public class ControlPlaneSteps extends CucumberSteps {
     Set<String> commandIds;
     Set<String> waitingFor;
 
-    @Then("^I will add the control plane test commands for \"([^\"]*)\" to the queue$")
-    public void i_will_add_the_control_plane_test_commands_for_to_the_queue(String testcase) throws Throwable {
-        String prefix = pssTestConfig.getCaseDirectory()+"/"+testcase;
-        entryCommands = healthService.queueControlPlaneCheck(queuer, prefix+"/control-plane-check.json");
+    @Then("^I will enqueue a control plane check$")
+    public void i_will_enqueue_a_control_plane_test() throws Throwable {
+        entryCommands = healthService.queueControlPlaneCheck(queuer);
+        this.i_start_waiting_for_commands();
+
+    }
+    @Then("^I start waiting for commands$")
+    public void i_start_waiting_for_commands() throws Throwable {
 
         statusMap = new HashMap<>();
 
         commandIds = new HashSet<>();
         waitingFor = new HashSet<>();
 
-        entryCommands.entrySet().forEach(e -> {
-            waitingFor.add(e.getKey().getDevice());
-            commandIds.add(e.getValue());
-        });
     }
 
-    @Then("^I will wait up to (\\d+) ms for the control plane commands to complete$")
-    public void i_will_wait_up_to_ms_for_the_control_plane_commands_to_complete(int millis) throws Throwable {
+    @Then("^I will wait up to (\\d+) ms for the commands to complete$")
+    public void i_will_wait_up_to_ms_for_the_commands_to_complete(int millis) throws Throwable {
         int totalMs = 0;
         while (waitingFor.size() > 0 && totalMs < millis) {
             Thread.sleep(2000);
             totalMs += 2000;
             waitingFor.clear();
             for (String commandId : commandIds) {
-                log.debug("checking status for routerConfig " + commandId);
+                log.debug("checking status for command " + commandId);
                 CommandStatus status = queuer.getStatus(commandId).orElseThrow(NoSuchElementException::new);
                 if (status.getLifecycleStatus().equals(LifecycleStatus.DONE)) {
                     ControlPlaneStatus st = status.getControlPlaneStatus();
@@ -79,6 +78,7 @@ public class ControlPlaneSteps extends CucumberSteps {
             throw ex;
         }
     }
+
 
     @Then("^I have verified the control plane to all the devices$")
     public void i_have_verified_the_control_plane_to_all_the_devices() throws Throwable {

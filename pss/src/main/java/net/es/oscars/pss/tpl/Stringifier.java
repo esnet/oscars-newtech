@@ -8,7 +8,7 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.pss.prop.StartupProps;
+import net.es.oscars.pss.prop.PssProps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,10 +27,10 @@ public class Stringifier {
 
     private Configuration fmCfg;
 
-    private StartupProps props;
+    private PssProps props;
 
     @Autowired
-    public Stringifier(StartupProps props) {
+    public Stringifier(PssProps props) {
         this.props = props;
         this.configureTemplates();
     }

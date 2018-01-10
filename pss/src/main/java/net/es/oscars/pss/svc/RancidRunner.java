@@ -1,9 +1,10 @@
 package net.es.oscars.pss.svc;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.pss.beans.ControlPlaneException;
+import net.es.oscars.pss.beans.PssProfile;
+import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.prop.RancidProps;
 import net.es.oscars.pss.rancid.RancidArguments;
 import net.es.oscars.pss.rancid.RancidResult;
@@ -25,22 +26,25 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Component
 public class RancidRunner {
-    private RancidProps props;
+    private PssProps pssProps;
 
     @Autowired
-    public RancidRunner(RancidProps props) {
-        this.props = props;
+    public RancidRunner(PssProps props) {
+        this.pssProps = props;
     }
 
-    public RancidResult runRancid(RancidArguments arguments)
+    public RancidResult runRancid(RancidArguments arguments, String deviceUrn)
             throws ControlPlaneException, IOException, InterruptedException, TimeoutException {
+
+        PssProfile pssProfile = PssProfile.profileFor(pssProps, deviceUrn);
+        RancidProps props = pssProfile.getRancid();
 
         /*
         ObjectMapper mapper = new ObjectMapper();
         String pretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(props);
         log.info(pretty);
     */
-        if (!props.getExecute()) {
+        if (!props.getPerform()) {
             log.info("configured to not actually run rancid");
             return RancidResult.builder().commandline("").details("").exitCode(0).build();
         }

@@ -29,7 +29,7 @@ public class RouterConfigSteps extends CucumberSteps {
     private ParamsLoader loader;
 
     @Then("^I will generate and run the \"([^\"]*)\" commands from test specs$")
-    public void i_will_generate_and_run_the_commands_from_test_specs(CommandType t) throws Throwable {
+    public void i_will_generate_and_run_the_commands_from_test_specs(CommandType t) {
         for (RouterTestSpec rts : loader.getSpecs()) {
             Command cmd = Command.builder()
                     .device(rts.getDevice())

@@ -354,10 +354,12 @@ public class AluCommandGenerator {
                     .context("MPLS path name").keyword(path.getName())
                     .build(), alphanum_criteria);
 
-            for (MplsHop hop : path.getHops()) {
-                keywordMap.put(KeywordWithContext.builder()
-                        .context("MPLS hop address").keyword(hop.getAddress())
-                        .build(), ip_criteria);
+            if (path.getHops() != null) {
+                for (MplsHop hop : path.getHops()) {
+                    keywordMap.put(KeywordWithContext.builder()
+                            .context("MPLS hop address").keyword(hop.getAddress())
+                            .build(), ip_criteria);
+                }
             }
         }
 

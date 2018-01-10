@@ -1,5 +1,5 @@
 {
-  "device": "dev-7750sr12-rt1-es1",
+  "device": "dev-7750sr12-rt1",
   "model": "ALCATEL_SR7750",
   "shouldFail": false,
   "aluParams": {
@@ -10,19 +10,19 @@
           "port": "8/1/1",
           "vlan": 3101,
           "ingressQosId": 5211,
-          "egressQosId": 5511,
+          "egressQosId": 5211,
           "description": "first test SAP"
         },
         {
           "port": "8/1/2",
           "vlan": 3101,
           "ingressQosId": 5211,
-          "egressQosId": 5511,
+          "egressQosId": 5211,
           "description": "second test SAP"
         }
       ],
-      "serviceName": "testNewOscars-3101",
-      "description": "es.net-1234, to someplace"
+      "serviceName": "ABCD",
+      "description": "ABCD to someplace"
     },
     "qoses": [
       {
@@ -30,16 +30,16 @@
         "policing": "STRICT",
         "mbps": 100,
         "policyId": 5211,
-        "policyName": "es.net-1234",
-        "description": "es.net-1234"
+        "policyName": "ABCD-in",
+        "description": "something"
       },
       {
         "type": "SAP_EGRESS",
         "policing": "STRICT",
-        "mbps": 100,
-        "policyId": 5511,
-        "policyName": "es.net-1234",
-        "description": "es.net-1234"
+        "mbps": 200,
+        "policyId": 5211,
+        "policyName": "ABCD-eg",
+        "description": "more description"
       }
     ],
     "applyQos": true

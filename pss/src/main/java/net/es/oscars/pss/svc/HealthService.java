@@ -1,25 +1,25 @@
 package net.es.oscars.pss.svc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.pss.cp.ControlPlaneHealth;
 import net.es.oscars.pss.beans.DeviceEntry;
+import net.es.oscars.pss.beans.PssProfile;
+import net.es.oscars.pss.prop.PssProps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
 public class HealthService {
     private ControlPlaneHealth health;
+
+    @Autowired
+    private PssProps props;
 
     public HealthService() {
         log.info("initialized health service");
@@ -31,18 +31,22 @@ public class HealthService {
         return this.health;
     }
 
-    public List<DeviceEntry> devicesToCheck(String filename) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        File jsonFile = new File(filename);
-        return Arrays.asList(mapper.readValue(jsonFile, DeviceEntry[].class));
-
-    }
 
 
-    public Map<DeviceEntry, String> queueControlPlaneCheck(CommandQueuer queuer, String filename) throws IOException {
+    public Map<DeviceEntry, String> queueControlPlaneCheck(CommandQueuer queuer) throws IOException {
+        List<DeviceEntry> entries = new ArrayList<>();
+        for (PssProfile pssProfile : props.getProfiles()) {
+            if (pssProfile.getCheck().getPerform()) {
+                entries.addAll(pssProfile.getCheck().getDevices());
+            } else {
+                log.info("not performing check for profile "+pssProfile.getProfile());
+            }
+        }
+
+
         Map<DeviceEntry, String> result = new HashMap<>();
-        List<DeviceEntry> entries = this.devicesToCheck(filename);
         entries.forEach(e -> {
+            log.info("adding check for "+e.getDevice());
             Command cmd = Command.builder()
                     .device(e.getDevice())
                     .model(e.getModel())

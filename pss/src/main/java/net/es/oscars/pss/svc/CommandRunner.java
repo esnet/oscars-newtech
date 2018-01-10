@@ -44,13 +44,13 @@ public class CommandRunner {
                 case BUILD:
                     status.setConfigStatus(ConfigStatus.NONE);
                     args = builder.build(command);
-                    confRes = configure(args);
+                    confRes = configure(args, command.getDevice());
                     status.setConfigStatus(confRes.getStatus());
                     break;
                 case DISMANTLE:
                     status.setConfigStatus(ConfigStatus.NONE);
                     args = builder.dismantle(command);
-                    confRes = configure(args);
+                    confRes = configure(args, command.getDevice());
                     status.setConfigStatus(confRes.getStatus());
                     break;
 
@@ -61,12 +61,12 @@ public class CommandRunner {
         }
     }
 
-    private ConfigResult configure(RancidArguments args) {
+    private ConfigResult configure(RancidArguments args, String deviceUrn) {
 
         ConfigResult result = ConfigResult.builder().build();
 
         try {
-            rancidRunner.runRancid(args);
+            rancidRunner.runRancid(args, deviceUrn);
             result.setStatus(ConfigStatus.OK);
 
         } catch (IOException | InterruptedException | TimeoutException | ControlPlaneException ex) {
@@ -84,7 +84,7 @@ public class CommandRunner {
 
         try {
             RancidArguments args = builder.controlPlaneCheck(device, model);
-            rancidRunner.runRancid(args);
+            rancidRunner.runRancid(args, device);
             healthService.getHealth().getDeviceStatus().put(device, ControlPlaneStatus.OK);
             result.setStatus(ControlPlaneStatus.OK);
 

@@ -3,24 +3,29 @@ package net.es.oscars.pss.prop;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import net.es.oscars.pss.beans.ProfileMatch;
+import net.es.oscars.pss.beans.PssProfile;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@ConfigurationProperties(prefix = "startup")
+import java.util.ArrayList;
+import java.util.List;
+
+@ConfigurationProperties(prefix = "pss")
 @Data
 @Component
 @NoArgsConstructor
-public class StartupProps {
+public class PssProps {
 
 
     @NonNull
     private String[] templateDirs;
 
     @NonNull
-    private Boolean performControlPlaneCheck;
+    private List<ProfileMatch> matching = new ArrayList<>();
 
     @NonNull
-    private String controlPlaneCheckFilename;
+    private List<PssProfile> profiles = new ArrayList<>();
 
 }
 

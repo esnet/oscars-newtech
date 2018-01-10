@@ -11,7 +11,7 @@
           "port": "3/2/1",
           "vlan": 1381,
           "ingressQosId": 7200,
-          "egressQosId": 7002,
+          "egressQosId": 7200,
           "description": "sap description"
         }
       ],
@@ -46,7 +46,7 @@
         "type": "SAP_EGRESS",
         "policing": "STRICT",
         "mbps": 100,
-        "policyId": 7002,
+        "policyId": 7200,
         "policyName": "OKI9R5-7001",
         "description": "OKI9R5"
       }

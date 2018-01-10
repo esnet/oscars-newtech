@@ -12,6 +12,6 @@ import net.es.oscars.dto.topo.enums.DeviceModel;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UrnMappingEntry {
-    String dns;
-    String ipv4Address;
+    String urn;
+    String address;
 }
