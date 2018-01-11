@@ -1,7 +1,7 @@
 [
   {
-    "ipv4Address": "134.55.200.125",
-    "urn": "dev-mx960-rt1-es1",
+    "ipv4Address": "10.255.0.3",
+    "urn": "dev-mx960-rt1",
     "capabilities": [
       "ETHERNET",
       "MPLS"
@@ -11,18 +11,18 @@
     "type": "ROUTER",
     "ports": [
       {
-        "ipv4Address": "134.55.38.134",
+        "ipv4Address": "10.3.6.1",
         "reservableEgressBw": 10000,
-        "urn": "pppl-rt5:xe-0/2/0",
+        "urn": "dev-mx960-rt1:xe-11/1/0",
         "reservableIngressBw": 10000,
         "capabilities": [
           "MPLS"
         ]
       },
       {
-        "ipv4Address": "134.55.219.85",
+        "ipv4Address": "10.3.15.1",
         "reservableEgressBw": 10000,
-        "urn": "pppl-rt5:xe-1/0/0",
+        "urn": "dev-mx960-rt1:xe-11/0/0",
         "reservableIngressBw": 10000,
         "capabilities": [
           "MPLS"
@@ -31,123 +31,73 @@
       {
         "reservableIngressBw": 10000,
         "tags": [
-          "pppl-rt5->pppl(as3380):10ge:site_sdn_v4:show:intercloud",
-          "xe-1/2/0.4"
+          "to netlab-asw"
         ],
-        "urn": "pppl-rt5:xe-1/2/0",
+        "urn": "dev-mx960-rt1:xe-11/2/0",
         "capabilities": [
           "ETHERNET"
         ],
         "reservableVlans": [
           {
-            "ceiling": 3,
-            "floor": 2
-          },
-          {
-            "ceiling": 4094,
-            "floor": 5
+            "ceiling": 2900,
+            "floor": 2000
           }
         ],
         "reservableEgressBw": 10000
+      }
+    ]
+  },
+  {
+    "ipv4Address": "10.255.0.15",
+    "urn": "dev-mx960-rt2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "JUNIPER_MX",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "10.6.15.2",
+        "reservableEgressBw": 10000,
+        "urn": "dev-mx960-rt2:xe-1/1/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
       },
       {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "pppl-rt5->pppl-owamp:ge:perf-test:show:intercloud",
-          "ge-0/0/2.919"
-        ],
-        "urn": "pppl-rt5:ge-0/0/2",
+        "ipv4Address": "10.8.15.2",
+        "reservableEgressBw": 10000,
+        "urn": "dev-mx960-rt2:xe-1/0/0",
+        "reservableIngressBw": 10000,
         "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 918,
-            "floor": 2
-          },
-          {
-            "ceiling": 4094,
-            "floor": 920
-          }
-        ],
-        "reservableEgressBw": 1000
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "10.3.15.2",
+        "reservableEgressBw": 10000,
+        "urn": "dev-mx960-rt2:xe-7/0/0",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
       },
       {
         "reservableIngressBw": 10000,
         "tags": [
-          "pppl-rt5->pppl(as3380):10ge:site_conn-a_v4:show:intercloud",
-          "xe-1/1/0.10"
+          "to netlab-asw"
         ],
-        "urn": "pppl-rt5:xe-1/1/0",
+        "urn": "dev-mx960-rt2:xe-0/0/0",
         "capabilities": [
           "ETHERNET"
         ],
         "reservableVlans": [
           {
-            "ceiling": 9,
-            "floor": 2
-          },
-          {
-            "ceiling": 4094,
-            "floor": 11
-          }
-        ],
-        "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "pppl-rt5->es-stub:ge:access-local:show:intracloud",
-          "ge-0/0/0.0"
-        ],
-        "urn": "pppl-rt5:ge-0/0/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4094,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 10000,
-        "tags": [
-          "pppl-rt5->pppl-pt1:10ge:perf-test:show:intercloud",
-          "xe-1/3/0.911"
-        ],
-        "urn": "pppl-rt5:xe-1/3/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 910,
-            "floor": 2
-          },
-          {
-            "ceiling": 4094,
-            "floor": 912
-          }
-        ],
-        "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 10000,
-        "tags": [
-          "pppl-rt5->hep(as88):10ge::show:ren-intercloud",
-          "xe-2/0/0.0"
-        ],
-        "urn": "pppl-rt5:xe-2/0/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4094,
-            "floor": 2
+            "ceiling": 2900,
+            "floor": 2000
           }
         ],
         "reservableEgressBw": 10000
@@ -166,6 +116,25 @@
     "type": "ROUTER",
     "ports": [
       {
+        "ipv4Address": "10.3.6.2",
+        "reservableEgressBw": 10000,
+        "urn": "dev-7750sr12-rt1:9/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "10.6.15.1",
+        "reservableEgressBw": 10000,
+        "urn": "dev-7750sr12-rt1:9/1/4",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+
+      {
         "ipv4Address": "10.6.8.1",
         "reservableEgressBw": 10000,
         "urn": "dev-7750sr12-rt1:9/1/3",
@@ -175,233 +144,72 @@
         ]
       },
       {
-        "ipv4Address": "134.55.41.213",
-        "reservableEgressBw": 10000,
-        "urn": "chic-cr5:10/1/5",
-        "reservableIngressBw": 10000,
-        "capabilities": [
-          "MPLS"
-        ]
-      },
-      {
-        "ipv4Address": "134.55.42.45",
-        "reservableEgressBw": 100000,
-        "urn": "chic-cr5:6/2/1",
-        "reservableIngressBw": 100000,
-        "capabilities": [
-          "MPLS"
-        ]
-      },
-      {
-        "ipv4Address": "134.55.40.201",
-        "reservableEgressBw": 100000,
-        "urn": "chic-cr5:4/1/1",
-        "reservableIngressBw": 100000,
-        "capabilities": [
-          "MPLS"
-        ]
-      },
-      {
-        "ipv4Address": "134.55.218.61",
-        "reservableEgressBw": 100000,
-        "urn": "chic-cr5:7/1/1",
-        "reservableIngressBw": 100000,
-        "capabilities": [
-          "MPLS"
-        ]
-      },
-      {
-        "ipv4Address": "134.55.37.81",
-        "reservableEgressBw": 100000,
-        "urn": "chic-cr5:6/1/1",
-        "reservableIngressBw": 100000,
-        "capabilities": [
-          "MPLS"
-        ]
-      },
-      {
-        "ipv4Address": "134.55.36.45",
-        "reservableEgressBw": 100000,
-        "urn": "chic-cr5:1/1/1",
-        "reservableIngressBw": 100000,
-        "capabilities": [
-          "MPLS"
-        ]
-      },
-      {
-        "ipv4Address": "134.55.43.81",
-        "reservableEgressBw": 100000,
-        "urn": "chic-cr5:3/1/1",
-        "reservableIngressBw": 100000,
-        "capabilities": [
-          "MPLS"
-        ]
-      },
-      {
-        "ipv4Address": "134.55.42.41",
-        "reservableEgressBw": 100000,
-        "urn": "chic-cr5:2/1/1",
-        "reservableIngressBw": 100000,
-        "capabilities": [
-          "MPLS"
-        ]
-      },
-      {
-        "ipv4Address": "134.55.217.109",
-        "reservableEgressBw": 10000,
-        "urn": "chic-cr5:9/1/4",
-        "reservableIngressBw": 10000,
-        "capabilities": [
-          "MPLS"
-        ]
-      },
-      {
         "reservableIngressBw": 10000,
         "tags": [
-          "chic-cr5->chic-pt1:10ge:perf-test:show:intercloud",
-          "to_chic-pt1-v4"
+          "to netlab-asw"
         ],
-        "urn": "chic-cr5:10/1/1",
+        "urn": "dev-7750sr12-rt1:9/1/1",
         "capabilities": [
           "ETHERNET"
         ],
         "reservableVlans": [
           {
-            "ceiling": "2999",
-            "floor": "2000"
+            "ceiling": 2900,
+            "floor": 2000
           }
         ],
         "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 10000,
-        "tags": [
-          "chic-cr5->esnet:10ge(vlan):esnet_atf-hsm-chic_v4:hide:intercloud",
-          "to_atf-hsm-chic",
-          "chic-cr5->chic-owamp:10ge(vlan):access-local:hide:na",
-          "to_chic-owamp",
-          "chic-cr5->level3(as3356):10ge(vlan):ip:hide:com-intercloud",
-          "to_level3",
-          "chic-cr5->mgt-stub0:10ge(vlan):access-local:hide:intercloud",
-          "es-stub",
-          "chic-cr5->eqx-chi-rt1:1ge:ip-b:show:intracloud",
-          "to_eqx-chi-rt1_ip-b",
-          "chic-cr5->esnet:10ge(vlan):esnet_chic-gw_v4:hide:intercloud",
-          "to_chic-gw"
-        ],
-        "urn": "chic-cr5:10/1/3",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": "2999",
-            "floor": "2000"
-          }
-        ],
-        "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 100000,
-        "tags": [
-          "chic-cr5->fnal(as3152):100ge:site_conn-o_backup_v4:show:na",
-          "to_fnal_ip-o_v4"
-        ],
-        "urn": "chic-cr5:3/2/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": "2999",
-            "floor": "2000"
-          }
-        ],
-        "reservableEgressBw": 100000
-      },
-      {
-        "reservableIngressBw": 10000,
-        "tags": [
-          "chic-cr5->Indiana-GigPOP:10ge(vlan)::show:ren-intercloud",
-          "to_in-gigapop_v4"
-        ],
-        "urn": "chic-cr5:10/1/9",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": "2999",
-            "floor": "2000"
-          }
-        ],
-        "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 100000,
-        "tags": [
-          "chic-cr5->flr(as11096):100ge(vlan):al2s:show:ren-intercloud",
-          "to_flr_v4",
-          "chic-cr5->internet2(as11537):100ge(vlan):al2s:show:ren-intercloud",
-          "to_internet2-v4"
-        ],
-        "urn": "chic-cr5:5/1/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": "2999",
-            "floor": "2000"
-          }
-        ],
-        "reservableEgressBw": 100000
-      },
-      {
-        "reservableIngressBw": 100000,
-        "tags": [
-          "chic-cr5->ui-iccn(as40387):100ge(vlan):ip-b:show:ren-intercloud",
-          "to_ui-iccn-b",
-          "chic-cr5->uchicago-scidmz:100ge(vlan):ip-b:show:edu-intercloud",
-          "to_uchicago_scidmz-b",
-          "chic-cr5->pennstate(as3999):100ge(vlan):ip-a_v4v6:show:edu-intercloud",
-          "to_pennstate",
-          "chic-cr5->uwmadison(as59):100ge(vlan):ip-b:show:edu-intercloud",
-          "to_uwmadison-b",
-          "chic-cr5->uiowa:100ge(vlan):site_conn-b_v4v6:show:edu-intercloud",
-          "to_uiowa-b"
-        ],
-        "urn": "chic-cr5:8/2/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": "2999",
-            "floor": "2000"
-          }
-        ],
-        "reservableEgressBw": 100000
-      },
-      {
-        "reservableIngressBw": 100000,
-        "tags": [
-          "chic-cr5->ncsa(as1224):100ge(vlan)::show:edu-intercloud",
-          "to_ncsa_v4v6"
-        ],
-        "urn": "chic-cr5:8/1/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": "2999",
-            "floor": "2000"
-          }
-        ],
-        "reservableEgressBw": 100000
       }
     ]
   },
+  {
+    "ipv4Address": "10.255.0.8",
+    "urn": "dev-7750sr12-rt2",
+    "capabilities": [
+      "ETHERNET",
+      "MPLS"
+    ],
+    "reservableVlans": [],
+    "model": "ALCATEL_SR7750",
+    "type": "ROUTER",
+    "ports": [
+      {
+        "ipv4Address": "10.6.8.2",
+        "reservableEgressBw": 10000,
+        "urn": "dev-7750sr12-rt2:10/1/2",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+      {
+        "ipv4Address": "10.8.15.1",
+        "reservableEgressBw": 10000,
+        "urn": "dev-7750sr12-rt2:10/1/1",
+        "reservableIngressBw": 10000,
+        "capabilities": [
+          "MPLS"
+        ]
+      },
+
+      {
+        "reservableIngressBw": 10000,
+        "tags": [
+          "to netlab-asw"
+        ],
+        "urn": "dev-7750sr12-rt2:10/1/5",
+        "capabilities": [
+          "ETHERNET"
+        ],
+        "reservableVlans": [
+          {
+            "ceiling": 2900,
+            "floor": 2000
+          }
+        ],
+        "reservableEgressBw": 10000
+      }
+    ]
+  }
 
 ]

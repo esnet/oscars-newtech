@@ -4,4 +4,4 @@ function tabname {
 }
 tabname "oscars PSS"
 
-java -Xmx512m -jar target/pss-1.0.0-beta.jar
+java -Xmx512m -jar target/pss-1.0.0-beta9.jar

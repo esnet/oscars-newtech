@@ -42,7 +42,6 @@ public class PssProfile {
 
     public static String profileNameFor(List<ProfileMatch> matchList, String urn) throws NoSuchElementException {
         for (ProfileMatch match : matchList) {
-            log.info("match "+ match.getProfile());
             for (String criterion : match.getCriteria()) {
                 if (urn.matches(criterion)) {
                     return match.getProfile();
