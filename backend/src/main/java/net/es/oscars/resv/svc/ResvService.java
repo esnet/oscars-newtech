@@ -1,9 +1,15 @@
 package net.es.oscars.resv.svc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import inet.ipaddr.AddressStringException;
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
+import inet.ipaddr.format.AddressCreator;
+import inet.ipaddr.ipv4.IPv4Address;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.app.props.PssProperties;
+import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.resv.beans.PeriodBandwidth;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.ent.*;
@@ -17,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import java.net.InetAddress;
 import java.util.*;
 
 @Service
@@ -40,6 +46,12 @@ public class ResvService {
 
     @Autowired
     private JunctionRepository jnctRepo;
+
+    @Autowired
+    private CommandParamRepository cpRepo;
+    @Autowired
+    private PssProperties pssProperties;
+
 
     @Autowired
     private TopoService topoService;
@@ -225,6 +237,60 @@ public class ResvService {
 
         Map<String, TopoUrn> baseline = topoService.getTopoUrnMap();
         return ResvLibrary.availableCommandParams(baseline, reservedParams);
+
+    }
+
+    public Set<Integer> availableLoopbacks(Interval interval) throws PSSException {
+        Set<Integer> available = new HashSet<>();
+
+        List<Schedule> scheds = scheduleRepo.findOverlapping(interval.getBeginning(), interval.getEnding());
+        Set<CommandParam> reservedLoopbacks = this.reservedLoopbacks(scheds);
+
+
+        String range = pssProperties.getLoopbackRange();
+        // range format is ipv4address-ipv4address
+        String[] parts = range.split("-");
+        if (parts.length != 2) {
+            throw new PSSException("invalid vpls loopback range "+range);
+        }
+
+        try {
+            IPAddress bottom = new IPAddressString(parts[0]).toAddress();
+            IPAddress top = new IPAddressString(parts[1]).toAddress();
+            Integer min = bottom.toIPv4().intValue();
+            Integer max = top.toIPv4().intValue();
+            if (max <= min ) {
+                throw new PSSException("invalid VPLS loopback range");
+            } else if (max - min > 10000) {
+                throw new PSSException("VPLS loopback range too big");
+            }
+            for (Integer i = min; i <= max; i++) {
+                available.add(i);
+            }
+
+        } catch (AddressStringException ex ) {
+            throw new PSSException("invalid VPLS loopback range");
+        }
+
+        for (CommandParam reserved : reservedLoopbacks) {
+            available.remove(reserved.getResource());
+        }
+
+        return available;
+    }
+
+    public Set<CommandParam> reservedLoopbacks(List<Schedule> scheds) {
+        Set<CommandParam> result = new HashSet<>();
+
+        for (Schedule sched : scheds) {
+            List<CommandParam> cpList = cpRepo.findBySchedule(sched);
+            for (CommandParam cp: cpList) {
+                if (cp.getParamType().equals(CommandParamType.VPLS_LOOPBACK)) {
+                    result.add(cp);
+                }
+            }
+        }
+        return result;
 
     }
 

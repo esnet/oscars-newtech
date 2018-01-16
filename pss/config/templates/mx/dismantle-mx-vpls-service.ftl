@@ -4,6 +4,8 @@ delete routing-instances "${vpls.serviceName}"
 edit interfaces lo0 unit 0 family inet
 delete address ${vpls.loopback}
 </#if>
+top
 <#if vpls.statsFilter??>
 delete firewall family vpls filter "${vpls.statsFilter}"
 </#if>
+

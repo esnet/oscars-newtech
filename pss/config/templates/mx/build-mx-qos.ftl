@@ -20,11 +20,12 @@ edit firewall policer "${qos.policerName}"
     <#assign burst_limit = qos.mbps+"00000" >
 set if-exceeding bandwidth-limit ${bw_limit}
 set if-exceeding burst-size-limit ${burst_limit}
-</#if>
+
 <#if qos.policing == "SOFT">
 set then loss-priority high
 <#else>
 set then discard
+</#if>
 </#if>
 top
 set firewall family any filter "${qos.filterName}" term oscars then policer "${qos.policerName}"

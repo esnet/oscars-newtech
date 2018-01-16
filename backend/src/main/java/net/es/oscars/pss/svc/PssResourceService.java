@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PSSException;
-import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.resv.db.FixtureRepository;
 import net.es.oscars.resv.db.JunctionRepository;
@@ -15,7 +14,6 @@ import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.ReservableCommandParam;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.ent.Device;
-import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
@@ -24,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.*;
 
 
@@ -43,6 +40,7 @@ public class PssResourceService {
 
     @Autowired
     private JunctionRepository jnctRepo;
+
 
     public void reserve(Connection conn) throws PSSException {
         log.info("starting PSS resource reservation");
@@ -79,7 +77,27 @@ public class PssResourceService {
     public void reserveGlobals(Connection conn, Schedule sched,
                                 Map<String, Set<ReservableCommandParam>> availableParams) throws PSSException {
 
-        log.info("reserving globals..");
+        log.info("reserving globals & per-device. deciding VC id:");
+        Interval interval = Interval.builder()
+                .beginning(sched.getBeginning())
+                .ending(sched.getEnding())
+                .build();
+
+
+        /*
+        VC ids are reserved like so:
+        - each device has a set of VC ids reservable and some of these are reserved i.e.
+          device A: avail: {2, 3, 4, 5, 6, 7, 8, 9, 10 } res: { 5 }
+          device B: avail: {3, 4, 5, 6, 7, 8, 9, 10 } res: { 3, 6, 8 }
+        - for each device, the available set is reservable minus reserved i.e.
+          device A: { 2, 3, 4, 6, 7, 8, 9, 10 }
+          device B: { 4, 7, 9, 10 }
+         - from all those sets, pick the lowest id that exists in every one of them (so, 4)
+
+         - then add it to the reserved set for each device
+          device A: avail: {2, 3, 4, 5, 6, 7, 8, 9, 10 } res: { 4, 5 }
+          device B: avail: {3, 4, 5, 6, 7, 8, 9, 10 } res: { 3, 4, 6, 8 }
+         */
 
         List<TopoUrn> topoUrns = new ArrayList<>();
         for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
@@ -108,7 +126,64 @@ public class PssResourceService {
 
         log.info("found vc id "+ vcid);
 
+        /*
+        loopbacks are reserved like so:
+
+            in ResvService:
+        0.  There is a global set of reservable loopback addresses, as per PssProperties.loopbackRange
+        0.1 We remove from that set any addresses already reserved and we then have a reservable set.
+
+            here:
+        1. for each junction in a connection
+        1.1 if it doesn't connect to pipes, no loopback needed
+        1.2 otherwise, reserve a loopback from the reservable set starting from the lowest available
+
+        - the IP address is handled as an integer, it will be decoded by the PSS params handler
+
+         */
+
+
+        Set<Integer> availLoopbacks = resvService.availableLoopbacks(interval);
+
         for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
+
+            for (VlanPipe p: conn.getReserved().getCmp().getPipes()) {
+                if (p.getA().getDeviceUrn().equals(j.getDeviceUrn()) || p.getZ().getDeviceUrn().equals(j.getDeviceUrn())) {
+                    log.info("loopback needed for device "+j.getDeviceUrn());
+
+
+                    Integer loopback = Integer.MAX_VALUE;
+                    Boolean found = false;
+                    for (Integer i : availLoopbacks) {
+                        if (i < loopback) {
+                            loopback = i;
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        throw new PSSException("could not find loopback for "+j.getDeviceUrn()+" pool size: "+availLoopbacks.size());
+                    }
+
+                    availLoopbacks.remove(loopback);
+
+                    CommandParam loopbackCp = CommandParam.builder()
+                            .connectionId(conn.getConnectionId())
+                            .paramType(CommandParamType.VPLS_LOOPBACK)
+                            .resource(loopback)
+                            .intent(j.getDeviceUrn())
+                            .schedule(sched)
+                            .urn(j.getDeviceUrn())
+                            .build();
+
+                    j.getCommandParams().add(loopbackCp);
+                }
+            }
+
+
+
+            log.info("reserving VC id for device "+j.getDeviceUrn());
+
+
             CommandParam vcCp = CommandParam.builder()
                     .connectionId(conn.getConnectionId())
                     .paramType(CommandParamType.VC_ID)
@@ -117,6 +192,7 @@ public class PssResourceService {
                     .urn(j.getDeviceUrn())
                     .build();
             j.getCommandParams().add(vcCp);
+
 
             // for ALUs we also need to reserve an SVC ID globally. Right now: === the VC id
             // TODO: consider VC & SVC id for backup

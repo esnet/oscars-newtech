@@ -1,5 +1,7 @@
 package net.es.oscars.pss.svc;
 
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.ipv4.IPv4Address;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +34,13 @@ public class AluParamsAdapter {
     public AluParams params(Connection c, VlanJunction rvj) throws PSSException {
         Integer aluSvcId = null;
         log.info("making ALU params");
+        Integer loopback = null;
         for (CommandParam rpr : rvj.getCommandParams()) {
             if (rpr.getParamType().equals(CommandParamType.ALU_SVC_ID)) {
                 aluSvcId = rpr.getResource();
+            }
+            if (rpr.getParamType().equals(CommandParamType.VPLS_LOOPBACK)) {
+                loopback = rpr.getResource();
             }
         }
         if (aluSvcId == null) {
@@ -123,30 +129,30 @@ public class AluParamsAdapter {
         // - an LSP to specify the hop-by-hop route over the network
         // - a Path that uses the LSP
         // - an SDP to use the path
+        boolean isInPipes = false;
         for (VlanPipe p : cmp.getPipes()) {
-            Device a_d = null;
-            Device z_d = null;
+            VlanJunction other_j = null;
             List<EroHop> hops = null;
 
             if (p.getA().getDeviceUrn().equals(rvj.getDeviceUrn())) {
-                a_d = topoService.getTopoUrnMap().get(p.getA().getDeviceUrn()).getDevice();
-                z_d = topoService.getTopoUrnMap().get(p.getZ().getDeviceUrn()).getDevice();
+                other_j = p.getZ();
                 hops = p.getAzERO();
+                isInPipes = true;
             } else if (p.getZ().getDeviceUrn().equals(rvj.getDeviceUrn())) {
-                z_d = topoService.getTopoUrnMap().get(p.getA().getDeviceUrn()).getDevice();
-                a_d = topoService.getTopoUrnMap().get(p.getZ().getDeviceUrn()).getDevice();
+                other_j = p.getA();
                 hops = p.getZaERO();
+                isInPipes = true;
 
             }
             if (hops != null) {
-                PipeResult pr = this.makePipe(z_d, hops, p, rvj, c, vpls);
+                AluPipeResult pr = this.makePipe(other_j, hops, p, rvj, c, vpls);
                 sdps.add(pr.getSdp());
                 paths.add(pr.getPath());
                 lsps.add(pr.getLsp());
             }
         }
 
-        return AluParams.builder()
+        AluParams params = AluParams.builder()
                 .applyQos(true)
                 .lsps(lsps)
                 .paths(paths)
@@ -154,55 +160,52 @@ public class AluParamsAdapter {
                 .qoses(qoses)
                 .aluVpls(vpls)
                 .build();
+
+        if (isInPipes) {
+            if (loopback == null) {
+                throw new PSSException("no loopback reserved for "+rvj.getDeviceUrn());
+            }
+            IPv4Address address = new IPv4Address(loopback);
+            params.setLoopbackInterface(c.getConnectionId()+"-lo0");
+            params.setLoopbackAddress(address.toString());
+        }
+
+        return params;
     }
 
     @Data
-    private class PipeResult {
+    private class AluPipeResult {
         private MplsPath path;
         private Lsp lsp;
         private AluSdp sdp;
     }
 
-    public PipeResult makePipe(Device z_d, List<EroHop> hops, VlanPipe p, VlanJunction j, Connection c, AluVpls vpls) throws PSSException {
-        // eroHops look like this:
-        // 0: A
-        // 1:  A:1/1
-        // 2: B:2/1
-        // 3: B
-        // 4: B:3/2
-        // 5: C:4/1
-        // 6: C
-        // 7: C:8/2
-        // 8: Z:2/1
-        // 9: Z
-        // to make the MPLS path, we take only hops that are index 2 mod 3
-        List<MplsHop> mplsHops = new ArrayList<>();
+    public AluPipeResult makePipe(VlanJunction otherJunction, List<EroHop> hops, VlanPipe p, VlanJunction j, Connection c, AluVpls vpls) throws PSSException {
 
-        // hop index starts at 1
-        Integer order = 1;
-        for (int i = 0; i < hops.size(); i++) {
-            if (i % 3 == 2) {
-                EroHop hop = hops.get(i);
-                Port port = topoService.getTopoUrnMap().get(hop.getUrn()).getPort();
-                MplsHop mplsHop = MplsHop.builder()
-                        .address(port.getIpv4Address())
-                        .order(order)
-                        .build();
-                order = order + 1;
-                mplsHops.add(mplsHop);
-            }
-        }
+        List<MplsHop> mplsHops = MiscHelper.mplsHops(hops, topoService);
 
         MplsPath path = MplsPath.builder()
                 .hops(mplsHops)
                 .name(c.getConnectionId()+"-PATH-"+p.getZ().getDeviceUrn())
                 .build();
 
+        Integer otherLoopbackInt = null;
+        for (CommandParam rpr : otherJunction.getCommandParams()) {
+            if (rpr.getParamType().equals(CommandParamType.VPLS_LOOPBACK)) {
+                otherLoopbackInt = rpr.getResource();
+            }
+        }
+        if (otherLoopbackInt == null) {
+            log.error("no loopback found for "+otherJunction.getDeviceUrn());
+            throw new PSSException("no loopback found for "+otherJunction.getDeviceUrn());
+        }
+        IPv4Address otherLoopback = new IPv4Address(otherLoopbackInt);
+
         Lsp lsp = Lsp.builder()
                 .holdPriority(5)
                 .setupPriority(5)
                 .metric(65000)
-                .to(z_d.getIpv4Address())
+                .to(otherLoopback.toString())
                 .pathName(path.getName())
                 .name(c.getConnectionId()+"-LSP-"+p.getZ().getDeviceUrn())
                 .build();
@@ -210,7 +213,7 @@ public class AluParamsAdapter {
         Integer sdpId = null;
         for (CommandParam cp: j.getCommandParams()) {
             if (cp.getParamType().equals(CommandParamType.ALU_SDP_ID)) {
-                if (cp.getIntent().equals(z_d.getUrn())) {
+                if (cp.getIntent().equals(otherJunction.getDeviceUrn())) {
                     sdpId = cp.getResource();
                 }
             }
@@ -223,18 +226,18 @@ public class AluParamsAdapter {
 
         AluSdp sdp = AluSdp.builder()
                 .sdpId(sdpId)
-                .description(c.getConnectionId()+"-SDP-"+z_d.getUrn())
-                .farEnd(z_d.getIpv4Address())
+                .description(c.getConnectionId()+"-SDP-"+otherJunction.getDeviceUrn())
+                .farEnd(otherLoopback.toString())
                 .lspName(lsp.getName())
                 .build();
 
 
-        // bleh, side effect
+        // bleh, side effect! but can't help it
         AluSdpToVcId sdpToVcId = AluSdpToVcId.builder().sdpId(sdpId).vcId(vpls.getSvcId()).build();
         vpls.getSdpToVcIds().add(sdpToVcId);
 
 
-        PipeResult pr = new PipeResult();
+        AluPipeResult pr = new AluPipeResult();
         pr.setLsp(lsp);
         pr.setPath(path);
         pr.setSdp(sdp);

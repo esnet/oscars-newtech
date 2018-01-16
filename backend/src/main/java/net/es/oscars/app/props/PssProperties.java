@@ -31,6 +31,8 @@ public class PssProperties {
     @NonNull
     private String aluQosidRange;
 
+    @NonNull
+    private String loopbackRange;
 
     @NonNull
     private Integer controlPlaneCheckRandom;

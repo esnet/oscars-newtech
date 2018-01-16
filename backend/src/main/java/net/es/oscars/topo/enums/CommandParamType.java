@@ -7,4 +7,5 @@ public enum CommandParamType {
     ALU_QOS_POLICY_ID,
     ALU_SDP_ID,
     ALU_SVC_ID,
+    VPLS_LOOPBACK
 }
