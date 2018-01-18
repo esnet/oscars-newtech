@@ -4,4 +4,17 @@ function tabname {
 }
 tabname "oscars backend"
 
-java -Xmx512m -jar target/backend-1.0.0-beta9.jar $1 $2 $3 $4 $5
+# Find the OSCARS backend.jar file
+JARFILE=""
+# Artifact location in target directory, for running in-tree
+LOCALJAR=`echo target/backend-*.jar`
+if [ -e $LOCALJAR ]; then
+    JARFILE=$LOCALJAR
+fi
+# Make sure we can find it
+if [ "x$JARFILE" = "x" ]; then
+    echo "Unable to locate OSCARS backend.jar file"
+    exit 1
+fi
+
+java -Xmx512m -jar ${JARFILE} $1 $2 $3 $4 $5

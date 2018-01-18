@@ -4,4 +4,17 @@ function tabname {
 }
 tabname "oscars PSS"
 
-java -Xmx512m -jar target/pss-1.0.0-beta9.jar
+# Find the OSCARS pss.jar file
+JARFILE=""
+# Artifact location in target directory, for running in-tree
+LOCALJAR=`echo target/pss-*.jar`
+if [ -e $LOCALJAR ]; then
+    JARFILE=$LOCALJAR
+fi
+# Make sure we can find it
+if [ "x$JARFILE" = "x" ]; then
+    echo "Unable to locate OSCARS pss.jar file"
+    exit 1
+fi
+
+java -Xmx512m -jar ${JARFILE}

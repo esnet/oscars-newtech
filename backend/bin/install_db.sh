@@ -1,4 +1,22 @@
 #!/bin/bash
+
+# Find the OSCARS backend.jar file
+JARFILE=""
+# Install location in RPM
+if [ -e lib/backend.jar ]; then
+    JARFILE="lib/backend.jar"
+fi
+# Artifact location in target directory, for running in-tree
+LOCALJAR=`echo target/backend-*.jar`
+if [ -e $LOCALJAR ]; then
+    JARFILE=$LOCALJAR
+fi
+# Make sure we can find it
+if [ "x$JARFILE" = "x" ]; then
+    echo "Unable to locate OSCARS backend.jar file"
+    exit 1
+fi
+
 echo "OSCARS database installation script."
 echo ""
 echo "Note: the Postgres server should be running, and you will need an account"
@@ -51,6 +69,6 @@ echo "Configured Postgres. Please, edit backend/config/application.properties an
 echo "the password in the 'spring.datasource.password' line, if you haven't already."
 read -p " Press enter to create OSCARS tables.. "
 
-java -jar lib/backend.jar \
+java -jar ${JARFILE} \
     --spring.jpa.hibernate.ddl-auto=update \
     --startup.exit=true spring.datasource.password=${password}
