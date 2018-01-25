@@ -56,6 +56,12 @@ public class PceLibrary {
         pcePath.setAzBaseline(Integer.MAX_VALUE);
         pcePath.setZaBaseline(Integer.MAX_VALUE);
 
+        if (pcePath.getAzEro().size() == 0) {
+            pcePath.setAzAvailable(-1);
+            pcePath.setZaAvailable(-1);
+            pcePath.setAzBaseline(-1);
+            pcePath.setZaBaseline(-1);
+        }
 
         List<EroHop> azHops = pcePath.getAzEro();
         for (int i = 0; i < azHops.size(); i++) {
