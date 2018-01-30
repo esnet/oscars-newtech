@@ -18,6 +18,7 @@ public class PceResponse {
     private Integer evaluated;
 
     private PcePath shortest;
+    private PcePath leastHops;
     private PcePath fits;
     private PcePath widestSum;
     private PcePath widestAZ;

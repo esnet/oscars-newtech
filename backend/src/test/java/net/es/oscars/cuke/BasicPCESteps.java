@@ -3,17 +3,17 @@ package net.es.oscars.cuke;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.pce.PalindromicalPCE;
+import net.es.oscars.pce.AllPathsPCE;
 import net.es.oscars.resv.ent.EroHop;
 import net.es.oscars.resv.ent.VlanJunction;
 import net.es.oscars.resv.ent.VlanPipe;
 import net.es.oscars.resv.enums.BwDirection;
 import net.es.oscars.resv.enums.EroDirection;
 import net.es.oscars.resv.svc.ResvLibrary;
-import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.PcePath;
+import net.es.oscars.web.beans.PceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
@@ -26,7 +26,7 @@ public class BasicPCESteps extends CucumberSteps {
     private CucumberWorld world;
 
     @Autowired
-    private PalindromicalPCE palindromicalPCE;
+    private AllPathsPCE widestPathsPCE;
     @Autowired
     private TopoService topoService;
 
@@ -56,7 +56,8 @@ public class BasicPCESteps extends CucumberSteps {
         availIngressBw = ResvLibrary.availableBandwidthMap(BwDirection.INGRESS, baseline, new HashMap<>());
         availEgressBw = ResvLibrary.availableBandwidthMap(BwDirection.EGRESS, baseline, new HashMap<>());
 
-        PcePath shortest = palindromicalPCE.shortestAndFits(vp, availIngressBw, availEgressBw).getShortest();
+        PceResponse response = widestPathsPCE.calculatePaths(vp, availIngressBw, availEgressBw);
+        PcePath shortest = response.getShortest();
 
         world.pipeEros = new HashMap<>();
         world.pipeEros.put(EroDirection.A_TO_Z, shortest.getAzEro());

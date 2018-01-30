@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.app.exc.StartupException;
-import net.es.oscars.pce.PalindromicalPCE;
 import net.es.oscars.pce.PceService;
 import net.es.oscars.resv.beans.PeriodBandwidth;
 import net.es.oscars.resv.db.FixtureRepository;

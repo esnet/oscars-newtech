@@ -21,25 +21,12 @@ public class DijkstraPCE {
     @Autowired
     FloydWarshall floydWarshall;
 
-    public PcePath shortestPath(List<TopoAdjcy> adjcies, TopoUrn src, TopoUrn dst) {
+    public PcePath shortestPath(DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> graph , TopoUrn src, TopoUrn dst) {
 
-        Map<TopoAdjcy, Double> costs = new HashMap<>();
-
-        for (TopoAdjcy adjcy : adjcies) {
-            double cost = 0;
-            for (Long metric : adjcy.getMetrics().values()) {
-                if (metric > cost) {
-                    cost = metric.doubleValue();
-                }
-            }
-            costs.put(adjcy, cost);
-        }
-
-        DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> graph = PceLibrary.makeGraph(adjcies, costs);
         DijkstraShortestPath<TopoUrn, TopoAdjcy> alg = new DijkstraShortestPath<>(graph);
         GraphPath<TopoUrn, TopoAdjcy> path = alg.getPath(src, dst);
         double w = alg.getPathWeight(src,dst);
-        log.info("shortest path weight: "+w);
+        log.info("shortest path cost: "+w);
         List<EroHop> azEro = PceLibrary.toEro(path);
         List<EroHop> zaEro = new ArrayList<>();
         for (EroHop hop : azEro) {
@@ -51,7 +38,7 @@ public class DijkstraPCE {
         return PcePath.builder()
                 .azEro(azEro)
                 .zaEro(zaEro)
-                .weight(w)
+                .cost(w)
                 .build();
 
     }

@@ -39,6 +39,14 @@ public class PceLibrary {
 
     }
 
+    public static void pathCost(PcePath pcePath, GraphPath<TopoUrn, TopoAdjcy> path, Map<TopoAdjcy, Double> costs) {
+        Double cost = 0D;
+        for (TopoAdjcy ta : path.getEdgeList()) {
+            cost = cost + costs.get(ta);
+        }
+        pcePath.setCost(cost);
+    }
+
     public static void pathBandwidths(PcePath pcePath,
                                  Map<String, TopoUrn> baseline,
                                  Map<String, Integer> availIngressBw,
@@ -55,13 +63,6 @@ public class PceLibrary {
         pcePath.setZaAvailable(Integer.MAX_VALUE);
         pcePath.setAzBaseline(Integer.MAX_VALUE);
         pcePath.setZaBaseline(Integer.MAX_VALUE);
-
-        if (pcePath.getAzEro().size() == 0) {
-            pcePath.setAzAvailable(-1);
-            pcePath.setZaAvailable(-1);
-            pcePath.setAzBaseline(-1);
-            pcePath.setZaBaseline(-1);
-        }
 
         List<EroHop> azHops = pcePath.getAzEro();
         for (int i = 0; i < azHops.size(); i++) {
@@ -110,6 +111,15 @@ public class PceLibrary {
                 }
             }
         }
+
+
+        if (pcePath.getAzEro().size() == 0) {
+            pcePath.setAzAvailable(-1);
+            pcePath.setZaAvailable(-1);
+            pcePath.setAzBaseline(-1);
+            pcePath.setZaBaseline(-1);
+        }
+
     }
 
     public static List<EroHop> toEro(GraphPath<TopoUrn, TopoAdjcy> path) {

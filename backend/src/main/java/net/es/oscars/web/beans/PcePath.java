@@ -15,7 +15,8 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor(suppressConstructorProperties=true)
 public class PcePath {
-    private double weight;
+    private double cost;
+
     private List<EroHop> azEro;
     private List<EroHop> zaEro;
     private Integer azAvailable;
