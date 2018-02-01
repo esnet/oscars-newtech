@@ -1,7 +1,5 @@
 [Unit]
 Description=OSCARS PSS service process
-After=postgresql.service
-Requires=postgresql.service
 
 [Service]
 Type=simple
