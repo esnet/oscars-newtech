@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.cp.ControlPlaneHealth;
 import net.es.oscars.pss.beans.ConfigException;
-import net.es.oscars.pss.beans.ControlPlaneException;
 import net.es.oscars.pss.beans.UrnMappingException;
 import net.es.oscars.pss.svc.CommandQueuer;
+import net.es.oscars.pss.svc.ConfigVerifier;
 import net.es.oscars.pss.svc.HealthService;
 import net.es.oscars.pss.svc.RouterConfigBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 @Slf4j
 @RestController
@@ -25,14 +24,17 @@ public class PssController {
     private HealthService healthService;
     private RouterConfigBuilder routerConfigBuilder;
     private CommandQueuer commandQueuer;
+    private ConfigVerifier configVerifier;
 
     @Autowired
     public PssController(HealthService healthService,
                          CommandQueuer commandQueuer,
+                         ConfigVerifier configVerifier,
                          RouterConfigBuilder routerConfigBuilder) {
         this.healthService = healthService;
         this.routerConfigBuilder = routerConfigBuilder;
         this.commandQueuer = commandQueuer;
+        this.configVerifier = configVerifier;
     }
 
     @ExceptionHandler(NoSuchElementException.class)
@@ -65,6 +67,13 @@ public class PssController {
                 .build();
 
     }
+
+
+    @RequestMapping(value = "/verify", method = RequestMethod.POST)
+    public VerifyResponse verify(@RequestBody VerifyRequest request) {
+        return this.configVerifier.verify(request);
+    }
+
 
     @RequestMapping(value = "/generate", method = RequestMethod.POST)
     public GenerateResponse generate(@RequestBody Command cmd)

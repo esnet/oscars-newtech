@@ -2,6 +2,7 @@ package net.es.oscars.pss.svc;
 
 
 import net.es.oscars.dto.pss.cmd.Command;
+import net.es.oscars.dto.pss.cmd.VerifyRequest;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.ConfigException;
 import net.es.oscars.pss.beans.PssProfile;
@@ -100,6 +101,26 @@ public class RouterConfigBuilder {
         return buildRouterConfig(routerConfig, deviceUrn, model);
     }
 
+    public RancidArguments getConfig(VerifyRequest request)
+            throws ConfigException, UrnMappingException  {
+        String routerConfig;
+        DeviceModel model = request.getModel();
+        String deviceUrn = request.getDevice();
+
+        switch (model) {
+            case ALCATEL_SR7750:
+                routerConfig = "admin display-config\n";
+                break;
+            case JUNIPER_MX:
+            case JUNIPER_EX:
+                routerConfig = "show configuration | display json\n";
+                break;
+            default:
+                throw new ConfigException("unknown model");
+        }
+
+        return buildRouterConfig(routerConfig, deviceUrn, model);
+    }
 
     public RancidArguments build(Command command)
             throws ConfigException, UrnMappingException  {
