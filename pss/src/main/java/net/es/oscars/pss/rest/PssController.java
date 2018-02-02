@@ -7,6 +7,7 @@ import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.cp.ControlPlaneHealth;
 import net.es.oscars.pss.beans.ConfigException;
 import net.es.oscars.pss.beans.UrnMappingException;
+import net.es.oscars.pss.beans.VerifyException;
 import net.es.oscars.pss.svc.CommandQueuer;
 import net.es.oscars.pss.svc.ConfigVerifier;
 import net.es.oscars.pss.svc.HealthService;
@@ -70,7 +71,7 @@ public class PssController {
 
 
     @RequestMapping(value = "/verify", method = RequestMethod.POST)
-    public VerifyResponse verify(@RequestBody VerifyRequest request) {
+    public VerifyResponse verify(@RequestBody VerifyRequest request) throws VerifyException {
         return this.configVerifier.verify(request);
     }
 

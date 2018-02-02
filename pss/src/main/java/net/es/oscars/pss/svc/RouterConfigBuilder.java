@@ -101,11 +101,9 @@ public class RouterConfigBuilder {
         return buildRouterConfig(routerConfig, deviceUrn, model);
     }
 
-    public RancidArguments getConfig(VerifyRequest request)
+    public RancidArguments getConfig(String deviceUrn, DeviceModel model)
             throws ConfigException, UrnMappingException  {
         String routerConfig;
-        DeviceModel model = request.getModel();
-        String deviceUrn = request.getDevice();
 
         switch (model) {
             case ALCATEL_SR7750:
@@ -113,13 +111,14 @@ public class RouterConfigBuilder {
                 break;
             case JUNIPER_MX:
             case JUNIPER_EX:
-                routerConfig = "show configuration | display json\n";
+                routerConfig = "show configuration | display xml\n";
                 break;
             default:
                 throw new ConfigException("unknown model");
         }
 
         return buildRouterConfig(routerConfig, deviceUrn, model);
+
     }
 
     public RancidArguments build(Command command)

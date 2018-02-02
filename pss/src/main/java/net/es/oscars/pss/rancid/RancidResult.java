@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RancidResult {
     private String commandline;
-    private String details;
+    private String output;
     private Integer exitCode;
 
 }

@@ -46,7 +46,7 @@ public class RancidRunner {
     */
         if (!props.getPerform()) {
             log.info("configured to not actually run rancid");
-            return RancidResult.builder().commandline("").details("").exitCode(0).build();
+            return RancidResult.builder().commandline("").output("").exitCode(0).build();
         }
         File temp = File.createTempFile("oscars-routerConfig-", ".tmp");
 
@@ -59,7 +59,7 @@ public class RancidRunner {
         String cloginrc = props.getCloginrc();
 
         String command_line = "";
-        String details;
+        String output;
 
 
         if (host.equals("localhost")) {
@@ -78,8 +78,8 @@ public class RancidRunner {
                     .exitValue(0)
                     .readOutput(true)
                     .execute();
-            details = res.getOutput().getUTF8();
-            log.info("output is: " + details);
+            output = res.getOutput().getUTF8();
+            //log.info("output is: " + output);
 
 
         } else {
@@ -176,8 +176,8 @@ public class RancidRunner {
                         .redirectError(Slf4jStream.ofCaller().asError())
                         .execute();
 
-                details = res.getOutput().getUTF8();
-                log.info("output is: " + details);
+                output = res.getOutput().getUTF8();
+                log.info("output is: " + output);
 
                 command_line = StringUtils.join(rmArgs, " ");
                 log.info("deleting scp'd file, command line: [" + command_line+"]");
@@ -202,7 +202,7 @@ public class RancidRunner {
         }
         // delete local file
         FileUtils.deleteQuietly(temp);
-        return RancidResult.builder().commandline(command_line).details(details).exitCode(0).build();
+        return RancidResult.builder().commandline(command_line).output(output).exitCode(0).build();
 
     }
 

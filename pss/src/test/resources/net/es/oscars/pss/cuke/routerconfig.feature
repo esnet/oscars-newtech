@@ -8,9 +8,9 @@ Feature: Control plane checking
     Given I have warned the user this is a live test
 
     Given I create profile "netlab"
-    Given I configure a match for urn "dev-mx960-rt1" to profile "netlab"
+    Given I configure a match for urn "netlab-mx960-rt1" to profile "netlab"
     When I set the mapping method to "MATCH" on profile "netlab"
-    Given I added a mapping from "dev-mx960-rt1" to "dev-mx960-rt1-es1.es.net" on profile "netlab"
+    Given I added a mapping from "netlab-mx960-rt1" to "netlab-mx960-rt1-es1.es.net" on profile "netlab"
     Then I set rancid perform to true on profile "netlab"
     Then I set rancid host to "netlab-noc.es.net" on profile "netlab"
     Then I set rancid dir to "/home/rancid/bin" on profile "netlab"

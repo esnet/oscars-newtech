@@ -19,6 +19,7 @@ public class VerifierProps {
 
 
     private String aparsePath;
+    private Integer cacheLifetime;
 
 
 }
