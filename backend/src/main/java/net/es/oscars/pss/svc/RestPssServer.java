@@ -45,6 +45,15 @@ public class RestPssServer implements PSSProxy {
         return restTemplate.postForObject(restPath, cmd, GenerateResponse.class);
     }
 
+    public VerifyResponse verify(VerifyRequest request) {
+        log.info("verify - device "+request.getDevice());
+        String pssUrl = props.getUrl();
+        String submitUrl = "/verify";
+        String restPath = pssUrl + submitUrl;
+        return restTemplate.postForObject(restPath, request, VerifyResponse.class);
+    }
+
+
     public CommandStatus status(String commandId) {
         log.info("status - cmd id "+commandId);
         String pssUrl = props.getUrl();

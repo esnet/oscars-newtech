@@ -1,15 +1,12 @@
-package net.es.oscars.pss.go;
+package net.es.oscars.pss.app;
 
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.pss.beans.UrnMappingException;
 import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.svc.CommandQueuer;
 import net.es.oscars.pss.svc.UrnMappingService;
 import net.es.oscars.pss.svc.HealthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Slf4j
 @Component

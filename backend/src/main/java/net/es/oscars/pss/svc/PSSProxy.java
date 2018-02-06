@@ -1,11 +1,9 @@
 package net.es.oscars.pss.svc;
 
 
+import com.google.common.base.VerifyException;
 import net.es.oscars.app.exc.PSSException;
-import net.es.oscars.dto.pss.cmd.Command;
-import net.es.oscars.dto.pss.cmd.CommandResponse;
-import net.es.oscars.dto.pss.cmd.CommandStatus;
-import net.es.oscars.dto.pss.cmd.GenerateResponse;
+import net.es.oscars.dto.pss.cmd.*;
 
 public interface PSSProxy {
 
@@ -14,5 +12,7 @@ public interface PSSProxy {
     GenerateResponse generate(Command cmd) throws PSSException;
 
     CommandStatus status(String commandId) throws PSSException;
+
+    VerifyResponse verify(VerifyRequest request) throws VerifyException;
 
 }

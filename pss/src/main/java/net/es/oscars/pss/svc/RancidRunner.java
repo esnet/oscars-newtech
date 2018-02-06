@@ -177,7 +177,7 @@ public class RancidRunner {
                         .execute();
 
                 output = res.getOutput().getUTF8();
-                log.info("output is: " + output);
+                // log.debug("output is: " + output);
 
                 command_line = StringUtils.join(rmArgs, " ");
                 log.info("deleting scp'd file, command line: [" + command_line+"]");

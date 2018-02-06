@@ -5,6 +5,8 @@ import lombok.*;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -20,7 +22,7 @@ public class VerifyResponse {
     private String config;
 
     @NonNull
-    private String error;
+    private Map<String, Object> present;
 
     @NonNull
     private Instant lastUpdated;

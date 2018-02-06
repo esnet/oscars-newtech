@@ -9,14 +9,19 @@ import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.app.props.TopoProperties;
 import net.es.oscars.dto.pss.cmd.CommandStatus;
+import net.es.oscars.dto.pss.cmd.VerifyRequest;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.ent.Device;
+import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.Version;
+import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.svc.TopoService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +41,8 @@ public class PssHealthChecker implements StartupComponent {
     private DeviceRepository deviceRepo;
 
     private Set<Device> devicesToCheck = new HashSet<>();
+    private Set<Device> devicesToVerify = new HashSet<>();
+
     private Map<String, CommandStatus> statuses = new HashMap<>();
 
     @Autowired
@@ -51,11 +58,11 @@ public class PssHealthChecker implements StartupComponent {
 
     public void checkControlPlane(String deviceUrn) throws PSSException {
         if (!topoService.getTopoUrnMap().containsKey(deviceUrn)) {
-            throw new PSSException("could not find device! "+deviceUrn);
+            throw new PSSException("could not find device! " + deviceUrn);
         }
         TopoUrn urn = topoService.getTopoUrnMap().get(deviceUrn);
         if (!urn.getUrnType().equals(UrnType.DEVICE)) {
-            throw new PSSException("urn : "+deviceUrn+ " is "+urn.getUrnType()+", should be device");
+            throw new PSSException("urn : " + deviceUrn + " is " + urn.getUrnType() + ", should be device");
         }
 
         boolean shouldCheck = false;
@@ -67,19 +74,52 @@ public class PssHealthChecker implements StartupComponent {
                 Instant now = Instant.now();
                 Instant lastUpdated = Instant.ofEpochMilli(cs.getLastUpdated().getTime());
                 if (!lastUpdated.plusSeconds(30).isAfter(now)) {
-                    log.debug("stale CP check for "+deviceUrn);
+                    log.debug("stale CP check for " + deviceUrn);
                     shouldCheck = true;
                 }
             }
         } else {
-            log.debug("no checks yet for "+deviceUrn);
+            log.debug("no checks yet for " + deviceUrn);
             shouldCheck = true;
         }
         if (shouldCheck) {
-            log.debug("will need to check "+deviceUrn);
+            log.debug("will need to check " + deviceUrn);
             this.devicesToCheck.add(urn.getDevice());
         }
     }
+
+    public VerifyRequest verifyDeviceFacts(Device d) throws PSSException {
+        List<String> mbp = new ArrayList<>();
+        List<String> mba = new ArrayList<>();
+        Map<String, String> mhv = new HashMap<>();
+
+        switch (d.getModel()) {
+            case JUNIPER_MX:
+                for (Port p : d.getPorts()) {
+                    String portName = p.getUrn().split(":")[1];
+                    // internal ports: must exist in interfaces, must have the IP address we expect configured on some unit
+                    // TODO: what if it's not a /30?
+                    if (p.getCapabilities().contains(Layer.MPLS)) {
+                        mhv.put("$.interfaces.interface[?(@.name=='" + portName + "')]..inet.address.name", p.getIpv4Address()+"/30");
+                    }
+                }
+
+
+                break;
+            case ALCATEL_SR7750:
+                break;
+            default:
+                throw new PSSException("Unsupported model");
+        }
+        return VerifyRequest.builder()
+                .device(d.getUrn())
+                .model(d.getModel())
+                .mustBeAbsent(mba)
+                .mustBePresent(mbp)
+                .mustContainValue(mhv)
+                .build();
+    }
+
 
     public void startup() throws StartupException {
 
@@ -99,27 +139,29 @@ public class PssHealthChecker implements StartupComponent {
                 if (randomNumToCheck <= 0) {
                     // do not perform a random check, get from json
                     String checkFilename = "./config/topo/" + topoProperties.getPrefix() + "-check.json";
-                    log.info("control plane check from file "+checkFilename);
+                    log.info("control plane check from file " + checkFilename);
 
                     File jsonFile = new File(checkFilename);
                     ObjectMapper mapper = new ObjectMapper();
                     List<String> fromFile = Arrays.asList(mapper.readValue(jsonFile, String[].class));
                     for (String deviceUrn : fromFile) {
                         if (!topoService.getTopoUrnMap().containsKey(deviceUrn)) {
-                            throw new StartupException("invalid entry in check file: "+deviceUrn);
+                            throw new StartupException("invalid entry in check file: " + deviceUrn);
                         }
                         TopoUrn urn = topoService.getTopoUrnMap().get(deviceUrn);
                         if (!urn.getUrnType().equals(UrnType.DEVICE)) {
-                            throw new StartupException("entry in check file: "+deviceUrn+ " is "+urn.getUrnType()+", should be device");
+                            throw new StartupException("entry in check file: " + deviceUrn + " is " + urn.getUrnType() + ", should be device");
                         }
                         devicesToCheck.add(urn.getDevice());
+                        devicesToVerify.add(urn.getDevice());
                     }
 
                 } else if (randomNumToCheck > devices.size()) {
-                    log.error("asked to check "+randomNumToCheck+" devices but only "+devices.size()+" exist; checking all ");
+                    log.error("asked to check " + randomNumToCheck + " devices but only " + devices.size() + " exist; checking all ");
                     devicesToCheck.addAll(devices);
+                    devicesToVerify.addAll(devices);
                 } else {
-                    log.info("adding "+randomNumToCheck+" random devices");
+                    log.info("adding " + randomNumToCheck + " random devices");
                     Random r = new Random();
 
                     while (devicesToCheck.size() < randomNumToCheck) {
@@ -127,7 +169,8 @@ public class PssHealthChecker implements StartupComponent {
                         Device d = devices.get(idx);
                         if (!devicesToCheck.contains(d)) {
                             devicesToCheck.add(d);
-                            log.debug("will check "+d.getUrn());
+                            devicesToVerify.add(d);
+                            log.debug("will check " + d.getUrn());
                         }
                     }
                 }

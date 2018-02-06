@@ -7,6 +7,9 @@ import net.es.oscars.dto.pss.params.ex.ExParams;
 import net.es.oscars.dto.pss.params.mx.MxParams;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 
+import java.util.List;
+import java.util.Map;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,10 +21,13 @@ public class VerifyRequest {
     private DeviceModel model;
 
     @NonNull
-    private String mustBePresent;
+    private Map<String, String> mustContainValue;
 
     @NonNull
-    private String mustBeAbsent;
+    private List<String> mustBePresent;
+
+    @NonNull
+    private List<String> mustBeAbsent;
 
 
 }

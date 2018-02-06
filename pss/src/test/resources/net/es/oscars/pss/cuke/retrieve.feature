@@ -1,5 +1,5 @@
 @wip @live
-Feature: Retrieve config
+Feature: Retrieve & verify config
     I want to make sure I can collect configuration for parsing and verification
 
   Scenario: Retrieve Juniper config
@@ -16,4 +16,11 @@ Feature: Retrieve config
     Then I set rancid cloginrc to "/home/oscars/oscars-credentials/cloginrc" on profile "netlab"
 
     When I retrieve config for "netlab-mx960-rt1" model "JUNIPER_MX"
+    Then I verify that "$['chassis']" must be "PRESENT"
+    Then I verify that "$['foobar']" must be "ABSENT"
+
+    Then I verify that "$.interfaces.interface[?(@.name=='lo0')].name" must contain "lo0"
+    Then I verify that "$.interfaces.interface[?(@.name=='lo0')].unit[?(@.name == '0')].name" must contain "0"
+    Then I verify that "$.interfaces.interface[?(@.name=='lo0')].unit.family.inet.address[?(@.name == '127.0.0.1/32')].name" must contain "127.0.0.1/32"
+
     Then I did not receive an exception
