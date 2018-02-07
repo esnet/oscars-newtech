@@ -53,6 +53,10 @@ public class PSSParamsAdapter {
 
     private Command makeCmd(String connId, CommandType type, String device) throws PSSException {
         TopoUrn devUrn = topoService.getTopoUrnMap().get(device);
+        if (devUrn == null) {
+            throw new PSSException("could not locate topo URN for "+device);
+
+        }
         if (!devUrn.getUrnType().equals(UrnType.DEVICE)) {
             throw new PSSException("bad urn type");
         }
