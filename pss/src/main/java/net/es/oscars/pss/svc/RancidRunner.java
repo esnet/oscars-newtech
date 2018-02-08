@@ -179,22 +179,26 @@ public class RancidRunner {
                 output = res.getOutput().getUTF8();
                 // log.debug("output is: " + output);
 
-                command_line = StringUtils.join(rmArgs, " ");
-                log.info("deleting scp'd file, command line: [" + command_line+"]");
-
-                new ProcessExecutor()
-                        .command(rmArgs)
-                        .exitValue(0)
-                        .readOutput(true)
-                        .redirectError(Slf4jStream.ofCaller().asError())
-                        .execute();
-
-
             } catch (InvalidExitValueException ex) {
 
                 throw new ControlPlaneException("error running Rancid!");
 
             } finally {
+                // try to delete the SCP'd file even if an error occurred
+                try {
+                    command_line = StringUtils.join(rmArgs, " ");
+                    log.info("deleting scp'd file, command line: [" + command_line + "]");
+
+                    new ProcessExecutor()
+                            .command(rmArgs)
+                            .exitValue(0)
+                            .readOutput(true)
+                            .redirectError(Slf4jStream.ofCaller().asError())
+                            .execute();
+                } catch (InvalidExitValueException rmEx) {
+                    log.error("could not rm scp'd file; likely scp never happened");
+                }
+
 
                 FileUtils.deleteQuietly(temp);
             }
