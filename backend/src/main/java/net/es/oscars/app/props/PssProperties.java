@@ -38,6 +38,9 @@ public class PssProperties {
     private Integer controlPlaneCheckRandom;
 
     @NonNull
+    private Integer configTimeoutSec;
+
+    @NonNull
     private Boolean controlPlaneCheckOnStart;
 
 }

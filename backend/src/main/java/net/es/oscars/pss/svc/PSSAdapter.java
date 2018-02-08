@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.st.ConfigStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
@@ -26,14 +27,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PSSAdapter {
     private PSSProxy pssProxy;
+    private PssProperties properties;
     private RouterCommandsRepository rcr;
     private PSSParamsAdapter paramsAdapter;
 
     @Autowired
-    public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr, PSSParamsAdapter paramsAdapter) {
+    public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr,
+                      PSSParamsAdapter paramsAdapter, PssProperties properties) {
         this.pssProxy = pssProxy;
         this.rcr = rcr;
         this.paramsAdapter = paramsAdapter;
+        this.properties = properties;
     }
 
 
@@ -104,7 +108,7 @@ public class PSSAdapter {
 
         boolean allDone = false;
         boolean timedOut = false;
-        Integer timeoutMillis = 60000;
+        Integer timeoutMillis = properties.getConfigTimeoutSec() * 1000;
         Integer elapsed = 0;
         List<CommandStatus> statuses = new ArrayList<>();
 
