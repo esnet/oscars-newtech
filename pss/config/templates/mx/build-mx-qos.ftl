@@ -12,7 +12,6 @@ set forwarding-class best-effort-vc
 set loss-priority high
 </#if>
 top
-
 <#if qos.createPolicer>
 edit firewall policer "${qos.policerName}"
 <#if qos.mbps gt 0>
@@ -21,11 +20,17 @@ edit firewall policer "${qos.policerName}"
 set if-exceeding bandwidth-limit ${bw_limit}
 set if-exceeding burst-size-limit ${burst_limit}
 
-<#if qos.policing == "SOFT">
+    <#if qos.policing == "SOFT">
 set then loss-priority high
-<#else>
+    <#else>
 set then discard
-</#if>
+    </#if>
+
+<#-- if bandwidth == 0 then just mark as scavenger-->
+<#else>
+set if-exceeding bandwidth-limit 8000
+set if-exceeding burst-size-limit 1500
+set then loss-priority high
 </#if>
 top
 set firewall family any filter "${qos.filterName}" term oscars then policer "${qos.policerName}"
