@@ -10,6 +10,8 @@ import net.es.oscars.dto.pss.cmd.VerifyRequest;
 import net.es.oscars.dto.pss.cmd.VerifyResponse;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.*;
+import net.es.oscars.pss.prop.PssProps;
+import net.es.oscars.pss.prop.RancidProps;
 import net.es.oscars.pss.prop.VerifierProps;
 import net.es.oscars.pss.rancid.RancidArguments;
 import net.es.oscars.pss.rancid.RancidResult;
@@ -37,19 +39,37 @@ public class ConfigVerifier {
     private RancidRunner rancidRunner;
     private RouterConfigBuilder rcb;
     private VerifierProps verifierProps;
+    private PssProps pssProps;
     private Map<String, ConfigCacheEntry> cache = new HashMap<>();
 
     @Autowired
-    public ConfigVerifier(RancidRunner rancidRunner, VerifierProps verifierProps, RouterConfigBuilder rcb) {
+    public ConfigVerifier(RancidRunner rancidRunner, PssProps pssProps, VerifierProps verifierProps, RouterConfigBuilder rcb) {
         this.rancidRunner = rancidRunner;
         this.verifierProps = verifierProps;
         this.rcb = rcb;
+        this.pssProps = pssProps;
     }
 
     public VerifyResponse verify(VerifyRequest req) throws VerifyException {
 
         Duration lifetime = Duration.of(verifierProps.getCacheLifetime(), SECONDS);
         Instant now = Instant.now();
+
+        PssProfile pssProfile = PssProfile.profileFor(pssProps, req.getDevice());
+        RancidProps props = pssProfile.getRancid();
+
+        if (!props.getPerform()) {
+            log.info("configured to not actually run rancid");
+            return VerifyResponse.builder()
+                    .lastUpdated(now)
+                    .model(req.getModel())
+                    .device(req.getDevice())
+                    .config("")
+                    .present(new HashMap<>())
+                    .build();
+        }
+
+
 
         boolean mustUpdate = true;
         if (cache.keySet().contains(req.getDevice())) {
