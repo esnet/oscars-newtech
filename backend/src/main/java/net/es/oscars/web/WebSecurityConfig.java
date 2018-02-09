@@ -1,7 +1,6 @@
 package net.es.oscars.web;
 
 
-import net.es.oscars.security.jwt.JwtAuthenticationEntryPoint;
 import net.es.oscars.security.jwt.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

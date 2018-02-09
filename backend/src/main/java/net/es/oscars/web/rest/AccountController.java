@@ -6,6 +6,7 @@ import net.es.oscars.security.ent.User;
 import net.es.oscars.security.jwt.JwtAuthenticationRequest;
 import net.es.oscars.security.jwt.JwtAuthenticationResponse;
 import net.es.oscars.security.jwt.JwtTokenUtil;
+import net.es.oscars.web.beans.PasswordChange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -82,12 +84,30 @@ public class AccountController {
 
     @RequestMapping(value = "/protected/account_password", method = RequestMethod.POST)
     @ResponseBody
-    public void protected_account_password(Authentication authentication, @RequestBody String newPassword) {
+    public void protected_account_password(Authentication authentication,
+                                           @RequestBody PasswordChange passwordChange) throws AuthenticationException{
         String username = authentication.getName();
-        User dbUser = userRepo.findByUsername(username).orElseThrow(NoSuchElementException::new);
-        String encodedPassword = new BCryptPasswordEncoder().encode(newPassword);
-        dbUser.setPassword(encodedPassword);
-        userRepo.save(dbUser);
+
+        String newPassword = passwordChange.getNewPassword();
+        String oldPassword = passwordChange.getOldPassword();
+
+        // Perform the security
+        final Authentication checkOldPassword = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        username,
+                        oldPassword
+                )
+        );
+        if (checkOldPassword.isAuthenticated()) {
+            User dbUser = userRepo.findByUsername(username).orElseThrow(NoSuchElementException::new);
+            String encodedPassword = new BCryptPasswordEncoder().encode(newPassword);
+            dbUser.setPassword(encodedPassword);
+            userRepo.save(dbUser);
+        } else {
+            throw new BadCredentialsException("invalid old password");
+
+        }
+
     }
 
     @RequestMapping(value = "/protected/account", method = RequestMethod.POST)
