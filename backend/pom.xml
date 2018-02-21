@@ -314,6 +314,9 @@
                                 <source>
                                     <location>${project.basedir}/bin/install_db.sh</location>
                                 </source>
+				<source>
+				    <location>${project.basedir}/../topo/esdb_topo.py</location>
+				</source>
                             </sources>
                         </mapping>
                         <mapping>
