@@ -9,7 +9,7 @@ import net.es.oscars.pss.beans.ConfigException;
 import net.es.oscars.pss.beans.UrnMappingException;
 import net.es.oscars.pss.beans.VerifyException;
 import net.es.oscars.pss.svc.CommandQueuer;
-import net.es.oscars.pss.svc.ConfigVerifier;
+import net.es.oscars.pss.svc.ConfigCollector;
 import net.es.oscars.pss.svc.HealthService;
 import net.es.oscars.pss.svc.RouterConfigBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +25,17 @@ public class PssController {
     private HealthService healthService;
     private RouterConfigBuilder routerConfigBuilder;
     private CommandQueuer commandQueuer;
-    private ConfigVerifier configVerifier;
+    private ConfigCollector configCollector;
 
     @Autowired
     public PssController(HealthService healthService,
                          CommandQueuer commandQueuer,
-                         ConfigVerifier configVerifier,
+                         ConfigCollector configCollector,
                          RouterConfigBuilder routerConfigBuilder) {
         this.healthService = healthService;
         this.routerConfigBuilder = routerConfigBuilder;
         this.commandQueuer = commandQueuer;
-        this.configVerifier = configVerifier;
+        this.configCollector = configCollector;
     }
 
     @ExceptionHandler(NoSuchElementException.class)
@@ -70,9 +70,9 @@ public class PssController {
     }
 
 
-    @RequestMapping(value = "/verify", method = RequestMethod.POST)
-    public VerifyResponse verify(@RequestBody VerifyRequest request) throws VerifyException {
-        return this.configVerifier.verify(request);
+    @RequestMapping(value = "/getConfig", method = RequestMethod.POST)
+    public DeviceConfigResponse getConfig(@RequestBody DeviceConfigRequest request) throws VerifyException {
+        return this.configCollector.getConfig(request);
     }
 
 

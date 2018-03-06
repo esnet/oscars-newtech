@@ -15,12 +15,6 @@ Feature: Retrieve & verify config
     Then I set rancid username to "oscars" on profile "netlab"
     Then I set rancid cloginrc to "/home/oscars/oscars-credentials/cloginrc" on profile "netlab"
 
-    When I retrieve config for "netlab-mx960-rt1" model "JUNIPER_MX"
-    Then I verify that "$['chassis']" must be "PRESENT"
-    Then I verify that "$['foobar']" must be "ABSENT"
-
-    Then I verify that "$.interfaces.interface[?(@.name=='lo0')].name" must contain "lo0"
-    Then I verify that "$.interfaces.interface[?(@.name=='lo0')].unit[?(@.name == '0')].name" must contain "0"
-    Then I verify that "$.interfaces.interface[?(@.name=='lo0')].unit.family.inet.address[?(@.name == '127.0.0.1/32')].name" must contain "127.0.0.1/32"
+    When I retrieve config for "netlab-mx960-rt1" model "JUNIPER_MX" profile "netlab"
 
     Then I did not receive an exception

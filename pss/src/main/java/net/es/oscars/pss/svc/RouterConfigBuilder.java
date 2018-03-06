@@ -2,7 +2,6 @@ package net.es.oscars.pss.svc;
 
 
 import net.es.oscars.dto.pss.cmd.Command;
-import net.es.oscars.dto.pss.cmd.VerifyRequest;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.ConfigException;
 import net.es.oscars.pss.beans.PssProfile;
@@ -43,7 +42,7 @@ public class RouterConfigBuilder {
                 result = opStatus(command).getRouterConfig();
                 break;
             case CONTROL_PLANE_STATUS:
-                result = controlPlaneCheck(command.getDevice(), command.getModel()).getRouterConfig();
+                result = controlPlaneCheck(command.getDevice(), command.getModel(), command.getProfile()).getRouterConfig();
                 break;
             case BUILD:
                 result = build(command).getRouterConfig();
@@ -56,7 +55,7 @@ public class RouterConfigBuilder {
     }
 
 
-    public RancidArguments controlPlaneCheck(String deviceUrn, DeviceModel model)
+    public RancidArguments controlPlaneCheck(String deviceUrn, DeviceModel model, String profile)
             throws ConfigException, UrnMappingException  {
         String routerConfig;
         switch (model) {
@@ -71,7 +70,7 @@ public class RouterConfigBuilder {
                 throw new ConfigException("unknown model");
         }
 
-        return buildRouterConfig(routerConfig, deviceUrn, model);
+        return buildRouterConfig(routerConfig, deviceUrn, model, profile);
     }
 
     public RancidArguments opStatus(Command command)
@@ -79,6 +78,7 @@ public class RouterConfigBuilder {
         String routerConfig;
         DeviceModel model = command.getModel();
         String deviceUrn = command.getDevice();
+        String profile = command.getProfile();
 
         switch (model) {
             case ALCATEL_SR7750:
@@ -98,10 +98,10 @@ public class RouterConfigBuilder {
                 throw new ConfigException("unknown model");
         }
 
-        return buildRouterConfig(routerConfig, deviceUrn, model);
+        return buildRouterConfig(routerConfig, deviceUrn, model, profile);
     }
 
-    public RancidArguments getConfig(String deviceUrn, DeviceModel model)
+    public RancidArguments getConfig(String deviceUrn, DeviceModel model, String profile)
             throws ConfigException, UrnMappingException  {
         String routerConfig;
 
@@ -117,7 +117,7 @@ public class RouterConfigBuilder {
                 throw new ConfigException("unknown model");
         }
 
-        return buildRouterConfig(routerConfig, deviceUrn, model);
+        return buildRouterConfig(routerConfig, deviceUrn, model, profile);
 
     }
 
@@ -139,7 +139,7 @@ public class RouterConfigBuilder {
                 throw new ConfigException("unknown model");
         }
 
-        return buildRouterConfig(routerConfig, command.getDevice(), command.getModel());
+        return buildRouterConfig(routerConfig, command.getDevice(), command.getModel(), command.getProfile());
     }
 
     public RancidArguments dismantle(Command command) throws ConfigException, UrnMappingException  {
@@ -159,18 +159,21 @@ public class RouterConfigBuilder {
                 throw new ConfigException("unknown model");
         }
 
-        return buildRouterConfig(routerConfig, command.getDevice(), command.getModel());
+        return buildRouterConfig(routerConfig, command.getDevice(), command.getModel(), command.getProfile());
     }
 
-    public RancidArguments buildRouterConfig(String routerConfig, String deviceUrn, DeviceModel model)
+    public RancidArguments buildRouterConfig(String routerConfig, String deviceUrn, DeviceModel model, String profileName)
             throws ConfigException, UrnMappingException {
         String execPath;
-        PssProfile pssProfile = PssProfile.profileFor(pssProps, deviceUrn);
+
+        PssProfile pssProfile = PssProfile.find(pssProps, profileName);
+
+
         RancidProps props = pssProfile.getRancid();
 
         String cloginrc = props.getCloginrc();
         String dir = props.getDir();
-        String router = ums.getRouterAddress(deviceUrn);
+        String router = ums.getRouterAddress(deviceUrn, pssProfile);
 
 
         switch (model) {

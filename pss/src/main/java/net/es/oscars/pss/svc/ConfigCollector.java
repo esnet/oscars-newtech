@@ -1,18 +1,13 @@
 package net.es.oscars.pss.svc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.*;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.dto.pss.cmd.VerifyRequest;
-import net.es.oscars.dto.pss.cmd.VerifyResponse;
+import net.es.oscars.dto.pss.cmd.DeviceConfigRequest;
+import net.es.oscars.dto.pss.cmd.DeviceConfigResponse;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.prop.RancidProps;
-import net.es.oscars.pss.prop.VerifierProps;
+import net.es.oscars.pss.prop.CollectorProps;
 import net.es.oscars.pss.rancid.RancidArguments;
 import net.es.oscars.pss.rancid.RancidResult;
 import org.json.JSONException;
@@ -20,14 +15,12 @@ import org.json.JSONObject;
 import org.json.XML;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -35,165 +28,86 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 @Service
 @Slf4j
-public class ConfigVerifier {
+public class ConfigCollector {
     private RancidRunner rancidRunner;
     private RouterConfigBuilder rcb;
-    private VerifierProps verifierProps;
+    private CollectorProps verifierProps;
     private PssProps pssProps;
     private Map<String, ConfigCacheEntry> cache = new HashMap<>();
 
     @Autowired
-    public ConfigVerifier(RancidRunner rancidRunner, PssProps pssProps, VerifierProps verifierProps, RouterConfigBuilder rcb) {
+    public ConfigCollector(RancidRunner rancidRunner, PssProps pssProps, CollectorProps verifierProps, RouterConfigBuilder rcb) {
         this.rancidRunner = rancidRunner;
         this.verifierProps = verifierProps;
         this.rcb = rcb;
         this.pssProps = pssProps;
     }
 
-    public VerifyResponse verify(VerifyRequest req) throws VerifyException {
+    public DeviceConfigResponse getConfig(DeviceConfigRequest req) throws VerifyException {
 
         Duration lifetime = Duration.of(verifierProps.getCacheLifetime(), SECONDS);
         Instant now = Instant.now();
 
-        PssProfile pssProfile = PssProfile.profileFor(pssProps, req.getDevice());
+        PssProfile pssProfile = PssProfile.find(pssProps, req.getProfile());
         RancidProps props = pssProfile.getRancid();
 
         if (!props.getPerform()) {
             log.info("configured to not actually run rancid");
-            return VerifyResponse.builder()
+            return DeviceConfigResponse.builder()
                     .lastUpdated(now)
                     .model(req.getModel())
                     .device(req.getDevice())
-                    .config("")
-                    .present(new HashMap<>())
+                    .asJson("{}")
                     .build();
         }
 
-
+        Instant lastUpdated;
+        String config;
 
         boolean mustUpdate = true;
         if (cache.keySet().contains(req.getDevice())) {
-            Instant lastUpdated = cache.get(req.getDevice()).getLastUpdated();
+            lastUpdated = cache.get(req.getDevice()).getLastUpdated();
             Instant expiration = lastUpdated.plus(lifetime);
             if (now.isBefore(expiration)) {
+                log.info("device config current in cache for "+req.getDevice());
                 mustUpdate = false;
             }
+            log.info("device config stale in cache for "+req.getDevice());
+        } else {
+            log.info("missing device from cache for "+req.getDevice());
         }
 
-        String config;
-
         if (mustUpdate) {
-            config = this.collectConfig(req.getDevice(), req.getModel());
+            config = this.collectConfig(req.getDevice(), req.getModel(), req.getProfile());
+            lastUpdated = Instant.now();
+
+            ConfigCacheEntry entry = ConfigCacheEntry.builder()
+                    .config(config)
+                    .device(req.getDevice())
+                    .lastUpdated(lastUpdated)
+                    .build();
+            cache.put(req.getDevice(), entry);
+
 
         } else {
             config = cache.get(req.getDevice()).getConfig();
+            lastUpdated = cache.get(req.getDevice()).getLastUpdated();
         }
-        return this.verifyConfigAgrees(config, req);
-    }
 
-
-    public VerifyResponse verifyConfigAgrees(String config, VerifyRequest req) {
-        VerifyResponse response = VerifyResponse.builder()
-                .config(config)
-                .device(req.getDevice())
+        return DeviceConfigResponse.builder()
+                .lastUpdated(lastUpdated)
                 .model(req.getModel())
-                .present(new HashMap<>())
-                .lastUpdated(Instant.now())
+                .device(req.getDevice())
+                .asJson(config)
                 .build();
 
-        ObjectMapper m = new ObjectMapper();
-
-
-        JsonProvider jsonProvider = new JacksonJsonProvider();
-        Configuration conf = Configuration.defaultConfiguration();
-
-        conf = conf.addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL);
-        conf = conf.addOptions(Option.ALWAYS_RETURN_LIST);
-        conf = conf.addOptions(Option.SUPPRESS_EXCEPTIONS);
-        conf = conf.jsonProvider(jsonProvider);
-
-        Object document = conf.jsonProvider().parse(config);
-
-
-
-        // TERRIBLE OBJECT CASTING FOLLOWS
-        for (String path : req.getMustBeAbsent()) {
-            Object pathResult = JsonPath.parse(document, conf).read(path);
-            List<Object> results = (List<Object>) pathResult;
-
-            if (results.isEmpty() || results.get(0) == null) {
-                response.getPresent().put(path, false);
-            } else {
-                response.getPresent().put(path, true);
-            }
-
-            try {
-                log.info("mba: "+m.writerWithDefaultPrettyPrinter().writeValueAsString(pathResult));
-            } catch (JsonProcessingException ex) {
-                log.error(ex.getMessage(), ex);
-            }
-
-
-        }
-
-        for (String path : req.getMustBePresent()) {
-            Object pathResult = JsonPath.parse(document, conf).read(path);
-            List<Object> results = (List<Object>) pathResult;
-            if (results.isEmpty() || results.get(0) == null) {
-                response.getPresent().put(path, false);
-            } else {
-                response.getPresent().put(path, true);
-            }
-
-            try {
-                log.info("mbp: "+m.writerWithDefaultPrettyPrinter().writeValueAsString(pathResult));
-            } catch (JsonProcessingException ex) {
-                log.error(ex.getMessage(), ex);
-            }
-        }
-
-        for (String path : req.getMustContainValue().keySet()) {
-            String value = req.getMustContainValue().get(path);
-            Object pathResult = JsonPath.parse(document, conf).read(path);
-
-            try {
-                log.info("mhv ("+value+"): "+m.writerWithDefaultPrettyPrinter().writeValueAsString(pathResult));
-            } catch (JsonProcessingException ex) {
-                log.error(ex.getMessage(), ex);
-            }
-
-            List<Object> results = (List<Object>) pathResult;
-            if (results.isEmpty()) {
-                response.getPresent().put(path, false);
-            } else {
-                boolean contained = false;
-                for (Object result: results) {
-                    if (result.toString().equals(value)) {
-                        contained = true;
-                    }
-                }
-                if (contained) {
-                    response.getPresent().put(path, value);
-                } else {
-                    response.getPresent().put(path, false);
-                }
-            }
-
-
-        }
-
-
-        return response;
     }
 
 
-
-
-
-    public String collectConfig(String deviceUrn, DeviceModel model) throws VerifyException {
+    public String collectConfig(String deviceUrn, DeviceModel model, String profile) throws VerifyException {
         String config = null;
         try {
-            RancidArguments args = rcb.getConfig(deviceUrn, model);
+            RancidArguments args = rcb.getConfig(deviceUrn, model, profile);
             RancidResult res = rancidRunner.runRancid(args, deviceUrn);
             String output = res.getOutput();
             String[] lines = output.split("\\r?\\n");

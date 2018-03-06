@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-@ConfigurationProperties(prefix = "verify")
+@ConfigurationProperties(prefix = "collect")
 @Component
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VerifierProps {
+public class CollectorProps {
 
 
     private String aparsePath;

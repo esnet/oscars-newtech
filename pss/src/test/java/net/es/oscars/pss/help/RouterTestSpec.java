@@ -17,6 +17,7 @@ public class RouterTestSpec {
     private String filename;
     private String device;
     private DeviceModel model;
+    private String profile;
     private Boolean shouldFail;
     private AluParams aluParams;
     private ExParams exParams;

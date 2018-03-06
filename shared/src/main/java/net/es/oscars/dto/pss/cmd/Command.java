@@ -18,6 +18,8 @@ public class Command {
     private CommandType type;
     @NonNull
     private DeviceModel model;
+    @NonNull
+    private String profile;
 
     private String connectionId;
     private boolean refresh;

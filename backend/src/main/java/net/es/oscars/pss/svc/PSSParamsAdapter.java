@@ -2,6 +2,7 @@ package net.es.oscars.pss.svc;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.pss.params.alu.AluParams;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 public class PSSParamsAdapter {
 
     private TopoService topoService;
+    private PssProperties pssProperties;
     private AluParamsAdapter aluParamsAdapter;
     private MxParamsAdapter mxParamsAdapter;
 
@@ -66,6 +68,7 @@ public class PSSParamsAdapter {
                 .type(type)
                 .model(devUrn.getDevice().getModel())
                 .device(devUrn.getUrn())
+                .profile(pssProperties.getProfile())
                 .build();
     }
 

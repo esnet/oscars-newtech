@@ -20,6 +20,7 @@ public class CommandQueuer {
         CommandStatus commandStatus = CommandStatus.builder()
                 .lifecycleStatus(LifecycleStatus.INITIAL_STATE)
                 .configStatus(ConfigStatus.NONE)
+                .profile(command.getProfile())
                 .operationalStatus(OperationalStatus.NONE)
                 .controlPlaneStatus(ControlPlaneStatus.NONE)
                 .commands("")

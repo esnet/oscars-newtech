@@ -24,15 +24,9 @@ public class PssProfile {
     private RancidProps rancid;
     private GetConfigProps getConfig;
     private UrnMappingProps urnMapping;
-    private RancidCheck check;
 
-    public static PssProfile profileFor(PssProps props, String urn) throws NoSuchElementException {
-        String profileName = profileNameFor(props.getMatching(), urn);
-        return findProfile(props.getProfiles(), profileName);
-    }
-
-    public static PssProfile findProfile(List<PssProfile> profileList, String profile) throws NoSuchElementException {
-        for (PssProfile pssProfile : profileList) {
+    public static PssProfile find(PssProps props, String profile) throws NoSuchElementException {
+        for (PssProfile pssProfile : props.getProfiles()) {
             if (pssProfile.getProfile().equals(profile)) {
                 return pssProfile;
             }
@@ -40,15 +34,6 @@ public class PssProfile {
         throw new NoSuchElementException("No profile found for "+profile);
     }
 
-    public static String profileNameFor(List<ProfileMatch> matchList, String urn) throws NoSuchElementException {
-        for (ProfileMatch match : matchList) {
-            for (String criterion : match.getCriteria()) {
-                if (urn.matches(criterion)) {
-                    return match.getProfile();
-                }
-            }
-        }
-        throw new NoSuchElementException("no profile match for " + urn);
-    }
+
 
 }

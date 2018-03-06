@@ -13,6 +13,10 @@ import java.util.Date;
 public class CommandStatus {
     @NonNull
     private String device;
+
+    @NonNull
+    private String profile;
+
     @NonNull
     private CommandType type;
 

@@ -3,7 +3,6 @@ package net.es.oscars.pss.prop;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import net.es.oscars.pss.beans.ProfileMatch;
 import net.es.oscars.pss.beans.PssProfile;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -20,9 +19,6 @@ public class PssProps {
 
     @NonNull
     private String[] templateDirs;
-
-    @NonNull
-    private List<ProfileMatch> matching = new ArrayList<>();
 
     @NonNull
     private List<PssProfile> profiles = new ArrayList<>();

@@ -38,7 +38,7 @@ public class CommandRunner {
                 case OPERATIONAL_STATUS:
                     break;
                 case CONTROL_PLANE_STATUS:
-                    ControlPlaneResult res = cplStatus(command.getDevice(), command.getModel());
+                    ControlPlaneResult res = cplStatus(command.getDevice(), command.getModel(), command.getProfile());
                     status.setControlPlaneStatus(res.getStatus());
                     break;
                 case BUILD:
@@ -77,14 +77,14 @@ public class CommandRunner {
         return result;
     }
 
-    private ControlPlaneResult cplStatus(String device, DeviceModel model)
+    private ControlPlaneResult cplStatus(String device, DeviceModel model, String profile)
             throws UrnMappingException {
 
         ControlPlaneResult result = ControlPlaneResult.builder().build();
 
         try {
-            RancidArguments args = builder.controlPlaneCheck(device, model);
-            rancidRunner.runRancid(args, device);
+            RancidArguments args = builder.controlPlaneCheck(device, model, profile);
+            rancidRunner.runRancid(args, profile);
             healthService.getHealth().getDeviceStatus().put(device, ControlPlaneStatus.OK);
             result.setStatus(ControlPlaneStatus.OK);
 
