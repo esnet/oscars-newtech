@@ -35,12 +35,15 @@ public class TopoController {
     @Autowired
     private Startup startup;
 
+    // cache these in memory
+    private Map<String, List<Port>> eppd = new HashMap<>();
+    private Map<String, PortBwVlan> baseline = new HashMap<>();
+
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public void handleResourceNotFoundException(NoSuchElementException ex) {
         log.warn("requested an item which did not exist", ex);
     }
-
 
 
     @RequestMapping(value = "/api/topo/ethernetPortsByDevice", method = RequestMethod.GET)
@@ -54,21 +57,22 @@ public class TopoController {
             throw new StartupException("OSCARS shutting down");
         }
 
+        if (eppd.size() == 0) {
+            Topology topology = topoService.currentTopology();
 
-        Topology topology = topoService.currentTopology();
+            for (Device d : topology.getDevices()) {
+                List<Port> ports = new ArrayList<>();
+                d.getPorts().forEach(p -> {
+                    if (p.getCapabilities().contains(Layer.ETHERNET)) {
+                        ports.add(p);
+                    }
+                });
+                eppd.put(d.getUrn(), ports);
 
-        Map<String, List<Port>> result = new HashMap<>();
-        for (Device d : topology.getDevices()) {
-            List<Port> ports = new ArrayList<>();
-            d.getPorts().forEach(p -> {
-                if (p.getCapabilities().contains(Layer.ETHERNET)) {
-                    ports.add(p);
-                }
-            });
-            result.put(d.getUrn(), ports);
-
+            }
         }
-        return result;
+
+        return eppd;
     }
 
 
@@ -81,8 +85,11 @@ public class TopoController {
             throw new StartupException("OSCARS shutting down");
         }
 
-        // grab everything available
-        return ResvLibrary.portBwVlans(topoService.getTopoUrnMap(), new HashSet<>(), new HashMap<>(), new HashMap<>());
+        if (baseline.size() == 0) {
+            // grab everything available
+            baseline = ResvLibrary.portBwVlans(topoService.getTopoUrnMap(), new HashSet<>(), new HashMap<>(), new HashMap<>());
+        }
+        return baseline;
 
     }
 
