@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Set;
 
 @Builder
 @Data
@@ -17,5 +19,8 @@ public class PceRequest {
     private String z;
     private Integer azBw;
     private Integer zaBw;
+    private List<String> include;
+    private Set<String> exclude;
+
 
 }

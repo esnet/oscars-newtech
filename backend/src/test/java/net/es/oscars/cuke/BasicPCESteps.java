@@ -56,7 +56,7 @@ public class BasicPCESteps extends CucumberSteps {
         availIngressBw = ResvLibrary.availableBandwidthMap(BwDirection.INGRESS, baseline, new HashMap<>());
         availEgressBw = ResvLibrary.availableBandwidthMap(BwDirection.EGRESS, baseline, new HashMap<>());
 
-        PceResponse response = widestPathsPCE.calculatePaths(vp, availIngressBw, availEgressBw);
+        PceResponse response = widestPathsPCE.calculatePaths(vp, availIngressBw, availEgressBw, new ArrayList<>(), new HashSet<>());
         PcePath shortest = response.getShortest();
 
         world.pipeEros = new HashMap<>();
