@@ -9,7 +9,7 @@ public class MiscController {
 
     @RequestMapping(value = "/api/version", method = RequestMethod.GET)
     public String getVersion() {
-        return "1.0.1";
+        return "1.0.2";
     }
 
 }
