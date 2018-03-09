@@ -33,10 +33,10 @@ public class RancidRunner {
         this.pssProps = props;
     }
 
-    public RancidResult runRancid(RancidArguments arguments, String deviceUrn)
+    public RancidResult runRancid(RancidArguments arguments, String profile)
             throws ControlPlaneException, IOException, InterruptedException, TimeoutException {
 
-        PssProfile pssProfile = PssProfile.profileFor(pssProps, deviceUrn);
+        PssProfile pssProfile = PssProfile.find(pssProps, profile);
         RancidProps props = pssProfile.getRancid();
 
         /*

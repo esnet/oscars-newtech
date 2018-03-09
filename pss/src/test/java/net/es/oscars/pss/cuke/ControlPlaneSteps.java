@@ -26,20 +26,14 @@ public class ControlPlaneSteps extends CucumberSteps {
     @Autowired
     private CommandQueuer queuer;
 
-
-    @Autowired
-    private HealthService healthService;
     Map<DeviceEntry, String> entryCommands;
     Map<String, ControlPlaneStatus> statusMap;
     Set<String> commandIds;
     Set<String> waitingFor;
 
-    @Then("^I will enqueue a control plane check$")
-    public void i_will_enqueue_a_control_plane_test() throws Throwable {
-        entryCommands = healthService.queueControlPlaneCheck(queuer);
-        this.i_start_waiting_for_commands();
 
-    }
+
+
     @Then("^I start waiting for commands$")
     public void i_start_waiting_for_commands() throws Throwable {
 

@@ -8,7 +8,6 @@ Feature: Control plane checking
     Given I have warned the user this is a live test
 
     Given I create profile "netlab"
-    Given I configure a match for urn "netlab-mx960-rt1" to profile "netlab"
     When I set the mapping method to "MATCH" on profile "netlab"
     Given I added a mapping from "netlab-mx960-rt1" to "netlab-mx960-rt1-es1.es.net" on profile "netlab"
     Then I set rancid perform to true on profile "netlab"
@@ -18,8 +17,6 @@ Feature: Control plane checking
     Then I set rancid cloginrc to "/home/oscars/oscars-credentials/cloginrc" on profile "netlab"
 
     Given I create profile "testbed"
-    Given I configure a match for urn "nersc-tb1" to profile "testbed"
-    Given I configure a match for urn "star-tb1" to profile "testbed"
     When I set the mapping method to "IDENTITY" on profile "testbed"
     Then I set rancid perform to true on profile "testbed"
     Then I set rancid host to "oscars-west.es.net" on profile "testbed"

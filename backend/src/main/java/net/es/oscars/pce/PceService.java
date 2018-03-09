@@ -49,7 +49,7 @@ public class PceService {
         // - the max available bandwidth anywhere on the network
 
 
-        return  widestPCE.calculatePaths(bwPipe, availIngressBw, availEgressBw);
+        return  widestPCE.calculatePaths(bwPipe, availIngressBw, availEgressBw, request.getInclude(), request.getExclude());
     }
 
 

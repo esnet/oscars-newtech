@@ -13,6 +13,6 @@ public interface PSSProxy {
 
     CommandStatus status(String commandId) throws PSSException;
 
-    VerifyResponse verify(VerifyRequest request) throws VerifyException;
+    DeviceConfigResponse getConfig(DeviceConfigRequest request) throws VerifyException;
 
 }

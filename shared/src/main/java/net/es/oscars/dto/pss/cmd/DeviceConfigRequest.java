@@ -1,26 +1,27 @@
-package net.es.oscars.pss.help;
+package net.es.oscars.dto.pss.cmd;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import net.es.oscars.dto.pss.params.alu.AluParams;
 import net.es.oscars.dto.pss.params.ex.ExParams;
 import net.es.oscars.dto.pss.params.mx.MxParams;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 
+import java.util.List;
+import java.util.Map;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RouterTestSpec {
-    private String filename;
+public class DeviceConfigRequest {
+    @NonNull
     private String device;
+    @NonNull
     private DeviceModel model;
+
+    @NonNull
     private String profile;
-    private Boolean shouldFail;
-    private AluParams aluParams;
-    private ExParams exParams;
-    private MxParams mxParams;
+
 
 }

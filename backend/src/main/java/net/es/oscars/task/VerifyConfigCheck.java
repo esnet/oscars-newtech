@@ -40,22 +40,22 @@ public class VerifyConfigCheck {
             return;
         }
         ObjectMapper m = new ObjectMapper();
-
+/*
         Set<Device> verified = new HashSet<>();
         for (Device d: checker.getDevicesToVerify()) {
             try {
-                VerifyRequest req = checker.verifyDeviceFacts(d);
+                DeviceConfigRequest req = checker.verifyDeviceFacts(d);
                 log.info("verifying device "+req.getDevice());
-                VerifyResponse resp = pssProxy.verify(req);
-                log.info(m.writerWithDefaultPrettyPrinter().writeValueAsString(resp.getPresent()));
+                DeviceConfigResponse resp = pssProxy.getConfig(req);
+                log.info(resp.getAsJson());
 //                log.info(resp.getConfig());
                 verified.add(d);
-            } catch (VerifyException | PSSException | JsonProcessingException ex) {
+            } catch (VerifyException | PSSException ex) {
                 log.error(ex.getMessage(), ex);
             }
         }
         checker.getDevicesToVerify().removeAll(verified);
-
+*/
     }
 
 }

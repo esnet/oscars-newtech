@@ -9,7 +9,7 @@ import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.app.props.TopoProperties;
 import net.es.oscars.dto.pss.cmd.CommandStatus;
-import net.es.oscars.dto.pss.cmd.VerifyRequest;
+import net.es.oscars.dto.pss.cmd.DeviceConfigRequest;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.db.DeviceRepository;
@@ -20,8 +20,6 @@ import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.svc.TopoService;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +39,10 @@ public class PssHealthChecker implements StartupComponent {
     private DeviceRepository deviceRepo;
 
     private Set<Device> devicesToCheck = new HashSet<>();
-    private Set<Device> devicesToVerify = new HashSet<>();
+    private Set<Device> devicesBeingChecked = new HashSet<>();
+
+    private Map<Device, Integer> checkAttempts = new HashMap<>();
+
 
     private Map<String, CommandStatus> statuses = new HashMap<>();
 
@@ -55,7 +56,7 @@ public class PssHealthChecker implements StartupComponent {
         this.deviceRepo = deviceRepo;
     }
 
-
+    // this is an on-demand check
     public void checkControlPlane(String deviceUrn) throws PSSException {
         if (!topoService.getTopoUrnMap().containsKey(deviceUrn)) {
             throw new PSSException("could not find device! " + deviceUrn);
@@ -70,7 +71,7 @@ public class PssHealthChecker implements StartupComponent {
         if (statuses.containsKey(deviceUrn)) {
             CommandStatus cs = statuses.get(deviceUrn);
             if (cs.getLifecycleStatus().equals(LifecycleStatus.DONE)) {
-                // if we have a complete record, if it's younger than 30 sec use that one
+                // if we have a complete record, and it's younger than 30 sec use that one
                 Instant now = Instant.now();
                 Instant lastUpdated = Instant.ofEpochMilli(cs.getLastUpdated().getTime());
                 if (!lastUpdated.plusSeconds(30).isAfter(now)) {
@@ -88,7 +89,8 @@ public class PssHealthChecker implements StartupComponent {
         }
     }
 
-    public VerifyRequest verifyDeviceFacts(Device d) throws PSSException {
+    public DeviceConfigRequest verifyDeviceFacts(Device d) throws PSSException {
+
         List<String> mbp = new ArrayList<>();
         List<String> mba = new ArrayList<>();
         Map<String, String> mhv = new HashMap<>();
@@ -111,16 +113,15 @@ public class PssHealthChecker implements StartupComponent {
             default:
                 throw new PSSException("Unsupported model");
         }
-        return VerifyRequest.builder()
+        return DeviceConfigRequest.builder()
                 .device(d.getUrn())
                 .model(d.getModel())
-                .mustBeAbsent(mba)
-                .mustBePresent(mbp)
-                .mustContainValue(mhv)
+                .profile(pssProperties.getProfile())
                 .build();
     }
 
 
+    // when we start up, put some devices into devicesToCheck. the check tasks will go through these.
     public void startup() throws StartupException {
 
         if (!pssProperties.getControlPlaneCheckOnStart()) {
@@ -152,14 +153,18 @@ public class PssHealthChecker implements StartupComponent {
                         if (!urn.getUrnType().equals(UrnType.DEVICE)) {
                             throw new StartupException("entry in check file: " + deviceUrn + " is " + urn.getUrnType() + ", should be device");
                         }
+                        checkAttempts.put(urn.getDevice(), 0);
                         devicesToCheck.add(urn.getDevice());
-                        devicesToVerify.add(urn.getDevice());
                     }
 
                 } else if (randomNumToCheck > devices.size()) {
                     log.error("asked to check " + randomNumToCheck + " devices but only " + devices.size() + " exist; checking all ");
-                    devicesToCheck.addAll(devices);
-                    devicesToVerify.addAll(devices);
+                    for (Device d : devices) {
+                        checkAttempts.put(d, 0);
+                        devicesToCheck.add(d);
+                    }
+
+//                    devicesToVerify.addAll(devices);
                 } else {
                     log.info("adding " + randomNumToCheck + " random devices");
                     Random r = new Random();
@@ -169,7 +174,8 @@ public class PssHealthChecker implements StartupComponent {
                         Device d = devices.get(idx);
                         if (!devicesToCheck.contains(d)) {
                             devicesToCheck.add(d);
-                            devicesToVerify.add(d);
+                            checkAttempts.put(d, 1);
+
                             log.debug("will check " + d.getUrn());
                         }
                     }

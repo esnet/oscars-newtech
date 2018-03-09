@@ -1,5 +1,7 @@
 package net.es.oscars.pce;
 
+import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.resv.ent.EroHop;
@@ -30,7 +32,9 @@ public class AllPathsPCE {
 
     public PceResponse calculatePaths(VlanPipe requestPipe,
                                       Map<String, Integer> availIngressBw,
-                                      Map<String, Integer> availEgressBw) throws PCEException {
+                                      Map<String, Integer> availEgressBw,
+                                      List<String> include,
+                                      Set<String> exclude) throws PCEException {
 
 
         Map<String, TopoUrn> baseline = topoService.getTopoUrnMap();
@@ -91,12 +95,44 @@ public class AllPathsPCE {
 
         Instant es = Instant.now();
         for (GraphPath<TopoUrn, TopoAdjcy> path : paths) {
-
             List<EroHop> azEro = PceLibrary.toEro(path);
+            List<String> hopUrnList = new ArrayList<>();
+            Set<String> hopUrnSet = new HashSet<>();
+
             List<EroHop> zaEro = new ArrayList<>();
             for (EroHop hop : azEro) {
                 zaEro.add(EroHop.builder().urn(hop.getUrn()).build());
+                hopUrnList.add(hop.getUrn());
+                hopUrnSet.add(hop.getUrn());
             }
+
+            boolean excludedOk = true;
+
+            if (exclude != null) {
+                Set<String> mustBeExcluded = Sets.intersection(exclude, hopUrnSet);
+                if (!mustBeExcluded.isEmpty()) {
+                    excludedOk = false;
+                }
+            }
+
+            boolean includedOk = true;
+
+            if (include != null) {
+                List<Integer> indices = new ArrayList<>();
+                for (String urn : include) {
+                    indices.add(hopUrnList.indexOf(urn));
+                }
+                boolean sorted = Ordering.natural().isOrdered(indices);
+                if (!sorted) {
+                    includedOk = false;
+                }
+            }
+
+            if (!includedOk || !excludedOk) {
+                continue;
+            }
+
+
 
             Collections.reverse(zaEro);
 

@@ -20,6 +20,9 @@ public class PssProperties {
     private String community;
 
     @NonNull
+    private String profile;
+
+    @NonNull
     private String vcidRange;
 
     @NonNull
@@ -42,5 +45,8 @@ public class PssProperties {
 
     @NonNull
     private Boolean controlPlaneCheckOnStart;
+
+    @NonNull
+    private Integer controlPlaneCheckMaxTries;
 
 }

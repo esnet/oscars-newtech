@@ -37,10 +37,12 @@ public class UrnMappingSteps extends CucumberSteps {
     @Autowired
     private PssProps properties;
 
-    @Then("^the router address of \"([^\"]*)\" is \"([^\"]*)\"$")
-    public void the_router_address_of_is(String urn, String addr) {
+    @Then("^the router address of \"([^\"]*)\" is \"([^\"]*)\" on profile \"([^\"]*)\"$")
+    public void the_router_address_of_is(String urn, String addr, String profile) {
+        PssProfile pssProfile = PssProfile.find(properties, profile);
+
         try {
-            assertThat(mappingService.getRouterAddress(urn), is(addr));
+            assertThat(mappingService.getRouterAddress(urn, pssProfile), is(addr));
         } catch (UrnMappingException ex) {
             world.add(ex);
         }
@@ -49,13 +51,13 @@ public class UrnMappingSteps extends CucumberSteps {
 
     @When("^I set the suffix \"([^\"]*)\" on profile \"([^\"]*)\"$")
     public void i_set_the_suffix_on_profile(String suffix, String profile) throws Throwable {
-        PssProfile pssProfile = PssProfile.findProfile(properties.getProfiles(), profile);
+        PssProfile pssProfile = PssProfile.find(properties, profile);
         pssProfile.getUrnMapping().setSuffix(suffix);
     }
 
     @Given("^I added a mapping from \"([^\"]*)\" to \"([^\"]*)\" on profile \"([^\"]*)\"$")
     public void i_added_a_mapping_from_to_on_profile(String urn, String addr, String profile) throws Throwable {
-        PssProfile pssProfile = PssProfile.findProfile(properties.getProfiles(), profile);
+        PssProfile pssProfile = PssProfile.find(properties, profile);
         UrnMappingEntry e = UrnMappingEntry.builder().address(addr).urn(urn).build();
         pssProfile.getUrnMapping().getMatch().add(e);
     }
@@ -63,21 +65,22 @@ public class UrnMappingSteps extends CucumberSteps {
 
     @Given("^I have cleared all mappings on profile \"([^\"]*)\"$")
     public void i_have_cleared_all_mappings_on_profile(String profile) throws Throwable {
-        PssProfile pssProfile = PssProfile.findProfile(properties.getProfiles(), profile);
+        PssProfile pssProfile = PssProfile.find(properties, profile);
         pssProfile.getUrnMapping().getMatch().clear();
     }
 
     @When("^I set the mapping method to \"([^\"]*)\" on profile \"([^\"]*)\"$")
     public void i_set_the_mapping_method_to_on_profile(UrnMappingMethod method, String profile) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-        PssProfile pssProfile = PssProfile.findProfile(properties.getProfiles(), profile);
+        PssProfile pssProfile = PssProfile.find(properties, profile);
         pssProfile.getUrnMapping().setMethod(method);
     }
 
-    @When("^I ask for the router address of \"([^\"]*)\"$")
-    public void i_ask_for_the_router_address_of(String urn) throws Throwable {
+    @When("^I ask for the router address of \"([^\"]*)\" on profile \"([^\"]*)\"$")
+    public void i_ask_for_the_router_address_of(String urn, String profile) throws Throwable {
+        PssProfile pssProfile = PssProfile.find(properties, profile);
         try {
-            mappingService.getRouterAddress(urn);
+            mappingService.getRouterAddress(urn, pssProfile);
         } catch (UrnMappingException | NoSuchElementException ex) {
             world.add(ex);
         }

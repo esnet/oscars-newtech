@@ -14,7 +14,6 @@ import java.time.Instant;
 @AllArgsConstructor
 public class ConfigCacheEntry {
     private String device;
-    private JSONObject parsed;
     private String config;
     private Instant lastUpdated;
 
