@@ -108,7 +108,7 @@ public class ConfigCollector {
         String config = null;
         try {
             RancidArguments args = rcb.getConfig(deviceUrn, model, profile);
-            RancidResult res = rancidRunner.runRancid(args, deviceUrn);
+            RancidResult res = rancidRunner.runRancid(args, profile);
             String output = res.getOutput();
             String[] lines = output.split("\\r?\\n");
             switch (model) {

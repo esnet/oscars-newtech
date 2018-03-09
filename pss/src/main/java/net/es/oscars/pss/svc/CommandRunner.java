@@ -44,13 +44,13 @@ public class CommandRunner {
                 case BUILD:
                     status.setConfigStatus(ConfigStatus.NONE);
                     args = builder.build(command);
-                    confRes = configure(args, command.getDevice());
+                    confRes = configure(args, command.getProfile());
                     status.setConfigStatus(confRes.getStatus());
                     break;
                 case DISMANTLE:
                     status.setConfigStatus(ConfigStatus.NONE);
                     args = builder.dismantle(command);
-                    confRes = configure(args, command.getDevice());
+                    confRes = configure(args, command.getProfile());
                     status.setConfigStatus(confRes.getStatus());
                     break;
 
@@ -61,12 +61,12 @@ public class CommandRunner {
         }
     }
 
-    private ConfigResult configure(RancidArguments args, String deviceUrn) {
+    private ConfigResult configure(RancidArguments args, String profile) {
 
         ConfigResult result = ConfigResult.builder().build();
 
         try {
-            rancidRunner.runRancid(args, deviceUrn);
+            rancidRunner.runRancid(args, profile);
             result.setStatus(ConfigStatus.OK);
 
         } catch (IOException | InterruptedException | TimeoutException | ControlPlaneException ex) {
