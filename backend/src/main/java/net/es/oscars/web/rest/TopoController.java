@@ -7,14 +7,17 @@ import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.resv.svc.ResvLibrary;
 import net.es.oscars.resv.svc.ResvService;
 import net.es.oscars.topo.beans.PortBwVlan;
+import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.Layer;
+import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.Interval;
+import net.es.oscars.web.beans.SimpleAdjcy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -73,6 +76,37 @@ public class TopoController {
         }
 
         return eppd;
+    }
+
+    @RequestMapping(value = "/api/topo/adjacencies", method = RequestMethod.GET)
+    @ResponseBody
+    public Set<SimpleAdjcy> adjacencies()
+            throws StartupException {
+
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
+        List<TopoAdjcy> topoAdjcies = topoService.getTopoAdjcies();
+
+
+        Set<SimpleAdjcy> simpleAdjcies = new HashSet<>();
+        for (TopoAdjcy adjcy : topoAdjcies) {
+            if (adjcy.getA().getUrnType().equals(UrnType.PORT) &&
+                adjcy.getZ().getUrnType().equals(UrnType.PORT)) {
+                SimpleAdjcy simpleAdjcy = SimpleAdjcy.builder()
+                        .a(adjcy.getA().getDevice().getUrn())
+                        .b(adjcy.getA().getPort().getUrn())
+                        .y(adjcy.getZ().getPort().getUrn())
+                        .z(adjcy.getZ().getDevice().getUrn())
+                        .build();
+                simpleAdjcies.add(simpleAdjcy);
+            }
+        }
+
+        return simpleAdjcies;
     }
 
 
