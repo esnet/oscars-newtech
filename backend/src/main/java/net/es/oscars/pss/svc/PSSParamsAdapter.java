@@ -27,10 +27,12 @@ public class PSSParamsAdapter {
     @Autowired
     public PSSParamsAdapter(TopoService topoService,
                             MxParamsAdapter mxParamsAdapter,
-                            AluParamsAdapter aluParamsAdapter) {
+                            AluParamsAdapter aluParamsAdapter,
+                            PssProperties pssProperties) {
         this.aluParamsAdapter = aluParamsAdapter;
         this.mxParamsAdapter = mxParamsAdapter;
         this.topoService = topoService;
+        this.pssProperties = pssProperties;
     }
 
     public Command command(CommandType type, Connection c, VlanJunction j) throws PSSException {
