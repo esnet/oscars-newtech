@@ -180,6 +180,7 @@ public class PssController {
                     .type(CommandType.CONTROL_PLANE_STATUS)
                     .controlPlaneStatus(ControlPlaneStatus.ERROR)
                     .lifecycleStatus(LifecycleStatus.WAITING)
+                    .profile("")
                     .commands("")
                     .lastUpdated(new Date())
                     .device(deviceUrn)
