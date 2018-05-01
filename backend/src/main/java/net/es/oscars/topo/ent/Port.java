@@ -53,6 +53,9 @@ public class Port {
     private Integer reservableEgressBw;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private String ifce;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String ipv4Address;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>newtech</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>1.0.4</version>
+        <version>1.0.5</version>
     </parent>
 
     <organization>
@@ -140,6 +140,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -197,10 +198,6 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.xebia</groupId>
-            <artifactId>jackson-lombok</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <scope>runtime</scope>
@@ -240,6 +237,7 @@
 
 
     <build>
+
         <plugins>
 
             <plugin>
@@ -318,9 +316,9 @@
                                 <source>
                                     <location>${project.basedir}/bin/install_db.sh</location>
                                 </source>
-				<source>
-				    <location>${project.basedir}/../topo/esdb_topo.py</location>
-				</source>
+                                <source>
+                                    <location>${project.basedir}/../topo/esdb_topo.py</location>
+                                </source>
                             </sources>
                         </mapping>
                         <mapping>

@@ -281,6 +281,7 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=Non
 
 
 def merge_isis_ports(oscars_devices=None, igp_portmap=None):
+
     for device_name in igp_portmap.keys():
         found_device = False
         for device in oscars_devices:
@@ -288,6 +289,8 @@ def merge_isis_ports(oscars_devices=None, igp_portmap=None):
                 found_device = True
                 for port_name in igp_portmap[device_name].keys():
                     mbps = igp_portmap[device_name][port_name]["mbps"]
+                    ifce = igp_portmap[device_name][port_name]["ifce"]
+
                     port_urn = device_name + ":" + port_name
                     found_port = False
                     for ifce_data in device["ports"]:
@@ -301,6 +304,7 @@ def merge_isis_ports(oscars_devices=None, igp_portmap=None):
                             "urn": port_urn,
                             "capabilities": ["MPLS"],
                             "reservableIngressBw": mbps,
+                            "ifce": ifce,
                             "reservableEgressBw": mbps
                         }
                         device["ports"].append(new_ifce_data)
@@ -368,7 +372,8 @@ def transform_isis(isis_adjcies=None):
                 igp_portmap[a_router] = {}
 
             igp_portmap[a_router][a_port] = {
-                "mbps": isis_adjcy["mbps"]
+                "mbps": isis_adjcy["mbps"],
+                "ifce": isis_adjcy["a_ifce"]
             }
             # else:
             #   print "skipping " + a_addr
