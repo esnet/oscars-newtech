@@ -101,24 +101,6 @@
         "reservableEgressBw": 10000
       },
       {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "pppl-rt5->es-stub:ge:access-local:show:intracloud",
-          "ge-0/0/0.0"
-        ],
-        "urn": "pppl-rt5:ge-0/0/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
         "reservableIngressBw": 10000,
         "tags": [
           "pppl-rt5->pppl-pt1:10ge:perf-test:show:intercloud",
@@ -140,24 +122,6 @@
           {
             "ceiling": 4093,
             "floor": 916
-          }
-        ],
-        "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 10000,
-        "tags": [
-          "pppl-rt5->hep(as88):10ge::show:ren-intercloud",
-          "xe-2/0/0.0"
-        ],
-        "urn": "pppl-rt5:xe-2/0/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
           }
         ],
         "reservableEgressBw": 10000
@@ -801,24 +765,6 @@
         "reservableEgressBw": 1000
       },
       {
-        "reservableIngressBw": 100,
-        "tags": [
-          "srs-rt3->es-stub:ether:access-local:show:intracloud",
-          "fe-0/3/1.0"
-        ],
-        "urn": "srs-rt3:fe-0/3/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 100
-      },
-      {
         "reservableIngressBw": 1000,
         "tags": [
           "srs-rt3->doenet-srs(as65006):1ge:site_conn-a:show:na"
@@ -1078,24 +1024,6 @@
         "ifce": "ge-1/2/0.5"
       },
       {
-        "reservableIngressBw": 100,
-        "tags": [
-          "orau-rt3->es-stub:fe:access-local:show:intracloud",
-          "fe-0/0/0.0"
-        ],
-        "urn": "orau-rt3:fe-0/0/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 100
-      },
-      {
         "ipv4Address": "134.55.38.5",
         "reservableIngressBw": 1000,
         "tags": [
@@ -1204,42 +1132,6 @@
       {
         "reservableIngressBw": 1000,
         "tags": [
-          "llnldc-rt4->lanl-dc:1ge:site_conn-a_v4:show:intercloud",
-          "ge-0/2/0.0"
-        ],
-        "urn": "llnldc-rt4:ge-0/2/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 100,
-        "tags": [
-          "llnldc-rt4->es-stub:ether:access-local:show:intracloud",
-          "fe-0/0/3.0"
-        ],
-        "urn": "llnldc-rt4:fe-0/0/3",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 100
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
           "llnldc-rt4->wash-cr5:1ge:ip-a:show:test",
           "ge-1/0/0.2301"
         ],
@@ -1255,24 +1147,6 @@
           {
             "ceiling": 4093,
             "floor": 2302
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "llnldc-rt4->llnl-dc:1ge:site_conn-a_v4v6:show:intercloud",
-          "ge-0/1/0.0"
-        ],
-        "urn": "llnldc-rt4:ge-0/1/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
           }
         ],
         "reservableEgressBw": 1000
@@ -2286,34 +2160,6 @@
     "type": "ROUTER",
     "ports": [
       {
-        "ipv4Address": "134.55.217.166",
-        "reservableIngressBw": 1000,
-        "urn": "forr-rt2:ge-0/0/1",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 1000,
-        "ifce": "ge-0/0/1.0"
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "forr-rt2->es-stub:fe:access-local:show:intracloud",
-          "ge-0/0/6.0"
-        ],
-        "urn": "forr-rt2:ge-0/0/6",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
         "reservableIngressBw": 1000,
         "tags": [
           "forr-rt2->forr-pt1:1ge(vlan):perf-test:show:intercloud",
@@ -2357,24 +2203,6 @@
           {
             "ceiling": 4093,
             "floor": 901
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "forr-rt2->doe-nnsa-forr:1ge:site_conn-a_v4:show:intercloud",
-          "ge-0/0/3.0"
-        ],
-        "urn": "forr-rt2:ge-0/0/3",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
           }
         ],
         "reservableEgressBw": 1000
@@ -2775,24 +2603,6 @@
           {
             "ceiling": 4093,
             "floor": 17
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "pantex-rt3->es-stub:ge:access-local:hide:intracloud",
-          "ge-1/0/0.0"
-        ],
-        "urn": "pantex-rt3:ge-1/0/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
           }
         ],
         "reservableEgressBw": 1000
@@ -4069,60 +3879,6 @@
       {
         "reservableIngressBw": 1000,
         "tags": [
-          "snla-rt3->doe-nnsa-albq:1ge:site_conn-a_securenet_v4:show:intercloud",
-          "ge-1/1/3.0"
-        ],
-        "urn": "snla-rt3:ge-1/1/3",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "snla-rt3->nga-snla:1ge:site_conn-d_v4:show:intercloud",
-          "ge-1/1/2.0"
-        ],
-        "urn": "snla-rt3:ge-1/1/2",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "snla-rt3->nga-snla:1ge:site_conn-c_v4:show:intercloud",
-          "ge-1/1/1.0"
-        ],
-        "urn": "snla-rt3:ge-1/1/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
           "snla-rt3->snla-pt1:ge:perf-test:show:intercloud",
           "ge-1/0/2.911"
         ],
@@ -4142,24 +3898,6 @@
           {
             "ceiling": 4093,
             "floor": 916
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "snla-rt3->es-stub:fe:access-local:show:intracloud",
-          "ge-1/0/3.0"
-        ],
-        "urn": "snla-rt3:ge-1/0/3",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
           }
         ],
         "reservableEgressBw": 1000
@@ -4646,26 +4384,6 @@
     "type": "ROUTER",
     "ports": [
       {
-        "ipv4Address": "134.55.40.198",
-        "reservableIngressBw": 100000,
-        "urn": "hous-cr5:1/1/1",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 100000,
-        "ifce": "to_elpa-cr5_ip-a"
-      },
-      {
-        "ipv4Address": "134.55.39.49",
-        "reservableIngressBw": 100000,
-        "urn": "hous-cr5:3/1/1",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 100000,
-        "ifce": "to_nash-cr5_ip-a"
-      },
-      {
         "ipv4Address": "134.55.217.173",
         "reservableIngressBw": 10000,
         "urn": "hous-cr5:10/1/3",
@@ -4689,6 +4407,36 @@
         ],
         "reservableEgressBw": 10000,
         "ifce": "to_pantex-rt3_ip-a"
+      },
+      {
+        "ipv4Address": "134.55.40.198",
+        "reservableIngressBw": 100000,
+        "urn": "hous-cr5:1/1/1",
+        "capabilities": [
+          "MPLS"
+        ],
+        "reservableEgressBw": 100000,
+        "ifce": "to_elpa-cr5_ip-a"
+      },
+      {
+        "ipv4Address": "134.55.39.49",
+        "reservableIngressBw": 100000,
+        "urn": "hous-cr5:3/1/1",
+        "capabilities": [
+          "MPLS"
+        ],
+        "reservableEgressBw": 100000,
+        "ifce": "to_nash-cr5_ip-a"
+      },
+      {
+        "ipv4Address": "134.55.43.109",
+        "reservableIngressBw": 100000,
+        "urn": "hous-cr5:2/1/1",
+        "capabilities": [
+          "MPLS"
+        ],
+        "reservableEgressBw": 100000,
+        "ifce": "to_kans-cr5_ip-a"
       },
       {
         "reservableIngressBw": 10000,
@@ -4742,24 +4490,6 @@
           {
             "ceiling": 4094,
             "floor": 3342
-          }
-        ],
-        "reservableEgressBw": 100000
-      },
-      {
-        "reservableIngressBw": 100000,
-        "tags": [
-          "hous-cr5->kans-cr5:100ge:ip-a:show:intracloud",
-          "to_kans-cr5_ip-a"
-        ],
-        "urn": "hous-cr5:2/1/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4094,
-            "floor": 2
           }
         ],
         "reservableEgressBw": 100000
@@ -6538,34 +6268,6 @@
         "ifce": "ge-1/1/3.5"
       },
       {
-        "ipv4Address": "134.55.218.18",
-        "reservableIngressBw": 10000,
-        "urn": "ga-rt2:xe-0/0/0",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 10000,
-        "ifce": "xe-0/0/0.0"
-      },
-      {
-        "reservableIngressBw": 10000,
-        "tags": [
-          "ga-rt2->ga(as3431):10ge:site_conn-a_v4:show:intercloud",
-          "xe-0/1/0.0"
-        ],
-        "urn": "ga-rt2:xe-0/1/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 10000
-      },
-      {
         "reservableIngressBw": 10000,
         "tags": [
           "ga-rt2->ga-pt1:10ge:perf-test:show:intercloud",
@@ -6707,26 +6409,6 @@
         "ifce": "xe-3/2/0.5"
       },
       {
-        "ipv4Address": "134.55.219.78",
-        "reservableIngressBw": 10000,
-        "urn": "llnl-mr2:xe-2/0/0",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 10000,
-        "ifce": "xe-2/0/0.0"
-      },
-      {
-        "ipv4Address": "134.55.219.65",
-        "reservableIngressBw": 10000,
-        "urn": "llnl-mr2:xe-0/1/0",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 10000,
-        "ifce": "xe-0/1/0.0"
-      },
-      {
         "reservableIngressBw": 10000,
         "tags": [
           "llnl-mr2->llnl(as44):10ge:site_conn-d_gdo_v4:show:intercloud",
@@ -6748,24 +6430,6 @@
           {
             "ceiling": 4093,
             "floor": 47
-          }
-        ],
-        "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 10000,
-        "tags": [
-          "llnl-mr2->snll(as3562):10ge:site_conn-b_secondary_v4:show:intercloud",
-          "xe-1/1/0.0"
-        ],
-        "urn": "llnl-mr2:xe-1/1/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
           }
         ],
         "reservableEgressBw": 10000
@@ -6821,42 +6485,6 @@
           }
         ],
         "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "llnl-mr2->doe-nnsa-llnl:1ge:site_conn-a_v4:show:intercloud",
-          "ge-3/1/2.0"
-        ],
-        "urn": "llnl-mr2:ge-3/1/2",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "llnl-mr2->llnl:1ge:site_conn-g_onennsa_v4:show:intercloud",
-          "ge-3/0/7.0"
-        ],
-        "urn": "llnl-mr2:ge-3/0/7",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
       },
       {
         "reservableIngressBw": 1000,
@@ -8312,16 +7940,6 @@
         "ifce": "ge-0/1/0.5"
       },
       {
-        "ipv4Address": "134.55.217.165",
-        "reservableIngressBw": 1000,
-        "urn": "doe-gtn-rt2:ge-0/0/0",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 1000,
-        "ifce": "ge-0/0/0.0"
-      },
-      {
         "reservableIngressBw": 1000,
         "tags": [
           "doe-gtn-rt2->doe-pt1:ge:perf-test:show:intercloud",
@@ -8350,60 +7968,6 @@
       {
         "reservableIngressBw": 1000,
         "tags": [
-          "doe-gtn-rt2->doe-net:1ge:conn-a_v4v6:show:intercloud",
-          "ge-0/0/2.0"
-        ],
-        "urn": "doe-gtn-rt2:ge-0/0/2",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "doe-gtn-rt2->doe-sc-gtn:1ge:site_conn-a_v4:show:intercloud",
-          "ge-0/0/1.0"
-        ],
-        "urn": "doe-gtn-rt2:ge-0/0/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "doe-gtn-rt2->es-stub:fe:access-local:show:intracloud",
-          "ge-0/1/2.0"
-        ],
-        "urn": "doe-gtn-rt2:ge-0/1/2",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
           "doe-gtn-rt2->doe-sc-gtn:1ge(vlan):site_conn-b_v4_scitvpn:show:intercloud",
           "ge-0/1/3.1820"
         ],
@@ -8422,24 +7986,6 @@
           }
         ],
         "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 100,
-        "tags": [
-          "doe-gtn-rt2->doe-nnsa-gtn:fe:site_conn-a_v4:show:intercloud",
-          "ge-0/1/1.0"
-        ],
-        "urn": "doe-gtn-rt2:ge-0/1/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 100
       }
     ]
   },
@@ -8454,16 +8000,6 @@
     "model": "JUNIPER_MX",
     "type": "ROUTER",
     "ports": [
-      {
-        "ipv4Address": "134.55.218.17",
-        "reservableIngressBw": 10000,
-        "urn": "sdsc-sdn2:xe-1/1/0",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 10000,
-        "ifce": "xe-1/1/0.0"
-      },
       {
         "ipv4Address": "134.55.217.153",
         "reservableIngressBw": 10000,
@@ -10615,44 +10151,6 @@
         "ifce": "xe-2/2/0.5"
       },
       {
-        "ipv4Address": "134.55.219.77",
-        "reservableIngressBw": 10000,
-        "urn": "snll-mr2:xe-2/0/0",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 10000,
-        "ifce": "xe-2/0/0.0"
-      },
-      {
-        "ipv4Address": "134.55.219.66",
-        "reservableIngressBw": 10000,
-        "urn": "snll-mr2:xe-1/1/0",
-        "capabilities": [
-          "MPLS"
-        ],
-        "reservableEgressBw": 10000,
-        "ifce": "xe-1/1/0.0"
-      },
-      {
-        "reservableIngressBw": 10000,
-        "tags": [
-          "snll-mr2->snll(as3562):10ge:site_conn-a_primary_v4v6:show:intercloud",
-          "xe-0/1/0.0"
-        ],
-        "urn": "snll-mr2:xe-0/1/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 10000
-      },
-      {
         "reservableIngressBw": 10000,
         "tags": [
           "snll-mr2->snll-pt1:10ge(vlan):perf-test:show:intercloud",
@@ -10800,24 +10298,6 @@
         ],
         "reservableEgressBw": 10000,
         "ifce": "xe-1/0/0.5"
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "ornl-rt4->es-stub:fe:access-local:show:intracloud",
-          "ge-0/0/0.0"
-        ],
-        "urn": "ornl-rt4:ge-0/0/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
       },
       {
         "ipv4Address": "134.55.42.17",
@@ -11446,26 +10926,6 @@
       {
         "reservableIngressBw": 1000,
         "tags": [
-          "lbl-mr2->ntp-west:ge:ip:show:intercloud",
-          "ge-9/1/3.0",
-          "lbl-mr2->ntp-west:ge:ip:show:intercloud",
-          "ge-9/1/3.0"
-        ],
-        "urn": "lbl-mr2:ge-9/1/3",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
           "lbl-mr2->test-owamp1:ge::show:test",
           "ge-9/1/2.919"
         ],
@@ -11536,42 +10996,6 @@
       {
         "reservableIngressBw": 1000,
         "tags": [
-          "lbl-mr2->icsi(as3970):1ge:site_conn-a_v4:hide:intercloud",
-          "ge-9/0/6.0"
-        ],
-        "urn": "lbl-mr2:ge-9/0/6",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 10000,
-        "tags": [
-          "lbl-mr2->lbl-diskpt3:10ge(vlan):perf-test:show:intercloud",
-          "xe-9/2/0.0"
-        ],
-        "urn": "lbl-mr2:xe-9/2/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
           "lbl-mr2->lbnl(as63331):1ge:site_conn-e_wireless_v4:show:intercloud",
           "ge-9/0/4.1124"
         ],
@@ -11591,96 +11015,6 @@
           {
             "ceiling": 4093,
             "floor": 1127
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "lbl-mr2->icsi:1ge:site_conn-b_v4:hide:intercloud",
-          "ge-9/0/5.0"
-        ],
-        "urn": "lbl-mr2:ge-9/0/5",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "lbl-mr2->lbl-owamp:ge::show:intercloud",
-          "ge-9/0/2.0"
-        ],
-        "urn": "lbl-mr2:ge-9/0/2",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "lbl-mr2->esnet:1ge:site_nlnog-ring-west_v4:hide:intercloud",
-          "ge-9/0/3.0"
-        ],
-        "urn": "lbl-mr2:ge-9/0/3",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "lbl-mr2->doe-sc-bso:1ge:site_conn-a_v4:show:na",
-          "ge-9/1/9.0"
-        ],
-        "urn": "lbl-mr2:ge-9/1/9",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "lbl-mr2->lbnl-gw:ge:security-plan:show:intracloud",
-          "ge-9/0/1.0"
-        ],
-        "urn": "lbl-mr2:ge-9/0/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
           }
         ],
         "reservableEgressBw": 1000
@@ -11864,24 +11198,6 @@
         "reservableEgressBw": 10000
       },
       {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "lbl-mr2->nps:1ge:site_conn-a_v4:show:intercloud",
-          "ge-9/0/7.0"
-        ],
-        "urn": "lbl-mr2:ge-9/0/7",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4093,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
-      },
-      {
         "reservableIngressBw": 10000,
         "tags": [
           "lbl-mr2->lbl-tb-of-3-p17:10ge:of-testbed:show:na"
@@ -11931,23 +11247,6 @@
           }
         ],
         "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 1000,
-        "tags": [
-          "lbl-mr2->noviflow:ge:of-testbed:show:na"
-        ],
-        "urn": "lbl-mr2:ge-9/0/0",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4094,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 1000
       },
       {
         "reservableIngressBw": 10000,
@@ -12049,6 +11348,16 @@
         "ifce": "to_chic-cr5_ip-a"
       },
       {
+        "ipv4Address": "134.55.43.110",
+        "reservableIngressBw": 100000,
+        "urn": "kans-cr5:3/1/1",
+        "capabilities": [
+          "MPLS"
+        ],
+        "reservableEgressBw": 100000,
+        "ifce": "to_hous-cr5_ip-a"
+      },
+      {
         "ipv4Address": "134.55.49.58",
         "reservableIngressBw": 100000,
         "urn": "kans-cr5:2/1/1",
@@ -12141,24 +11450,6 @@
           }
         ],
         "reservableEgressBw": 10000
-      },
-      {
-        "reservableIngressBw": 100000,
-        "tags": [
-          "kans-cr5->hous-cr5:100ge:ip-a:show:intracloud",
-          "to_hous-cr5_ip-a"
-        ],
-        "urn": "kans-cr5:3/1/1",
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableVlans": [
-          {
-            "ceiling": 4094,
-            "floor": 2
-          }
-        ],
-        "reservableEgressBw": 100000
       },
       {
         "reservableIngressBw": 10000,

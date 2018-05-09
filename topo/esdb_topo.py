@@ -98,7 +98,7 @@ def main():
     # in particular, we should have gotten only the current snapshot.
     snapshot = r.json()['topology_snapshots'][0]['data']
     today = snapshot['today']
-    #    print json.dumps(today, indent=2)
+    # print json.dumps(today, indent=2)
 
     # Post-processing of today.json.
     # Get information about routers, ISIS adjacencies, router ports, and IPv4 addresses.
@@ -245,7 +245,7 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=Non
                         if vlan is None:
                             all_vlans_known = False
                         #                            print "could not find vlan id for "+device["urn"]+":"+names["name"]
-                        elif vlan == 0:
+                        elif int(vlan) == 0:
                             untagged = True
                         else:
                             all_vlans.append(vlan)
@@ -269,17 +269,25 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=Non
 
                         ifce_data["reservableVlans"] = make_reservable_vlans(all_vlans, all_vlans_known)
 
+                    keep_port = port_in_igp or not untagged
+
                     found_port = False
+                    port_to_remove = None
                     for out_port in device["ports"]:
                         if out_port["urn"] == ifce_data["urn"]:
                             found_port = True
+                            if not keep_port:
+                                port_to_remove = out_port
+                            else:
+                                out_port["capabilities"] = ifce_data["capabilities"]
+                                out_port["reservableIngressBw"] = ifce_data["reservableIngressBw"]
+                                out_port["reservableEgressBw"] = ifce_data["reservableEgressBw"]
+                                if "reservableVlans" in ifce_data.keys():
+                                    out_port["reservableVlans"] = ifce_data["reservableVlans"]
+                    if port_to_remove:
+                        device["ports"].remove(port_to_remove)
 
-                            out_port["capabilities"] = ifce_data["capabilities"]
-                            out_port["reservableIngressBw"] = ifce_data["reservableIngressBw"]
-                            out_port["reservableEgressBw"] = ifce_data["reservableEgressBw"]
-                            if "reservableVlans" in ifce_data.keys():
-                                out_port["reservableVlans"] = ifce_data["reservableVlans"]
-                    if not found_port:
+                    if not found_port and keep_port:
                         device["ports"].append(ifce_data)
 
 
