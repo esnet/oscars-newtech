@@ -1,16 +1,19 @@
-package net.es.oscars.migration.input;
+package net.es.oscars.web.simple;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InHop {
+public class Junction {
     protected String device;
-    protected String port;
-    protected String addr;
+    protected List<Fixture> fixtures = new ArrayList<>();
+
 }

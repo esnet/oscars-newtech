@@ -45,31 +45,39 @@ public class MigrationEngine {
         topoService.updateTopo();
 
         List<InResv> resvs = this.readJson();
-        for (InResv resv : resvs) {
+        int num = 0;
+        int deleted = 0;
+        int failed = 0;
 
-            Connection c = this.toConnection(resv);
-//            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(c);
-//            log.debug(pretty);
-            Optional<Connection> maybeExists = connRepo.findByConnectionId(c.getConnectionId());
+        for (InResv resv : resvs) {
+            // delete old
+            Optional<Connection> maybeExists = connRepo.findByConnectionId(resv.getGri());
             if (maybeExists.isPresent()) {
-                log.info("deleting old connection");
                 connRepo.delete(maybeExists.get());
                 connRepo.flush();
+                deleted++;
             }
-            connRepo.save(c);
             List<RouterCommands> existing = rcRepo.findByConnectionId(resv.getGri());
             if (existing.size() > 0) {
-                log.info("deleting old router commands");
                 rcRepo.delete(existing);
                 rcRepo.flush();
-
             }
-            List<RouterCommands> rc = this.toCommands(resv);
-            rcRepo.save(rc);
-//        if (resv.getGri().equals("es.net-6338")) {
-//        }
+
+            Connection c = this.toConnection(resv);
+            if (c != null) {
+//            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(c);
+//            log.debug(pretty);
+                connRepo.save(c);
+                List<RouterCommands> rc = this.toCommands(resv);
+                rcRepo.save(rc);
+                num++;
+
+            } else {
+                failed ++;
+            }
         }
-        log.info("migrated "+resvs.size()+" reservations");
+        log.info("deleted " + deleted + " previously migrated connections");
+        log.info("migrated " + num + " reservations, but "+failed+" failed ");
 
     }
 
@@ -91,6 +99,7 @@ public class MigrationEngine {
 
     public Connection toConnection(InResv inResv) {
         Map<String, TopoUrn> urnMap = topoService.getTopoUrnMap();
+        boolean conversionError = false;
         /*
         try {
             String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(urnMap);
@@ -126,11 +135,13 @@ public class MigrationEngine {
             // log.info("adding junction for " + inJunction);
             if (!urnMap.containsKey(inJunction)) {
                 log.error("could not find device urn for " + inJunction);
+                conversionError = true;
                 continue;
             }
             TopoUrn deviceUrn = urnMap.get(inJunction);
             if (!deviceUrn.getUrnType().equals(UrnType.DEVICE)) {
                 log.error("wrong urn type for " + inJunction);
+                conversionError = true;
                 continue;
             }
             Set<CommandParam> jcps = new HashSet<>();
@@ -167,12 +178,19 @@ public class MigrationEngine {
                                 .build());
                     }
                     if (ipr.getWhat().equals("sdp")) {
+                        String otherJunction = inJunction;
+                        for (String j : inResv.getCmp().getJunctions()) {
+                            if (!j.equals(inJunction)) {
+                                otherJunction = j;
+                            }
+                        }
                         jcps.add(CommandParam.builder()
                                 .connectionId(inResv.getGri())
                                 .schedule(s)
                                 .resource(ipr.getResource())
                                 .paramType(CommandParamType.ALU_SDP_ID)
                                 .urn(inJunction)
+                                .intent(otherJunction)
                                 .build());
                     }
 
@@ -194,12 +212,14 @@ public class MigrationEngine {
 
             if (!jMap.containsKey(inFixture.getJunction())) {
                 log.error("no junction for " + inFixture.getJunction());
+                conversionError = true;
                 continue;
             }
             VlanJunction vj = jMap.get(inFixture.getJunction());
             String portUrnStr = inFixture.getJunction() + ":" + inFixture.getPort();
             if (!urnMap.containsKey(portUrnStr)) {
-                log.error("port urn not found in topo " + portUrnStr);
+                log.error("edge port urn not found in topo " + portUrnStr);
+                conversionError = true;
                 continue;
             }
             EthFixtureType et = EthFixtureType.ALU_SAP;
@@ -253,27 +273,41 @@ public class MigrationEngine {
                     .build());
 
             for (InHop inHop : inResv.getCmp().getPipe()) {
+                String renamed = renamedPorts(inHop.getPort());
+                if (renamed != null) {
+                    inHop.setPort(renamed);
+                }
+
                 String portUrn = inHop.getDevice() + ":" + inHop.getPort();
+
                 if (!urnMap.containsKey(portUrn)) {
                     boolean found = false;
                     if (!urnMap.containsKey(inHop.getDevice())) {
-                        log.error("device urn not found in topo " + inHop.getDevice());
+                        log.error("hop device urn not found in topo " + inHop.getDevice());
+                        conversionError = true;
                         continue;
                     }
                     TopoUrn dev = urnMap.get(inHop.getDevice());
                     if (!dev.getUrnType().equals(UrnType.DEVICE)) {
-                        log.error("device urn wrong type in topo " + inHop.getDevice());
+                        log.error("hop device urn wrong type in topo " + inHop.getDevice());
+                        conversionError = true;
                         continue;
                     }
                     for (Port p : dev.getDevice().getPorts()) {
                         if (inHop.getPort().equals(p.getIfce())) {
                             found = true;
-                            log.info("found " + portUrn + " as " + p.getUrn() + " instead");
                             portUrn = p.getUrn();
+                        } else if (inHop.getAddr().equals(p.getIpv4Address())) {
+
+                            found = true;
+                            portUrn = p.getUrn();
+
                         }
                     }
                     if (!found) {
-                        log.error("a port urn not found in topo " + portUrn);
+                        log.error("hop port urn not found in topo " + portUrn);
+                        conversionError = true;
+                        continue;
                     }
                 }
 
@@ -334,6 +368,10 @@ public class MigrationEngine {
 
         connSvc.archiveFromReserved(c);
 
+        if (conversionError) {
+            log.error("Error(s) converting " + inResv.getGri());
+            return null;
+        }
         return c;
     }
 
@@ -355,4 +393,13 @@ public class MigrationEngine {
 
     }
 
+    public String renamedPorts(String port) {
+        if (port.equals("to_lond-cr5_sdn-a")) {
+            return "to_lond-cr5_ip-c";
+        } else if (port.equals("to_aofa-cr5_sdn-a")) {
+            return "to_aofa-cr5_ip-c";
+        } else {
+            return null;
+        }
+    }
 }

@@ -4,6 +4,10 @@
 
 import MySQLdb as mdb
 import json
+import yaml
+
+stream = open('ifce-addrs.yaml', 'r')
+addrs = yaml.load(stream)
 
 # connect and make cursors
 rdb = mdb.connect(host="localhost",
@@ -96,6 +100,10 @@ for res in rcur.fetchall():
     firstHop = True
     for pathElem in cur.fetchall():
         urn = pathElem['urn']
+        addr = ''
+        if urn in addrs:
+            addr = addrs[urn]
+
         urn = urn.replace('urn:ogf:network:domain=es.net:node=', '')
         urn = urn.replace('port=', '')
         urn = urn.replace('link=', '')
@@ -116,7 +124,8 @@ for res in rcur.fetchall():
         zPort = parts[1]
         hops.append({
             'device': parts[0],
-            'port': parts[1]
+            'port': parts[1],
+            'addr': addr
         })
         firstHop = False
 

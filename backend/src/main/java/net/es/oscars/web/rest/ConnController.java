@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
 
 @RestController
 @Slf4j
-public class ConnControler {
+public class ConnController {
     @Autowired
     private Startup startup;
 

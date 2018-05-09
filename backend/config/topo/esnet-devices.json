@@ -2578,7 +2578,7 @@
           "cern-272-cr5->cern(as513):agg-10ge:site_conn-h:show:intercloud", 
           "to_cern_ip-a"
         ], 
-        "urn": "cern-272-cr5:BLANK", 
+        "urn": "cern-272-cr5:lag-1",
         "capabilities": [
           "ETHERNET"
         ], 
@@ -2589,6 +2589,22 @@
           }
         ], 
         "reservableEgressBw": 20000
+      },
+      {
+        "reservableIngressBw": 100000,
+        "tags": [
+        ],
+        "urn": "cern-272-cr5:1/2/1",
+        "capabilities": [
+          "ETHERNET"
+        ],
+        "reservableVlans": [
+          {
+            "ceiling": "2999",
+            "floor": "2000"
+          }
+        ],
+        "reservableEgressBw": 100000
       }
     ]
   }, 
@@ -6093,7 +6109,7 @@
           "cern-513-cr5->cern(as513):agg-10ge:site_conn-g:show:intercloud", 
           "to_cern_ip-a"
         ], 
-        "urn": "cern-513-cr5:BLANK", 
+        "urn": "cern-513-cr5:lag-1",
         "capabilities": [
           "ETHERNET"
         ], 
