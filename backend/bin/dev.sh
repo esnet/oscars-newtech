@@ -7,7 +7,7 @@ tabname "oscars backend"
 # Find the OSCARS backend.jar file
 JARFILE=""
 # Artifact location in target directory, for running in-tree
-LOCALJAR=`echo target/backend-*.jar`
+LOCALJAR=`echo target/backend-*-exec.jar`
 if [ -e $LOCALJAR ]; then
     JARFILE=$LOCALJAR
 fi

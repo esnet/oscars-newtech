@@ -2,18 +2,18 @@
 function tabname {
   echo -n -e "\033]0;$1\007"
 }
-tabname "oscars backend"
+tabname "oscars migration"
 
-# Find the OSCARS backend.jar file
+# Find the OSCARS migration.jar file
 JARFILE=""
 # Artifact location in target directory, for running in-tree
-LOCALJAR=`echo target/backend-*-exec.jar`
+LOCALJAR=`echo target/migration-*.jar`
 if [ -e $LOCALJAR ]; then
     JARFILE=$LOCALJAR
 fi
 # Make sure we can find it
 if [ "x$JARFILE" = "x" ]; then
-    echo "Unable to locate OSCARS backend.jar file"
+    echo "Unable to locate OSCARS migration.jar file"
     exit 1
 fi
 

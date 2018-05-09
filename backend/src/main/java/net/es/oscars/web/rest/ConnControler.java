@@ -149,7 +149,7 @@ public class ConnControler {
         }
     }
 
-    @RequestMapping(value = "/protected/conn/mode/{connectionId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/protected/conn/mode/{connectionId:.+}", method = RequestMethod.POST)
     @ResponseBody
     @Transactional
     public Connection setMode(@PathVariable String connectionId, @RequestBody String mode)
@@ -175,7 +175,7 @@ public class ConnControler {
 
     }
 
-    @RequestMapping(value = "/api/conn/info/{connectionId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/conn/info/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     public Connection info(@PathVariable String connectionId) throws StartupException {
         if (startup.isInStartup()) {
@@ -185,8 +185,10 @@ public class ConnControler {
         }
 
         if (connectionId == null || connectionId.equals("")) {
+            log.info("no connectionId!");
             return null;
         }
+//        log.info("looking for connectionId "+ connectionId);
         return connRepo.findByConnectionId(connectionId).orElse(null);
     }
 

@@ -7,7 +7,7 @@ if [ -e lib/backend.jar ]; then
     JARFILE="lib/backend.jar"
 fi
 # Artifact location in target directory, for running in-tree
-LOCALJAR=`echo target/backend-*.jar`
+LOCALJAR=`echo target/backend-*-exec.jar`
 if [ -e $LOCALJAR ]; then
     JARFILE=$LOCALJAR
 fi

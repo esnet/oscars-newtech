@@ -273,6 +273,9 @@
                         <goals>
                             <goal>repackage</goal>
                         </goals>
+                        <configuration>
+                            <classifier>exec</classifier>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -325,12 +328,12 @@
                             <directory>${rpm.home}/lib</directory>
                             <sources>
                                 <source>
-                                    <location>${project.basedir}/target/${project.artifactId}-${project.version}.jar
+                                    <location>${project.basedir}/target/${project.artifactId}-${project.version}-exec.jar
                                     </location>
                                 </source>
                                 <softlinkSource>
                                     <destination>${project.artifactId}.jar</destination>
-                                    <location>${project.artifactId}-${project.version}.jar</location>
+                                    <location>${project.artifactId}-${project.version}-exec.jar</location>
                                 </softlinkSource>
                             </sources>
                         </mapping>

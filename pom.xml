@@ -36,6 +36,7 @@
         <module>pss</module>
         <module>backend</module>
         <module>nsi</module>
+        <module>migration</module>
     </modules>
     <profiles>
         <profile>

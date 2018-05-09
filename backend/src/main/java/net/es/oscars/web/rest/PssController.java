@@ -52,7 +52,7 @@ public class PssController {
         log.warn("requested an item which did not exist", ex);
     }
 
-    @RequestMapping(value = "/protected/pss/commands/{connectionId}/{deviceUrn}", method = RequestMethod.GET)
+    @RequestMapping(value = "/protected/pss/commands/{connectionId:.+}/{deviceUrn}", method = RequestMethod.GET)
     @ResponseBody
     public List<RouterCommands> commands(@PathVariable String connectionId, @PathVariable String deviceUrn) throws StartupException {
         if (startup.isInStartup()) {
@@ -64,7 +64,7 @@ public class PssController {
     }
 
 
-    @RequestMapping(value = "/protected/pss/commands/{connectionId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/protected/pss/commands/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     public List<RouterCommands> commands(@PathVariable String connectionId) throws StartupException {
         if (startup.isInStartup()) {
@@ -77,7 +77,7 @@ public class PssController {
     }
 
 
-    @RequestMapping(value = "/protected/pss/build/{connectionId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/protected/pss/build/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     public void build(@PathVariable String connectionId) throws StartupException, PSSException {
         if (startup.isInStartup()) {
@@ -113,7 +113,7 @@ public class PssController {
             connRepo.save(c);
         }
     }
-    @RequestMapping(value = "/protected/pss/dismantle/{connectionId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/protected/pss/dismantle/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     @Transactional
     public void dismantle(@PathVariable String connectionId) throws StartupException, PSSException {

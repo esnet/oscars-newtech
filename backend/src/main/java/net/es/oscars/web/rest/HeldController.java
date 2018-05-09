@@ -38,7 +38,7 @@ public class HeldController {
     }
 
 
-    @RequestMapping(value = "/protected/held/{connectionId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/protected/held/{connectionId:.+}", method = RequestMethod.POST)
     @ResponseBody
     public Instant held_create_or_update(Authentication authentication,
                                          @RequestBody Connection conn,

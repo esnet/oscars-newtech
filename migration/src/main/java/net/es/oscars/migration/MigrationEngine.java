@@ -1,0 +1,358 @@
+package net.es.oscars.migration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.dto.pss.cmd.CommandType;
+import net.es.oscars.dto.topo.enums.DeviceModel;
+import net.es.oscars.migration.input.*;
+import net.es.oscars.pss.db.RouterCommandsRepository;
+import net.es.oscars.pss.ent.RouterCommands;
+import net.es.oscars.resv.db.ConnectionRepository;
+import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.BuildMode;
+import net.es.oscars.resv.enums.EthFixtureType;
+import net.es.oscars.resv.enums.Phase;
+import net.es.oscars.resv.enums.State;
+import net.es.oscars.resv.svc.ConnService;
+import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.topo.ent.Port;
+import net.es.oscars.topo.enums.CommandParamType;
+import net.es.oscars.topo.enums.UrnType;
+import net.es.oscars.topo.svc.TopoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.*;
+
+@Component
+@Slf4j
+@Transactional
+public class MigrationEngine {
+    @Autowired
+    protected ConnectionRepository connRepo;
+    @Autowired
+    protected RouterCommandsRepository rcRepo;
+    @Autowired
+    protected ConnService connSvc;
+    @Autowired
+    protected TopoService topoService;
+
+    public void runEngine() throws Exception {
+        topoService.updateTopo();
+
+        List<InResv> resvs = this.readJson();
+        for (InResv resv : resvs) {
+
+            Connection c = this.toConnection(resv);
+//            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(c);
+//            log.debug(pretty);
+            Optional<Connection> maybeExists = connRepo.findByConnectionId(c.getConnectionId());
+            if (maybeExists.isPresent()) {
+                log.info("deleting old connection");
+                connRepo.delete(maybeExists.get());
+                connRepo.flush();
+            }
+            connRepo.save(c);
+            List<RouterCommands> existing = rcRepo.findByConnectionId(resv.getGri());
+            if (existing.size() > 0) {
+                log.info("deleting old router commands");
+                rcRepo.delete(existing);
+                rcRepo.flush();
+
+            }
+            List<RouterCommands> rc = this.toCommands(resv);
+            rcRepo.save(rc);
+//        if (resv.getGri().equals("es.net-6338")) {
+//        }
+        }
+        log.info("migrated "+resvs.size()+" reservations");
+
+    }
+
+    public List<InResv> readJson() {
+        String filename = "0_6.json";
+        File jsonFile = new File(filename);
+        ObjectMapper mapper = new ObjectMapper();
+        List<InResv> resvs = new ArrayList<>();
+        try {
+            resvs = Arrays.asList(mapper.readValue(jsonFile, InResv[].class));
+            log.info("deserialized " + resvs.size() + " reservations");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return resvs;
+
+    }
+
+
+    public Connection toConnection(InResv inResv) {
+        Map<String, TopoUrn> urnMap = topoService.getTopoUrnMap();
+        /*
+        try {
+            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(urnMap);
+            log.debug(pretty);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        */
+
+
+        List<Tag> tags = new ArrayList<>();
+        tags.add(Tag.builder().category("oscars").contents("migrated").build());
+
+        if (inResv.getMisc().getProduction()) {
+            tags.add(Tag.builder().category("production").contents("true").build());
+        } else {
+            tags.add(Tag.builder().category("production").contents("false").build());
+        }
+        Schedule s = Schedule.builder()
+                .connectionId(inResv.getGri())
+                .phase(Phase.RESERVED)
+                .refId(inResv.getGri() + "-SCHEDULE")
+                .beginning(Instant.ofEpochSecond(inResv.getSchedule().getStart()))
+                .ending(Instant.ofEpochSecond(inResv.getSchedule().getEnd()))
+                .build();
+
+        List<VlanFixture> fixtures = new ArrayList<>();
+        List<VlanJunction> junctions = new ArrayList<>();
+        List<VlanPipe> pipes = new ArrayList<>();
+        Map<String, VlanJunction> jMap = new HashMap<>();
+
+        for (String inJunction : inResv.getCmp().getJunctions()) {
+            // log.info("adding junction for " + inJunction);
+            if (!urnMap.containsKey(inJunction)) {
+                log.error("could not find device urn for " + inJunction);
+                continue;
+            }
+            TopoUrn deviceUrn = urnMap.get(inJunction);
+            if (!deviceUrn.getUrnType().equals(UrnType.DEVICE)) {
+                log.error("wrong urn type for " + inJunction);
+                continue;
+            }
+            Set<CommandParam> jcps = new HashSet<>();
+
+            Collections.sort(inResv.getPss().getRes().getVplsId());
+            for (Integer vplsId : inResv.getPss().getRes().getVplsId()) {
+                jcps.add(CommandParam.builder()
+                        .connectionId(inResv.getGri())
+                        .schedule(s)
+                        .resource(vplsId)
+                        .paramType(CommandParamType.VC_ID)
+                        .urn(inJunction)
+                        .build());
+                if (deviceUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
+                    jcps.add(CommandParam.builder()
+                            .connectionId(inResv.getGri())
+                            .schedule(s)
+                            .resource(vplsId)
+                            .paramType(CommandParamType.ALU_SVC_ID)
+                            .urn(inJunction)
+                            .build());
+                }
+            }
+            for (InPssResResource ipr : inResv.getPss().getRes().getResources()) {
+                if (ipr.getDevice().equals(inJunction)) {
+                    if (ipr.getWhat().equals("loopback")) {
+                        jcps.add(CommandParam.builder()
+                                .connectionId(inResv.getGri())
+                                .schedule(s)
+                                .resource(ipr.getResource())
+                                .paramType(CommandParamType.VPLS_LOOPBACK)
+                                .urn(inJunction)
+                                .intent(inJunction)
+                                .build());
+                    }
+                    if (ipr.getWhat().equals("sdp")) {
+                        jcps.add(CommandParam.builder()
+                                .connectionId(inResv.getGri())
+                                .schedule(s)
+                                .resource(ipr.getResource())
+                                .paramType(CommandParamType.ALU_SDP_ID)
+                                .urn(inJunction)
+                                .build());
+                    }
+
+                }
+            }
+
+            VlanJunction vj = VlanJunction.builder()
+                    .commandParams(jcps)
+                    .connectionId(inResv.getGri())
+                    .deviceUrn(inJunction)
+                    .refId(inJunction)
+                    .schedule(s)
+                    .build();
+            junctions.add(vj);
+            jMap.put(inJunction, vj);
+        }
+
+        for (InFixture inFixture : inResv.getCmp().getFixtures()) {
+
+            if (!jMap.containsKey(inFixture.getJunction())) {
+                log.error("no junction for " + inFixture.getJunction());
+                continue;
+            }
+            VlanJunction vj = jMap.get(inFixture.getJunction());
+            String portUrnStr = inFixture.getJunction() + ":" + inFixture.getPort();
+            if (!urnMap.containsKey(portUrnStr)) {
+                log.error("port urn not found in topo " + portUrnStr);
+                continue;
+            }
+            EthFixtureType et = EthFixtureType.ALU_SAP;
+            TopoUrn deviceUrn = urnMap.get(inFixture.getJunction());
+            if (!deviceUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
+                et = EthFixtureType.JUNOS_IFCE;
+            }
+            Set<CommandParam> fcps = new HashSet<>();
+            if (deviceUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
+                for (InPssResResource ipr : inResv.getPss().getRes().getResources()) {
+                    if (ipr.getDevice().equals(inFixture.getJunction())) {
+                        if (ipr.getWhat().equals("qos")) {
+                            fcps.add(CommandParam.builder()
+                                    .connectionId(inResv.getGri())
+                                    .schedule(s)
+                                    .resource(ipr.getResource())
+                                    .paramType(CommandParamType.ALU_QOS_POLICY_ID)
+                                    .urn(ipr.getDevice())
+                                    .build());
+                        }
+                    }
+                }
+
+            }
+
+            Vlan v = Vlan.builder()
+                    .connectionId(inResv.getGri())
+                    .schedule(s)
+                    .urn(inFixture.getJunction())
+                    .vlanId(inFixture.getVlan())
+                    .build();
+
+            VlanFixture vf = VlanFixture.builder()
+                    .connectionId(inResv.getGri())
+                    .commandParams(fcps)
+                    .ingressBandwidth(inResv.getMbps())
+                    .egressBandwidth(inResv.getMbps())
+                    .ethFixtureType(et)
+                    .junction(vj)
+                    .portUrn(portUrnStr)
+                    .schedule(s)
+                    .vlan(v)
+                    .build();
+            fixtures.add(vf);
+        }
+
+        if (junctions.size() == 2) {
+            List<EroHop> azERO = new ArrayList<>();
+            azERO.add(EroHop.builder()
+                    .urn(junctions.get(0).getDeviceUrn())
+                    .build());
+
+            for (InHop inHop : inResv.getCmp().getPipe()) {
+                String portUrn = inHop.getDevice() + ":" + inHop.getPort();
+                if (!urnMap.containsKey(portUrn)) {
+                    boolean found = false;
+                    if (!urnMap.containsKey(inHop.getDevice())) {
+                        log.error("device urn not found in topo " + inHop.getDevice());
+                        continue;
+                    }
+                    TopoUrn dev = urnMap.get(inHop.getDevice());
+                    if (!dev.getUrnType().equals(UrnType.DEVICE)) {
+                        log.error("device urn wrong type in topo " + inHop.getDevice());
+                        continue;
+                    }
+                    for (Port p : dev.getDevice().getPorts()) {
+                        if (inHop.getPort().equals(p.getIfce())) {
+                            found = true;
+                            log.info("found " + portUrn + " as " + p.getUrn() + " instead");
+                            portUrn = p.getUrn();
+                        }
+                    }
+                    if (!found) {
+                        log.error("a port urn not found in topo " + portUrn);
+                    }
+                }
+
+                EroHop h = EroHop.builder()
+                        .urn(portUrn)
+                        .build();
+                azERO.add(h);
+            }
+            azERO.add(EroHop.builder()
+                    .urn(junctions.get(1).getDeviceUrn())
+                    .build());
+
+
+            List<EroHop> zaERO = new ArrayList<>();
+            for (EroHop h : azERO) {
+                zaERO.add(EroHop.builder().urn(h.getUrn()).build());
+            }
+            Collections.reverse(zaERO);
+
+            VlanPipe vp = VlanPipe.builder()
+                    .azBandwidth(inResv.getMbps())
+                    .zaBandwidth(inResv.getMbps())
+                    .a(junctions.get(0))
+                    .z(junctions.get(1))
+                    .connectionId(inResv.getGri())
+                    .azERO(azERO)
+                    .zaERO(zaERO)
+                    .schedule(s)
+                    .build();
+
+            pipes.add(vp);
+        }
+
+        Components cmp = Components.builder()
+                .fixtures(fixtures)
+                .junctions(junctions)
+                .pipes(pipes)
+                .build();
+        Reserved resv = Reserved.builder()
+                .connectionId(inResv.getGri())
+                .cmp(cmp)
+                .schedule(s)
+                .build();
+
+
+        Connection c = Connection.builder()
+                .connectionId(inResv.getGri())
+                .description(inResv.getMisc().getDescription())
+                .mode(BuildMode.AUTOMATIC)
+                .phase(Phase.RESERVED)
+                .state(State.ACTIVE)
+                .tags(tags)
+                .username(inResv.getMisc().getUser())
+                .held(null)
+                .archived(null)
+                .reserved(resv)
+                .build();
+
+        connSvc.archiveFromReserved(c);
+
+        return c;
+    }
+
+    public List<RouterCommands> toCommands(InResv inResv) {
+        List<RouterCommands> commands = new ArrayList<>();
+        for (InPssConfig inPssConfig : inResv.getPss().getConfig()) {
+            CommandType ct = CommandType.DISMANTLE;
+            if (inPssConfig.getPhase().equals("BUILD")) {
+                ct = CommandType.BUILD;
+            }
+            commands.add(RouterCommands.builder()
+                    .connectionId(inResv.getGri())
+                    .deviceUrn(inPssConfig.getDevice())
+                    .contents(inPssConfig.getConfig())
+                    .type(ct)
+                    .build());
+        }
+        return commands;
+
+    }
+
+}
