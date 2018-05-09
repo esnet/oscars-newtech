@@ -34,8 +34,8 @@ OUTPUT_ADJCIES = "output/adjacencies.json"
 
 pp = pprint.PrettyPrinter(indent=4)
 
-UNKNOWN_VLAN_RANGE = "2000-2999"
-VLAN_RANGE = "2-4095"
+UNKNOWN_VLAN_RANGE = "2-4094"
+VLAN_RANGE = "2-4094"
 
 
 def get_token(opts):
@@ -89,13 +89,16 @@ def main():
 
     r = requests.get(ESDB_URL + '/topology/today/1',
                      headers=dict(Authorization='Token {0}'.format(token)))
+
     if r.status_code != requests.codes.ok:
         print "error:  " + r.text
         exit(1)
+
     # Get the first snapshot that got returned.  Since we didn't ask for one
     # in particular, we should have gotten only the current snapshot.
     snapshot = r.json()['topology_snapshots'][0]['data']
     today = snapshot['today']
+    #    print json.dumps(today, indent=2)
 
     # Post-processing of today.json.
     # Get information about routers, ISIS adjacencies, router ports, and IPv4 addresses.
@@ -119,7 +122,7 @@ def main():
     merge_isis_ports(oscars_devices=oscars_devices, igp_portmap=igp_portmap)
 
     merge_phy_ports(oscars_devices=oscars_devices, ports=in_ports, igp_portmap=igp_portmap, vlans=vlans)
-#    pp.pprint(oscars_devices)
+    #    pp.pprint(oscars_devices)
     merge_addrs(oscars_devices=oscars_devices, addrs=addrs, isis_adjcies=isis_adjcies)
 
     # Dump output files
@@ -189,8 +192,8 @@ def make_reservable_vlans(used_vlans=None, used_vlans_known=None):
         parts = UNKNOWN_VLAN_RANGE.split("-")
         return [
             {
-                "floor": parts[0],
-                "ceiling": parts[1]
+                "floor": int(parts[0]),
+                "ceiling": int(parts[1])
             }
         ]
 
@@ -213,8 +216,8 @@ def make_reservable_vlans(used_vlans=None, used_vlans_known=None):
         result = []
         for entry in ranges:
             result.append({
-                "floor": entry[0],
-                "ceiling": entry[1]
+                "floor": int(entry[0]),
+                "ceiling": int(entry[1])
             })
         return result
     else:
@@ -281,7 +284,6 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=Non
 
 
 def merge_isis_ports(oscars_devices=None, igp_portmap=None):
-
     for device_name in igp_portmap.keys():
         found_device = False
         for device in oscars_devices:

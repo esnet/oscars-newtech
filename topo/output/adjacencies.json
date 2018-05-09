@@ -56,13 +56,6 @@
     "z": "jgi-mr2:xe-1/1/0"
   }, 
   {
-    "a": "hous-cr5:2/1/1", 
-    "metrics": {
-      "MPLS": 15
-    }, 
-    "z": "kans-cr5:3/1/1"
-  }, 
-  {
     "a": "wash-cr5:4/2/1", 
     "metrics": {
       "MPLS": 1
@@ -163,16 +156,9 @@
   {
     "a": "atla-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 6
     }, 
     "z": "wash-cr5:3/1/1"
-  }, 
-  {
-    "a": "kans-cr5:3/1/1", 
-    "metrics": {
-      "MPLS": 15
-    }, 
-    "z": "hous-cr5:2/1/1"
   }, 
   {
     "a": "albq-cr5:1/1/1", 
@@ -289,7 +275,7 @@
   {
     "a": "wash-cr5:3/1/1", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 6
     }, 
     "z": "atla-cr5:1/1/1"
   }, 
@@ -387,14 +373,14 @@
   {
     "a": "nash-cr5:10/1/3", 
     "metrics": {
-      "MPLS": 22
+      "MPLS": 15
     }, 
     "z": "srs-rt3:ge-1/1/0"
   }, 
   {
     "a": "srs-rt3:ge-1/1/0", 
     "metrics": {
-      "MPLS": 22
+      "MPLS": 15
     }, 
     "z": "nash-cr5:10/1/3"
   }, 
@@ -422,7 +408,7 @@
   {
     "a": "cern-272-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 16
     }, 
     "z": "amst-cr5:1/1/1"
   }, 
@@ -436,7 +422,7 @@
   {
     "a": "amst-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 16
     }, 
     "z": "cern-272-cr5:1/1/1"
   }, 
@@ -478,14 +464,14 @@
   {
     "a": "atla-cr5:10/1/3", 
     "metrics": {
-      "MPLS": 8
+      "MPLS": 9
     }, 
     "z": "srs-rt3:ge-0/1/0"
   }, 
   {
     "a": "srs-rt3:ge-0/1/0", 
     "metrics": {
-      "MPLS": 8
+      "MPLS": 9
     }, 
     "z": "atla-cr5:10/1/3"
   }, 
@@ -520,7 +506,7 @@
   {
     "a": "ornl-rt4:xe-1/0/0", 
     "metrics": {
-      "MPLS": 9
+      "MPLS": 15
     }, 
     "z": "ornl-cr5:10/1/1"
   }, 
@@ -646,7 +632,7 @@
   {
     "a": "ornl-cr5:10/1/1", 
     "metrics": {
-      "MPLS": 9
+      "MPLS": 15
     }, 
     "z": "ornl-rt4:xe-1/0/0"
   }, 
@@ -744,21 +730,21 @@
   {
     "a": "llnl-mr2:xe-3/2/0", 
     "metrics": {
-      "MPLS": 3
+      "MPLS": 1
     }, 
     "z": "sunn-cr5:9/1/3"
   }, 
   {
     "a": "sunn-cr5:9/1/3", 
     "metrics": {
-      "MPLS": 3
+      "MPLS": 1
     }, 
     "z": "llnl-mr2:xe-3/2/0"
   }, 
   {
     "a": "nersc-mr2:xe-2/2/0", 
     "metrics": {
-      "MPLS": 3
+      "MPLS": 4
     }, 
     "z": "sacr-cr5:10/2/1"
   }, 
@@ -793,7 +779,7 @@
   {
     "a": "lond-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 5
+      "MPLS": 6
     }, 
     "z": "amst-cr5:2/1/1"
   }, 
@@ -821,7 +807,7 @@
   {
     "a": "amst-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 5
+      "MPLS": 6
     }, 
     "z": "lond-cr5:2/1/1"
   }, 
@@ -905,7 +891,7 @@
   {
     "a": "amst-cr5:5/1/1", 
     "metrics": {
-      "MPLS": 75
+      "MPLS": 76
     }, 
     "z": "bost-cr5:3/1/1"
   }, 
@@ -919,7 +905,7 @@
   {
     "a": "bost-cr5:3/1/1", 
     "metrics": {
-      "MPLS": 75
+      "MPLS": 76
     }, 
     "z": "amst-cr5:5/1/1"
   }, 
@@ -996,7 +982,7 @@
   {
     "a": "nash-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 12
     }, 
     "z": "atla-cr5:2/1/1"
   }, 
@@ -1017,7 +1003,7 @@
   {
     "a": "atla-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 12
     }, 
     "z": "nash-cr5:2/1/1"
   }, 
@@ -1031,7 +1017,7 @@
   {
     "a": "star-cr5:4/2/1", 
     "metrics": {
-      "MPLS": 22
+      "MPLS": 20
     }, 
     "z": "aofa-cr5:5/1/1"
   }, 
@@ -1052,7 +1038,7 @@
   {
     "a": "aofa-cr5:5/1/1", 
     "metrics": {
-      "MPLS": 22
+      "MPLS": 20
     }, 
     "z": "star-cr5:4/2/1"
   }, 
@@ -1171,7 +1157,7 @@
   {
     "a": "sacr-cr5:10/2/1", 
     "metrics": {
-      "MPLS": 3
+      "MPLS": 4
     }, 
     "z": "nersc-mr2:xe-2/2/0"
   }, 

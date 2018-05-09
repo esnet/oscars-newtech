@@ -15,7 +15,7 @@ trap 'kill %1; kill %2; echo -e "\n\n######   Exiting all OSCARS tasks. ######\n
 
 echo "Starting backend"
 cd "$top_dir/backend"
-java -jar target/backend-1.0.5.jar &
+java -jar target/backend-1.0.5-exec.jar &
 
 echo "Starting PSS"
 cd "$top_dir/pss"

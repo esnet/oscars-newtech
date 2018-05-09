@@ -46,7 +46,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 5
           }
         ], 
@@ -68,7 +68,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -90,7 +90,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 11
           }
         ], 
@@ -108,7 +108,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -130,7 +130,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -148,7 +148,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -279,8 +279,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -305,8 +305,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -323,8 +323,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -345,8 +345,26 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
+          }
+        ], 
+        "reservableEgressBw": 100000
+      }, 
+      {
+        "reservableIngressBw": 100000, 
+        "tags": [
+          "chic-cr5->anl(as683):100ge:site_conn-g_v4v6:show:intercloud", 
+          "to_anl_ip-g"
+        ], 
+        "urn": "chic-cr5:7/2/1", 
+        "capabilities": [
+          "ETHERNET"
+        ], 
+        "reservableVlans": [
+          {
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -373,8 +391,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -391,8 +409,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -448,7 +466,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 663
           }
         ], 
@@ -470,7 +488,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -492,7 +510,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 665
           }
         ], 
@@ -510,7 +528,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -565,7 +583,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -587,7 +605,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -633,7 +651,7 @@
             "floor": 1806
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1821
           }
         ], 
@@ -674,7 +692,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -705,7 +723,7 @@
             "floor": 2116
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2185
           }
         ], 
@@ -727,7 +745,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -749,7 +767,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2112
           }
         ], 
@@ -790,7 +808,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -808,7 +826,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -830,7 +848,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2302
           }
         ], 
@@ -848,7 +866,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -909,8 +927,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -927,8 +945,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -949,8 +967,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -971,8 +989,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -1032,8 +1050,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1054,8 +1072,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1072,8 +1090,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1090,8 +1108,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -1108,8 +1126,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1126,8 +1144,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1207,8 +1225,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1225,8 +1243,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1245,8 +1263,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -1263,8 +1281,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1281,8 +1299,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1357,8 +1375,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1375,8 +1393,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1393,8 +1411,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -1435,7 +1453,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -1476,7 +1494,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -1498,7 +1516,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -1520,7 +1538,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 901
           }
         ], 
@@ -1538,7 +1556,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -1560,7 +1578,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1821
           }
         ], 
@@ -1583,7 +1601,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 6
           }
         ], 
@@ -1704,8 +1722,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1722,8 +1740,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1744,8 +1762,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1762,8 +1780,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -1780,8 +1798,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -1798,8 +1816,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -1843,7 +1861,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -1865,7 +1883,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 11
           }
         ], 
@@ -1883,7 +1901,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -1928,7 +1946,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 652
           }
         ], 
@@ -1950,7 +1968,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -1978,7 +1996,7 @@
             "floor": 910
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -2061,8 +2079,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -2083,8 +2101,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -2101,8 +2119,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -2121,8 +2139,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -2151,8 +2169,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -2169,8 +2187,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -2230,8 +2248,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -2250,8 +2268,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -2305,7 +2323,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1525
           }
         ], 
@@ -2329,7 +2347,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 995
           }
         ], 
@@ -2357,7 +2375,7 @@
             "floor": 910
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -2379,7 +2397,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1505
           }
         ], 
@@ -2401,7 +2419,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -2423,7 +2441,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2017
           }
         ], 
@@ -2475,7 +2493,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -2530,8 +2548,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -2548,8 +2566,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -2566,8 +2584,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -2584,8 +2602,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 20000
@@ -2635,7 +2653,7 @@
             "floor": 1152
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1156
           }
         ], 
@@ -2653,7 +2671,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -2671,7 +2689,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -2689,7 +2707,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -2711,7 +2729,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -2729,7 +2747,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -2794,7 +2812,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1133
           }
         ], 
@@ -2816,7 +2834,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -2850,7 +2868,7 @@
             "floor": 920
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1138
           }
         ], 
@@ -2905,7 +2923,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -2927,7 +2945,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 921
           }
         ], 
@@ -2949,7 +2967,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 903
           }
         ], 
@@ -2983,7 +3001,7 @@
             "floor": 910
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -3094,8 +3112,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3112,8 +3130,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3131,16 +3149,6 @@
     "model": "ALCATEL_SR7750", 
     "type": "ROUTER", 
     "ports": [
-      {
-        "ipv4Address": "134.55.217.173", 
-        "reservableIngressBw": 10000, 
-        "urn": "hous-cr5:10/1/3", 
-        "capabilities": [
-          "MPLS"
-        ], 
-        "reservableEgressBw": 10000, 
-        "ifce": "to_pantex-rt3_ip-a"
-      }, 
       {
         "ipv4Address": "134.55.40.198", 
         "reservableIngressBw": 100000, 
@@ -3162,14 +3170,14 @@
         "ifce": "to_nash-cr5_ip-a"
       }, 
       {
-        "ipv4Address": "134.55.43.109", 
-        "reservableIngressBw": 100000, 
-        "urn": "hous-cr5:2/1/1", 
+        "ipv4Address": "134.55.217.173", 
+        "reservableIngressBw": 10000, 
+        "urn": "hous-cr5:10/1/3", 
         "capabilities": [
           "MPLS"
         ], 
-        "reservableEgressBw": 100000, 
-        "ifce": "to_kans-cr5_ip-a"
+        "reservableEgressBw": 10000, 
+        "ifce": "to_pantex-rt3_ip-a"
       }, 
       {
         "reservableIngressBw": 10000, 
@@ -3183,8 +3191,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3201,8 +3209,26 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
+          }
+        ], 
+        "reservableEgressBw": 100000
+      }, 
+      {
+        "reservableIngressBw": 100000, 
+        "tags": [
+          "hous-cr5->kans-cr5:100ge:ip-a:show:intracloud", 
+          "to_kans-cr5_ip-a"
+        ], 
+        "urn": "hous-cr5:2/1/1", 
+        "capabilities": [
+          "ETHERNET"
+        ], 
+        "reservableVlans": [
+          {
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3242,8 +3268,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3260,8 +3286,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3286,8 +3312,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3304,8 +3330,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3322,8 +3348,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3340,8 +3366,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3393,8 +3419,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3417,8 +3443,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3435,8 +3461,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3453,8 +3479,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3498,7 +3524,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 654
           }
         ], 
@@ -3520,7 +3546,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -3548,7 +3574,7 @@
             "floor": 910
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -3699,8 +3725,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3717,8 +3743,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3735,8 +3761,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3753,8 +3779,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3773,8 +3799,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3805,8 +3831,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3823,8 +3849,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3841,8 +3867,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3859,8 +3885,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3877,8 +3903,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3897,8 +3923,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -3915,8 +3941,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -3953,8 +3979,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -4064,8 +4090,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4090,8 +4116,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4108,8 +4134,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4126,8 +4152,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -4144,8 +4170,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4162,8 +4188,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 9953
@@ -4180,8 +4206,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4245,7 +4271,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -4271,7 +4297,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 503
           }
         ], 
@@ -4293,7 +4319,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1693
           }
         ], 
@@ -4315,7 +4341,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1691
           }
         ], 
@@ -4337,7 +4363,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 910
           }
         ], 
@@ -4359,7 +4385,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -4410,7 +4436,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -4432,7 +4458,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -4454,7 +4480,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1303
           }
         ], 
@@ -4476,7 +4502,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1302
           }
         ], 
@@ -4498,7 +4524,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -4573,7 +4599,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 45
           }
         ], 
@@ -4591,7 +4617,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -4613,7 +4639,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -4635,7 +4661,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 155
           }
         ], 
@@ -4653,7 +4679,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -4671,7 +4697,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -4693,7 +4719,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 910
           }
         ], 
@@ -4715,7 +4741,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -4737,7 +4763,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1141
           }
         ], 
@@ -4759,7 +4785,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 165
           }
         ], 
@@ -4840,8 +4866,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4858,8 +4884,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -4878,8 +4904,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4896,8 +4922,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4967,8 +4993,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4985,8 +5011,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -4995,7 +5021,9 @@
         "reservableIngressBw": 100000, 
         "tags": [
           "atla-cr5->sox(as10490):100ge(vlan):sox:show:ren-intercloud", 
-          "to_sox"
+          "to_sox", 
+          "atla-cr5->flr(as11096):100ge:sox_conn-a_v4:show:ren-intercloud", 
+          "to_flr_ip-b"
         ], 
         "urn": "atla-cr5:4/1/1", 
         "capabilities": [
@@ -5003,8 +5031,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -5068,7 +5096,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -5102,7 +5130,7 @@
             "floor": 920
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1802
           }
         ], 
@@ -5124,7 +5152,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1801
           }
         ], 
@@ -5226,7 +5254,7 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "wash-cr5->va-sterling:10ge:conn-a:hide:ren-intercloud", 
+          "wash-cr5->va:10ge:site_conn-a:hide:intercloud", 
           "to_va-v4"
         ], 
         "urn": "wash-cr5:10/1/4", 
@@ -5235,8 +5263,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5268,8 +5296,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5286,8 +5314,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5320,8 +5348,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -5338,8 +5366,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5399,8 +5427,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -5419,8 +5447,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5437,8 +5465,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5457,8 +5485,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -5475,8 +5503,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5530,7 +5558,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -5548,7 +5576,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -5566,7 +5594,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -5584,7 +5612,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -5606,7 +5634,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1821
           }
         ], 
@@ -5624,7 +5652,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -5691,7 +5719,7 @@
             "floor": 920
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1402
           }
         ], 
@@ -5713,7 +5741,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -5814,8 +5842,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5832,8 +5860,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5850,8 +5878,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5868,8 +5896,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5886,8 +5914,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -5926,8 +5954,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -5944,8 +5972,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -6005,8 +6033,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -6029,8 +6057,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -6047,8 +6075,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -6065,8 +6093,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -6083,8 +6111,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 20000
@@ -6138,7 +6166,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 304
           }
         ], 
@@ -6160,7 +6188,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1112
           }
         ], 
@@ -6182,7 +6210,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -6216,7 +6244,7 @@
             "floor": 915
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -6238,7 +6266,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1000
           }
         ], 
@@ -6349,8 +6377,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -6369,8 +6397,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -6397,8 +6425,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -6425,8 +6453,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -6443,8 +6471,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -6461,8 +6489,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -6479,8 +6507,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -6525,8 +6553,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -6543,8 +6571,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 100000
@@ -6561,8 +6589,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -6632,7 +6660,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -6654,7 +6682,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -6694,7 +6722,7 @@
             "floor": 1151
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1168
           }
         ], 
@@ -6716,7 +6744,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1121
           }
         ], 
@@ -6787,7 +6815,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -6816,7 +6844,7 @@
             "floor": 2113
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2115
           }
         ], 
@@ -6881,8 +6909,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -6899,8 +6927,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -6919,8 +6947,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -6937,8 +6965,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 40000
@@ -6955,8 +6983,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -7016,7 +7044,7 @@
             "floor": 910
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -7038,7 +7066,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -7093,7 +7121,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 944
           }
         ], 
@@ -7115,7 +7143,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1407
           }
         ], 
@@ -7137,7 +7165,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 101
           }
         ], 
@@ -7165,7 +7193,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7185,7 +7213,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7207,7 +7235,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 920
           }
         ], 
@@ -7247,7 +7275,7 @@
             "floor": 925
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1010
           }
         ], 
@@ -7265,7 +7293,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7283,7 +7311,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7305,7 +7333,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1125
           }
         ], 
@@ -7323,7 +7351,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7341,7 +7369,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7359,7 +7387,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7377,7 +7405,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7395,7 +7423,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7417,7 +7445,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -7439,7 +7467,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -7461,7 +7489,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1205
           }
         ], 
@@ -7483,7 +7511,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 912
           }
         ], 
@@ -7505,7 +7533,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 5
           }
         ], 
@@ -7527,7 +7555,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 501
           }
         ], 
@@ -7549,7 +7577,7 @@
             "floor": 2
           }, 
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 1024
           }
         ], 
@@ -7567,7 +7595,7 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": 4094, 
+            "ceiling": 4093, 
             "floor": 2
           }
         ], 
@@ -7597,16 +7625,6 @@
         "ifce": "to_chic-cr5_ip-a"
       }, 
       {
-        "ipv4Address": "134.55.43.110", 
-        "reservableIngressBw": 100000, 
-        "urn": "kans-cr5:3/1/1", 
-        "capabilities": [
-          "MPLS"
-        ], 
-        "reservableEgressBw": 100000, 
-        "ifce": "to_hous-cr5_ip-a"
-      }, 
-      {
         "ipv4Address": "134.55.49.58", 
         "reservableIngressBw": 100000, 
         "urn": "kans-cr5:2/1/1", 
@@ -7628,8 +7646,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -7648,8 +7666,8 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
@@ -7670,11 +7688,29 @@
         ], 
         "reservableVlans": [
           {
-            "ceiling": "2999", 
-            "floor": "2000"
+            "ceiling": 4094, 
+            "floor": 2
           }
         ], 
         "reservableEgressBw": 10000
+      }, 
+      {
+        "reservableIngressBw": 100000, 
+        "tags": [
+          "kans-cr5->hous-cr5:100ge:ip-a:show:intracloud", 
+          "to_hous-cr5_ip-a"
+        ], 
+        "urn": "kans-cr5:3/1/1", 
+        "capabilities": [
+          "ETHERNET"
+        ], 
+        "reservableVlans": [
+          {
+            "ceiling": 4094, 
+            "floor": 2
+          }
+        ], 
+        "reservableEgressBw": 100000
       }
     ]
   }
