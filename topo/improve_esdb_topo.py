@@ -108,17 +108,6 @@ def main():
             if description == '':
                 relevant = False
 
-            if juniper and '.0' in ifce:
-#                print 'incoming untagged port: '+device+':'+ifce
-                untagged.append(
-                    {
-                        'device': device,
-                        'port': ifce.replace('.0', '')
-                    }
-                )
-                relevant = False
-                delete = ifce.replace('.0', '')
-
             if relevant:
                 used_vlans = []
 

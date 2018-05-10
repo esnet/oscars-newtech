@@ -394,7 +394,6 @@ def transform_isis(isis_adjcies=None):
 def best_urns_by_addr(isis_adjcies=None):
     urns_for_addr = {}
     all_port_urns = []
-    dupe_port_urns = []
     all_ifce_urns = []
     dupe_ifce_urns = []
 
@@ -413,9 +412,7 @@ def best_urns_by_addr(isis_adjcies=None):
                 all_ifce_urns.append(ifce_urn_a)
 
         port_urn_a = router_a + ":" + port_a
-        if port_urn_a in all_port_urns:
-            dupe_port_urns.append(port_urn_a)
-        else:
+        if port_urn_a not in all_port_urns:
             all_port_urns.append(port_urn_a)
 
         addr_urn_a = router_a + ":" + addr_a
@@ -426,21 +423,10 @@ def best_urns_by_addr(isis_adjcies=None):
             "addr_urn": addr_urn_a
         }
         urns_for_addr[addr_a] = entry
-
     best_urns = {}
-
     for addr in urns_for_addr.keys():
         entry = urns_for_addr[addr]
-        if entry["port_urn"] not in dupe_port_urns:
-            best_urns[addr] = entry["port_urn"]
-        elif entry["ifce_urn"] is not None:
-            best_urns[addr] = None
-        # best_urns[addr] = entry["ifce_urn"]
-        #   print "dupe urn! " + entry["ifce_urn"]
-        else:
-            best_urns[addr] = None
-            #   best_urns[addr] = entry["addr_urn"]
-            #   print "dupe urn! " + entry["addr_urn"]
+        best_urns[addr] = entry["port_urn"]
     return best_urns
 
 
