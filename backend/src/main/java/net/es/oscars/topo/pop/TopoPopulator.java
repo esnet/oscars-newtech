@@ -75,6 +75,8 @@ public class TopoPopulator implements StartupComponent {
                 // TODO: check how the delta affects existing connections
                 topoService.mergeVersionDelta(vd, currentVersion, newVersion);
 
+            } else {
+                log.info("no topology changes");
             }
         } catch (IOException | ConsistencyException ex) {
             throw new StartupException("Import failed! " + ex.getMessage());

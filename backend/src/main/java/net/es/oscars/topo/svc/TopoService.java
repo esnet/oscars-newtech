@@ -1,5 +1,7 @@
 package net.es.oscars.topo.svc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
@@ -101,67 +103,72 @@ public class TopoService {
     @Transactional
     public void mergeVersionDelta(VersionDelta vd, Version currentVersion, Version newVersion) throws ConsistencyException {
         log.info("merging version delta w/ timestamp: "+newVersion.getUpdated());
+        /*
+        String pretty = null;
+        try {
+            pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(vd);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        log.info(pretty);
+        */
         Delta<Device> dd = vd.getDeviceDelta();
         Delta<PortAdjcy> ad = vd.getAdjcyDelta();
         Delta<Port> pd = vd.getPortDelta();
 
-        // to remove adjacencies that no longer exist, do nothing, just don't set the new version
-
-        // now modify existing ones
-        for (PortAdjcy pa: ad.getModified()) {
-            log.warn("modifying an adjcy: "+pa.getA().getUrn()+ " -- "+pa.getZ().getUrn());
-            boolean found = false;
-            PortAdjcy prev = null;
-            for (PortAdjcy candidate : adjcyRepo.findByVersion(currentVersion)) {
-                if (candidate.getA().getUrn().equals(pa.getA().getUrn()) &&
-                        candidate.getZ().getUrn().equals(pa.getZ().getUrn())) {
-                    prev = candidate;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                throw new ConsistencyException("adjcy found in delta does not exist in repo");
-            }
-            for (Layer l : prev.getMetrics().keySet()) {
-                if (!pa.getMetrics().keySet().contains(l)) {
-                    log.debug("removing a metric for "+l.toString());
-                    prev.getMetrics().remove(l);
-                }
-            }
-            for (Layer l : pa.getMetrics().keySet()) {
-                log.debug("setting metric for "+l.toString());
-                prev.getMetrics().put(l, pa.getMetrics().get(l));
-            }
-
-            prev.setVersion(newVersion);
-            adjcyRepo.save(prev);
-        }
 
         // to delete gone devices, we don't do anything; we just won't update their version
 
+        int addedDevs = 0;
         // now add new devices
-        for (Device d: dd.getAdded()) {
+        for (Device d: dd.getAdded().values()) {
+            // fist check if it exists in the repo at all
+            //      (the delta is against the latest version only)
             if (deviceRepo.findByUrn(d.getUrn()).isPresent()) {
-                // this means it's present in the db but it has an invalid version
+                // this means it's present in the db but its has an invalid version
                 Version v = deviceRepo.findByUrn(d.getUrn()).get().getVersion();
                 if (v.getValid()) {
-                    throw new ConsistencyException("merge error");
+                    throw new ConsistencyException("merge error: device in valid version but also present in delta");
                 }
-                dd.getModified().add(d);
+                dd.getModified().put(d.getUrn(), d);
 
             } else {
-                // log.info("adding a device "+d.getUrn());
+                // it was not present in the database; just add and save it
+                // this will also
                 d.setVersion(newVersion);
                 deviceRepo.save(d);
                 for (Port p : d.getPorts()) {
                     pd.getAdded().remove(p);
                 }
             }
+            addedDevs++;
         }
+        log.debug("done adding new devices, added: "+addedDevs);
+
+        int unchangedDevices = 0;
+        // now handle unchanged devices; these too need to be set to latest version
+        for (Device d: dd.getUnchanged().values()) {
+            Optional<Device> maybeDev = deviceRepo.findByUrn(d.getUrn());
+            if (maybeDev.isPresent()) {
+                Device savedDevice = maybeDev.get();
+                savedDevice.setVersion(newVersion);
+
+            } else {
+                throw new ConsistencyException("merge error: unchanged device in delta not found in repo");
+            }
+            unchangedDevices++;
+        }
+        log.debug("done updating version for unchanged devices: "+unchangedDevices+" entries");
+
+        deviceRepo.flush();
+        int modifiedDevs = 0;
+        int modifiedPorts = 0;
+        int addedPorts = 0;
 
         // then merge modified ones including the ports
-        for (Device md: dd.getModified()) {
+        log.debug("now modifying devices");
+        for (Device md: dd.getModified().values()) {
+            log.debug(" modifying "+md.getUrn());
             Device prev = deviceRepo.findByUrn(md.getUrn()).orElseThrow(NoSuchElementException::new);
             prev.setCapabilities(md.getCapabilities());
             prev.setIpv4Address(md.getIpv4Address());
@@ -171,21 +178,30 @@ public class TopoService {
             prev.setType(md.getType());
             prev.setVersion(newVersion);
 
-            for (Port ap: pd.getAdded()) {
+            Set<String> handledPorts = new HashSet<>();
+
+            for (Port ap: pd.getAdded().values()) {
                 Optional<Port> maybeExists = portRepo.findByUrn(ap.getUrn());
                 if (maybeExists.isPresent()) {
                     // it exists in the repo so instead of adding we need to modify it instead
-                    pd.getModified().add(ap);
+                    pd.getModified().put(ap.getUrn(), ap);
+                    handledPorts.add(ap.getUrn());
                 } else {
                     if (ap.getDevice().getUrn().equals(prev.getUrn())) {
                         ap.setDevice(prev);
                         ap.setVersion(newVersion);
                         prev.getPorts().add(ap);
+                        handledPorts.add(ap.getUrn());
                     }
-
                 }
+                addedPorts++;
             }
-            for (Port mp: pd.getModified()) {
+            for (String p : handledPorts) {
+                pd.getAdded().remove(p);
+            }
+            handledPorts.clear();
+
+            for (Port mp: pd.getModified().values()) {
                 if (mp.getDevice().getUrn().equals(prev.getUrn())) {
                     boolean found = false;
                     Port prevPort = null;
@@ -210,17 +226,86 @@ public class TopoService {
                     prevPort.setReservableVlans(mp.getReservableVlans());
                     prevPort.setReservableIngressBw(mp.getReservableIngressBw());
                     prevPort.setReservableEgressBw(mp.getReservableEgressBw());
+                    handledPorts.add(mp.getUrn());
                 }
+                modifiedPorts++;
             }
+            for (String p : handledPorts) {
+                pd.getModified().remove(p);
+            }
+            handledPorts.clear();
 
-
-
+            modifiedDevs++;
             deviceRepo.save(prev);
         }
+        deviceRepo.flush();
+        portRepo.flush();
+        log.debug("done modifying devices, modified: "+modifiedDevs+" modified ports: "+modifiedPorts+" ");
+        log.debug("     + modified ports: "+modifiedPorts);
+        log.debug("     + added ports: "+addedPorts);
+        log.debug("     + deleted devices: "+dd.getRemoved().values().size());
 
+
+        int unchangedPorts = 0;
+        // now handle unchanged ports; these too need to be set to latest version
+        for (Port p: pd.getUnchanged().values()) {
+            Optional<Port> maybePort = portRepo.findByUrn(p.getUrn());
+            if (maybePort.isPresent()) {
+                Port savedPort = maybePort.get();
+                savedPort.setVersion(newVersion);
+
+            } else {
+                throw new ConsistencyException("merge error: unchanged port in delta not found in repo");
+            }
+            unchangedPorts++;
+        }
+        log.debug("done updating version for unchanged ports: "+unchangedPorts+" entries");
+        log.debug("               deleted ports: "+pd.getRemoved().values().size());
+
+        // to remove adjacencies that no longer exist, do nothing, just don't set the new version
+
+        // now modify existing ones
+        int modifiedAdjs = 0;
+        for (PortAdjcy pa: ad.getModified().values()) {
+            log.warn("modifying an adjcy: "+pa.getA().getUrn()+ " -- "+pa.getZ().getUrn());
+            boolean found = false;
+            PortAdjcy prev = null;
+            for (PortAdjcy candidate : adjcyRepo.findByVersion(currentVersion)) {
+                if (candidate.getA().getUrn().equals(pa.getA().getUrn()) &&
+                        candidate.getZ().getUrn().equals(pa.getZ().getUrn())) {
+                    prev = candidate;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw new ConsistencyException("adjcy in modified delta does not exist in repo");
+            }
+            for (Layer l : prev.getMetrics().keySet()) {
+                if (!pa.getMetrics().keySet().contains(l)) {
+                    log.debug("removing a metric for "+l.toString());
+                    prev.getMetrics().remove(l);
+                }
+            }
+            for (Layer l : pa.getMetrics().keySet()) {
+                log.debug("setting metric for "+l.toString());
+                prev.getMetrics().put(l, pa.getMetrics().get(l));
+            }
+
+            prev.setVersion(newVersion);
+            adjcyRepo.save(prev);
+
+            modifiedAdjs ++;
+        }
+        adjcyRepo.flush();
+        log.debug("done modifying adjacencies: modified: "+modifiedAdjs);
+        log.debug("                 deleted adjacencies: "+ad.getRemoved().values().size());
+
+
+        int addedAdjs = 0;
 
         // finally add new adjacencies; this is done last to make sure the ports we refer to have been added already
-        for (PortAdjcy pa: ad.getAdded()) {
+        for (PortAdjcy pa: ad.getAdded().values()) {
             // log.info("adding an adjcy: "+pa.getA().getUrn()+ " -- "+pa.getZ().getUrn());
             // fix port object refs
             pa.setA(portRepo.findByUrn(pa.getA().getUrn()).orElseThrow(NoSuchElementException::new));
@@ -229,7 +314,32 @@ public class TopoService {
             pa.getA().getAdjciesWhereA().add(pa);
             pa.getZ().getAdjciesWhereZ().add(pa);
             adjcyRepo.save(pa);
+            addedAdjs++;
         }
+        log.debug("done adding adjacencies: added: "+addedAdjs);
+
+        int unchangedAdjs = 0;
+        // now handle unchanged adjacencies; these too need to be set to latest version
+        for (PortAdjcy pa: ad.getUnchanged().values()) {
+            PortAdjcy existing = null;
+            boolean found = false;
+            for (PortAdjcy candidate : adjcyRepo.findByVersion(currentVersion)) {
+                if (candidate.getA().getUrn().equals(pa.getA().getUrn()) &&
+                        candidate.getZ().getUrn().equals(pa.getZ().getUrn())) {
+                    existing = candidate;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw new ConsistencyException("adjcy in modified delta does not exist in repo");
+            }
+            existing.setVersion(newVersion);
+            adjcyRepo.save(existing);
+            unchangedAdjs++;
+
+        }
+        log.debug("done updating version for unchanged adjacencies: "+unchangedAdjs+" entries");
 
     }
 

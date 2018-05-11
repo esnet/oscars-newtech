@@ -34,6 +34,10 @@ public class PortAdjcy {
     @ManyToOne
     private Version version;
 
+    public String getUrn() {
+        return a.getUrn()+" - "+z.getUrn();
+    }
+
     public Integer minimalReservableBandwidth() {
         Set<Integer> reservableBandwidths = new HashSet<>();
         reservableBandwidths.add(this.a.getReservableEgressBw());
