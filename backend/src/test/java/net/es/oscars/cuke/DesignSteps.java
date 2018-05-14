@@ -64,6 +64,7 @@ public class DesignSteps extends CucumberSteps {
     @Then("^I \"([^\"]*)\" verify the design against baseline$")
     public void i_verify_the_design_against_baseline(String maybe) throws Throwable {
         DesignResponse resp = designService.verifyDesign(world.design);
+        // log.info(resp.toString());
         if (maybe.equals("can")) {
             assert resp.isValid();
         } else {
