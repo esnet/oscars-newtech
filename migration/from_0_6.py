@@ -98,7 +98,11 @@ for res in rcur.fetchall():
     cur.execute("SELECT * FROM pathElems WHERE pathId = %s ORDER BY seqNumber" % pathId)
     hops = []
     firstHop = True
-    for pathElem in cur.fetchall():
+    prevDevice = None
+    pathElems = cur.fetchall()
+#    print json.dumps(pathElems, indent=2)
+    prevDevice = None
+    for pathElem in pathElems:
         urn = pathElem['urn']
         addr = ''
         if urn in addrs:
@@ -122,11 +126,22 @@ for res in rcur.fetchall():
             aPort = parts[1]
         zDevice = parts[0]
         zPort = parts[1]
+
+        if prevDevice == parts[0]:
+            hops.append({
+                'device': parts[0],
+                'port': '',
+                'addr': ''
+            })
+
+        prevDevice = parts[0]
+
         hops.append({
             'device': parts[0],
             'port': parts[1],
             'addr': addr
         })
+
         firstHop = False
 
     # slice hops to skip the first and last elements

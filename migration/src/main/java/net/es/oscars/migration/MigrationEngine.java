@@ -273,46 +273,50 @@ public class MigrationEngine {
                     .build());
 
             for (InHop inHop : inResv.getCmp().getPipe()) {
+                String hopUrn = null;
                 String renamed = renamedPorts(inHop.getPort());
                 if (renamed != null) {
                     inHop.setPort(renamed);
                 }
+                hopUrn = inHop.getDevice() + ":" + inHop.getPort();
 
-                String portUrn = inHop.getDevice() + ":" + inHop.getPort();
-
-                if (!urnMap.containsKey(portUrn)) {
+                if (!urnMap.containsKey(hopUrn)) {
                     boolean found = false;
                     if (!urnMap.containsKey(inHop.getDevice())) {
-                        log.error("hop device urn not found in topo " + inHop.getDevice());
+                        log.error("hop urn device component not found in topo " + inHop.getDevice());
                         conversionError = true;
                         continue;
                     }
                     TopoUrn dev = urnMap.get(inHop.getDevice());
                     if (!dev.getUrnType().equals(UrnType.DEVICE)) {
-                        log.error("hop device urn wrong type in topo " + inHop.getDevice());
+                        log.error("hop urn device component is wrong type in topo " + inHop.getDevice());
                         conversionError = true;
                         continue;
                     }
-                    for (Port p : dev.getDevice().getPorts()) {
-                        if (inHop.getPort().equals(p.getIfce())) {
-                            found = true;
-                            portUrn = p.getUrn();
-                        } else if (inHop.getAddr().equals(p.getIpv4Address())) {
-
-                            found = true;
-                            portUrn = p.getUrn();
-
+                    if (!inHop.getPort().equals("")) {
+                        for (Port p : dev.getDevice().getPorts()) {
+                            if (inHop.getPort().equals(p.getIfce())) {
+                                found = true;
+                                hopUrn = p.getUrn();
+                            } else if (inHop.getAddr().equals(p.getIpv4Address())) {
+                                found = true;
+                                hopUrn = p.getUrn();
+                            }
                         }
+                    } else {
+                        hopUrn = dev.getUrn();
                     }
+
                     if (!found) {
-                        log.error("hop port urn not found in topo " + portUrn);
+                        log.error("hop port urn not found in topo " + hopUrn);
                         conversionError = true;
                         continue;
                     }
                 }
 
+
                 EroHop h = EroHop.builder()
-                        .urn(portUrn)
+                        .urn(hopUrn)
                         .build();
                 azERO.add(h);
             }
