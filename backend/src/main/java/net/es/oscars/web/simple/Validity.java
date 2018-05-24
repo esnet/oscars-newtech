@@ -5,15 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Junction {
-    protected String device;
-    protected Validity validity;
+public class Validity {
+    protected boolean valid;
+    protected String message;
 
 }

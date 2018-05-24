@@ -26,5 +26,6 @@ public class Pipe {
 
     protected List<String> ero = new ArrayList<>();
     protected List<String> exclude = new ArrayList<>();
+    protected Validity validity;
 
 }

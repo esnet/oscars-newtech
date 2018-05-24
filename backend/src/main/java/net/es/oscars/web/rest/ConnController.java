@@ -1,5 +1,7 @@
 package net.es.oscars.web.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.PSSException;
@@ -84,7 +86,7 @@ public class ConnController {
     @RequestMapping(value = "/protected/conn/commit", method = RequestMethod.POST)
     @ResponseBody
     public Phase commit(Authentication authentication, @RequestBody String connectionId)
-            throws StartupException, PSSException {
+            throws StartupException, PSSException, JsonProcessingException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
@@ -94,16 +96,24 @@ public class ConnController {
         if (connectionId == null || connectionId.equals("")) {
             throw new IllegalArgumentException("empty or null connectionid!");
         }
+        log.info("committing "+connectionId);
 
         String username = authentication.getName();
+        Connection c;
+
         Optional<Connection> d = connRepo.findByConnectionId(connectionId);
         if (!d.isPresent()) {
-            Connection c = connSvc.connectionFromBits(connectionId, username);
-            return connSvc.commit(c);
+            log.info("making default connection from bits...");
+            c = connSvc.connectionFromBits(connectionId, username);
 
         } else {
-            return connSvc.commit(d.get());
+            log.info("found connection from connectionId...");
+            c = d.get();
         }
+        String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(c);
+        log.debug("committing conn: \n"+pretty);
+
+        return connSvc.commit(c);
     }
 
     @RequestMapping(value = "/protected/conn/uncommit", method = RequestMethod.POST)

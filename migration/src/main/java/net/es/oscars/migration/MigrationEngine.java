@@ -77,7 +77,7 @@ public class MigrationEngine {
             }
         }
         log.info("deleted " + deleted + " previously migrated connections");
-        log.info("migrated " + num + " reservations, but "+failed+" failed ");
+        log.info("migrated " + num + " reservations; "+failed+" failed ");
 
     }
 
@@ -268,9 +268,6 @@ public class MigrationEngine {
 
         if (junctions.size() == 2) {
             List<EroHop> azERO = new ArrayList<>();
-            azERO.add(EroHop.builder()
-                    .urn(junctions.get(0).getDeviceUrn())
-                    .build());
 
             for (InHop inHop : inResv.getCmp().getPipe()) {
                 String hopUrn = null;
@@ -304,7 +301,14 @@ public class MigrationEngine {
                             }
                         }
                     } else {
-                        hopUrn = dev.getUrn();
+                        if (urnMap.containsKey(inHop.getDevice())) {
+                            hopUrn = dev.getUrn();
+                            found = true;
+
+                        } else {
+                            log.error("hop urn not found in topo " + inHop.getDevice());
+                            conversionError = true;
+                        }
                     }
 
                     if (!found) {
@@ -320,9 +324,6 @@ public class MigrationEngine {
                         .build();
                 azERO.add(h);
             }
-            azERO.add(EroHop.builder()
-                    .urn(junctions.get(1).getDeviceUrn())
-                    .build());
 
 
             List<EroHop> zaERO = new ArrayList<>();

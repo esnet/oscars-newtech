@@ -18,6 +18,7 @@ public class Fixture {
     protected Integer mbps;
     protected Integer inMbps;
     protected Integer outMbps;
+    protected Validity validity;
 
 
 }

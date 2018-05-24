@@ -240,7 +240,7 @@
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>1.5.12.RELEASE</version>
+                <version>1.5.13.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -253,7 +253,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>1.5.12.RELEASE</version>
+                    <version>1.5.13.RELEASE</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
