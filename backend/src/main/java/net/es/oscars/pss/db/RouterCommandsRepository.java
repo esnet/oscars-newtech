@@ -1,14 +1,14 @@
 package net.es.oscars.pss.db;
 
 import net.es.oscars.pss.ent.RouterCommands;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 
 @Repository
-public interface RouterCommandsRepository extends CrudRepository<RouterCommands, Long> {
+public interface RouterCommandsRepository extends JpaRepository<RouterCommands, Long> {
 
     List<RouterCommands> findAll();
     List<RouterCommands> findByConnectionId(String connectionId);

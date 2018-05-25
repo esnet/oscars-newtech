@@ -10,6 +10,7 @@ import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -25,6 +26,7 @@ public class Connection {
                       @JsonProperty("username") @NonNull String username,
                       @JsonProperty("description") @NonNull String description,
                       @JsonProperty("reserved") Reserved reserved,
+                      @JsonProperty("tags") List<Tag> tags,
                       @JsonProperty("held") Held held,
                       @JsonProperty("archived") Archived archived) {
         this.connectionId = connectionId;
@@ -34,6 +36,7 @@ public class Connection {
         this.username = username;
         this.description = description;
         this.reserved = reserved;
+        this.tags = tags;
         this.held = held;
         this.archived = archived;
     }
@@ -62,6 +65,10 @@ public class Connection {
 
     @NonNull
     private String username;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<Tag> tags;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonInclude(JsonInclude.Include.NON_NULL)

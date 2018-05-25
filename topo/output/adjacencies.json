@@ -2,7 +2,7 @@
   {
     "a": "lbl-mr2:xe-7/2/0", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "sacr-cr5:10/2/2"
   }, 
@@ -51,14 +51,14 @@
   {
     "a": "sunn-cr5:9/1/1", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "jgi-mr2:xe-1/1/0"
   }, 
   {
     "a": "hous-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 15
     }, 
     "z": "kans-cr5:3/1/1"
   }, 
@@ -86,7 +86,7 @@
   {
     "a": "pantex-rt3:ge-0/3/0", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 18
     }, 
     "z": "hous-cr5:10/1/3"
   }, 
@@ -100,7 +100,7 @@
   {
     "a": "hous-cr5:10/1/3", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 18
     }, 
     "z": "pantex-rt3:ge-0/3/0"
   }, 
@@ -149,65 +149,44 @@
   {
     "a": "nash-cr5:4/2/1", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 18
     }, 
     "z": "wash-cr5:5/2/1"
   }, 
   {
-    "a": "star-cr5:5/1/1", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "chic-cr5:6/2/1"
-  }, 
-  {
     "a": "wash-cr5:5/2/1", 
     "metrics": {
-      "MPLS": 17
+      "MPLS": 18
     }, 
     "z": "nash-cr5:4/2/1"
   }, 
   {
     "a": "atla-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 6
     }, 
     "z": "wash-cr5:3/1/1"
   }, 
   {
     "a": "kans-cr5:3/1/1", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 15
     }, 
     "z": "hous-cr5:2/1/1"
   }, 
   {
     "a": "albq-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 8
     }, 
     "z": "denv-cr5:3/1/1"
   }, 
   {
     "a": "denv-cr5:3/1/1", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 8
     }, 
     "z": "albq-cr5:1/1/1"
-  }, 
-  {
-    "a": "eqx-ash-cr5:10/2/2", 
-    "metrics": {
-      "MPLS": 15
-    }, 
-    "z": "star-cr5:9/1/2"
-  }, 
-  {
-    "a": "star-cr5:9/1/2", 
-    "metrics": {
-      "MPLS": 15
-    }, 
-    "z": "eqx-ash-cr5:10/2/2"
   }, 
   {
     "a": "chic-cr5:6/2/1", 
@@ -245,11 +224,25 @@
     "z": "nash-cr5:1/1/1"
   }, 
   {
-    "a": "ornl-cr5:6/1/1", 
+    "a": "denv-cr5:4/1/1", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 25
     }, 
-    "z": "atla-cr5:3/1/1"
+    "z": "pnwg-cr5:2/2/1"
+  }, 
+  {
+    "a": "aofa-cr5:2/1/1", 
+    "metrics": {
+      "MPLS": 69
+    }, 
+    "z": "lond-cr5:2/2/1"
+  }, 
+  {
+    "a": "lond-cr5:2/2/1", 
+    "metrics": {
+      "MPLS": 69
+    }, 
+    "z": "aofa-cr5:2/1/1"
   }, 
   {
     "a": "newy-cr5:4/2/1", 
@@ -264,6 +257,13 @@
       "MPLS": 5
     }, 
     "z": "newy-cr5:4/2/1"
+  }, 
+  {
+    "a": "nash-cr5:10/1/5", 
+    "metrics": {
+      "MPLS": 3
+    }, 
+    "z": "ornl-rt4:xe-1/2/0"
   }, 
   {
     "a": "forr-rt2:ge-0/0/1", 
@@ -289,7 +289,7 @@
   {
     "a": "wash-cr5:3/1/1", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 6
     }, 
     "z": "atla-cr5:1/1/1"
   }, 
@@ -331,16 +331,16 @@
   {
     "a": "snll-mr2:xe-1/2/0", 
     "metrics": {
-      "MPLS": 4
+      "MPLS": 3
     }, 
     "z": "sacr-cr5:10/2/4"
   }, 
   {
-    "a": "nash-cr5:3/1/1", 
+    "a": "forr-rt2:ge-0/0/0", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 2
     }, 
-    "z": "hous-cr5:3/1/1"
+    "z": "wash-cr5:10/1/3"
   }, 
   {
     "a": "llnl-mr2:xe-2/0/0", 
@@ -352,7 +352,7 @@
   {
     "a": "wash-cr5:4/1/1", 
     "metrics": {
-      "MPLS": 5
+      "MPLS": 6
     }, 
     "z": "aofa-cr5:6/2/1"
   }, 
@@ -366,7 +366,7 @@
   {
     "a": "llnldc-rt4:t3-0/3/0", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "wash-ar1:t3-1/3/1"
   }, 
@@ -387,42 +387,28 @@
   {
     "a": "wash-ar1:t3-1/3/1", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "llnldc-rt4:t3-0/3/0"
   }, 
   {
-    "a": "eqx-ash-cr5:10/2/3", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "wash-cr5:10/1/7"
-  }, 
-  {
-    "a": "wash-cr5:10/1/1", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "eqx-ash-cr5:10/1/3"
-  }, 
-  {
     "a": "nash-cr5:10/1/3", 
     "metrics": {
-      "MPLS": 12
+      "MPLS": 15
     }, 
     "z": "srs-rt3:ge-1/1/0"
   }, 
   {
     "a": "srs-rt3:ge-1/1/0", 
     "metrics": {
-      "MPLS": 12
+      "MPLS": 15
     }, 
     "z": "nash-cr5:10/1/3"
   }, 
   {
     "a": "chic-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 18
+      "MPLS": 17
     }, 
     "z": "wash-cr5:1/1/1"
   }, 
@@ -436,16 +422,16 @@
   {
     "a": "wash-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 18
+      "MPLS": 17
     }, 
     "z": "chic-cr5:1/1/1"
   }, 
   {
-    "a": "nash-cr5:10/1/4", 
+    "a": "cern-272-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 3
+      "MPLS": 16
     }, 
-    "z": "ornl-rt4:xe-0/2/0"
+    "z": "amst-cr5:1/1/1"
   }, 
   {
     "a": "star-cr5:4/1/1", 
@@ -455,11 +441,11 @@
     "z": "chic-cr5:2/1/1"
   }, 
   {
-    "a": "amst-cr5:2/1/1", 
+    "a": "amst-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 8
+      "MPLS": 16
     }, 
-    "z": "lond-cr5:2/1/1"
+    "z": "cern-272-cr5:1/1/1"
   }, 
   {
     "a": "ameslab-rt3:xe-1/0/0", 
@@ -469,18 +455,18 @@
     "z": "star-cr5:8/1/6"
   }, 
   {
-    "a": "aofa-cr5:10/1/11", 
+    "a": "nash-cr5:10/1/4", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 3
     }, 
-    "z": "bnl-mr2:xe-1/3/0"
+    "z": "ornl-rt4:xe-0/2/0"
   }, 
   {
-    "a": "bnl-mr2:xe-1/3/0", 
+    "a": "star-cr5:5/1/1", 
     "metrics": {
       "MPLS": 1
     }, 
-    "z": "aofa-cr5:10/1/11"
+    "z": "chic-cr5:6/2/1"
   }, 
   {
     "a": "star-cr5:8/1/6", 
@@ -499,72 +485,65 @@
   {
     "a": "atla-cr5:10/1/3", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 9
     }, 
     "z": "srs-rt3:ge-0/1/0"
   }, 
   {
     "a": "srs-rt3:ge-0/1/0", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 9
     }, 
     "z": "atla-cr5:10/1/3"
   }, 
   {
     "a": "sacr-cr5:10/2/4", 
     "metrics": {
-      "MPLS": 4
+      "MPLS": 3
     }, 
     "z": "snll-mr2:xe-1/2/0"
   }, 
   {
-    "a": "cern-272-cr5:1/1/1", 
+    "a": "sacr-cr5:10/2/5", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 3
     }, 
-    "z": "amst-cr5:1/1/1"
-  }, 
-  {
-    "a": "slac-mr2:xe-1/1/0", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "sunn-cr5:10/1/4"
-  }, 
-  {
-    "a": "lond-cr5:4/1/1", 
-    "metrics": {
-      "MPLS": 69
-    }, 
-    "z": "aofa-cr5:5/2/1"
+    "z": "slac-mr2:xe-1/2/0"
   }, 
   {
     "a": "eqx-ash-cr5:10/1/1", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "doe-gtn-rt2:ge-0/1/0"
   }, 
   {
     "a": "doe-gtn-rt2:ge-0/1/0", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "eqx-ash-cr5:10/1/1"
   }, 
   {
     "a": "ornl-rt4:xe-1/0/0", 
     "metrics": {
-      "MPLS": 9
+      "MPLS": 15
     }, 
     "z": "ornl-cr5:10/1/1"
   }, 
   {
     "a": "hous-cr5:3/1/1", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 17
     }, 
     "z": "nash-cr5:3/1/1"
+  }, 
+  {
+    "a": "wash-cr5:10/1/3", 
+    "metrics": {
+      "MPLS": 2
+    }, 
+    "z": "forr-rt2:ge-0/0/0"
   }, 
   {
     "a": "lsvn-cr1:xe-1/2/0", 
@@ -590,14 +569,14 @@
   {
     "a": "aofa-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 5
+      "MPLS": 6
     }, 
     "z": "wash-cr5:2/1/1"
   }, 
   {
     "a": "wash-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 5
+      "MPLS": 6
     }, 
     "z": "aofa-cr5:1/1/1"
   }, 
@@ -644,16 +623,16 @@
     "z": "denv-cr5:2/1/1"
   }, 
   {
-    "a": "denv-cr5:2/1/1", 
+    "a": "llnl-mr2:xe-0/2/0", 
     "metrics": {
-      "MPLS": 21
+      "MPLS": 5
     }, 
-    "z": "sacr-cr5:2/1/1"
+    "z": "sacr-cr5:10/2/6"
   }, 
   {
     "a": "sacr-cr5:10/2/6", 
     "metrics": {
-      "MPLS": 4
+      "MPLS": 5
     }, 
     "z": "llnl-mr2:xe-0/2/0"
   }, 
@@ -681,7 +660,7 @@
   {
     "a": "ornl-cr5:10/1/1", 
     "metrics": {
-      "MPLS": 9
+      "MPLS": 15
     }, 
     "z": "ornl-rt4:xe-1/0/0"
   }, 
@@ -693,39 +672,18 @@
     "z": "aofa-cr5:3/1/1"
   }, 
   {
-    "a": "amst-cr5:4/1/1", 
+    "a": "nash-cr5:3/1/1", 
     "metrics": {
-      "MPLS": 76
+      "MPLS": 17
     }, 
-    "z": "bost-cr5:5/1/1"
+    "z": "hous-cr5:3/1/1"
   }, 
   {
-    "a": "bost-cr5:5/1/1", 
-    "metrics": {
-      "MPLS": 76
-    }, 
-    "z": "amst-cr5:4/1/1"
-  }, 
-  {
-    "a": "wash-cr5:10/1/5", 
-    "metrics": {
-      "MPLS": 4
-    }, 
-    "z": "pppl-rt5:xe-1/0/0"
-  }, 
-  {
-    "a": "bnl-mr2:xe-1/1/0", 
+    "a": "slac-mr2:xe-1/1/0", 
     "metrics": {
       "MPLS": 1
     }, 
-    "z": "newy-cr5:10/1/6"
-  }, 
-  {
-    "a": "aofa-cr5:9/1/4", 
-    "metrics": {
-      "MPLS": 3
-    }, 
-    "z": "bnl-mr2:xe-0/1/0"
+    "z": "sunn-cr5:10/1/4"
   }, 
   {
     "a": "sunn-cr5:10/1/4", 
@@ -735,20 +693,6 @@
     "z": "slac-mr2:xe-1/1/0"
   }, 
   {
-    "a": "aofa-cr5:10/1/12", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "bnl-mr2:xe-0/0/0"
-  }, 
-  {
-    "a": "newy-cr5:10/1/6", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "bnl-mr2:xe-1/1/0"
-  }, 
-  {
     "a": "sunn-cr5:10/2/4", 
     "metrics": {
       "MPLS": 12
@@ -756,44 +700,23 @@
     "z": "lsvn-cr1:xe-1/2/0"
   }, 
   {
-    "a": "bnl-mr2:xe-0/0/0", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "aofa-cr5:10/1/12"
-  }, 
-  {
     "a": "pppl-rt5:xe-1/0/0", 
     "metrics": {
-      "MPLS": 4
+      "MPLS": 5
     }, 
     "z": "wash-cr5:10/1/5"
   }, 
   {
-    "a": "eqx-ash-cr5:10/1/3", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "wash-cr5:10/1/1"
-  }, 
-  {
-    "a": "amst-cr5:1/1/1", 
-    "metrics": {
-      "MPLS": 15
-    }, 
-    "z": "cern-272-cr5:1/1/1"
-  }, 
-  {
-    "a": "sacr-cr5:10/2/5", 
+    "a": "wash-cr5:10/1/5", 
     "metrics": {
       "MPLS": 5
     }, 
-    "z": "slac-mr2:xe-1/2/0"
+    "z": "pppl-rt5:xe-1/0/0"
   }, 
   {
     "a": "slac-mr2:xe-1/2/0", 
     "metrics": {
-      "MPLS": 5
+      "MPLS": 3
     }, 
     "z": "sacr-cr5:10/2/5"
   }, 
@@ -807,44 +730,23 @@
   {
     "a": "cern-513-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 85
+      "MPLS": 88
     }, 
     "z": "wash-cr5:5/1/1"
   }, 
   {
     "a": "wash-cr5:5/1/1", 
     "metrics": {
-      "MPLS": 85
+      "MPLS": 88
     }, 
     "z": "cern-513-cr5:1/1/1"
   }, 
   {
-    "a": "star-cr5:10/1/2", 
+    "a": "osti-rt2:ae0", 
     "metrics": {
       "MPLS": 15
     }, 
-    "z": "eqx-ash-cr5:10/1/2"
-  }, 
-  {
-    "a": "eqx-ash-cr5:10/1/2", 
-    "metrics": {
-      "MPLS": 15
-    }, 
-    "z": "star-cr5:10/1/2"
-  }, 
-  {
-    "a": "aofa-cr5:9/1/3", 
-    "metrics": {
-      "MPLS": 3
-    }, 
-    "z": "bnl-mr2:xe-2/1/0"
-  }, 
-  {
-    "a": "bnl-mr2:xe-2/1/0", 
-    "metrics": {
-      "MPLS": 3
-    }, 
-    "z": "aofa-cr5:9/1/3"
+    "z": "ornl-rt4:xe-2/3/0"
   }, 
   {
     "a": "snla-rt3:xe-1/2/0", 
@@ -877,7 +779,7 @@
   {
     "a": "nersc-mr2:xe-2/2/0", 
     "metrics": {
-      "MPLS": 2
+      "MPLS": 4
     }, 
     "z": "sacr-cr5:10/2/1"
   }, 
@@ -891,28 +793,28 @@
   {
     "a": "sunn-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "sacr-cr5:1/1/1"
   }, 
   {
     "a": "sacr-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "sunn-cr5:1/1/1"
   }, 
   {
-    "a": "denv-cr5:4/1/1", 
+    "a": "ornl-cr5:6/1/1", 
     "metrics": {
-      "MPLS": 25
+      "MPLS": 6
     }, 
-    "z": "pnwg-cr5:2/2/1"
+    "z": "atla-cr5:3/1/1"
   }, 
   {
     "a": "lond-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 8
+      "MPLS": 6
     }, 
     "z": "amst-cr5:2/1/1"
   }, 
@@ -922,13 +824,6 @@
       "MPLS": 1
     }, 
     "z": "newy-cr5:2/1/1"
-  }, 
-  {
-    "a": "bnl-mr2:xe-0/1/0", 
-    "metrics": {
-      "MPLS": 3
-    }, 
-    "z": "aofa-cr5:9/1/4"
   }, 
   {
     "a": "pnwg-cr5:2/2/1", 
@@ -945,18 +840,46 @@
     "z": "chic-cr5:6/1/1"
   }, 
   {
-    "a": "aofa-cr5:5/2/1", 
+    "a": "amst-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 69
+      "MPLS": 6
     }, 
-    "z": "lond-cr5:4/1/1"
+    "z": "lond-cr5:2/1/1"
   }, 
   {
-    "a": "chic-cr5:10/1/4", 
+    "a": "orau-rt3:ge-0/2/0", 
     "metrics": {
-      "MPLS": 2
+      "MPLS": 1
     }, 
-    "z": "fnal-mr2:xe-0/0/0"
+    "z": "ornl-rt4:xe-2/3/0"
+  }, 
+  {
+    "a": "pppl-rt5:xe-0/2/0", 
+    "metrics": {
+      "MPLS": 1
+    }, 
+    "z": "aofa-cr5:9/1/1"
+  }, 
+  {
+    "a": "ornl-rt4:xe-2/3/0", 
+    "metrics": {
+      "MPLS": 1
+    }, 
+    "z": "orau-rt3:ge-0/2/0"
+  }, 
+  {
+    "a": "ornl-cr5:10/1/2", 
+    "metrics": {
+      "MPLS": 15
+    }, 
+    "z": "orau-rt3:ge-0/2/0"
+  }, 
+  {
+    "a": "orau-rt3:ge-0/2/0", 
+    "metrics": {
+      "MPLS": 15
+    }, 
+    "z": "ornl-cr5:10/1/2"
   }, 
   {
     "a": "chic-cr5:7/1/1", 
@@ -975,65 +898,65 @@
   {
     "a": "eqx-chi-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 16
     }, 
     "z": "eqx-ash-cr5:2/1/1"
   }, 
   {
     "a": "denv-cr5:10/1/10", 
     "metrics": {
-      "MPLS": 18
+      "MPLS": 17
     }, 
     "z": "lsvn-cr1:xe-2/2/0"
   }, 
   {
     "a": "eqx-ash-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 16
     }, 
     "z": "eqx-chi-cr5:2/1/1"
   }, 
   {
     "a": "albq-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 4
+      "MPLS": 5
     }, 
     "z": "elpa-cr5:2/1/1"
   }, 
   {
     "a": "ga-rt2:ge-1/1/3", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 11
     }, 
     "z": "lsvn-cr1:ge-1/1/5"
   }, 
   {
     "a": "lsvn-cr1:ge-1/1/5", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 11
     }, 
     "z": "ga-rt2:ge-1/1/3"
   }, 
   {
     "a": "lsvn-cr1:xe-2/2/0", 
     "metrics": {
-      "MPLS": 18
+      "MPLS": 17
     }, 
     "z": "denv-cr5:10/1/10"
   }, 
   {
     "a": "elpa-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 4
+      "MPLS": 5
     }, 
     "z": "albq-cr5:2/1/1"
   }, 
   {
-    "a": "nash-cr5:10/1/5", 
+    "a": "amst-cr5:5/1/1", 
     "metrics": {
-      "MPLS": 3
+      "MPLS": 76
     }, 
-    "z": "ornl-rt4:xe-1/2/0"
+    "z": "bost-cr5:3/1/1"
   }, 
   {
     "a": "fnal-mr2:xe-0/0/0", 
@@ -1041,6 +964,13 @@
       "MPLS": 2
     }, 
     "z": "chic-cr5:10/1/4"
+  }, 
+  {
+    "a": "bost-cr5:3/1/1", 
+    "metrics": {
+      "MPLS": 76
+    }, 
+    "z": "amst-cr5:5/1/1"
   }, 
   {
     "a": "bost-cr5:2/1/1", 
@@ -1059,21 +989,21 @@
   {
     "a": "sdsc-sdn2:xe-0/1/0", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 11
     }, 
     "z": "sunn-cr5:10/2/3"
   }, 
   {
-    "a": "llnl-mr2:xe-0/2/0", 
+    "a": "denv-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 4
+      "MPLS": 21
     }, 
-    "z": "sacr-cr5:10/2/6"
+    "z": "sacr-cr5:2/1/1"
   }, 
   {
     "a": "sunn-cr5:10/2/3", 
     "metrics": {
-      "MPLS": 10
+      "MPLS": 11
     }, 
     "z": "sdsc-sdn2:xe-0/1/0"
   }, 
@@ -1092,13 +1022,6 @@
     "z": "slac-mr2:xe-0/0/0"
   }, 
   {
-    "a": "wash-cr5:10/1/7", 
-    "metrics": {
-      "MPLS": 1
-    }, 
-    "z": "eqx-ash-cr5:10/2/3"
-  }, 
-  {
     "a": "sdsc-sdn2:xe-1/1/0", 
     "metrics": {
       "MPLS": 1
@@ -1106,18 +1029,32 @@
     "z": "ga-rt2:xe-0/0/0"
   }, 
   {
-    "a": "sacr-cr5:10/2/1", 
+    "a": "sacr-cr5:3/1/1", 
     "metrics": {
-      "MPLS": 2
+      "MPLS": 14
     }, 
-    "z": "nersc-mr2:xe-2/2/0"
+    "z": "pnwg-cr5:1/1/1"
+  }, 
+  {
+    "a": "eqx-ash-cr5:10/1/2", 
+    "metrics": {
+      "MPLS": 16
+    }, 
+    "z": "netl-mgn-rt1:xe-2/0/0"
   }, 
   {
     "a": "nash-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 12
     }, 
     "z": "atla-cr5:2/1/1"
+  }, 
+  {
+    "a": "netl-mgn-rt1:xe-2/0/0", 
+    "metrics": {
+      "MPLS": 16
+    }, 
+    "z": "eqx-ash-cr5:10/1/2"
   }, 
   {
     "a": "elpa-cr5:3/1/1", 
@@ -1129,7 +1066,7 @@
   {
     "a": "atla-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 12
     }, 
     "z": "nash-cr5:2/1/1"
   }, 
@@ -1143,51 +1080,65 @@
   {
     "a": "star-cr5:4/2/1", 
     "metrics": {
-      "MPLS": 22
+      "MPLS": 20
     }, 
     "z": "aofa-cr5:5/1/1"
   }, 
   {
     "a": "sunn-cr5:10/1/3", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "nersc-mr2:xe-1/1/0"
   }, 
   {
     "a": "jgi-mr2:xe-1/1/0", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "sunn-cr5:9/1/1"
   }, 
   {
     "a": "aofa-cr5:5/1/1", 
     "metrics": {
-      "MPLS": 22
+      "MPLS": 20
     }, 
     "z": "star-cr5:4/2/1"
   }, 
   {
     "a": "aofa-cr5:6/2/1", 
     "metrics": {
-      "MPLS": 5
+      "MPLS": 6
     }, 
     "z": "wash-cr5:4/1/1"
   }, 
   {
     "a": "nersc-mr2:xe-1/1/0", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "sunn-cr5:10/1/3"
   }, 
   {
     "a": "sacr-cr5:10/2/2", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "lbl-mr2:xe-7/2/0"
+  }, 
+  {
+    "a": "lond-cr5:5/1/1", 
+    "metrics": {
+      "MPLS": 69
+    }, 
+    "z": "aofa-cr5:7/2/1"
+  }, 
+  {
+    "a": "aofa-cr5:7/2/1", 
+    "metrics": {
+      "MPLS": 69
+    }, 
+    "z": "lond-cr5:5/1/1"
   }, 
   {
     "a": "star-cr5:9/1/4", 
@@ -1225,11 +1176,46 @@
     "z": "star-cr5:9/1/4"
   }, 
   {
-    "a": "pppl-rt5:xe-0/2/0", 
+    "a": "wash-cr5:10/1/3", 
     "metrics": {
       "MPLS": 1
     }, 
-    "z": "aofa-cr5:9/1/1"
+    "z": "wash-ar1:ae0"
+  }, 
+  {
+    "a": "eqx-ash-cr5:10/2/2", 
+    "metrics": {
+      "MPLS": 11
+    }, 
+    "z": "netl-pgh-rt1:xe-2/0/0"
+  }, 
+  {
+    "a": "wash-ar1:ae0", 
+    "metrics": {
+      "MPLS": 1
+    }, 
+    "z": "wash-cr5:10/1/3"
+  }, 
+  {
+    "a": "netl-pgh-rt1:xe-2/0/0", 
+    "metrics": {
+      "MPLS": 11
+    }, 
+    "z": "eqx-ash-cr5:10/2/2"
+  }, 
+  {
+    "a": "ornl-rt4:xe-2/3/0", 
+    "metrics": {
+      "MPLS": 15
+    }, 
+    "z": "osti-rt2:ae0"
+  }, 
+  {
+    "a": "chic-cr5:10/1/4", 
+    "metrics": {
+      "MPLS": 2
+    }, 
+    "z": "fnal-mr2:xe-0/0/0"
   }, 
   {
     "a": "denv-cr5:10/1/4", 
@@ -1253,11 +1239,11 @@
     "z": "pppl-rt5:xe-0/2/0"
   }, 
   {
-    "a": "sacr-cr5:3/1/1", 
+    "a": "sacr-cr5:10/2/1", 
     "metrics": {
-      "MPLS": 14
+      "MPLS": 4
     }, 
-    "z": "pnwg-cr5:1/1/1"
+    "z": "nersc-mr2:xe-2/2/0"
   }, 
   {
     "a": "pnwg-cr5:1/1/1", 
@@ -1269,14 +1255,14 @@
   {
     "a": "lbl-mr2:xe-1/3/0", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "sunn-cr5:9/1/2"
   }, 
   {
     "a": "sunn-cr5:9/1/2", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
     "z": "lbl-mr2:xe-1/3/0"
   }, 

@@ -37,7 +37,7 @@ public class MapController {
 
     @RequestMapping(value = "/api/map", method = RequestMethod.GET)
     @ResponseBody
-    public MapGraph getMap() throws ConsistencyException, StartupException{
+    public MapGraph getMap() throws ConsistencyException, StartupException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
@@ -102,9 +102,20 @@ public class MapController {
             }
 
 
-
         }
         return g;
+    }
+
+    @RequestMapping(value = "/api/positions", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Position> getPositions() throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+        return uiPopulator.getPositions().getPositions();
+
     }
 
 }

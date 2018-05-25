@@ -4,6 +4,10 @@
 
 import MySQLdb as mdb
 import json
+import yaml
+
+stream = open('ifce-addrs.yaml', 'r')
+addrs = yaml.load(stream)
 
 # connect and make cursors
 rdb = mdb.connect(host="localhost",
@@ -67,9 +71,9 @@ for res in rcur.fetchall():
         'pss': {
             'res': {
                 'vplsId': [],
-                'devices': {}
+                'resources': []
             },
-            'config': {}
+            'config': []
         }
     }
 
@@ -94,8 +98,16 @@ for res in rcur.fetchall():
     cur.execute("SELECT * FROM pathElems WHERE pathId = %s ORDER BY seqNumber" % pathId)
     hops = []
     firstHop = True
-    for pathElem in cur.fetchall():
+    prevDevice = None
+    pathElems = cur.fetchall()
+#    print json.dumps(pathElems, indent=2)
+    prevDevice = None
+    for pathElem in pathElems:
         urn = pathElem['urn']
+        addr = ''
+        if urn in addrs:
+            addr = addrs[urn]
+
         urn = urn.replace('urn:ogf:network:domain=es.net:node=', '')
         urn = urn.replace('port=', '')
         urn = urn.replace('link=', '')
@@ -114,10 +126,22 @@ for res in rcur.fetchall():
             aPort = parts[1]
         zDevice = parts[0]
         zPort = parts[1]
+
+        if prevDevice == parts[0]:
+            hops.append({
+                'device': parts[0],
+                'port': '',
+                'addr': ''
+            })
+
+        prevDevice = parts[0]
+
         hops.append({
             'device': parts[0],
-            'port': parts[1]
+            'port': parts[1],
+            'addr': addr
         })
+
         firstHop = False
 
     # slice hops to skip the first and last elements
@@ -159,13 +183,22 @@ for res in rcur.fetchall():
     pcur.execute("SELECT * FROM config WHERE phase = 'SETUP' AND gri = '%s'" % res['globalReservationId'])
     for config in pcur.fetchall():
         device = config['deviceId']
-        out['pss']['config'][device] = {}
-        out['pss']['config'][device]['BUILD'] = config['config']
+        entry = {
+            'device': device,
+            'phase': 'BUILD',
+            'config': config['config']
+        }
+        out['pss']['config'].append(entry)
 
     pcur.execute("SELECT * FROM config WHERE phase = 'TEARDOWN' AND gri = '%s'" % res['globalReservationId'])
     for config in pcur.fetchall():
         device = config['deviceId']
-        out['pss']['config'][device]['DISMANTLE'] = config['config']
+        entry = {
+            'device': device,
+            'phase': 'DISMANTLE',
+            'config': config['config']
+        }
+        out['pss']['config'].append(entry)
 
     # grab those convoluted PSS resources
     pcur.execute("SELECT * FROM srl WHERE gri = '%s'" % gri)
@@ -178,9 +211,12 @@ for res in rcur.fetchall():
             parts = srl['scope'].split(':')
             device = parts[0]
             what = parts[1]
-            if device not in out['pss']['res']['devices']:
-                out['pss']['res']['devices'][device] = {}
-            out['pss']['res']['devices'][device][what] = srl['resource']
+            entry = {
+                'what': what,
+                'resource': srl['resource'],
+                'device': device
+            }
+            out['pss']['res']['resources'].append(entry)
 
 # add new data, end of loop
     results[gri] = out
@@ -194,11 +230,17 @@ for srl in pcur.fetchall():
     gri = parts[0]
     device = parts[1]
     if gri in results:
-        if device not in results[gri]['pss']['res']['devices']:
-            results[gri]['pss']['res']['devices'][device] = {}
-
-        results[gri]['pss']['res']['devices'][device]['loopback'] = srl['resource']
+        entry = {
+            'what': 'loopback',
+            'resource': srl['resource'],
+            'device': device
+        }
+        results[gri]['pss']['res']['resources'].append(entry)
 
 # dump JSON output & exit
 
-print json.dumps(results, indent=2)
+final = []
+for gri in results:
+    final.append(results[gri])
+
+print json.dumps(final, indent=2)

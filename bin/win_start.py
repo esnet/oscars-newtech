@@ -17,12 +17,12 @@ try:
 
     # Launch core
     os.chdir(os.path.join(top_dir, "backend"))
-    core_proc = subprocess.Popen(['java', "-jar", os.path.join("target", "backend-1.0.4.jar")])
+    core_proc = subprocess.Popen(['java', "-jar", os.path.join("target", "backend-1.0.5.jar")])
     processes.append(core_proc)
 
     # Launch PSS
     os.chdir(os.path.join(top_dir, "pss"))
-    pss_proc = subprocess.Popen(['java', "-jar", os.path.join("target", "pss-1.0.4.jar")])
+    pss_proc = subprocess.Popen(['java', "-jar", os.path.join("target", "pss-1.0.5.jar")])
     processes.append(pss_proc)
 
     os.chdir(orig_dir)

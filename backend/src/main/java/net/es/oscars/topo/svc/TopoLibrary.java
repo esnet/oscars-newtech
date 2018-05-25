@@ -9,7 +9,9 @@ import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class TopoLibrary {
@@ -57,10 +59,10 @@ public class TopoLibrary {
 
     public static Delta<Device> compareDevices(List<Device> alpha, List<Device> beta) {
         //log.info("comparing devices");
-        List<Device> added = new ArrayList<>();
-        List<Device> modified = new ArrayList<>();
-        List<Device> removed = new ArrayList<>();
-        List<Device> unchanged = new ArrayList<>();
+        Map<String, Device> added = new HashMap<>();
+        Map<String, Device> modified = new HashMap<>();
+        Map<String, Device> removed = new HashMap<>();
+        Map<String, Device> unchanged = new HashMap<>();
 
         for (Device aDevice : alpha) {
             boolean found = false;
@@ -87,14 +89,14 @@ public class TopoLibrary {
             }
             if (found) {
                 if (!changed) {
-                    unchanged.add(aDevice);
+                    unchanged.put(aDevice.getUrn(), aDevice);
                 } else {
                     log.info("will modify "+aDevice.getUrn());
-                    modified.add(aDevice);
+                    modified.put(aDevice.getUrn(), aDevice);
                 }
             } else {
                 log.info("will remove "+aDevice.getUrn());
-                removed.add(aDevice);
+                removed.put(aDevice.getUrn(), aDevice);
             }
         }
 
@@ -107,7 +109,7 @@ public class TopoLibrary {
             }
             if (!found) {
                 log.info("will add "+bDevice.getUrn());
-                added.add(bDevice);
+                added.put(bDevice.getUrn(), bDevice);
             }
         }
 
@@ -122,10 +124,10 @@ public class TopoLibrary {
 
     public static Delta<Port> comparePorts(List<Port> alpha, List<Port> beta) {
         // log.info("comparing ports");
-        List<Port> added = new ArrayList<>();
-        List<Port> modified = new ArrayList<>();
-        List<Port> removed = new ArrayList<>();
-        List<Port> unchanged = new ArrayList<>();
+        Map<String, Port> added = new HashMap<>();
+        Map<String, Port> modified = new HashMap<>();
+        Map<String, Port> removed = new HashMap<>();
+        Map<String, Port> unchanged = new HashMap<>();
 
         for (Port aPort : alpha) {
             boolean found = false;
@@ -165,13 +167,13 @@ public class TopoLibrary {
             if (!found) {
                 // log.info("will remove "+aPort.getUrn());
 
-                removed.add(aPort);
+                removed.put(aPort.getUrn(), aPort);
             } else {
                 if (changed) {
                     // log.info("will modify "+aPort.getUrn());
-                    modified.add(aPort);
+                    modified.put(aPort.getUrn(), aPort);
                 } else {
-                    unchanged.add(aPort);
+                    unchanged.put(aPort.getUrn(), aPort);
                 }
             }
         }
@@ -185,7 +187,7 @@ public class TopoLibrary {
             }
             if (!found) {
                 // log.info("will add "+bPort.getUrn());
-                added.add(bPort);
+                added.put(bPort.getUrn(), bPort);
             }
         }
 
@@ -199,10 +201,10 @@ public class TopoLibrary {
 
     public static Delta<PortAdjcy> comparePortAdjcies(List<PortAdjcy> alpha, List<PortAdjcy> beta) {
         // log.info("comparing port adjcies");
-        List<PortAdjcy> added = new ArrayList<>();
-        List<PortAdjcy> modified = new ArrayList<>();
-        List<PortAdjcy> removed = new ArrayList<>();
-        List<PortAdjcy> unchanged = new ArrayList<>();
+        Map<String, PortAdjcy> added = new HashMap<>();
+        Map<String, PortAdjcy> modified = new HashMap<>();
+        Map<String, PortAdjcy> removed = new HashMap<>();
+        Map<String, PortAdjcy> unchanged = new HashMap<>();
 
         for (PortAdjcy aAdjcy : alpha) {
             // log.info("verifying: "+ aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn());
@@ -224,13 +226,13 @@ public class TopoLibrary {
             if (found) {
                 if (changed) {
                     // log.info("will modify "+aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn());
-                    modified.add(aAdjcy);
+                    modified.put(aAdjcy.getUrn(), aAdjcy);
                 } else {
-                    unchanged.add(aAdjcy);
+                    unchanged.put(aAdjcy.getUrn(), aAdjcy);
                 }
             } else {
                 // log.info("will remove "+aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn());
-                removed.add(aAdjcy);
+                removed.put(aAdjcy.getUrn(), aAdjcy);
             }
         }
         for (PortAdjcy bAdjcy : beta) {
@@ -247,7 +249,7 @@ public class TopoLibrary {
             }
             if (!found) {
                 // log.info("will add "+bAdjcy.getA().getUrn()+ " -- "+bAdjcy.getZ().getUrn());
-                added.add(bAdjcy);
+                added.put(bAdjcy.getUrn(), bAdjcy);
             }
         }
 

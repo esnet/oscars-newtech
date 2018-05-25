@@ -10,6 +10,7 @@ import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.db.HeldRepository;
 import net.es.oscars.resv.db.ReservedRepository;
 import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.BuildMode;
 import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
@@ -90,6 +91,9 @@ public class ConnService {
                 .connectionId(connectionId)
                 .phase(Phase.HELD)
                 .state(State.WAITING)
+                .description("some default")
+                .mode(BuildMode.AUTOMATIC)
+                .tags(new ArrayList<>())
                 .username(username)
                 .build();
         if (archivedRepo.findByConnectionId(connectionId).isPresent()) {

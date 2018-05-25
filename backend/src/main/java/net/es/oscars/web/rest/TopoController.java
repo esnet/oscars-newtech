@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.*;
 
@@ -48,9 +49,15 @@ public class TopoController {
         log.warn("requested an item which did not exist", ex);
     }
 
+    @ExceptionHandler(StartupException.class)
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public void handleStartup(StartupException ex) {
+        log.warn("Still in startup");
+    }
 
     @RequestMapping(value = "/api/topo/ethernetPortsByDevice", method = RequestMethod.GET)
     @ResponseBody
+    @Transactional
     public Map<String, List<Port>> ethernetPortsByDevice()
             throws ConsistencyException, StartupException {
 

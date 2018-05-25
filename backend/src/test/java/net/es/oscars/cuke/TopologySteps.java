@@ -5,6 +5,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.topo.beans.Delta;
+import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.db.DeviceRepository;
@@ -18,8 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Slf4j
 @Transactional
@@ -57,8 +57,8 @@ public class TopologySteps extends CucumberSteps {
 
         topoService.updateTopo();
         world.topoBaseline = topoService.getTopoUrnMap();
+        // log.info(world.topoBaseline.toString());
     }
-
 
 
     @Given("^I clear the topology$")
@@ -67,7 +67,9 @@ public class TopologySteps extends CucumberSteps {
         adjcyRepo.deleteAll();
         deviceRepo.deleteAll();
         versionRepo.deleteAll();
+        world.topoBaseline = new HashMap<>();
     }
+
     @Then("^the current topology is empty$")
     public void the_current_topology_is_empty() throws Throwable {
         Topology c = topoService.currentTopology();
@@ -79,7 +81,7 @@ public class TopologySteps extends CucumberSteps {
     @Then("^the \"([^\"]*)\" delta has (\\d+) entries \"([^\"]*)\"$")
     public void the_latest_delta_has_entries(String which, int num, String action) throws Throwable {
         Delta delta;
-        List list;
+        Collection list;
 
         if (which.equals("device")) {
             delta = vd.getDeviceDelta();
@@ -93,13 +95,13 @@ public class TopologySteps extends CucumberSteps {
         }
 
         if (action.equals("added")) {
-            list = delta.getAdded();
+            list = delta.getAdded().values();
         } else if (action.equals("modified")) {
-            list = delta.getModified();
+            list = delta.getModified().values();
         } else if (action.equals("removed")) {
-            list = delta.getRemoved();
+            list = delta.getRemoved().values();
         } else if (action.equals("unchanged")) {
-            list = delta.getUnchanged();
+            list = delta.getUnchanged().values();
         } else {
             throw new RuntimeException("bad action");
         }

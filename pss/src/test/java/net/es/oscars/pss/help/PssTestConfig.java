@@ -6,7 +6,7 @@ import lombok.NonNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@ConfigurationProperties(prefix = "pss_test")
+@ConfigurationProperties(prefix = "psstest")
 @Data
 @Component
 @NoArgsConstructor

@@ -34,8 +34,8 @@ OUTPUT_ADJCIES = "output/adjacencies.json"
 
 pp = pprint.PrettyPrinter(indent=4)
 
-UNKNOWN_VLAN_RANGE = "2000-2999"
-VLAN_RANGE = "2-4095"
+UNKNOWN_VLAN_RANGE = "2-4094"
+VLAN_RANGE = "2-4094"
 
 
 def get_token(opts):
@@ -89,13 +89,16 @@ def main():
 
     r = requests.get(ESDB_URL + '/topology/today/1',
                      headers=dict(Authorization='Token {0}'.format(token)))
+
     if r.status_code != requests.codes.ok:
         print "error:  " + r.text
         exit(1)
+
     # Get the first snapshot that got returned.  Since we didn't ask for one
     # in particular, we should have gotten only the current snapshot.
     snapshot = r.json()['topology_snapshots'][0]['data']
     today = snapshot['today']
+    # print json.dumps(today, indent=2)
 
     # Post-processing of today.json.
     # Get information about routers, ISIS adjacencies, router ports, and IPv4 addresses.
@@ -119,7 +122,7 @@ def main():
     merge_isis_ports(oscars_devices=oscars_devices, igp_portmap=igp_portmap)
 
     merge_phy_ports(oscars_devices=oscars_devices, ports=in_ports, igp_portmap=igp_portmap, vlans=vlans)
-#    pp.pprint(oscars_devices)
+    #    pp.pprint(oscars_devices)
     merge_addrs(oscars_devices=oscars_devices, addrs=addrs, isis_adjcies=isis_adjcies)
 
     # Dump output files
@@ -189,8 +192,8 @@ def make_reservable_vlans(used_vlans=None, used_vlans_known=None):
         parts = UNKNOWN_VLAN_RANGE.split("-")
         return [
             {
-                "floor": parts[0],
-                "ceiling": parts[1]
+                "floor": int(parts[0]),
+                "ceiling": int(parts[1])
             }
         ]
 
@@ -213,8 +216,8 @@ def make_reservable_vlans(used_vlans=None, used_vlans_known=None):
         result = []
         for entry in ranges:
             result.append({
-                "floor": entry[0],
-                "ceiling": entry[1]
+                "floor": int(entry[0]),
+                "ceiling": int(entry[1])
             })
         return result
     else:
@@ -242,7 +245,7 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=Non
                         if vlan is None:
                             all_vlans_known = False
                         #                            print "could not find vlan id for "+device["urn"]+":"+names["name"]
-                        elif vlan == 0:
+                        elif int(vlan) == 0:
                             untagged = True
                         else:
                             all_vlans.append(vlan)
@@ -266,17 +269,25 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=Non
 
                         ifce_data["reservableVlans"] = make_reservable_vlans(all_vlans, all_vlans_known)
 
+                    keep_port = port_in_igp or not untagged
+
                     found_port = False
+                    port_to_remove = None
                     for out_port in device["ports"]:
                         if out_port["urn"] == ifce_data["urn"]:
                             found_port = True
+                            if not keep_port:
+                                port_to_remove = out_port
+                            else:
+                                out_port["capabilities"] = ifce_data["capabilities"]
+                                out_port["reservableIngressBw"] = ifce_data["reservableIngressBw"]
+                                out_port["reservableEgressBw"] = ifce_data["reservableEgressBw"]
+                                if "reservableVlans" in ifce_data.keys():
+                                    out_port["reservableVlans"] = ifce_data["reservableVlans"]
+                    if port_to_remove:
+                        device["ports"].remove(port_to_remove)
 
-                            out_port["capabilities"] = ifce_data["capabilities"]
-                            out_port["reservableIngressBw"] = ifce_data["reservableIngressBw"]
-                            out_port["reservableEgressBw"] = ifce_data["reservableEgressBw"]
-                            if "reservableVlans" in ifce_data.keys():
-                                out_port["reservableVlans"] = ifce_data["reservableVlans"]
-                    if not found_port:
+                    if not found_port and keep_port:
                         device["ports"].append(ifce_data)
 
 
@@ -288,6 +299,8 @@ def merge_isis_ports(oscars_devices=None, igp_portmap=None):
                 found_device = True
                 for port_name in igp_portmap[device_name].keys():
                     mbps = igp_portmap[device_name][port_name]["mbps"]
+                    ifce = igp_portmap[device_name][port_name]["ifce"]
+
                     port_urn = device_name + ":" + port_name
                     found_port = False
                     for ifce_data in device["ports"]:
@@ -301,6 +314,7 @@ def merge_isis_ports(oscars_devices=None, igp_portmap=None):
                             "urn": port_urn,
                             "capabilities": ["MPLS"],
                             "reservableIngressBw": mbps,
+                            "ifce": ifce,
                             "reservableEgressBw": mbps
                         }
                         device["ports"].append(new_ifce_data)
@@ -368,7 +382,8 @@ def transform_isis(isis_adjcies=None):
                 igp_portmap[a_router] = {}
 
             igp_portmap[a_router][a_port] = {
-                "mbps": isis_adjcy["mbps"]
+                "mbps": isis_adjcy["mbps"],
+                "ifce": isis_adjcy["a_ifce"]
             }
             # else:
             #   print "skipping " + a_addr
@@ -379,7 +394,6 @@ def transform_isis(isis_adjcies=None):
 def best_urns_by_addr(isis_adjcies=None):
     urns_for_addr = {}
     all_port_urns = []
-    dupe_port_urns = []
     all_ifce_urns = []
     dupe_ifce_urns = []
 
@@ -398,9 +412,7 @@ def best_urns_by_addr(isis_adjcies=None):
                 all_ifce_urns.append(ifce_urn_a)
 
         port_urn_a = router_a + ":" + port_a
-        if port_urn_a in all_port_urns:
-            dupe_port_urns.append(port_urn_a)
-        else:
+        if port_urn_a not in all_port_urns:
             all_port_urns.append(port_urn_a)
 
         addr_urn_a = router_a + ":" + addr_a
@@ -411,21 +423,10 @@ def best_urns_by_addr(isis_adjcies=None):
             "addr_urn": addr_urn_a
         }
         urns_for_addr[addr_a] = entry
-
     best_urns = {}
-
     for addr in urns_for_addr.keys():
         entry = urns_for_addr[addr]
-        if entry["port_urn"] not in dupe_port_urns:
-            best_urns[addr] = entry["port_urn"]
-        elif entry["ifce_urn"] is not None:
-            best_urns[addr] = None
-        # best_urns[addr] = entry["ifce_urn"]
-        #   print "dupe urn! " + entry["ifce_urn"]
-        else:
-            best_urns[addr] = None
-            #   best_urns[addr] = entry["addr_urn"]
-            #   print "dupe urn! " + entry["addr_urn"]
+        best_urns[addr] = entry["port_urn"]
     return best_urns
 
 

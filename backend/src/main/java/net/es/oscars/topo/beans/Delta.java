@@ -4,15 +4,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Data
 @Builder
 public class Delta<T> {
-    List<T> added;
-    List<T> removed;
-    List<T> modified;
-    List<T> unchanged;
+    Map<String, T> added;
+    Map<String, T> removed;
+    Map<String, T> modified;
+    Map<String, T> unchanged;
 
 }
