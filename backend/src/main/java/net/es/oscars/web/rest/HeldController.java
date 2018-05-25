@@ -72,9 +72,11 @@ public class HeldController {
         Instant exp = Instant.now().plus(15L, ChronoUnit.MINUTES);
         if (maybeConnection.isPresent()) {
             Connection conn = maybeConnection.get();
+            if (conn.getPhase().equals(Phase.HELD)) {
+                conn.getHeld().setExpiration(exp);
+                connRepo.save(conn);
+            }
 
-            conn.getHeld().setExpiration(exp);
-            connRepo.save(conn);
             return exp;
         } else {
             throw new NoSuchElementException("connection id not found");
