@@ -118,7 +118,9 @@ public class ConnService {
 
         this.archiveFromReserved(c);
 
+        Held held = c.getHeld();
         c.setHeld(null);
+        heldRepo.delete(held);
         connRepo.save(c);
 
         // TODO: set the user
@@ -139,7 +141,9 @@ public class ConnService {
     public Phase uncommit(Connection c) {
 
         Held h = this.heldFromReserved(c);
+        Reserved r = c.getReserved();
         c.setReserved(null);
+        reservedRepo.delete(r);
         c.setHeld(h);
         connRepo.save(c);
         return Phase.HELD;
@@ -160,8 +164,10 @@ public class ConnService {
 
         // then, archive it
         c.setPhase(Phase.ARCHIVED);
-        c.setHeld(null);
+
+        Reserved r = c.getReserved();
         c.setReserved(null);
+        reservedRepo.delete(r);
 
         // TODO: somehow set the user that cancelled
         Event ev = Event.builder()
