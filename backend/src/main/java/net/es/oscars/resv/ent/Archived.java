@@ -32,7 +32,7 @@ public class Archived {
     private String connectionId;
 
     @NonNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
     private Components cmp;
 
     @NonNull

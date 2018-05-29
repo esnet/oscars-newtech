@@ -2,6 +2,7 @@ package net.es.oscars.resv.svc;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.pss.svc.PSSAdapter;
 import net.es.oscars.pss.svc.PssResourceService;
@@ -15,6 +16,9 @@ import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.web.beans.ConnectionFilter;
+import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.Multigraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -110,7 +114,52 @@ public class ConnService {
 
     }
 
-    public Phase commit(Connection c) throws PSSException {
+    public Phase commit(Connection c) throws PSSException, PCEException {
+
+        Held h = c.getHeld();
+        Boolean valid = true;
+
+        String error = "";
+        Multigraph<String, DefaultEdge> graph = new Multigraph<>(DefaultEdge.class);
+        for (VlanJunction j: h.getCmp().getJunctions()) {
+            graph.addVertex(j.getDeviceUrn());
+        }
+        for (VlanPipe pipe: h.getCmp().getPipes()) {
+            boolean pipeValid = true;
+            if (!graph.containsVertex(pipe.getA().getDeviceUrn())) {
+                pipeValid = false;
+                error += "invalid pipe A entry: "+pipe.getA().getDeviceUrn()+"\n";
+            }
+            if (!graph.containsVertex(pipe.getZ().getDeviceUrn())) {
+                pipeValid = false;
+                valid = false;
+                error += "invalid pipe Z entry: "+pipe.getZ().getDeviceUrn()+"\n";
+            }
+            if (pipeValid) {
+                graph.addEdge(pipe.getA().getDeviceUrn(), pipe.getZ().getDeviceUrn());
+            }
+        }
+
+        for (VlanFixture f: h.getCmp().getFixtures()) {
+            if (!graph.containsVertex(f.getJunction().getDeviceUrn())) {
+                valid = false;
+                error += "invalid fixture junction entry: "+f.getJunction().getDeviceUrn()+"\n";
+            } else {
+                graph.addVertex(f.getPortUrn());
+                graph.addEdge(f.getJunction().getDeviceUrn(), f.getPortUrn());
+            }
+        }
+
+        ConnectivityInspector<String, DefaultEdge> inspector = new ConnectivityInspector<>(graph);
+        if (!inspector.isGraphConnected()) {
+            error += "fixture / junction / pipe graph is unconnected\n";
+            valid = false;
+        }
+        if (!valid) {
+            throw new PCEException(error);
+        }
+
+
         c.setPhase(Phase.RESERVED);
 
         this.reservedFromHeld(c);

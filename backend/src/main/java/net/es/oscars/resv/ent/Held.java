@@ -38,7 +38,7 @@ public class Held {
     private Instant expiration;
 
     @NonNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
     private Components cmp;
 
     @NonNull

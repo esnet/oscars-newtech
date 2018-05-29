@@ -12,19 +12,27 @@ import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.resv.svc.LogService;
-import net.es.oscars.web.simple.Fixture;
-import net.es.oscars.web.simple.Pipe;
-import net.es.oscars.web.simple.SimpleConnection;
+import net.es.oscars.resv.svc.ResvService;
+import net.es.oscars.topo.beans.IntRange;
+import net.es.oscars.topo.beans.PortBwVlan;
+import net.es.oscars.web.beans.Interval;
+import net.es.oscars.web.simple.*;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.Multigraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 
 
@@ -35,14 +43,15 @@ public class HeldController {
     private LogService logService;
     @Autowired
     private Startup startup;
-    @PersistenceContext
-    private EntityManager entityManager;
+
+    @Autowired
+    private ResvService resvService;
 
     @Autowired
     private ConnectionRepository connRepo;
 
     @Autowired
-    private HeldRepository heldRepo;
+    private ScheduleRepository schRepo;
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -96,7 +105,12 @@ public class HeldController {
         } else if (startup.isInShutdown()) {
             throw new StartupException("OSCARS shutting down");
         }
-        this.validateConnection(in);
+        Validity v = this.validateConnection(in);
+        if (!v.isValid()) {
+            in.setValidity(v);
+            log.info("did not update invalid connection");
+            return in;
+        }
 
         String username = authentication.getName();
         in.setUsername(username);
@@ -147,40 +161,196 @@ public class HeldController {
     }
 
 
-    public void validateConnection(SimpleConnection in)
+    public Validity validateConnection(SimpleConnection in)
             throws NoSuchElementException, IllegalArgumentException {
 
+        String error = "";
+        Boolean valid = true;
+        Boolean validInterval = true;
         if (in == null) {
-            throw new IllegalArgumentException("null incoming connection!");
+            throw new IllegalArgumentException("null connection");
         }
+        Instant begin = Instant.now();
+        Instant end = Instant.now();
 
         String connectionId = in.getConnectionId();
         if (connectionId == null || connectionId.equals("")) {
-            throw new IllegalArgumentException("empty or null connection id!");
+            error += "empty or null connection id\n";
+            valid = false;
+        }
+        if (in.getBegin() == null) {
+            error += "null begin field\n";
+            valid = false;
+            validInterval = false;
+        } else {
+            begin = Instant.ofEpochSecond(in.getBegin());
+            if (!begin.isAfter(Instant.now())) {
+                error += "begin date not past now()\n";
+                valid = false;
+                validInterval = false;
+            }
         }
 
-        // TODO: Verify resources are available / validate input!!!
-
-        /*
-        vlanRepo.findAll().forEach(v -> {
-            if (v.getSchedule() != null) {
-                log.info(v.getUrn()+' '+v.getSchedule().getPhase()+' '+v.getVlanId());
+        if (in.getEnd() == null) {
+            error += "null end field\n";
+            valid = false;
+            validInterval = false;
+        } else {
+            end = Instant.ofEpochSecond(in.getEnd());
+            if (!end.isAfter(Instant.now())) {
+                error += "end date not past now()\n";
+                valid = false;
+                validInterval = false;
             }
-        });
-        fixtureRepo.findAll().forEach(f -> {
-            if (f.getSchedule() != null) {
-                log.info(f.getPortUrn() + ' ' + f.getSchedule().getPhase() + ' ' + f.getIngressBandwidth() + " / " + f.getEgressBandwidth());
+            if (!end.isAfter(begin)) {
+                error += "end date not past begin()\n";
+                valid = false;
+                validInterval = false;
             }
-        });
+        }
+        if (validInterval) {
+            begin = Instant.ofEpochSecond(in.getBegin());
+            end = Instant.ofEpochSecond(in.getEnd());
+            if (begin.plus(Duration.ofMinutes(15)).isAfter(end)) {
+                valid = false;
+                error += "interval is too short (less than 15 min)";
+            }
 
-        Interval interval = Interval.builder()
-                .beginning(conn.getHeld().getSchedule().getBeginning())
-                .ending(conn.getHeld().getSchedule().getEnding())
+        }
+        if (in.getDescription() == null) {
+            error += "null description\n";
+            valid = false;
+        }
+
+
+        if (validInterval) {
+            Interval interval = Interval.builder()
+                    .beginning(begin)
+                    .ending(Instant.ofEpochSecond(in.getEnd()))
+                    .build();
+
+            Map<String, PortBwVlan> availBwVlanMap = resvService.available(interval);
+
+            Map<String, ImmutablePair<Integer, Integer>> inBwMap = new HashMap<>();
+            Map<String, Set<Integer>> inVlanMap = new HashMap<>();
+            for (Fixture f : in.getFixtures()) {
+                Integer inMbps = f.getInMbps();
+                Integer outMbps = f.getOutMbps();
+                if (f.getMbps() != null) {
+                    inMbps = f.getMbps();
+                    outMbps = f.getMbps();
+                }
+                if (inBwMap.containsKey(f.getPort())) {
+                    ImmutablePair<Integer, Integer> prevBw = inBwMap.get(f.getPort());
+                    inMbps += prevBw.getLeft();
+                    outMbps += prevBw.getRight();
+                    ImmutablePair<Integer, Integer> newBw = new ImmutablePair<>(inMbps, outMbps);
+                    inBwMap.put(f.getPort(), newBw);
+                } else {
+                    inBwMap.put(f.getPort(), new ImmutablePair<>(inMbps, outMbps));
+                }
+                Set<Integer> vlans = new HashSet<>();
+                if (inVlanMap.containsKey(f.getPort())) {
+                    vlans = inVlanMap.get(f.getPort());
+                }
+                vlans.add(f.getVlan());
+                inVlanMap.put(f.getPort(), vlans);
+            }
+
+
+            for (Pipe p : in.getPipes()) {
+                Integer azMbps = p.getAzMbps();
+                Integer zaMbps = p.getZaMbps();
+                if (p.getMbps() != null) {
+                    azMbps = p.getMbps();
+                    zaMbps = p.getMbps();
+                }
+                int i = 0;
+                for (String urn : p.getEro()) {
+                    // egress for a-z, ingress for z-a
+                    Integer egr = azMbps;
+                    Integer ing = zaMbps;
+                    boolean notDevice = false;
+                    if (i % 3 == 1) {
+                        ing = zaMbps;
+                        egr = azMbps;
+                        notDevice = true;
+                    } else if (i % 3 == 2) {
+                        ing = azMbps;
+                        egr = zaMbps;
+                        notDevice = true;
+                    }
+                    if (notDevice) {
+                        if (inBwMap.containsKey(urn)) {
+                            ImmutablePair<Integer, Integer> prevBw = inBwMap.get(urn);
+                            ImmutablePair<Integer, Integer> newBw =
+                                    ImmutablePair.of(ing + prevBw.getLeft(), egr + prevBw.getRight());
+                            inBwMap.put(urn, newBw);
+                        } else {
+                            ImmutablePair<Integer, Integer> newBw = ImmutablePair.of(ing, egr);
+                            inBwMap.put(urn, newBw);
+                        }
+
+                    }
+                    i++;
+                }
+
+            }
+            for (Fixture f : in.getFixtures()) {
+                PortBwVlan avail = availBwVlanMap.get(f.getPort());
+                Set<Integer> vlans = inVlanMap.get(f.getPort());
+
+                Set<IntRange> availVlanRanges = avail.getVlanRanges();
+                for (Integer vlan : vlans) {
+                    boolean atLeastOneContains = false;
+                    for (IntRange r : availVlanRanges) {
+                        if (r.contains(vlan)) {
+                            atLeastOneContains = true;
+                        }
+                    }
+                    if (!atLeastOneContains) {
+                        error += "vlan not available: " + f.getJunction() + ":" + f.getPort() + "." + f.getVlan() + "\n";
+                        valid = false;
+                    }
+                }
+
+            }
+            for (String urn : inBwMap.keySet()) {
+                PortBwVlan avail = availBwVlanMap.get(urn);
+                ImmutablePair<Integer, Integer> inBw = inBwMap.get(urn);
+                if (avail.getIngressBandwidth() < inBw.getLeft()) {
+                    error += "total port ingress bw exceeds available: " + urn
+                            + " " + inBw.getLeft() + "(req) / " + avail.getIngressBandwidth() + " (avail)\n";
+                    valid = false;
+
+                }
+                if (avail.getEgressBandwidth() < inBw.getRight()) {
+                    error += "total port egress bw exceeds available: " + urn
+                            + " " + inBw.getRight() + "(req) / " + avail.getEgressBandwidth() + " (avail)\n";
+                    valid = false;
+                }
+            }
+
+
+        } else {
+            error += "invalid interval, VLANs and bandwidths not checked\n";
+            valid = false;
+        }
+
+        Validity v = Validity.builder()
+                .message(error)
+                .valid(valid)
                 .build();
 
-        Map<String, Integer> availIngressBw = resvService.availableIngBws(interval);
-        Map<String, Integer> availEgressBw = resvService.availableEgBws(interval);
-        */
+        try {
+            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(v);
+            // log.info(pretty);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return v;
+
 
     }
 
@@ -240,7 +410,7 @@ public class HeldController {
                     Integer outMbps = f.getOutMbps();
                     if (f.getMbps() != null) {
                         inMbps = f.getMbps();
-                        outMbps = f.getOutMbps();
+                        outMbps = f.getMbps();
                     }
                     Vlan vlan = Vlan.builder()
                             .connectionId(in.getConnectionId())
@@ -268,7 +438,7 @@ public class HeldController {
                     VlanJunction zj = junctionMap.get(pipe.getZ());
                     List<EroHop> azEro = new ArrayList<>();
                     List<EroHop> zaEro = new ArrayList<>();
-                    for (String hop: pipe.getEro()) {
+                    for (String hop : pipe.getEro()) {
                         azEro.add(EroHop.builder()
                                 .urn(hop)
                                 .build());
@@ -308,9 +478,15 @@ public class HeldController {
 
         if (c.getHeld() != null) {
             Held oldHeld = c.getHeld();
+
+            Schedule oldSchedule = oldHeld.getSchedule();
+
             oldHeld.setSchedule(s);
             oldHeld.setExpiration(expiration);
             oldHeld.setCmp(cmp);
+
+            schRepo.delete(oldSchedule);
+            log.info("deleted schedule");
         } else {
             c.setHeld(h);
         }

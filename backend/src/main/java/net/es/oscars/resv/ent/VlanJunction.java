@@ -50,12 +50,12 @@ public class VlanJunction {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String connectionId;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<CommandParam> commandParams;
 
     // really only for reserving a vlanId at a switch
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Vlan vlan;
 
