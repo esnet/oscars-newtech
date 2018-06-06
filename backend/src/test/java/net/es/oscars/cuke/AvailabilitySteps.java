@@ -6,16 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.resv.beans.PeriodBandwidth;
 import net.es.oscars.resv.enums.BwDirection;
 import net.es.oscars.resv.svc.ResvLibrary;
-import net.es.oscars.topo.beans.TopoUrn;
-import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
-import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +18,6 @@ import java.util.Map;
 @Slf4j
 @Transactional
 public class AvailabilitySteps extends CucumberSteps {
-
-
 
     @Autowired
     private Jackson2ObjectMapperBuilder builder;

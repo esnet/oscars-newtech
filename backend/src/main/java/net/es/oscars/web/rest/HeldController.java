@@ -79,12 +79,19 @@ public class HeldController {
         Instant exp = Instant.now().plus(15L, ChronoUnit.MINUTES);
         if (maybeConnection.isPresent()) {
             Connection conn = maybeConnection.get();
+            Instant start  = conn.getHeld().getSchedule().getBeginning();
+            // hold time will end at start time, at most
+            if (!start.isAfter(exp)) {
+                exp = start;
+            }
+
+            conn.getHeld().setExpiration(exp);
 
             conn.getHeld().setExpiration(exp);
             connRepo.save(conn);
             return exp;
         } else {
-            throw new NoSuchElementException("connection id not found");
+            return Instant.MIN;
         }
 
     }
@@ -111,7 +118,7 @@ public class HeldController {
         return result;
     }
 
-    @RequestMapping(value = "/protected/held/clear", method = RequestMethod.GET)
+    @RequestMapping(value = "/protected/held/clear/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     @Transactional
     public void deleteHeld(@PathVariable String connectionId)  throws StartupException {
@@ -515,6 +522,7 @@ public class HeldController {
             oldHeld.setSchedule(s);
             oldHeld.setExpiration(expiration);
             oldHeld.setCmp(cmp);
+
 
 
             Schedule oldSchedule = oldHeld.getSchedule();
