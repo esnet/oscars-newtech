@@ -1,6 +1,7 @@
 package net.es.oscars.resv.db;
 
 import net.es.oscars.resv.ent.Connection;
+import net.es.oscars.resv.enums.Phase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +14,6 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
     List<Connection> findAll();
     Optional<Connection> findByConnectionId(String connectionId);
 
+    List<Connection> findByPhase(Phase phase);
 
 }

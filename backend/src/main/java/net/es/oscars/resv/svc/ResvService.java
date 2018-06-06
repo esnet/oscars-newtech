@@ -56,12 +56,18 @@ public class ResvService {
     @Autowired
     private TopoService topoService;
 
-    public Map<String, List<PeriodBandwidth>> reservedIngBws(Interval interval) {
+    public Map<String, List<PeriodBandwidth>> reservedIngBws(Interval interval, String connectionId) {
         List<Schedule> scheds = scheduleRepo.findOverlapping(interval.getBeginning(), interval.getEnding());
         Map<String, List<PeriodBandwidth>> reservedIngBws = new HashMap<>();
 
 
         for (Schedule sch : scheds) {
+            if (connectionId != null ) {
+                if (sch.getConnectionId().equals(connectionId)) {
+                    continue;
+                }
+            }
+
             if (sch.getPhase().equals(Phase.HELD) || sch.getPhase().equals(Phase.RESERVED)) {
                 List<VlanFixture> fixtures = fixtureRepo.findBySchedule(sch);
                 List<VlanPipe> pipes = pipeRepo.findBySchedule(sch);
@@ -121,11 +127,16 @@ public class ResvService {
         return reservedIngBws;
     }
 
-    public Map<String, List<PeriodBandwidth>> reservedEgBws(Interval interval) {
+    public Map<String, List<PeriodBandwidth>> reservedEgBws(Interval interval, String connectionId) {
         List<Schedule> scheds = scheduleRepo.findOverlapping(interval.getBeginning(), interval.getEnding());
         Map<String, List<PeriodBandwidth>> reservedEgBws = new HashMap<>();
 
         for (Schedule sch : scheds) {
+            if (connectionId != null) {
+                if (sch.getConnectionId().equals(connectionId)) {
+                    continue;
+                }
+            }
             if (sch.getPhase().equals(Phase.HELD) || sch.getPhase().equals(Phase.RESERVED)) {
                 List<VlanFixture> fixtures = fixtureRepo.findBySchedule(sch);
                 List<VlanPipe> pipes = pipeRepo.findBySchedule(sch);
@@ -187,23 +198,26 @@ public class ResvService {
         return reservedEgBws;
     }
 
-    public Collection<Vlan> reservedVlans(Interval interval) {
+    public Collection<Vlan> reservedVlans(Interval interval, String connectionId) {
         List<Schedule> scheds = scheduleRepo.findOverlapping(interval.getBeginning(), interval.getEnding());
         HashSet<Vlan> reservedVlans = new HashSet<>();
 
         for (Schedule sch : scheds) {
+            if (connectionId != null ) {
+                if (sch.getConnectionId().equals(connectionId)) {
+                    continue;
+                }
+            }
             if (sch.getPhase().equals(Phase.HELD) || sch.getPhase().equals(Phase.RESERVED)) {
-
                 List<Vlan> vlans = vlanRepo.findBySchedule(sch);
                 reservedVlans.addAll(vlans);
-
             }
         }
         return reservedVlans;
     }
 
     public Map<String, Integer> availableIngBws(Interval interval) {
-        Map<String, List<PeriodBandwidth>> reservedIngBws = reservedIngBws(interval);
+        Map<String, List<PeriodBandwidth>> reservedIngBws = reservedIngBws(interval, null);
 
         /*
         try {
@@ -319,7 +333,7 @@ public class ResvService {
     }
 
     public Map<String, Integer> availableEgBws(Interval interval) {
-        Map<String, List<PeriodBandwidth>> reservedEgBws = reservedEgBws(interval);
+        Map<String, List<PeriodBandwidth>> reservedEgBws = reservedEgBws(interval, null);
         /*
         try {
             ObjectMapper mapper = builder.build();
@@ -333,10 +347,10 @@ public class ResvService {
         return ResvLibrary.availableBandwidthMap(BwDirection.EGRESS, baseline, reservedEgBws);
     }
 
-    public Map<String, PortBwVlan> available(Interval interval) {
-        Collection<Vlan> reservedVlans = reservedVlans(interval);
-        Map<String, List<PeriodBandwidth>> reservedEgBws = reservedEgBws(interval);
-        Map<String, List<PeriodBandwidth>> reservedIngBws = reservedIngBws(interval);
+    public Map<String, PortBwVlan> available(Interval interval, String connectionId) {
+        Collection<Vlan> reservedVlans = reservedVlans(interval, connectionId);
+        Map<String, List<PeriodBandwidth>> reservedEgBws = reservedEgBws(interval, connectionId);
+        Map<String, List<PeriodBandwidth>> reservedIngBws = reservedIngBws(interval, connectionId);
 
         return ResvLibrary.portBwVlans(topoService.getTopoUrnMap(), reservedVlans, reservedIngBws, reservedEgBws);
     }

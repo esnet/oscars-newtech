@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.NestedServletException;
 
 @Slf4j
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
@@ -53,7 +54,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
+        try {
 
-        chain.doFilter(request, response);
+            chain.doFilter(request, response);
+        } catch (NestedServletException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new ServletException(ex.getMessage());
+        }
     }
 }
