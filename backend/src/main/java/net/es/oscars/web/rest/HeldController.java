@@ -294,7 +294,12 @@ public class HeldController {
                 if (inVlanMap.containsKey(f.getPort())) {
                     vlans = inVlanMap.get(f.getPort());
                 }
-                vlans.add(f.getVlan());
+                if (vlans.contains(f.getVlan())) {
+                    error += "duplicate VLAN for "+f.getPort();
+                    valid = false;
+                } else {
+                    vlans.add(f.getVlan());
+                }
                 inVlanMap.put(f.getPort(), vlans);
             }
 
@@ -337,6 +342,7 @@ public class HeldController {
                 }
 
             }
+
             for (Fixture f : in.getFixtures()) {
                 PortBwVlan avail = availBwVlanMap.get(f.getPort());
                 Set<Integer> vlans = inVlanMap.get(f.getPort());

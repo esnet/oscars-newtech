@@ -14,12 +14,10 @@ import javax.persistence.Id;
 @Builder
 @AllArgsConstructor(suppressConstructorProperties=true)
 @NoArgsConstructor
-public class Tag {
+public class TagCategory {
     @JsonCreator
-    public Tag(@JsonProperty("category") @NonNull String category,
-               @JsonProperty("contents") @NonNull String contents) {
+    public TagCategory(@JsonProperty("category") @NonNull String category) {
         this.category = category;
-        this.contents = contents;
     }
 
     @Id
@@ -29,7 +27,5 @@ public class Tag {
     @NonNull
     private String category;
 
-    @NonNull
-    private String contents;
 
 }
