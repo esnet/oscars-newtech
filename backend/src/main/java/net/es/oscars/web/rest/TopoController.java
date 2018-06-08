@@ -20,10 +20,9 @@ import net.es.oscars.web.beans.Interval;
 import net.es.oscars.web.beans.SimpleAdjcy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
-import java.time.Instant;
 import java.util.*;
 
 @RestController
@@ -72,11 +71,11 @@ public class TopoController {
 
             for (Device d : topology.getDevices()) {
                 List<Port> ports = new ArrayList<>();
-                d.getPorts().forEach(p -> {
+                for (Port p: d.getPorts()) {
                     if (p.getCapabilities().contains(Layer.ETHERNET)) {
                         ports.add(p);
                     }
-                });
+                }
                 eppd.put(d.getUrn(), ports);
 
             }
@@ -145,7 +144,7 @@ public class TopoController {
         }
 
 
-        return resvService.available(interval);
+        return resvService.available(interval, null);
 
     }
 

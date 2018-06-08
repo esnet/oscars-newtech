@@ -16,7 +16,7 @@ import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.web.beans.ConnectionFilter;
-import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.Multigraph;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,12 +187,11 @@ public class ConnService {
 
 
 
+
     public Phase uncommit(Connection c) {
 
         Held h = this.heldFromReserved(c);
-        Reserved r = c.getReserved();
         c.setReserved(null);
-        reservedRepo.delete(r);
         c.setHeld(h);
         connRepo.save(c);
         return Phase.HELD;
@@ -213,10 +212,8 @@ public class ConnService {
 
         // then, archive it
         c.setPhase(Phase.ARCHIVED);
-
-        Reserved r = c.getReserved();
+        c.setHeld(null);
         c.setReserved(null);
-        reservedRepo.delete(r);
 
         // TODO: somehow set the user that cancelled
         Event ev = Event.builder()

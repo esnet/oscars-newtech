@@ -30,11 +30,11 @@ public class Reserved {
     @NonNull
     private String connectionId;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @NonNull
     private Components cmp;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @NonNull
     private Schedule schedule;
 

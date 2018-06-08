@@ -2,6 +2,7 @@ package net.es.oscars.pce;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.resv.ent.EroHop;
+import net.es.oscars.resv.enums.EroDirection;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.web.beans.PcePath;

@@ -31,14 +31,14 @@ public class Components {
     private Long id;
 
     @NonNull
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<VlanJunction> junctions;
 
     @NonNull
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<VlanFixture> fixtures;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<VlanPipe> pipes;
 

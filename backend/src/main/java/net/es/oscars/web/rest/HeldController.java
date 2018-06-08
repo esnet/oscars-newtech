@@ -15,24 +15,22 @@ import net.es.oscars.resv.svc.LogService;
 import net.es.oscars.resv.svc.ResvService;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
+import net.es.oscars.web.beans.CurrentlyHeldEntry;
 import net.es.oscars.web.beans.Interval;
-import net.es.oscars.web.simple.*;
+import net.es.oscars.web.simple.Fixture;
+import net.es.oscars.web.simple.Pipe;
+import net.es.oscars.web.simple.SimpleConnection;
+import net.es.oscars.web.simple.Validity;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.jgrapht.UndirectedGraph;
-import org.jgrapht.alg.ConnectivityInspector;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.Multigraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 
 
@@ -45,13 +43,13 @@ public class HeldController {
     private Startup startup;
 
     @Autowired
-    private ResvService resvService;
-
-    @Autowired
     private ConnectionRepository connRepo;
 
     @Autowired
     private ScheduleRepository schRepo;
+
+    @Autowired
+    private ResvService resvService;
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -81,14 +79,55 @@ public class HeldController {
         Instant exp = Instant.now().plus(15L, ChronoUnit.MINUTES);
         if (maybeConnection.isPresent()) {
             Connection conn = maybeConnection.get();
-            if (conn.getPhase().equals(Phase.HELD)) {
-                conn.getHeld().setExpiration(exp);
-                connRepo.save(conn);
+            Instant start  = conn.getHeld().getSchedule().getBeginning();
+            // hold time will end at start time, at most
+            if (!start.isAfter(exp)) {
+                exp = start;
             }
 
+            conn.getHeld().setExpiration(exp);
+            connRepo.save(conn);
             return exp;
         } else {
-            throw new NoSuchElementException("connection id not found");
+            return Instant.MIN;
+        }
+
+    }
+
+
+    @RequestMapping(value = "/protected/held/current", method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional
+    public List<CurrentlyHeldEntry> currentlyHeld()  throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+        List<Connection> connections = connRepo.findByPhase(Phase.HELD);
+        List<CurrentlyHeldEntry> result = new ArrayList<>();
+        for (Connection c: connections) {
+            CurrentlyHeldEntry e = CurrentlyHeldEntry.builder()
+                    .connectionId(c.getConnectionId())
+                    .username(c.getUsername())
+                    .build();
+            result.add(e);
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/protected/held/clear/{connectionId:.+}", method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional
+    public void deleteHeld(@PathVariable String connectionId)  throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+        Optional<Connection> c = connRepo.findByConnectionId(connectionId);
+        if (c.isPresent() && c.get().getPhase().equals(Phase.HELD)) {
+            connRepo.delete(c.get());
         }
 
     }
@@ -108,7 +147,7 @@ public class HeldController {
         Validity v = this.validateConnection(in);
         if (!v.isValid()) {
             in.setValidity(v);
-            log.info("did not update invalid connection");
+            log.info("did not update invalid connection "+in.getConnectionId());
             return in;
         }
 
@@ -128,7 +167,9 @@ public class HeldController {
         if (maybeConnection.isPresent()) {
             log.info("overwriting previous connection for " + connectionId);
             Connection prev = maybeConnection.get();
-
+            if (!prev.getPhase().equals(Phase.HELD)) {
+                throw new IllegalArgumentException("connection not in HELD phase");
+            }
 
             String prettyPrv = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(prev);
             // log.debug("prev conn: "+prev.getId()+"\n" + prettyPrv);
@@ -229,7 +270,7 @@ public class HeldController {
                     .ending(Instant.ofEpochSecond(in.getEnd()))
                     .build();
 
-            Map<String, PortBwVlan> availBwVlanMap = resvService.available(interval);
+            Map<String, PortBwVlan> availBwVlanMap = resvService.available(interval, in.getConnectionId());
 
             Map<String, ImmutablePair<Integer, Integer>> inBwMap = new HashMap<>();
             Map<String, Set<Integer>> inVlanMap = new HashMap<>();
@@ -253,7 +294,12 @@ public class HeldController {
                 if (inVlanMap.containsKey(f.getPort())) {
                     vlans = inVlanMap.get(f.getPort());
                 }
-                vlans.add(f.getVlan());
+                if (vlans.contains(f.getVlan())) {
+                    error += "duplicate VLAN for "+f.getPort();
+                    valid = false;
+                } else {
+                    vlans.add(f.getVlan());
+                }
                 inVlanMap.put(f.getPort(), vlans);
             }
 
@@ -296,6 +342,7 @@ public class HeldController {
                 }
 
             }
+
             for (Fixture f : in.getFixtures()) {
                 PortBwVlan avail = availBwVlanMap.get(f.getPort());
                 Set<Integer> vlans = inVlanMap.get(f.getPort());
@@ -410,7 +457,7 @@ public class HeldController {
                     Integer outMbps = f.getOutMbps();
                     if (f.getMbps() != null) {
                         inMbps = f.getMbps();
-                        outMbps = f.getMbps();
+                        outMbps = f.getOutMbps();
                     }
                     Vlan vlan = Vlan.builder()
                             .connectionId(in.getConnectionId())
@@ -438,7 +485,7 @@ public class HeldController {
                     VlanJunction zj = junctionMap.get(pipe.getZ());
                     List<EroHop> azEro = new ArrayList<>();
                     List<EroHop> zaEro = new ArrayList<>();
-                    for (String hop : pipe.getEro()) {
+                    for (String hop: pipe.getEro()) {
                         azEro.add(EroHop.builder()
                                 .urn(hop)
                                 .build());
@@ -478,6 +525,11 @@ public class HeldController {
 
         if (c.getHeld() != null) {
             Held oldHeld = c.getHeld();
+            oldHeld.setSchedule(s);
+            oldHeld.setExpiration(expiration);
+            oldHeld.setCmp(cmp);
+
+
 
             Schedule oldSchedule = oldHeld.getSchedule();
 
@@ -486,7 +538,6 @@ public class HeldController {
             oldHeld.setCmp(cmp);
 
             schRepo.delete(oldSchedule);
-            log.info("deleted schedule");
         } else {
             c.setHeld(h);
         }

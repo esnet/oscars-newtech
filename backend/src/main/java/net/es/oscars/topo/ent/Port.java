@@ -71,11 +71,11 @@ public class Port {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Layer> capabilities = new HashSet<>();
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnore
     @OneToMany(mappedBy = "a", cascade = CascadeType.ALL)
     private Set<PortAdjcy> adjciesWhereA = new HashSet<>();
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnore
     @OneToMany(mappedBy = "z", cascade = CascadeType.ALL)
     private Set<PortAdjcy> adjciesWhereZ = new HashSet<>();
 

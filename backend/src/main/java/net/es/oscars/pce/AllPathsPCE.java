@@ -15,6 +15,7 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -26,6 +27,16 @@ import java.util.*;
 public class AllPathsPCE {
     @Autowired
     private TopoService topoService;
+
+    @Value("#{new Double('${pce.long-path-ratio}')}")
+    private Double longPathRatio;
+
+    @Value("${pce.long-path-detour:9}")
+    private Integer longPathDetour;
+
+    @Value("${pce.short-path-detour:15}")
+    private Integer shortPathDetour;
+
 
     @Autowired
     private DijkstraPCE dijkstraPCE;
@@ -65,6 +76,7 @@ public class AllPathsPCE {
         DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> byMetricGraph = PceLibrary.makeGraph(topoAdjcies, metricCosts);
         DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> byHopsGraph = PceLibrary.makeGraph(topoAdjcies, hopCosts);
 
+
         PcePath shortest = dijkstraPCE.shortestPath(byMetricGraph, src, dst);
         // first, get the shortest path (by metric)
         PcePath leastHops = dijkstraPCE.shortestPath(byHopsGraph, src, dst);
@@ -74,10 +86,24 @@ public class AllPathsPCE {
 
         Integer shortestPathLength = shortest.getAzEro().size();
 
-        // now we will look at all paths up to a limit of 15 edges longer than our shortest-by-metric path length
-        // 15 is a bit arbitrary but will allow a good detour while not being too hard computationally
-        Integer maxLength = shortestPathLength + 15;
+        // dynamic detour: if it's a long path, use a different detour size
+        // this is to reduce response time with very long paths
+        Integer maxLength = shortestPathLength + shortPathDetour;
 
+        if (PceLibrary.diameter == null) {
+            // cache graph diameter
+            PceLibrary.calculateDiameter(topoAdjcies, hopCosts);
+        }
+
+        Double lengthRatio = shortestPathLength / PceLibrary.diameter;
+
+        if (lengthRatio > longPathRatio) {
+            maxLength = shortestPathLength + longPathDetour;
+            log.info("long path; using long path max-length ("+maxLength+")");
+        } else {
+            log.info("short path; using short path max-length ("+maxLength+")");
+
+        }
 
         AllDirectedPaths<TopoUrn, TopoAdjcy> ap = new AllDirectedPaths<>(byMetricGraph);
 
@@ -96,6 +122,9 @@ public class AllPathsPCE {
         Instant es = Instant.now();
         for (GraphPath<TopoUrn, TopoAdjcy> path : paths) {
             List<EroHop> azEro = PceLibrary.toEro(path);
+            if (azEro == null) {
+                continue;
+            }
             List<String> hopUrnList = new ArrayList<>();
             Set<String> hopUrnSet = new HashSet<>();
 
@@ -189,7 +218,7 @@ public class AllPathsPCE {
         Instant ee = Instant.now();
         log.info("widest paths found in time "+ Duration.between(es, ee));
 
-        PceResponse response = PceResponse.builder()
+        return PceResponse.builder()
                 .widestAZ(widestAZ)
                 .widestZA(widestZA)
                 .widestSum(widestSum)
@@ -198,7 +227,6 @@ public class AllPathsPCE {
                 .fits(fits)
                 .evaluated(paths.size())
                 .build();
-        return response;
     }
 
 

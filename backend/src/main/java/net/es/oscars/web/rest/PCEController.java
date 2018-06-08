@@ -11,6 +11,7 @@ import net.es.oscars.web.beans.PceRequest;
 import net.es.oscars.web.beans.PceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -35,6 +36,7 @@ public class PCEController {
 
     @RequestMapping(value = "/api/pce/paths", method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
     public PceResponse paths(@RequestBody PceRequest request) throws PCEException, StartupException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");

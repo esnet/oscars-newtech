@@ -60,7 +60,7 @@ public class VlanFixture {
     private Integer egressBandwidth;
 
     // mandatory; a fixture always has a vlan specification associated with it
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(cascade = CascadeType.ALL)
     @NonNull
     private Vlan vlan;
 
@@ -76,7 +76,7 @@ public class VlanFixture {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private EthFixtureType ethFixtureType;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<CommandParam> commandParams;
 

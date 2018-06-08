@@ -32,11 +32,11 @@ public class Archived {
     private String connectionId;
 
     @NonNull
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Components cmp;
 
     @NonNull
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Schedule schedule;
 
 

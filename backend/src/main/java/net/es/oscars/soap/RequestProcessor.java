@@ -57,7 +57,7 @@ public class RequestProcessor {
         } catch (PSSException | PCEException ex) {
             ex.printStackTrace();
             log.error(ex.getMessage());
-            throw new ServiceException("PSS / PCE exception!");
+            throw new ServiceException("internal exception!");
         }
 
 
