@@ -86,8 +86,6 @@ public class HeldController {
             }
 
             conn.getHeld().setExpiration(exp);
-
-            conn.getHeld().setExpiration(exp);
             connRepo.save(conn);
             return exp;
         } else {
@@ -169,7 +167,9 @@ public class HeldController {
         if (maybeConnection.isPresent()) {
             log.info("overwriting previous connection for " + connectionId);
             Connection prev = maybeConnection.get();
-
+            if (!prev.getPhase().equals(Phase.HELD)) {
+                throw new IllegalArgumentException("connection not in HELD phase");
+            }
 
             String prettyPrv = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(prev);
             // log.debug("prev conn: "+prev.getId()+"\n" + prettyPrv);
