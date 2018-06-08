@@ -3,6 +3,7 @@ package net.es.oscars.soap;
 import lombok.extern.slf4j.Slf4j;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.ServiceException;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.headers.CommonHeaderType;
+import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.pss.svc.PSSAdapter;
 import net.es.oscars.resv.db.ConnectionRepository;
@@ -53,10 +54,10 @@ public class RequestProcessor {
                     this.callback(request);
                     break;
             }
-        } catch (PSSException ex) {
+        } catch (PSSException | PCEException ex) {
             ex.printStackTrace();
             log.error(ex.getMessage());
-            throw new ServiceException("PSS exception!");
+            throw new ServiceException("internal exception!");
         }
 
 
