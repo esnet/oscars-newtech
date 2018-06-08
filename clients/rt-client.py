@@ -36,18 +36,27 @@ def main():
         # TODO: this might be able to be harvested from tags now
         out += pre+'contact-+-%s\n' % c['username']
 
+        src = c['fixtures'][0]['port']+'.'+str(c['fixtures'][0]['vlan'])
+        dst = c['fixtures'][1]['port']+'.'+str(c['fixtures'][1]['vlan'])
+
         out += pre+'description-+-%s\n' % c['description']
         out += pre+'startTime-+-%i\n' % c['begin']
         out += pre+'endTime-+-%i\n' % c['end']
-        out += pre+'source-+-%s\n' % (c['fixtures'][0]['port']+'.'+str(c['fixtures'][0]['vlan']))
-        out += pre+'destination-+-%s\n' % (c['fixtures'][1]['port']+'.'+str(c['fixtures'][1]['vlan']))
+        out += pre+'source-+-%s\n' % src
+        out += pre+'destination-+-%s\n' % dst
         out += pre+'bandwidth-+-%i000000\n' % c['fixtures'][0]['inMbps']
         out += pre+'vlan-+-%i-%i\n' % (c['fixtures'][0]['vlan'], c['fixtures'][1]['vlan'])
+
         if 'pipes' in c and len(c['pipes']) > 0:
-            i = 0
+            out += pre+'path-+-0-+-0-+-hop-+-%s\n' % src
+            i = 1
+            j = 0
             for hop in c['pipes'][0]['ero']:
-                out += pre+'path-+-0-+-%i-+-hop-+-%s\n' % (i, hop)
-                i = i + 1
+                if j % 3 != 0:
+                    out += pre+'path-+-0-+-%i-+-hop-+-%s\n' % (i, hop)
+                    i = i + 1
+                j = j + 1
+            out += pre+'path-+-0-+-%i-+-hop-+-%s\n' % (i, dst)
 
     print out
 
