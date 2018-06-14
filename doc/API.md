@@ -52,7 +52,7 @@ connection id, know that resources are available, and we the EROs
 for our paths are valid. 
 
 
-###Holding resources: 
+### Holding resources: 
 
 You will want to hold resources with the `protected/hold` POST call. 
 
@@ -73,7 +73,7 @@ in the request will overwrite the previous one. You can use this to:
 (i.e. ensure you can hold the fixtures first, then perform pathfinding, 
 then hold the pipes. this is how the web UI does things)
 
-###Committing resources.
+### Committing resources.
 
 After you have successfully held all the resources you will need, perform a commit
 operation. The server will make a further validation of what you have requested,
