@@ -7,6 +7,7 @@ import net.es.oscars.dto.pss.st.*;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.rancid.RancidArguments;
+import net.es.oscars.pss.rancid.RancidResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,13 +46,17 @@ public class CommandRunner {
                     status.setConfigStatus(ConfigStatus.NONE);
                     args = builder.build(command);
                     confRes = configure(args, command.getProfile());
+                    status.setOutput(confRes.getOutput());
                     status.setConfigStatus(confRes.getStatus());
+                    status.setCommands(confRes.getCommands());
                     break;
                 case DISMANTLE:
                     status.setConfigStatus(ConfigStatus.NONE);
                     args = builder.dismantle(command);
                     confRes = configure(args, command.getProfile());
                     status.setConfigStatus(confRes.getStatus());
+                    status.setOutput(confRes.getOutput());
+                    status.setCommands(confRes.getCommands());
                     break;
 
             }
@@ -66,8 +71,11 @@ public class CommandRunner {
         ConfigResult result = ConfigResult.builder().build();
 
         try {
-            rancidRunner.runRancid(args, profile);
+            RancidResult rr = rancidRunner.runRancid(args, profile);
             result.setStatus(ConfigStatus.OK);
+            result.setOutput(rr.getOutput());
+            result.setCommands(args.getRouterConfig());
+
 
         } catch (IOException | InterruptedException | TimeoutException | ControlPlaneException ex) {
             log.error("Rancid error", ex);

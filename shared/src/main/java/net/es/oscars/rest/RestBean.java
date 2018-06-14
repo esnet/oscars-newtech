@@ -1,6 +1,5 @@
-package net.es.oscars.app.rest;
+package net.es.oscars.rest;
 
-import net.es.oscars.app.props.RestProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;

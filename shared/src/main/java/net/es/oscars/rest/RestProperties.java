@@ -1,4 +1,4 @@
-package net.es.oscars.app.props;
+package net.es.oscars.rest;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

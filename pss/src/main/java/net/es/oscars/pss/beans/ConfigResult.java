@@ -11,6 +11,7 @@ import net.es.oscars.dto.pss.st.ConfigStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConfigResult {
-    private String details;
+    private String commands;
+    private String output;
     private ConfigStatus status;
 }

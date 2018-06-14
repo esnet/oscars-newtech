@@ -2,6 +2,8 @@ package net.es.oscars.pss.svc;
 
 
 import net.es.oscars.dto.pss.cmd.Command;
+import net.es.oscars.dto.pss.cmd.CommandType;
+import net.es.oscars.dto.pss.cmd.GeneratedCommands;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.ConfigException;
 import net.es.oscars.pss.beans.PssProfile;
@@ -9,6 +11,8 @@ import net.es.oscars.pss.beans.UrnMappingException;
 import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.prop.RancidProps;
 import net.es.oscars.pss.rancid.RancidArguments;
+import net.es.oscars.pss.rest.BackendProxy;
+import net.es.oscars.pss.rest.BackendServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +22,12 @@ public class RouterConfigBuilder {
     private AluCommandGenerator acg;
     private MxCommandGenerator mcg;
     private ExCommandGenerator ecg;
+    private BackendServer bes;
     private UrnMappingService ums;
 
     @Autowired
     public RouterConfigBuilder(PssProps pssProps,
+                               BackendServer bes,
                                AluCommandGenerator acg,
                                MxCommandGenerator mcg,
                                ExCommandGenerator ecg,
@@ -31,6 +37,7 @@ public class RouterConfigBuilder {
         this.mcg = mcg;
         this.ecg = ecg;
         this.ums = ums;
+        this.bes = bes;
     }
 
     public String generate(Command command) throws ConfigException, UrnMappingException  {
@@ -45,10 +52,10 @@ public class RouterConfigBuilder {
                 result = controlPlaneCheck(command.getDevice(), command.getModel(), command.getProfile()).getRouterConfig();
                 break;
             case BUILD:
-                result = build(command).getRouterConfig();
+                result = gen_build(command).getRouterConfig();
                 break;
             case DISMANTLE:
-                result = dismantle(command).getRouterConfig();
+                result = gen_dismantle(command).getRouterConfig();
                 break;
         }
         return result;
@@ -123,6 +130,22 @@ public class RouterConfigBuilder {
 
     public RancidArguments build(Command command)
             throws ConfigException, UrnMappingException  {
+
+        GeneratedCommands cmds = bes.commands(command.getConnectionId(), command.getDevice());
+        String routerConfig = cmds.getGenerated().get(CommandType.BUILD);
+        return buildRouterConfig(routerConfig, command.getDevice(), command.getModel(), command.getProfile());
+    }
+
+    public RancidArguments dismantle(Command command) throws ConfigException, UrnMappingException  {
+        GeneratedCommands cmds = bes.commands(command.getConnectionId(), command.getDevice());
+        String routerConfig = cmds.getGenerated().get(CommandType.DISMANTLE);
+
+
+        return buildRouterConfig(routerConfig, command.getDevice(), command.getModel(), command.getProfile());
+    }
+
+    public RancidArguments gen_build(Command command)
+            throws ConfigException, UrnMappingException  {
         String routerConfig = "";
         DeviceModel model = command.getModel();
         switch (model) {
@@ -142,7 +165,7 @@ public class RouterConfigBuilder {
         return buildRouterConfig(routerConfig, command.getDevice(), command.getModel(), command.getProfile());
     }
 
-    public RancidArguments dismantle(Command command) throws ConfigException, UrnMappingException  {
+    public RancidArguments gen_dismantle(Command command) throws ConfigException, UrnMappingException  {
         String routerConfig = "";
         DeviceModel model = command.getModel();
         switch (model) {
@@ -161,6 +184,7 @@ public class RouterConfigBuilder {
 
         return buildRouterConfig(routerConfig, command.getDevice(), command.getModel(), command.getProfile());
     }
+
 
     public RancidArguments buildRouterConfig(String routerConfig, String deviceUrn, DeviceModel model, String profileName)
             throws ConfigException, UrnMappingException {

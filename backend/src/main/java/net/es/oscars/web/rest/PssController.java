@@ -6,6 +6,7 @@ import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.dto.pss.cmd.CommandStatus;
 import net.es.oscars.dto.pss.cmd.CommandType;
+import net.es.oscars.dto.pss.cmd.GeneratedCommands;
 import net.es.oscars.dto.pss.st.ControlPlaneStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
 import net.es.oscars.pss.db.RouterCommandsRepository;
@@ -23,10 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 
 @RestController
@@ -52,6 +50,7 @@ public class PssController {
         log.warn("requested an item which did not exist", ex);
     }
 
+    // TODO: deprecate this
     @RequestMapping(value = "/protected/pss/commands/{connectionId:.+}/{deviceUrn}", method = RequestMethod.GET)
     @ResponseBody
     public List<RouterCommands> commands(@PathVariable String connectionId, @PathVariable String deviceUrn) throws StartupException {
@@ -61,6 +60,27 @@ public class PssController {
             throw new StartupException("OSCARS shutting down");
         }
         return rcRepo.findByConnectionIdAndDeviceUrn(connectionId, deviceUrn);
+    }
+
+    @RequestMapping(value = "/api/pss/generated/{connectionId:.+}/{deviceUrn}", method = RequestMethod.GET)
+    @ResponseBody
+    public GeneratedCommands generated(@PathVariable String connectionId, @PathVariable String deviceUrn)
+            throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
+        GeneratedCommands gc = GeneratedCommands.builder()
+                .device(deviceUrn)
+                .generated(new HashMap<>())
+                .build();
+
+        for (RouterCommands rc : rcRepo.findByConnectionIdAndDeviceUrn(connectionId, deviceUrn)) {
+            gc.getGenerated().put(rc.getType(), rc.getContents());
+        }
+        return gc;
     }
 
 

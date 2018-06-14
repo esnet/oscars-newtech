@@ -1,6 +1,5 @@
-package net.es.oscars.app.rest;
+package net.es.oscars.rest;
 
-import net.es.oscars.app.props.RestProperties;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
