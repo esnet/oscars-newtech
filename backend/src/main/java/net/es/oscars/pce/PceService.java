@@ -18,7 +18,7 @@ public class PceService {
 
 
     @Autowired
-    private AllPathsPCE widestPCE;
+    private AllPathsPCE allPathsPCE;
 
 
     public PceResponse calculatePaths(PceRequest request) throws PCEException {
@@ -49,7 +49,7 @@ public class PceService {
         // - the max available bandwidth anywhere on the network
 
 
-        return  widestPCE.calculatePaths(bwPipe, availIngressBw, availEgressBw, request.getInclude(), request.getExclude());
+        return allPathsPCE.calculatePaths(bwPipe, availIngressBw, availEgressBw, request.getInclude(), request.getExclude());
     }
 
 

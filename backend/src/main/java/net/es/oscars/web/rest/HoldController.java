@@ -36,7 +36,7 @@ import java.util.*;
 
 @RestController
 @Slf4j
-public class HeldController {
+public class HoldController {
     @Autowired
     private LogService logService;
     @Autowired
@@ -201,6 +201,16 @@ public class HeldController {
         return in;
     }
 
+    // TODO: at 1.1 implement this
+    @RequestMapping(value = "/protected/pcehold", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public SimpleConnection pceHold(Authentication authentication,
+                                 @RequestBody SimpleConnection in)
+            throws StartupException, JsonProcessingException {
+
+        return this.hold(authentication, in);
+    }
 
     public Validity validateConnection(SimpleConnection in)
             throws NoSuchElementException, IllegalArgumentException {
@@ -212,7 +222,7 @@ public class HeldController {
             throw new IllegalArgumentException("null connection");
         }
         Instant begin = Instant.now();
-        Instant end = Instant.now();
+        Instant end;
 
         String connectionId = in.getConnectionId();
         if (connectionId == null || connectionId.equals("")) {
@@ -269,6 +279,17 @@ public class HeldController {
                     .beginning(begin)
                     .ending(Instant.ofEpochSecond(in.getEnd()))
                     .build();
+
+            if (in.getFixtures() == null)  {
+                in.setFixtures(new ArrayList<>());
+            }
+            if (in.getPipes() == null)  {
+                in.setPipes(new ArrayList<>());
+            }
+            if (in.getJunctions() == null) {
+                in.setJunctions(new ArrayList<>());
+
+            }
 
             Map<String, PortBwVlan> availBwVlanMap = resvService.available(interval, in.getConnectionId());
 

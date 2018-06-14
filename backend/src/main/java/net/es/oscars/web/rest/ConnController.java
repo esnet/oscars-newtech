@@ -7,6 +7,8 @@ import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.pss.ent.RouterCommandHistory;
+import net.es.oscars.resv.db.CommandHistoryRepository;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.enums.BuildMode;
@@ -33,6 +35,8 @@ public class ConnController {
 
     @Autowired
     private ConnectionRepository connRepo;
+    @Autowired
+    private CommandHistoryRepository historyRepo;
 
     @Autowired
     private ConnService connSvc;
@@ -203,6 +207,22 @@ public class ConnController {
         return connRepo.findByConnectionId(connectionId).orElse(null);
     }
 
+    @RequestMapping(value = "/api/conn/history/{connectionId:.+}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<RouterCommandHistory> history(@PathVariable String connectionId) throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
+        if (connectionId == null || connectionId.equals("")) {
+            log.info("no connectionId!");
+            throw new IllegalArgumentException("no connectionId");
+        }
+//        log.info("looking for connectionId "+ connectionId);
+        return historyRepo.findByConnectionId(connectionId);
+    }
 
     @RequestMapping(value = "/api/conn/list", method = RequestMethod.POST)
     @ResponseBody
