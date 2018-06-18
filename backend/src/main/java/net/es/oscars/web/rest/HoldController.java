@@ -148,7 +148,8 @@ public class HoldController {
         if (!v.isValid()) {
             in.setValidity(v);
             log.info("did not update invalid connection "+in.getConnectionId());
-            return in;
+            log.info("reason: "+v.getMessage());
+            throw new IllegalArgumentException(v.getMessage());
         }
 
         String username = authentication.getName();

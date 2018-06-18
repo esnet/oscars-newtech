@@ -25,7 +25,8 @@ def main():
     # retrieve from https://graphite.es.net/api/west/sap/
     saps_in = json.load(open('input/saps.json', 'r'))
 
-    # from https://graphite.es.net/api/west/snmp/?interface_descr=
+    # from
+    # wget -4 https://graphite.es.net/api/west/snmp/?interface_descr= > input/graphite_ports.json
     # note: slow operation
     ports = json.load(open('input/graphite_ports.json', 'r'))
 

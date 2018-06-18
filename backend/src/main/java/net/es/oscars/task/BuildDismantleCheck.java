@@ -3,9 +3,7 @@ package net.es.oscars.task;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.PSSException;
-import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.pss.svc.PSSAdapter;
-import net.es.oscars.pss.svc.PSSProxy;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.Schedule;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,8 +24,6 @@ import java.util.Set;
 @Slf4j
 @Component
 public class BuildDismantleCheck {
-    @Autowired
-    private PSSProxy pssProxy;
     @Autowired
     private PSSAdapter pssAdapter;
 

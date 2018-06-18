@@ -190,6 +190,28 @@ public class ConnController {
 
     }
 
+
+    @RequestMapping(value = "/protected/conn/state/{connectionId:.+}", method = RequestMethod.POST)
+    @Transactional
+    public void setState(@PathVariable String connectionId, @RequestBody String state)
+            throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+        Optional<Connection> cOpt = connRepo.findByConnectionId(connectionId);
+        if (!cOpt.isPresent()) {
+            throw new NoSuchElementException();
+        } else {
+            Connection c = cOpt.get();
+            log.info(c.getConnectionId()+ " overriding state to "+state);
+            c.setState(State.valueOf(state));
+            connRepo.save(c);
+        }
+
+    }
+
     @RequestMapping(value = "/api/conn/info/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     public Connection info(@PathVariable String connectionId) throws StartupException {
