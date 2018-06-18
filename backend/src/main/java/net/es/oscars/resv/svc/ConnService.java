@@ -151,7 +151,7 @@ public class ConnService {
         }
 
         ConnectivityInspector<String, DefaultEdge> inspector = new ConnectivityInspector<>(graph);
-        if (!inspector.isGraphConnected()) {
+        if (!inspector.isConnected()) {
             error += "fixture / junction / pipe graph is unconnected\n";
             valid = false;
         }

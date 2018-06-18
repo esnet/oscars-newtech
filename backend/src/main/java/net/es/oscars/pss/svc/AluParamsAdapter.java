@@ -166,7 +166,7 @@ public class AluParamsAdapter {
                 throw new PSSException("no loopback reserved for "+rvj.getDeviceUrn());
             }
             IPv4Address address = new IPv4Address(loopback);
-            params.setLoopbackInterface(c.getConnectionId()+"-lo0");
+            params.setLoopbackInterface("lo0-"+c.getConnectionId());
             params.setLoopbackAddress(address.toString());
         }
 
@@ -189,6 +189,9 @@ public class AluParamsAdapter {
                 .name(c.getConnectionId()+"-PATH-"+p.getZ().getDeviceUrn())
                 .build();
 
+        TopoUrn deviceTopoUrn = topoService.getTopoUrnMap().get(otherJunction.getDeviceUrn());
+        String remoteLoopback = deviceTopoUrn.getDevice().getIpv4Address();
+        /*
         Integer otherLoopbackInt = null;
         for (CommandParam rpr : otherJunction.getCommandParams()) {
             if (rpr.getParamType().equals(CommandParamType.VPLS_LOOPBACK)) {
@@ -200,12 +203,13 @@ public class AluParamsAdapter {
             throw new PSSException("no loopback found for "+otherJunction.getDeviceUrn());
         }
         IPv4Address otherLoopback = new IPv4Address(otherLoopbackInt);
+        */
 
         Lsp lsp = Lsp.builder()
                 .holdPriority(5)
                 .setupPriority(5)
                 .metric(65000)
-                .to(otherLoopback.toString())
+                .to(remoteLoopback)
                 .pathName(path.getName())
                 .name(c.getConnectionId()+"-LSP-"+p.getZ().getDeviceUrn())
                 .build();
@@ -227,7 +231,7 @@ public class AluParamsAdapter {
         AluSdp sdp = AluSdp.builder()
                 .sdpId(sdpId)
                 .description(c.getConnectionId()+"-SDP-"+otherJunction.getDeviceUrn())
-                .farEnd(otherLoopback.toString())
+                .farEnd(remoteLoopback)
                 .lspName(lsp.getName())
                 .build();
 

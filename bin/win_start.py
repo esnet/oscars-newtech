@@ -8,7 +8,7 @@ import traceback
 processes = []
 
 try:
-    version = "1.0.6";
+    version = "1.0.7";
     orig_dir = os.getcwd()
 
     top_dir = os.path.join(os.path.dirname(__file__), "..")

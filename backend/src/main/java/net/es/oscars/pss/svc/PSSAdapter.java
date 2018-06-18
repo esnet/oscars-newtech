@@ -9,7 +9,9 @@ import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.st.ConfigStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
 import net.es.oscars.pss.db.RouterCommandsRepository;
+import net.es.oscars.pss.ent.RouterCommandHistory;
 import net.es.oscars.pss.ent.RouterCommands;
+import net.es.oscars.resv.db.CommandHistoryRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.VlanJunction;
 import net.es.oscars.resv.enums.State;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -30,12 +33,15 @@ public class PSSAdapter {
     private PssProperties properties;
     private RouterCommandsRepository rcr;
     private PSSParamsAdapter paramsAdapter;
+    private CommandHistoryRepository historyRepo;
 
     @Autowired
     public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr,
+                      CommandHistoryRepository historyRepo,
                       PSSParamsAdapter paramsAdapter, PssProperties properties) {
         this.pssProxy = pssProxy;
         this.rcr = rcr;
+        this.historyRepo = historyRepo;
         this.paramsAdapter = paramsAdapter;
         this.properties = properties;
     }
@@ -67,8 +73,21 @@ public class PSSAdapter {
         log.info("setting up " + conn.getConnectionId());
         List<Command> commands = this.buildCommands(conn);
         List<CommandStatus> stable = this.getStableStatuses(commands);
+        Instant now = Instant.now();
+
         State result = State.ACTIVE;
         for (CommandStatus st : stable) {
+            RouterCommandHistory rch = RouterCommandHistory.builder()
+                    .connectionId(conn.getConnectionId())
+                    .date(now)
+                    .deviceUrn(st.getDevice())
+                    .commands(st.getCommands())
+                    .output(st.getOutput())
+                    .configStatus(st.getConfigStatus())
+                    .type(CommandType.BUILD)
+                    .build();
+            historyRepo.save(rch);
+
             if (st.getConfigStatus().equals(ConfigStatus.ERROR)) {
                 result = State.FAILED;
             }
@@ -80,8 +99,19 @@ public class PSSAdapter {
         log.info("tearing down " + conn.getConnectionId());
         List<Command> commands = this.dismantleCommands(conn);
         List<CommandStatus> stable = this.getStableStatuses(commands);
+        Instant now = Instant.now();
         State result = State.WAITING;
         for (CommandStatus st : stable) {
+            RouterCommandHistory rch = RouterCommandHistory.builder()
+                    .connectionId(conn.getConnectionId())
+                    .date(now)
+                    .deviceUrn(st.getDevice())
+                    .commands(st.getCommands())
+                    .output(st.getOutput())
+                    .configStatus(st.getConfigStatus())
+                    .type(CommandType.DISMANTLE)
+                    .build();
+            historyRepo.save(rch);
             if (st.getConfigStatus().equals(ConfigStatus.ERROR)) {
                 result = State.FAILED;
             }

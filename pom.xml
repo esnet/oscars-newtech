@@ -7,7 +7,7 @@
     <groupId>net.es.oscars</groupId>
     <artifactId>newtech</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -87,7 +87,7 @@
             <dependency>
                 <groupId>net.es.oscars</groupId>
                 <artifactId>frontend</artifactId>
-                <version>1.0.10</version>
+                <version>1.0.11</version>
             </dependency>
 
             <dependency>

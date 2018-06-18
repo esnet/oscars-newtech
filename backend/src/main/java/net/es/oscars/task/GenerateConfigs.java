@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -31,7 +33,9 @@ public class GenerateConfigs {
     @Autowired
     private PSSAdapter pssAdapter;
 
-    @Scheduled(fixedDelay = 5000)
+    private Map<String, Integer> attempts = new HashMap<>();
+
+    @Scheduled(fixedDelay = 10000)
     @Transactional
     public void processingLoop() {
         if (startup.isInStartup() || startup.isInShutdown()) {
@@ -50,13 +54,27 @@ public class GenerateConfigs {
             }
         }
 
-        for (Connection c: needConfigs) {
 
-            try {
-                pssAdapter.generateConfig(c);
-            } catch (PSSException e) {
-                e.printStackTrace();
+        for (Connection c: needConfigs) {
+            Integer tried = 0;
+            Integer maxTries = 3;
+            if (attempts.containsKey(c.getConnectionId())) {
+                tried = attempts.get(c.getConnectionId());
             }
+            if (tried < maxTries) {
+                tried = tried + 1;
+                try {
+                    pssAdapter.generateConfig(c);
+                } catch (PSSException e) {
+                    attempts.put(c.getConnectionId(), tried);
+                    e.printStackTrace();
+                }
+
+            } else if (tried.equals(maxTries)){
+                log.error(" stopping trying to generate config for "+c.getConnectionId());
+                attempts.put(c.getConnectionId(), maxTries + 1);
+            }
+
         }
 
 

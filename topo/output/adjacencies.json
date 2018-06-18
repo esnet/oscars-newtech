@@ -163,7 +163,7 @@
   {
     "a": "atla-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 14
     }, 
     "z": "wash-cr5:3/1/1"
   }, 
@@ -259,13 +259,6 @@
     "z": "newy-cr5:4/2/1"
   }, 
   {
-    "a": "nash-cr5:10/1/5", 
-    "metrics": {
-      "MPLS": 3
-    }, 
-    "z": "ornl-rt4:xe-1/2/0"
-  }, 
-  {
     "a": "forr-rt2:ge-0/0/1", 
     "metrics": {
       "MPLS": 2
@@ -287,9 +280,16 @@
     "z": "anl-mr2:xe-2/3/0"
   }, 
   {
-    "a": "wash-cr5:3/1/1", 
+    "a": "lond-cr5:2/1/1", 
     "metrics": {
       "MPLS": 6
+    }, 
+    "z": "amst-cr5:2/1/1"
+  }, 
+  {
+    "a": "wash-cr5:3/1/1", 
+    "metrics": {
+      "MPLS": 14
     }, 
     "z": "atla-cr5:1/1/1"
   }, 
@@ -392,16 +392,23 @@
     "z": "llnldc-rt4:t3-0/3/0"
   }, 
   {
+    "a": "amst-cr5:2/1/1", 
+    "metrics": {
+      "MPLS": 6
+    }, 
+    "z": "lond-cr5:2/1/1"
+  }, 
+  {
     "a": "nash-cr5:10/1/3", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 10
     }, 
     "z": "srs-rt3:ge-1/1/0"
   }, 
   {
     "a": "srs-rt3:ge-1/1/0", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 10
     }, 
     "z": "nash-cr5:10/1/3"
   }, 
@@ -427,9 +434,9 @@
     "z": "chic-cr5:1/1/1"
   }, 
   {
-    "a": "cern-272-cr5:1/1/1", 
+    "a": "cern-513-cr5:5/1/1", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 15
     }, 
     "z": "amst-cr5:1/1/1"
   }, 
@@ -443,9 +450,9 @@
   {
     "a": "amst-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 15
     }, 
-    "z": "cern-272-cr5:1/1/1"
+    "z": "cern-513-cr5:5/1/1"
   }, 
   {
     "a": "ameslab-rt3:xe-1/0/0", 
@@ -480,19 +487,19 @@
     "metrics": {
       "MPLS": 8
     }, 
-    "z": "chic-cr5:9/1/4"
+    "z": "chic-cr5:10/1/7"
   }, 
   {
     "a": "atla-cr5:10/1/3", 
     "metrics": {
-      "MPLS": 9
+      "MPLS": 8
     }, 
     "z": "srs-rt3:ge-0/1/0"
   }, 
   {
     "a": "srs-rt3:ge-0/1/0", 
     "metrics": {
-      "MPLS": 9
+      "MPLS": 8
     }, 
     "z": "atla-cr5:10/1/3"
   }, 
@@ -527,7 +534,7 @@
   {
     "a": "ornl-rt4:xe-1/0/0", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 9
     }, 
     "z": "ornl-cr5:10/1/1"
   }, 
@@ -581,9 +588,9 @@
     "z": "aofa-cr5:1/1/1"
   }, 
   {
-    "a": "cern-513-cr5:2/1/1", 
+    "a": "cern-773-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 14
     }, 
     "z": "lond-cr5:1/1/1"
   }, 
@@ -604,9 +611,9 @@
   {
     "a": "lond-cr5:1/1/1", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 14
     }, 
-    "z": "cern-513-cr5:2/1/1"
+    "z": "cern-773-cr5:1/1/1"
   }, 
   {
     "a": "chic-cr5:6/1/1", 
@@ -637,7 +644,7 @@
     "z": "llnl-mr2:xe-0/2/0"
   }, 
   {
-    "a": "chic-cr5:9/1/4", 
+    "a": "chic-cr5:10/1/7", 
     "metrics": {
       "MPLS": 8
     }, 
@@ -660,7 +667,7 @@
   {
     "a": "ornl-cr5:10/1/1", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 9
     }, 
     "z": "ornl-rt4:xe-1/0/0"
   }, 
@@ -744,7 +751,7 @@
   {
     "a": "osti-rt2:ae0", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 9
     }, 
     "z": "ornl-rt4:xe-2/3/0"
   }, 
@@ -786,7 +793,7 @@
   {
     "a": "atla-cr5:3/1/1", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 5
     }, 
     "z": "ornl-cr5:6/1/1"
   }, 
@@ -807,16 +814,16 @@
   {
     "a": "ornl-cr5:6/1/1", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 5
     }, 
     "z": "atla-cr5:3/1/1"
   }, 
   {
-    "a": "lond-cr5:2/1/1", 
+    "a": "pnwg-cr5:10/1/4", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 9
     }, 
-    "z": "amst-cr5:2/1/1"
+    "z": "netl-alb-rt1:xe-2/0/0"
   }, 
   {
     "a": "aofa-cr5:3/1/1", 
@@ -840,11 +847,11 @@
     "z": "chic-cr5:6/1/1"
   }, 
   {
-    "a": "amst-cr5:2/1/1", 
+    "a": "netl-alb-rt1:xe-2/0/0", 
     "metrics": {
-      "MPLS": 6
+      "MPLS": 9
     }, 
-    "z": "lond-cr5:2/1/1"
+    "z": "pnwg-cr5:10/1/4"
   }, 
   {
     "a": "orau-rt3:ge-0/2/0", 
@@ -854,11 +861,11 @@
     "z": "ornl-rt4:xe-2/3/0"
   }, 
   {
-    "a": "pppl-rt5:xe-0/2/0", 
+    "a": "chic-cr5:10/1/4", 
     "metrics": {
-      "MPLS": 1
+      "MPLS": 2
     }, 
-    "z": "aofa-cr5:9/1/1"
+    "z": "fnal-mr2:xe-0/0/0"
   }, 
   {
     "a": "ornl-rt4:xe-2/3/0", 
@@ -870,14 +877,14 @@
   {
     "a": "ornl-cr5:10/1/2", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 8
     }, 
     "z": "orau-rt3:ge-0/2/0"
   }, 
   {
     "a": "orau-rt3:ge-0/2/0", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 8
     }, 
     "z": "ornl-cr5:10/1/2"
   }, 
@@ -952,11 +959,11 @@
     "z": "albq-cr5:2/1/1"
   }, 
   {
-    "a": "amst-cr5:5/1/1", 
+    "a": "nash-cr5:10/1/5", 
     "metrics": {
-      "MPLS": 76
+      "MPLS": 3
     }, 
-    "z": "bost-cr5:3/1/1"
+    "z": "ornl-rt4:xe-1/2/0"
   }, 
   {
     "a": "fnal-mr2:xe-0/0/0", 
@@ -964,13 +971,6 @@
       "MPLS": 2
     }, 
     "z": "chic-cr5:10/1/4"
-  }, 
-  {
-    "a": "bost-cr5:3/1/1", 
-    "metrics": {
-      "MPLS": 76
-    }, 
-    "z": "amst-cr5:5/1/1"
   }, 
   {
     "a": "bost-cr5:2/1/1", 
@@ -1038,21 +1038,21 @@
   {
     "a": "eqx-ash-cr5:10/1/2", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 19
     }, 
     "z": "netl-mgn-rt1:xe-2/0/0"
   }, 
   {
     "a": "nash-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 12
+      "MPLS": 6
     }, 
     "z": "atla-cr5:2/1/1"
   }, 
   {
     "a": "netl-mgn-rt1:xe-2/0/0", 
     "metrics": {
-      "MPLS": 16
+      "MPLS": 19
     }, 
     "z": "eqx-ash-cr5:10/1/2"
   }, 
@@ -1066,7 +1066,7 @@
   {
     "a": "atla-cr5:2/1/1", 
     "metrics": {
-      "MPLS": 12
+      "MPLS": 6
     }, 
     "z": "nash-cr5:2/1/1"
   }, 
@@ -1080,7 +1080,7 @@
   {
     "a": "star-cr5:4/2/1", 
     "metrics": {
-      "MPLS": 20
+      "MPLS": 21
     }, 
     "z": "aofa-cr5:5/1/1"
   }, 
@@ -1101,7 +1101,7 @@
   {
     "a": "aofa-cr5:5/1/1", 
     "metrics": {
-      "MPLS": 20
+      "MPLS": 21
     }, 
     "z": "star-cr5:4/2/1"
   }, 
@@ -1185,7 +1185,7 @@
   {
     "a": "eqx-ash-cr5:10/2/2", 
     "metrics": {
-      "MPLS": 11
+      "MPLS": 18
     }, 
     "z": "netl-pgh-rt1:xe-2/0/0"
   }, 
@@ -1199,23 +1199,23 @@
   {
     "a": "netl-pgh-rt1:xe-2/0/0", 
     "metrics": {
-      "MPLS": 11
+      "MPLS": 18
     }, 
     "z": "eqx-ash-cr5:10/2/2"
   }, 
   {
     "a": "ornl-rt4:xe-2/3/0", 
     "metrics": {
-      "MPLS": 15
+      "MPLS": 9
     }, 
     "z": "osti-rt2:ae0"
   }, 
   {
-    "a": "chic-cr5:10/1/4", 
+    "a": "pppl-rt5:xe-0/2/0", 
     "metrics": {
-      "MPLS": 2
+      "MPLS": 1
     }, 
-    "z": "fnal-mr2:xe-0/0/0"
+    "z": "aofa-cr5:9/1/1"
   }, 
   {
     "a": "denv-cr5:10/1/4", 
@@ -1267,7 +1267,7 @@
     "z": "lbl-mr2:xe-1/3/0"
   }, 
   {
-    "a": "cern-272-cr5:2/1/1", 
+    "a": "cern-773-cr5:2/1/1", 
     "metrics": {
       "MPLS": 1
     }, 
@@ -1285,6 +1285,6 @@
     "metrics": {
       "MPLS": 1
     }, 
-    "z": "cern-272-cr5:2/1/1"
+    "z": "cern-773-cr5:2/1/1"
   }
 ]
