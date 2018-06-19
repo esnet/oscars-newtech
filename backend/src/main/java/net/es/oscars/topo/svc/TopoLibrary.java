@@ -7,6 +7,7 @@ import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.enums.Layer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -207,7 +208,8 @@ public class TopoLibrary {
         Map<String, PortAdjcy> unchanged = new HashMap<>();
 
         for (PortAdjcy aAdjcy : alpha) {
-            // log.info("verifying: "+ aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn());
+            String adjcyStr = aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn();
+            PortAdjcy newAdjcy = null;
 
             String a_a_urn = aAdjcy.getA().getUrn();
             String a_z_urn = aAdjcy.getZ().getUrn();
@@ -218,15 +220,38 @@ public class TopoLibrary {
                 String b_z_urn = bAdjcy.getZ().getUrn();
                 if (a_a_urn.equals(b_a_urn) && a_z_urn.equals(b_z_urn)) {
                     found = true;
-                    if (!aAdjcy.getMetrics().equals(bAdjcy.getMetrics())) {
-                        changed = true;
+                    for (Layer l : aAdjcy.getMetrics().keySet()) {
+                        if (!bAdjcy.getMetrics().containsKey(l)) {
+                            log.info("  removed a metric "+l+ " on "+adjcyStr);
+                            changed = true;
+                        }
+                    }
+                    for (Layer l : bAdjcy.getMetrics().keySet()) {
+                        if (!aAdjcy.getMetrics().containsKey(l)) {
+                            log.info("  added a metric "+l+ " on "+adjcyStr);
+                            changed = true;
+                        }
+                    }
+
+                    if ( !changed) {
+                        for (Layer l : aAdjcy.getMetrics().keySet()) {
+                            Long aMetric = aAdjcy.getMetrics().get(l);
+                            Long bMetric = bAdjcy.getMetrics().get(l);
+                            if (!aMetric.equals(bMetric)) {
+                                log.info("  modified metric "+l+ " on "+adjcyStr);
+                                changed = true;
+                            }
+                        }
+                    }
+                    if (changed) {
+                        newAdjcy = bAdjcy;
                     }
                 }
             }
             if (found) {
                 if (changed) {
                     // log.info("will modify "+aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn());
-                    modified.put(aAdjcy.getUrn(), aAdjcy);
+                    modified.put(aAdjcy.getUrn(), newAdjcy);
                 } else {
                     unchanged.put(aAdjcy.getUrn(), aAdjcy);
                 }

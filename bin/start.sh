@@ -18,11 +18,11 @@ trap 'kill %1; kill %2; echo -e "\n\n######   Exiting all OSCARS tasks. ######\n
 echo "Starting backend"
 cd "$top_dir/backend"
 
-java -jar "target/backend-${version}-exec.jar" &
+java -jar -Xmx512m "target/backend-${version}-exec.jar" &
 
 echo "Starting PSS"
 cd "$top_dir/pss"
-java -jar "target/pss-${version}.jar"
+java -jar -Xmx512m "target/pss-${version}.jar"
 
 kill %1; kill %2
 

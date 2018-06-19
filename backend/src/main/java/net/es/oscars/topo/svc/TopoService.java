@@ -283,13 +283,23 @@ public class TopoService {
             }
             for (Layer l : prev.getMetrics().keySet()) {
                 if (!pa.getMetrics().keySet().contains(l)) {
-                    log.debug("removing a metric for "+l.toString());
+                    log.debug("  removing a metric for "+l.toString());
                     prev.getMetrics().remove(l);
                 }
             }
             for (Layer l : pa.getMetrics().keySet()) {
-                log.debug("setting metric for "+l.toString());
-                prev.getMetrics().put(l, pa.getMetrics().get(l));
+                Long newMetric = pa.getMetrics().get(l);
+                if (!prev.getMetrics().containsKey(l)) {
+                    log.debug("  adding a metric for "+l.toString() + " to "+newMetric);
+                    prev.getMetrics().put(l, newMetric);
+
+                } else {
+                    Long prevMetric = prev.getMetrics().get(l);
+                    if (!prevMetric.equals(newMetric)) {
+                        log.debug("  replacing metric for "+l.toString() + " to "+newMetric);
+                        prev.getMetrics().put(l, newMetric);
+                    }
+                }
             }
 
             prev.setVersion(newVersion);
@@ -299,7 +309,7 @@ public class TopoService {
         }
         adjcyRepo.flush();
         log.debug("done modifying adjacencies: modified: "+modifiedAdjs);
-        log.debug("                 deleted adjacencies: "+ad.getRemoved().values().size());
+        log.debug("                            deleted : "+ad.getRemoved().values().size());
 
 
         int addedAdjs = 0;
@@ -340,6 +350,7 @@ public class TopoService {
 
         }
         log.debug("done updating version for unchanged adjacencies: "+unchangedAdjs+" entries");
+        adjcyRepo.flush();
 
     }
 

@@ -199,7 +199,17 @@ public class ConnService {
     }
 
     public Phase cancel(Connection c) {
-        // need to dismantle first, that part relies on Reserved components
+        // if it is still HELD, delete it
+        if (c.getPhase().equals(Phase.HELD)) {
+            connRepo.delete(c);
+            return Phase.HELD;
+        }
+        // if it is ARCHIVED / DESIGN, nothing to do
+        if (c.getPhase().equals(Phase.ARCHIVED) || c.getPhase().equals(Phase.DESIGN)) {
+            return c.getPhase();
+        }
+
+            // need to dismantle first, that part relies on Reserved components
         try {
             State s = pssAdapter.dismantle(c);
             if (!s.equals(State.FAILED)) {

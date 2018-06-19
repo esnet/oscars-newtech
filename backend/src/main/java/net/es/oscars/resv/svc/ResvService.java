@@ -273,6 +273,7 @@ public class ResvService {
             IPAddress top = new IPAddressString(parts[1]).toAddress();
             Integer min = bottom.toIPv4().intValue();
             Integer max = top.toIPv4().intValue();
+//            log.info("vpls loopback range "+min+" -- "+max);
             if (max <= min ) {
                 throw new PSSException("invalid VPLS loopback range");
             } else if (max - min > 10000) {
