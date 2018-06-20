@@ -102,7 +102,7 @@ public class TopoService {
 
     @Transactional
     public void mergeVersionDelta(VersionDelta vd, Version currentVersion, Version newVersion) throws ConsistencyException {
-        log.info("merging version delta w/ timestamp: "+newVersion.getUpdated());
+        log.info("merging version delta, new version : "+newVersion.getId());
         /*
         String pretty = null;
         try {
@@ -185,6 +185,7 @@ public class TopoService {
                 if (maybeExists.isPresent()) {
                     // it exists in the repo so instead of adding we need to modify it instead
                     pd.getModified().put(ap.getUrn(), ap);
+                    ap.setVersion(newVersion);
                     handledPorts.add(ap.getUrn());
                 } else {
                     if (ap.getDevice().getUrn().equals(prev.getUrn())) {
@@ -240,14 +241,14 @@ public class TopoService {
         }
         deviceRepo.flush();
         portRepo.flush();
-        log.debug("done modifying devices, modified: "+modifiedDevs+" modified ports: "+modifiedPorts+" ");
+        log.debug("done modifying devices, modified: "+modifiedDevs);
+        log.debug("                     invalidated: "+dd.getRemoved().values().size());
         log.debug("     + modified ports: "+modifiedPorts);
         log.debug("     + added ports: "+addedPorts);
-        log.debug("     + deleted devices: "+dd.getRemoved().values().size());
 
 
         int unchangedPorts = 0;
-        // now handle unchanged ports; these too need to be set to latest version
+        // now for unchanged ports; these too need to be set to latest version
         for (Port p: pd.getUnchanged().values()) {
             Optional<Port> maybePort = portRepo.findByUrn(p.getUrn());
             if (maybePort.isPresent()) {
@@ -259,11 +260,16 @@ public class TopoService {
             }
             unchangedPorts++;
         }
-        log.debug("done updating version for unchanged ports: "+unchangedPorts+" entries");
-        log.debug("               deleted ports: "+pd.getRemoved().values().size());
 
-        // to remove adjacencies that no longer exist, do nothing, just don't set the new version
+        for (Port p : pd.getRemoved().values()) {
+            log.info(" invalidating port "+p.getUrn()+" , version id stays: "+p.getVersion().getId());
+        }
+        portRepo.flush();
+        log.debug("   unchanged ports: "+unchangedPorts+" entries");
+        log.debug(" invalidated ports: "+pd.getRemoved().values().size());
 
+
+        // to invalidate adjacencies that no longer exist, do nothing, just don't set the new version
         // now modify existing ones
         int modifiedAdjs = 0;
         for (PortAdjcy pa: ad.getModified().values()) {
@@ -307,9 +313,10 @@ public class TopoService {
 
             modifiedAdjs ++;
         }
+
         adjcyRepo.flush();
         log.debug("done modifying adjacencies: modified: "+modifiedAdjs);
-        log.debug("                            deleted : "+ad.getRemoved().values().size());
+        log.debug("                        invalidated : "+ad.getRemoved().values().size());
 
 
         int addedAdjs = 0;
@@ -376,7 +383,11 @@ public class TopoService {
             t.setDevices(devices);
             t.setAdjcies(adjcies);
             devices.forEach(d -> {
-                ports.addAll(d.getPorts());
+                for (Port p : d.getPorts()) {
+                    if (p.getVersion() != null && p.getVersion().getValid()) {
+                        ports.add(p);
+                    }
+                }
             });
             t.setPorts(ports);
 
