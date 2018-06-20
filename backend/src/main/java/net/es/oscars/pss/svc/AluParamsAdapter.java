@@ -96,7 +96,7 @@ public class AluParamsAdapter {
                         .mbps(rvf.getEgressBandwidth())
                         .policing(Policing.STRICT)
                         .policyId(egQosId)
-                        .policyName("EG"+c.getConnectionId() + "-" + configPortStr)
+                        .policyName("EG-"+c.getConnectionId() + "-" + configPortStr)
                         .type(AluQosType.SAP_EGRESS)
                         .build();
                 qoses.add(egQos);

@@ -18,13 +18,15 @@ top
 set routing-options forwarding-table export [ "${vpls.policyName}" ]
 
 <#list mxLsps as mxlsp>
-<#assign lsp_neighbor = mxlsp.neighbor>
+    <#assign lsp_neighbor = mxlsp.neighbor>
 edit routing-instances "${vpls.serviceName}" protocols vpls mesh-group "${mesh_group}"
+set local-switching
 set vpls-id ${vpls.vcId}
 edit neighbor ${lsp_neighbor}
 set psn-tunnel-endpoint ${mxlsp.lsp.to}
 set community "${community}"
 set encapsulation-type ethernet-vlan
+top
 </#list>
 
 
