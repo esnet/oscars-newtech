@@ -113,14 +113,16 @@ public class NmlController {
 
 
         for (Port p : edgePorts) {
+            String nsiUrn = prefix + p.getUrn().replace("/", "_");
+
             Element bdp = doc.createElementNS(nsBase, "nml-base:BidirectionalPort");
-            bdp.setAttribute("id", prefix + p.getUrn() + "+");
+            bdp.setAttribute("id", nsiUrn + ":+");
             rootElement.appendChild(bdp);
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdp.appendChild(pgi);
-            pgi.setAttribute("id", prefix + p.getUrn() + "+:in");
+            pgi.setAttribute("id", nsiUrn + ":+:in");
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgo.setAttribute("id", prefix + p.getUrn() + "+:out");
+            pgo.setAttribute("id", nsiUrn + ":+:out");
             bdp.appendChild(pgo);
         }
 
@@ -157,11 +159,14 @@ public class NmlController {
         sSvc.appendChild(ssSd);
 
         for (Port p : edgePorts) {
+            String nsiUrn = prefix + p.getUrn().replace("/", "_");
+
+
             Element pgsi = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgsi.setAttribute("id", prefix+p.getUrn()+"+:in");
+            pgsi.setAttribute("id", nsiUrn+":+:in");
             ssIRel.appendChild(pgsi);
             Element pgso = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgso.setAttribute("id", prefix+p.getUrn()+"+:out");
+            pgso.setAttribute("id", nsiUrn+":+:out");
             ssORel.appendChild(pgso);
         }
 
@@ -184,9 +189,11 @@ public class NmlController {
                 }
             }
             String vlans = String.join(",", parts);
+            String nsiUrn = prefix + p.getUrn().replace("/", "_");
+
 
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgi.setAttribute("id", prefix+p.getUrn()+"+:in");
+            pgi.setAttribute("id", nsiUrn+":+:in");
             pgi.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
             hip.appendChild(pgi);
 
@@ -211,7 +218,7 @@ public class NmlController {
 
 
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgo.setAttribute("id", prefix+p.getUrn()+"+:out");
+            pgo.setAttribute("id", nsiUrn+":+:out");
             pgo.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
             hop.appendChild(pgo);
 

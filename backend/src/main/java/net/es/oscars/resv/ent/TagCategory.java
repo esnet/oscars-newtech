@@ -16,8 +16,11 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class TagCategory {
     @JsonCreator
-    public TagCategory(@JsonProperty("category") @NonNull String category) {
+    public TagCategory(
+            @JsonProperty("category") @NonNull String category,
+            @JsonProperty("source") String source) {
         this.category = category;
+        this.source = source;
     }
 
     @Id
@@ -27,5 +30,6 @@ public class TagCategory {
     @NonNull
     private String category;
 
+    private String source;
 
 }
