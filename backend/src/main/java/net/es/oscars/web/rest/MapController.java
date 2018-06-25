@@ -50,7 +50,7 @@ public class MapController {
 
         Topology topology = topoService.currentTopology();
 
-        for (Device d : topology.getDevices()) {
+        for (Device d : topology.getDevices().values()) {
             MapNode n = MapNode.builder()
                     .id(d.getUrn())
                     .label(d.getUrn())

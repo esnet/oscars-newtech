@@ -8,13 +8,14 @@ import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Data
 @Builder
 public class Topology {
-    private List<Device> devices;
-    private List<Port> ports;
+    private Map<String, Device> devices;
+    private Map<String, Port> ports;
     private List<PortAdjcy> adjcies;
 
 }

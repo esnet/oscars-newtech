@@ -136,9 +136,12 @@ public class TopoService {
                 // it was not present in the database; just add and save it
                 // this will also
                 d.setVersion(newVersion);
+                for (Port p : d.getPorts()) {
+                    p.setVersion(newVersion);
+                }
                 deviceRepo.save(d);
                 for (Port p : d.getPorts()) {
-                    pd.getAdded().remove(p);
+                    pd.getAdded().remove(p.getUrn());
                 }
             }
             addedDevs++;
@@ -362,13 +365,13 @@ public class TopoService {
     }
 
     public Topology currentTopology() throws ConsistencyException {
-        List<Device> devices = new ArrayList<>();
+        Map<String, Device> deviceMap = new HashMap<>();
+        Map<String, Port> portMap = new HashMap<>();
         List<PortAdjcy> adjcies = new ArrayList<>();
-        List<Port> ports = new ArrayList<>();
         Topology t = Topology.builder()
                 .adjcies(adjcies)
-                .devices(devices)
-                .ports(ports)
+                .devices(deviceMap)
+                .ports(portMap)
                 .build();
 
         if (versionRepo.findAll().size() != 0) {
@@ -376,21 +379,27 @@ public class TopoService {
             if (versions.size() != 1) {
                 throw new ConsistencyException("exactly one valid version can exist");
             }
-            devices = deviceRepo.findByVersion(versions.get(0));
+            List<Device> devices = deviceRepo.findByVersion(versions.get(0));
+            devices.forEach(d -> {
+                deviceMap.put(d.getUrn(), d);
+            });
+
             adjcies = adjcyRepo.findByVersion(versions.get(0));
             log.info("found "+devices.size()+" devices in version "+versions.get(0).getId());
             log.info("found "+adjcies.size()+" adjcies in version "+versions.get(0).getId());
-            t.setDevices(devices);
+            t.setDevices(deviceMap);
             t.setAdjcies(adjcies);
+
+            log.info(" current topo:");
             devices.forEach(d -> {
+                log.info(" d: "+d.getUrn());
                 for (Port p : d.getPorts()) {
                     if (p.getVersion() != null && p.getVersion().getValid()) {
-                        ports.add(p);
+                        log.info(" +- "+p.getUrn());
+                        portMap.put(p.getUrn(), p);
                     }
                 }
             });
-            t.setPorts(ports);
-
         }
 
 

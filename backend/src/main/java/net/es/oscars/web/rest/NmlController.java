@@ -57,7 +57,7 @@ public class NmlController {
         Version v = maybeVersion.get();
         Topology topology = topoService.currentTopology();
         List<Port> edgePorts = new ArrayList<>();
-        for (Device d : topology.getDevices()) {
+        for (Device d : topology.getDevices().values()) {
             for (Port p: d.getPorts()) {
                 if (p.getCapabilities().contains(Layer.ETHERNET) && !p.getReservableVlans().isEmpty()) {
                     edgePorts.add(p);
