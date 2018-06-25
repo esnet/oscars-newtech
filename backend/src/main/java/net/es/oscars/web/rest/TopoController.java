@@ -69,7 +69,7 @@ public class TopoController {
         if (eppd.size() == 0) {
             Topology topology = topoService.currentTopology();
 
-            for (Device d : topology.getDevices()) {
+            for (Device d : topology.getDevices().values()) {
                 List<Port> ports = new ArrayList<>();
                 for (Port p: d.getPorts()) {
                     if (p.getCapabilities().contains(Layer.ETHERNET)) {

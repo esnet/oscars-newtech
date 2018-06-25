@@ -88,22 +88,23 @@ public class TopoPopulator implements StartupComponent {
 
         List<Device> devices = loadDevicesFromFile(devicesFilename);
         Map<String, Port> portMap = new HashMap<>();
+        Map<String, Device> deviceMap = new HashMap<>();
+        log.info("loaded topology");
         devices.forEach(d -> {
+            deviceMap.put(d.getUrn(), d);
+            log.info("  d: "+d.getUrn());
             d.getPorts().forEach(p -> {
+                log.info("  +- "+p.getUrn());
                 portMap.put(p.getUrn(), p);
             });
         });
 
         List<PortAdjcy> adjcies = loadPortAdjciesFromFile(adjciesFilename, portMap);
-        List<Port> ports = new ArrayList<>();
-        devices.forEach(d -> {
-            ports.addAll(d.getPorts());
-        });
 
         return Topology.builder()
                 .adjcies(adjcies)
-                .devices(devices)
-                .ports(ports)
+                .devices(deviceMap)
+                .ports(portMap)
                 .build();
 
     }

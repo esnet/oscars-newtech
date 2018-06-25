@@ -86,6 +86,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login").permitAll()
                 // allow everyone to public API
                 .antMatchers("/api/**").permitAll()
+
                 // allow everyone to web services (for now..)
                 .antMatchers("/services/**").permitAll()
                 // allow everyone to pages

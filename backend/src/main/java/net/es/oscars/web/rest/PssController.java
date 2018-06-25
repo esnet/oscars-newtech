@@ -96,6 +96,31 @@ public class PssController {
 
     }
 
+    @RequestMapping(value = "/protected/pss/regenerate/{connectionId:.+}", method = RequestMethod.GET)
+    @ResponseBody
+    @Transactional
+    public void regenerate(@PathVariable String connectionId) throws StartupException {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+        Optional<Connection> maybeC = connRepo.findByConnectionId(connectionId);
+        if (!maybeC.isPresent()) {
+            throw new NoSuchElementException("connection not found");
+
+        } else {
+            Connection c = maybeC.get();
+            if (!c.getPhase().equals(Phase.RESERVED)) {
+                throw new IllegalArgumentException("can only regenerate for connections in RESERVED phase");
+            }
+        }
+
+        List<RouterCommands> rc = rcRepo.findByConnectionId(connectionId);
+        rcRepo.delete(rc);
+
+    }
+
 
     @RequestMapping(value = "/protected/pss/build/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody

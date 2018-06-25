@@ -1,5 +1,7 @@
 package net.es.oscars.topo.svc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.topo.beans.Delta;
 import net.es.oscars.topo.beans.Topology;
@@ -7,11 +9,10 @@ import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.ent.Version;
+import net.es.oscars.topo.enums.Layer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class TopoLibrary {
@@ -30,8 +31,11 @@ public class TopoLibrary {
     public static VersionDelta compare(Topology alpha, Topology beta) {
         // log.info("comparing topologies");
         Delta<PortAdjcy> adjcyDelta = comparePortAdjcies(alpha.getAdjcies(), beta.getAdjcies());
-        Delta<Device> deviceDelta = compareDevices(alpha.getDevices(), beta.getDevices());
-        Delta<Port> portDelta = comparePorts(alpha.getPorts(), beta.getPorts());
+
+        Delta<Device> deviceDelta = compareDevices(alpha, beta);
+
+        Delta<Port> portDelta = comparePorts(alpha, beta, deviceDelta);
+
         boolean changed = false;
         if (adjcyDelta.getModified().size() > 0 ||
                 adjcyDelta.getAdded().size() > 0 ||
@@ -49,67 +53,72 @@ public class TopoLibrary {
             changed = true;
         }
 
-        return VersionDelta.builder()
+        VersionDelta vd = VersionDelta.builder()
                 .adjcyDelta(adjcyDelta)
                 .deviceDelta(deviceDelta)
                 .portDelta(portDelta)
                 .changed(changed)
                 .build();
+        /*
+        try {
+            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(vd);
+            log.debug(pretty);
+        } catch (JsonProcessingException ex) {
+            log.error("json error", ex);
+        }
+        */
+
+        return vd;
     }
 
-    public static Delta<Device> compareDevices(List<Device> alpha, List<Device> beta) {
+    public static Delta<Device> compareDevices(Topology alpha, Topology beta) {
+
         //log.info("comparing devices");
         Map<String, Device> added = new HashMap<>();
         Map<String, Device> modified = new HashMap<>();
         Map<String, Device> removed = new HashMap<>();
         Map<String, Device> unchanged = new HashMap<>();
 
-        for (Device aDevice : alpha) {
-            boolean found = false;
-            boolean changed = false;
-            for (Device bDevice : beta) {
-                if (aDevice.getUrn().equals(bDevice.getUrn())) {
-                    found = true;
-                    if (!aDevice.getModel().equals(bDevice.getModel())) {
-                        changed = true;
-                    }
-                    if (!aDevice.getIpv4Address().equals(bDevice.getIpv4Address())) {
-                        changed = true;
-                    }
-                    if (!aDevice.getType().equals(bDevice.getType())) {
-                        changed = true;
-                    }
-                    if (!aDevice.getCapabilities().equals(bDevice.getCapabilities())) {
-                        changed = true;
-                    }
-                    if (!aDevice.getReservableVlans().equals(bDevice.getReservableVlans())) {
-                        changed = true;
-                    }
-                }
-            }
-            if (found) {
-                if (!changed) {
-                    unchanged.put(aDevice.getUrn(), aDevice);
-                } else {
-                    log.info("will modify "+aDevice.getUrn());
-                    modified.put(aDevice.getUrn(), aDevice);
-                }
+        List<String> checkForChanges = new ArrayList<>();
+
+        for (String urn : alpha.getDevices().keySet()) {
+            if (beta.getDevices().keySet().contains(urn)) {
+                checkForChanges.add(urn);
             } else {
-                log.info("will remove "+aDevice.getUrn());
-                removed.put(aDevice.getUrn(), aDevice);
+                removed.put(urn, alpha.getDevices().get(urn));
+            }
+        }
+        for (String urn : beta.getDevices().keySet()) {
+            if (!alpha.getDevices().keySet().contains(urn)) {
+                added.put(urn, beta.getDevices().get(urn));
             }
         }
 
-        for (Device bDevice : beta) {
-            boolean found = false;
-            for (Device aDevice : alpha) {
-                if (aDevice.getUrn().equals(bDevice.getUrn())) {
-                    found = true;
-                }
+
+        for (String urn : checkForChanges) {
+            Device aDevice = alpha.getDevices().get(urn);
+            Device bDevice = beta.getDevices().get(urn);
+            boolean changed = false;
+            if (!aDevice.getModel().equals(bDevice.getModel())) {
+                changed = true;
             }
-            if (!found) {
-                log.info("will add "+bDevice.getUrn());
-                added.put(bDevice.getUrn(), bDevice);
+            if (!aDevice.getIpv4Address().equals(bDevice.getIpv4Address())) {
+                changed = true;
+            }
+            if (!aDevice.getType().equals(bDevice.getType())) {
+                changed = true;
+            }
+            if (!aDevice.getCapabilities().equals(bDevice.getCapabilities())) {
+                changed = true;
+            }
+            if (!aDevice.getReservableVlans().equals(bDevice.getReservableVlans())) {
+                changed = true;
+            }
+            if (!changed) {
+                unchanged.put(aDevice.getUrn(), aDevice);
+            } else {
+                log.info("will modify "+aDevice.getUrn());
+                modified.put(aDevice.getUrn(), aDevice);
             }
         }
 
@@ -122,75 +131,72 @@ public class TopoLibrary {
     }
 
 
-    public static Delta<Port> comparePorts(List<Port> alpha, List<Port> beta) {
+    public static Delta<Port> comparePorts(Topology alpha, Topology beta, Delta<Device> deviceDelta) {
         // log.info("comparing ports");
         Map<String, Port> added = new HashMap<>();
         Map<String, Port> modified = new HashMap<>();
         Map<String, Port> removed = new HashMap<>();
         Map<String, Port> unchanged = new HashMap<>();
 
-        for (Port aPort : alpha) {
-            boolean found = false;
-            boolean changed = false;
-            for (Port bPort : beta) {
-                if (aPort.getUrn().equals(bPort.getUrn())) {
-                    found = true;
-                    if (aPort.getIpv4Address() == null) {
-                        if (bPort.getIpv4Address() != null) {
-                            changed = true;
-                        }
+        List<String> checkForChanges = new ArrayList<>();
 
-                    } else if (!aPort.getIpv4Address().equals(bPort.getIpv4Address())) {
-                        changed = true;
-                    }
-                    if (!aPort.getCapabilities().equals(bPort.getCapabilities())) {
-                        changed = true;
-                    }
-                    if (!aPort.getReservableIngressBw().equals(bPort.getReservableIngressBw())) {
-                        changed = true;
-                    }
-                    if (!aPort.getReservableEgressBw().equals(bPort.getReservableEgressBw())) {
-                        changed = true;
-                    }
-                    if (!aPort.getReservableVlans().equals(bPort.getReservableVlans())) {
-                        changed = true;
-                    }
-                    if (aPort.getTags() == null) {
-                        if (bPort.getTags() != null) {
-                            changed = true;
-                        }
-                    } else if (!aPort.getTags().equals(bPort.getTags())) {
-                        changed = true;
-                    }
-                }
-            }
-            if (!found) {
-                // log.info("will remove "+aPort.getUrn());
 
-                removed.put(aPort.getUrn(), aPort);
+        for (String urn : alpha.getPorts().keySet()) {
+            if (beta.getPorts().keySet().contains(urn)) {
+                log.info(" check changes "+urn);
+                checkForChanges.add(urn);
             } else {
-                if (changed) {
-                    // log.info("will modify "+aPort.getUrn());
-                    modified.put(aPort.getUrn(), aPort);
-                } else {
-                    unchanged.put(aPort.getUrn(), aPort);
-                }
+                log.info(" removed port "+urn);
+                removed.put(urn, alpha.getPorts().get(urn));
             }
         }
 
-        for (Port bPort : beta) {
-            boolean found = false;
-            for (Port aPort : alpha) {
-                if (aPort.getUrn().equals(bPort.getUrn())) {
-                    found = true;
-                }
-            }
-            if (!found) {
-                // log.info("will add "+bPort.getUrn());
-                added.put(bPort.getUrn(), bPort);
+        for (String urn : beta.getPorts().keySet()) {
+            if (!alpha.getPorts().keySet().contains(urn)) {
+                log.info(" added port "+urn);
+                added.put(urn, beta.getPorts().get(urn));
             }
         }
 
+        for (String urn : checkForChanges) {
+            Port aPort = alpha.getPorts().get(urn);
+            Port bPort = beta.getPorts().get(urn);
+            boolean changed = false;
+            if (aPort.getIpv4Address() == null) {
+                if (bPort.getIpv4Address() != null) {
+                    changed = true;
+                }
+
+            } else if (!aPort.getIpv4Address().equals(bPort.getIpv4Address())) {
+                changed = true;
+            }
+            if (!aPort.getCapabilities().equals(bPort.getCapabilities())) {
+                changed = true;
+            }
+            if (!aPort.getReservableIngressBw().equals(bPort.getReservableIngressBw())) {
+                changed = true;
+            }
+            if (!aPort.getReservableEgressBw().equals(bPort.getReservableEgressBw())) {
+                changed = true;
+            }
+            if (!aPort.getReservableVlans().equals(bPort.getReservableVlans())) {
+                changed = true;
+            }
+            if (aPort.getTags() == null) {
+                if (bPort.getTags() != null) {
+                    changed = true;
+                }
+            } else if (!aPort.getTags().equals(bPort.getTags())) {
+                changed = true;
+            }
+            if (changed) {
+                // log.info("will modify "+aPort.getUrn());
+                modified.put(aPort.getUrn(), aPort);
+            } else {
+                unchanged.put(aPort.getUrn(), aPort);
+            }
+
+        }
         return Delta.<Port>builder()
                 .added(added)
                 .modified(modified)
@@ -207,7 +213,8 @@ public class TopoLibrary {
         Map<String, PortAdjcy> unchanged = new HashMap<>();
 
         for (PortAdjcy aAdjcy : alpha) {
-            // log.info("verifying: "+ aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn());
+            String adjcyStr = aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn();
+            PortAdjcy newAdjcy = null;
 
             String a_a_urn = aAdjcy.getA().getUrn();
             String a_z_urn = aAdjcy.getZ().getUrn();
@@ -218,15 +225,38 @@ public class TopoLibrary {
                 String b_z_urn = bAdjcy.getZ().getUrn();
                 if (a_a_urn.equals(b_a_urn) && a_z_urn.equals(b_z_urn)) {
                     found = true;
-                    if (!aAdjcy.getMetrics().equals(bAdjcy.getMetrics())) {
-                        changed = true;
+                    for (Layer l : aAdjcy.getMetrics().keySet()) {
+                        if (!bAdjcy.getMetrics().containsKey(l)) {
+                            log.info("  removed a metric "+l+ " on "+adjcyStr);
+                            changed = true;
+                        }
+                    }
+                    for (Layer l : bAdjcy.getMetrics().keySet()) {
+                        if (!aAdjcy.getMetrics().containsKey(l)) {
+                            log.info("  added a metric "+l+ " on "+adjcyStr);
+                            changed = true;
+                        }
+                    }
+
+                    if ( !changed) {
+                        for (Layer l : aAdjcy.getMetrics().keySet()) {
+                            Long aMetric = aAdjcy.getMetrics().get(l);
+                            Long bMetric = bAdjcy.getMetrics().get(l);
+                            if (!aMetric.equals(bMetric)) {
+                                log.info("  modified metric "+l+ " on "+adjcyStr);
+                                changed = true;
+                            }
+                        }
+                    }
+                    if (changed) {
+                        newAdjcy = bAdjcy;
                     }
                 }
             }
             if (found) {
                 if (changed) {
                     // log.info("will modify "+aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn());
-                    modified.put(aAdjcy.getUrn(), aAdjcy);
+                    modified.put(aAdjcy.getUrn(), newAdjcy);
                 } else {
                     unchanged.put(aAdjcy.getUrn(), aAdjcy);
                 }

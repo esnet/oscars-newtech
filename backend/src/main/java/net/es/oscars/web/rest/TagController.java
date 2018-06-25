@@ -51,6 +51,7 @@ public class TagController {
             throw new IllegalArgumentException("null or empty category!");
         }
         ctg.setCategory(in.getCategory());
+        ctg.setSource(in.getSource());
         ctgRepo.save(ctg);
     }
     @RequestMapping(value = "/protected/tag/categories/delete/{id}", method = RequestMethod.GET)

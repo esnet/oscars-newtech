@@ -73,8 +73,8 @@ public class TopologySteps extends CucumberSteps {
     @Then("^the current topology is empty$")
     public void the_current_topology_is_empty() throws Throwable {
         Topology c = topoService.currentTopology();
-        assert c.getDevices().size() == 0;
-        assert c.getPorts().size() == 0;
+        assert c.getDevices().values().size() == 0;
+        assert c.getPorts().values().size() == 0;
         assert c.getAdjcies().size() == 0;
     }
 
