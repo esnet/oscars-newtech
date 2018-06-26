@@ -50,12 +50,12 @@ public class Device {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String ipv6Address;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<IntRange> reservableVlans = new HashSet<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Layer> capabilities = new HashSet<>();

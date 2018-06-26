@@ -20,15 +20,14 @@ public class PortAdjcy {
     @GeneratedValue
     private Long id;
 
-    @NonNull
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Port a;
 
-    @NonNull
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Port z;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable
     private Map<Layer, Long> metrics = new HashMap<>();
 
     @ManyToOne

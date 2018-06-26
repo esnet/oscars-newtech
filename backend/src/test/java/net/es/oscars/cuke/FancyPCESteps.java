@@ -35,9 +35,10 @@ public class FancyPCESteps extends CucumberSteps {
 
         Map<TopoAdjcy, Double> costs = new HashMap<>();
         for (TopoAdjcy adjcy : topoAdjcies) {
-//            log.info("adjcy:" + adjcy.asLogString());
+            //log.info("adjcy:" + adjcy.asLogString());
             costs.put(adjcy, 1D);
         }
+        log.info("adjcies size: "+topoAdjcies.size());
 
         DirectedWeightedMultigraph<TopoUrn, TopoAdjcy> graph = PceLibrary.makeGraph(topoAdjcies, costs);
         assert graph.containsVertex(src);
@@ -46,6 +47,7 @@ public class FancyPCESteps extends CucumberSteps {
         DijkstraShortestPath<TopoUrn, TopoAdjcy> sp = new DijkstraShortestPath<>(graph);
         GraphPath<TopoUrn, TopoAdjcy> path = sp.getPath(src, dst);
 
+        assert path != null;
         int length = radius + path.getEdgeList().size();
 
         AllDirectedPaths<TopoUrn, TopoAdjcy> ap = new AllDirectedPaths<>(graph);

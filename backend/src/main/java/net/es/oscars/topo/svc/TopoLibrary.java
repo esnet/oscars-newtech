@@ -146,14 +146,14 @@ public class TopoLibrary {
                 log.info(" check changes "+urn);
                 checkForChanges.add(urn);
             } else {
-                log.info(" removed port "+urn);
+                log.info(" will remove port "+urn);
                 removed.put(urn, alpha.getPorts().get(urn));
             }
         }
 
         for (String urn : beta.getPorts().keySet()) {
             if (!alpha.getPorts().keySet().contains(urn)) {
-                log.info(" added port "+urn);
+                log.info(" will add port "+urn);
                 added.put(urn, beta.getPorts().get(urn));
             }
         }

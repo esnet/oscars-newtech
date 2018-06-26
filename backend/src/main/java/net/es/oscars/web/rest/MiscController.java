@@ -22,11 +22,12 @@ import java.util.stream.Stream;
 @Slf4j
 public class MiscController {
 
-    public static String logfile = "backend.log";
+    @Value("${logging.file}:backend.log")
+    private String logfile;
 
     @RequestMapping(value = "/api/version", method = RequestMethod.GET)
     public String getVersion() {
-        return "1.0.8";
+        return "1.0.9";
     }
 
 
@@ -36,7 +37,7 @@ public class MiscController {
 
             @Override
             public void writeTo(OutputStream out) throws IOException {
-                Stream<String> stream = Files.lines(Paths.get(MiscController.logfile));
+                Stream<String> stream = Files.lines(Paths.get(logfile));
 
                 stream.forEach(s -> {
                     String o = s + "\n";

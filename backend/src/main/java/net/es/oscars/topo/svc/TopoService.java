@@ -97,27 +97,28 @@ public class TopoService {
         }
 
         versionRepo.save(newVersion);
+        versionRepo.flush();
         return newVersion;
     }
 
     @Transactional
     public void mergeVersionDelta(VersionDelta vd, Version currentVersion, Version newVersion) throws ConsistencyException {
         log.info("merging version delta, new version : "+newVersion.getId());
-        /*
         String pretty = null;
         try {
             pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(vd);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        log.info(pretty);
-        */
+//        log.info(pretty);
+
         Delta<Device> dd = vd.getDeviceDelta();
         Delta<PortAdjcy> ad = vd.getAdjcyDelta();
         Delta<Port> pd = vd.getPortDelta();
 
 
         // to delete gone devices, we don't do anything; we just won't update their version
+        int addedPorts = 0;
 
         int addedDevs = 0;
         // now add new devices
@@ -138,14 +139,20 @@ public class TopoService {
                 d.setVersion(newVersion);
                 for (Port p : d.getPorts()) {
                     p.setVersion(newVersion);
+//                    log.info(" adding port from device: "+p.getUrn()+" v: "+newVersion.getId());
+                    portRepo.save(p);
                 }
                 deviceRepo.save(d);
                 for (Port p : d.getPorts()) {
                     pd.getAdded().remove(p.getUrn());
+                    addedPorts++;
                 }
             }
             addedDevs++;
         }
+        deviceRepo.flush();
+        portRepo.flush();
+
         log.debug("done adding new devices, added: "+addedDevs);
 
         int unchangedDevices = 0;
@@ -166,7 +173,6 @@ public class TopoService {
         deviceRepo.flush();
         int modifiedDevs = 0;
         int modifiedPorts = 0;
-        int addedPorts = 0;
 
         // then merge modified ones including the ports
         log.debug("now modifying devices");
@@ -247,8 +253,51 @@ public class TopoService {
         log.debug("done modifying devices, modified: "+modifiedDevs);
         log.debug("                     invalidated: "+dd.getRemoved().values().size());
         log.debug("     + modified ports: "+modifiedPorts);
-        log.debug("     + added ports: "+addedPorts);
 
+
+        // now for added ports; these too need to be set to latest version
+        for (Port p: pd.getAdded().values()) {
+            log.info("adding remaining port "+p.getUrn());
+            Optional<Port> maybeExists = portRepo.findByUrn(p.getUrn());
+            if (maybeExists.isPresent()) {
+                Port prevPort = maybeExists.get();
+                if (!prevPort.getVersion().getValid()) {
+                    prevPort.setVersion(newVersion);
+                    prevPort.setCapabilities(p.getCapabilities());
+                    prevPort.setTags(p.getTags());
+                    prevPort.setIpv4Address(p.getIpv4Address());
+                    prevPort.setIpv6Address(p.getIpv6Address());
+                    prevPort.setReservableVlans(p.getReservableVlans());
+                    prevPort.setReservableIngressBw(p.getReservableIngressBw());
+                    prevPort.setReservableEgressBw(p.getReservableEgressBw());
+                    p = prevPort;
+                    portRepo.save(p);
+
+                } else {
+                    throw new ConsistencyException("merge error: added port matches existing valid "+p.getUrn());
+                }
+            } else {
+                log.info(" brand new port "+p.getUrn());
+
+            }
+
+            Optional<Device> maybeDev = deviceRepo.findByUrn(p.getDevice().getUrn());
+            if (maybeDev.isPresent()) {
+                Device savedDev = maybeDev.get();
+                if (!savedDev.getVersion().getValid()) {
+                    throw new ConsistencyException("merge error: added port's device invalid version "+p.getUrn());
+                }
+                p.setDevice(savedDev);
+                p.setVersion(newVersion);
+                savedDev.getPorts().add(p);
+                addedPorts++;
+                portRepo.save(p);
+            } else {
+                throw new ConsistencyException("merge error: added port's device not found in repo "+p.getUrn());
+            }
+        }
+        portRepo.flush();
+        log.debug("     + added ports: "+addedPorts);
 
         int unchangedPorts = 0;
         // now for unchanged ports; these too need to be set to latest version
@@ -290,6 +339,16 @@ public class TopoService {
             if (!found) {
                 throw new ConsistencyException("adjcy in modified delta does not exist in repo");
             }
+
+            if (!prev.getA().getAdjciesWhereA().contains(pa)) {
+                prev.getA().getAdjciesWhereA().add(pa);
+                portRepo.save(pa.getA());
+            }
+            if (!prev.getZ().getAdjciesWhereZ().contains(pa)) {
+                prev.getZ().getAdjciesWhereZ().add(pa);
+                portRepo.save(pa.getZ());
+            }
+
             for (Layer l : prev.getMetrics().keySet()) {
                 if (!pa.getMetrics().keySet().contains(l)) {
                     log.debug("  removing a metric for "+l.toString());
@@ -318,24 +377,51 @@ public class TopoService {
         }
 
         adjcyRepo.flush();
+        portRepo.flush();
         log.debug("done modifying adjacencies: modified: "+modifiedAdjs);
         log.debug("                        invalidated : "+ad.getRemoved().values().size());
 
 
         int addedAdjs = 0;
 
-        // finally add new adjacencies; this is done last to make sure the ports we refer to have been added already
+        // add new adjacencies; this is done after we have added all the ports
         for (PortAdjcy pa: ad.getAdded().values()) {
-            // log.info("adding an adjcy: "+pa.getA().getUrn()+ " -- "+pa.getZ().getUrn());
+            String aUrn = pa.getA().getUrn();
+            String zUrn = pa.getZ().getUrn();
+            pa.setA(null);
+            pa.setZ(null);
             // fix port object refs
-            pa.setA(portRepo.findByUrn(pa.getA().getUrn()).orElseThrow(NoSuchElementException::new));
-            pa.setZ(portRepo.findByUrn(pa.getZ().getUrn()).orElseThrow(NoSuchElementException::new));
-            pa.setVersion(newVersion);
-            pa.getA().getAdjciesWhereA().add(pa);
-            pa.getZ().getAdjciesWhereZ().add(pa);
-            adjcyRepo.save(pa);
-            addedAdjs++;
+            Optional<Port> maybePortA = portRepo.findByUrn(aUrn);
+            Optional<Port> maybePortZ = portRepo.findByUrn(zUrn);
+            boolean missingPort = false;
+            if (!maybePortA.isPresent()) {
+                missingPort = true;
+                log.error("missing adjacency port: "+aUrn);
+            }
+            if (!maybePortZ.isPresent()) {
+                missingPort = true;
+                log.error("missing adjacency port: "+zUrn);
+            }
+
+            if (missingPort) {
+                log.error("not adding "+aUrn+ " -- "+zUrn);
+
+            } else {
+                log.info("adding an adjcy: "+aUrn+ " -- "+zUrn);
+                pa.setVersion(newVersion);
+                pa.setA(maybePortA.get());
+                pa.setZ(maybePortZ.get());
+                pa.getA().getAdjciesWhereA().add(pa);
+                pa.getZ().getAdjciesWhereZ().add(pa);
+                adjcyRepo.save(pa);
+                portRepo.save(pa.getA());
+                portRepo.save(pa.getZ());
+                addedAdjs++;
+            }
+
         }
+        adjcyRepo.flush();
+        portRepo.flush();
         log.debug("done adding adjacencies: added: "+addedAdjs);
 
         int unchangedAdjs = 0;
@@ -355,11 +441,20 @@ public class TopoService {
                 throw new ConsistencyException("adjcy in modified delta does not exist in repo");
             }
             existing.setVersion(newVersion);
+            if (!existing.getA().getAdjciesWhereA().contains(pa)) {
+                existing.getA().getAdjciesWhereA().add(pa);
+                portRepo.save(pa.getA());
+            }
+            if (!existing.getZ().getAdjciesWhereZ().contains(pa)) {
+                existing.getZ().getAdjciesWhereZ().add(pa);
+                portRepo.save(pa.getZ());
+            }
             adjcyRepo.save(existing);
             unchangedAdjs++;
 
         }
         log.debug("done updating version for unchanged adjacencies: "+unchangedAdjs+" entries");
+        portRepo.flush();
         adjcyRepo.flush();
 
     }
@@ -392,10 +487,10 @@ public class TopoService {
 
             log.info(" current topo:");
             devices.forEach(d -> {
-                log.info(" d: "+d.getUrn());
+//                log.info(" d: "+d.getUrn());
                 for (Port p : d.getPorts()) {
                     if (p.getVersion() != null && p.getVersion().getValid()) {
-                        log.info(" +- "+p.getUrn());
+//                        log.info(" +- "+p.getUrn());
                         portMap.put(p.getUrn(), p);
                     }
                 }
@@ -496,6 +591,13 @@ public class TopoService {
         List<TopoAdjcy> adjcies = new ArrayList<>();
 
         for (PortAdjcy pa : portAdjcies) {
+            if (pa.getVersion() == null) {
+                log.info("null port adjcy: "+pa.getUrn());
+                continue;
+            } else if (!pa.getVersion().getValid()) {
+                log.info("invalid port adjcy: "+pa.getUrn());
+                continue;
+            }
             // all our adjcies should point to ports in the topoUrnMap
 
             if (!this.topoUrnMap.containsKey(pa.getA().getUrn())) {
@@ -505,10 +607,15 @@ public class TopoService {
 
             } else if (!this.topoUrnMap.containsKey(pa.getZ().getUrn())) {
 
-                log.error(pa.getA().getUrn()+" -- "+pa.getZ().getUrn());
-                throw new TopoException("missing Z "+pa.getZ().getUrn());
+                log.error(pa.getA().getUrn() + " -- " + pa.getZ().getUrn());
+                throw new TopoException("missing Z " + pa.getZ().getUrn());
+            } else if (!pa.getA().getVersion().getValid()) {
+                throw new TopoException("invalid A in adjcy" + pa.getUrn());
+            } else if (!pa.getZ().getVersion().getValid()) {
+                throw new TopoException("invalid Z in adjcy" + pa.getUrn());
 
             } else {
+
                 TopoUrn aUrn = this.topoUrnMap.get(pa.getA().getUrn());
                 TopoUrn zUrn = this.topoUrnMap.get(pa.getZ().getUrn());
                 Map<Layer, Long> metrics = new HashMap<>();
@@ -532,6 +639,9 @@ public class TopoService {
             if (this.topoUrnMap.containsKey(d.getUrn())) {
                 TopoUrn deviceUrn = this.topoUrnMap.get(d.getUrn());
                 for (Port p : d.getPorts()) {
+                    if (p.getVersion() == null || !p.getVersion().getValid()) {
+                        continue;
+                    }
                     if (this.topoUrnMap.containsKey(p.getUrn())) {
                         TopoUrn portUrn = this.topoUrnMap.get(p.getUrn());
                         TopoAdjcy az = TopoAdjcy.builder()

@@ -72,7 +72,8 @@ public class TopoController {
             for (Device d : topology.getDevices().values()) {
                 List<Port> ports = new ArrayList<>();
                 for (Port p: d.getPorts()) {
-                    if (p.getCapabilities().contains(Layer.ETHERNET)) {
+                    if (p.getCapabilities().contains(Layer.ETHERNET)
+                            && p.getVersion() != null && p.getVersion().getValid()) {
                         ports.add(p);
                     }
                 }
