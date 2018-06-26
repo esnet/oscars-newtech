@@ -368,6 +368,17 @@ public class HoldController {
             for (Fixture f : in.getFixtures()) {
                 PortBwVlan avail = availBwVlanMap.get(f.getPort());
                 Set<Integer> vlans = inVlanMap.get(f.getPort());
+                if (avail == null) {
+                    avail = PortBwVlan.builder()
+                            .egressBandwidth(-1)
+                            .ingressBandwidth(-1)
+                            .vlanExpression("")
+                            .vlanRanges(new HashSet<>())
+                            .build();
+                }
+                if (vlans == null) {
+                    vlans = new HashSet<>();
+                }
 
                 Set<IntRange> availVlanRanges = avail.getVlanRanges();
                 for (Integer vlan : vlans) {
