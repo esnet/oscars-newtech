@@ -20,10 +20,10 @@ public class PortAdjcy {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private Port a;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private Port z;
 
     @ElementCollection(fetch = FetchType.EAGER)

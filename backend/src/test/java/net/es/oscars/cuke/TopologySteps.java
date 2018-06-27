@@ -10,8 +10,13 @@ import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;
+import net.es.oscars.topo.db.PortRepository;
 import net.es.oscars.topo.db.VersionRepository;
+import net.es.oscars.topo.ent.Device;
+import net.es.oscars.topo.ent.Port;
+import net.es.oscars.topo.ent.PortAdjcy;
 import net.es.oscars.topo.ent.Version;
+import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.TopoPopulator;
 import net.es.oscars.topo.svc.TopoLibrary;
 import net.es.oscars.topo.svc.TopoService;
@@ -41,6 +46,9 @@ public class TopologySteps extends CucumberSteps {
     private CucumberWorld world;
 
     @Autowired
+    private PortRepository portRepo;
+
+    @Autowired
     private TopoPopulator topoPopulator;
 
     private Topology t;
@@ -63,10 +71,38 @@ public class TopologySteps extends CucumberSteps {
 
     @Given("^I clear the topology$")
     public void clear_topo() throws Throwable {
-        log.info("clearing topology");
+
+        log.info("clearing adjacencies");
+        for (Port p : portRepo.findAll()) {
+            p.setAdjciesWhereA(new HashSet<>());
+            p.setAdjciesWhereZ(new HashSet<>());
+            portRepo.save(p);
+        }
         adjcyRepo.deleteAll();
-        deviceRepo.deleteAll();
+        adjcyRepo.flush();
+
+        log.info("clearing devices");
+        for (Device d : deviceRepo.findAll()) {
+            HashSet<Port> ports = new HashSet<>(d.getPorts());
+            for (Port p : ports) {
+                log.info("deleting "+p.getUrn());
+                d.getPorts().remove(p);
+                portRepo.delete(p);
+            }
+            deviceRepo.delete(d);
+            log.info("deleting "+d.getUrn());
+        }
+
+        deviceRepo.flush();
+
+
+        log.info("clearing ports");
+        portRepo.deleteAll();
+        portRepo.flush();
+
+        log.info("clearing versions");
         versionRepo.deleteAll();
+        versionRepo.flush();
         world.topoBaseline = new HashMap<>();
     }
 
@@ -112,7 +148,13 @@ public class TopologySteps extends CucumberSteps {
     public void i_merge_the_new_topology() throws Throwable {
         Version newVersion = topoService.nextVersion();
         Version current = topoService.currentVersion().orElseThrow(NoSuchElementException::new);
-        topoService.mergeVersionDelta(vd, current, newVersion);
+        try {
+            topoService.mergeVersionDelta(vd, current, newVersion);
+        } catch (ConsistencyException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex.getMessage());
+
+        }
     }
 
 }

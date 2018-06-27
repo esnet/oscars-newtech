@@ -1,5 +1,8 @@
 package net.es.oscars.soap;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.Error;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.ServiceException;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.provider.ConnectionProviderPort;
@@ -8,7 +11,7 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.framework.headers.CommonHeaderType;
 
 import javax.xml.ws.Holder;
 
-
+@Slf4j
 public class NsiProvider implements ConnectionProviderPort {
 
     @Override
@@ -43,6 +46,16 @@ public class NsiProvider implements ConnectionProviderPort {
 
     @Override
     public ReserveResponseType reserve(ReserveType reserve, Holder<CommonHeaderType> header) throws ServiceException {
+        try {
+            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(reserve);
+            log.debug(pretty);
+             pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(header);
+            log.debug(pretty);
+
+        } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
+        }
+
         return null;
     }
 
