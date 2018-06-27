@@ -23,6 +23,7 @@ import net.es.oscars.web.simple.SimpleConnection;
 import net.es.oscars.web.simple.Validity;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +52,9 @@ public class HoldController {
     @Autowired
     private ResvService resvService;
 
+    @Value("${resv.timeout}")
+    private Integer resvTimeout;
+
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public void handleResourceNotFoundException(NoSuchElementException ex) {
@@ -76,7 +80,7 @@ public class HoldController {
         }
         Optional<Connection> maybeConnection = connRepo.findByConnectionId(connectionId);
 
-        Instant exp = Instant.now().plus(15L, ChronoUnit.MINUTES);
+        Instant exp = Instant.now().plus(resvTimeout, ChronoUnit.SECONDS);
         if (maybeConnection.isPresent()) {
             Connection conn = maybeConnection.get();
             Instant start  = conn.getHeld().getSchedule().getBeginning();

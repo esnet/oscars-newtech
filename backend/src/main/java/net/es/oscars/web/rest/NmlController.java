@@ -1,6 +1,7 @@
 package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.nsi.svc.NsiService;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.ent.Device;
@@ -39,9 +40,12 @@ public class NmlController {
 
     @Value("${nml.topo-name}")
     private String topoName;
+
     @Autowired
     private TopoService topoService;
 
+    @Autowired
+    private NsiService nsiService;
 
     private static String nsBase = "http://schemas.ogf.org/nml/2013/05/base#";
     private static String nsDefs = "http://schemas.ogf.org/nsi/2013/12/services/definition";
@@ -113,7 +117,7 @@ public class NmlController {
 
 
         for (Port p : edgePorts) {
-            String nsiUrn = prefix + p.getUrn().replace("/", "_");
+            String nsiUrn = nsiService.nsiUrnFromInternal(p.getUrn());
 
             Element bdp = doc.createElementNS(nsBase, "nml-base:BidirectionalPort");
             bdp.setAttribute("id", nsiUrn + ":+");
@@ -159,7 +163,7 @@ public class NmlController {
         sSvc.appendChild(ssSd);
 
         for (Port p : edgePorts) {
-            String nsiUrn = prefix + p.getUrn().replace("/", "_");
+            String nsiUrn = nsiService.nsiUrnFromInternal(p.getUrn());
 
 
             Element pgsi = doc.createElementNS(nsBase, "nml-base:PortGroup");
@@ -189,7 +193,7 @@ public class NmlController {
                 }
             }
             String vlans = String.join(",", parts);
-            String nsiUrn = prefix + p.getUrn().replace("/", "_");
+            String nsiUrn = nsiService.nsiUrnFromInternal(p.getUrn());
 
 
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");

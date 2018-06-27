@@ -26,6 +26,7 @@ import javax.transaction.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -53,6 +54,37 @@ public class ConnService {
     @Autowired
     private PSSAdapter pssAdapter;
 
+    public String generateConnectionId() {
+        boolean found = false;
+        String result = "";
+        while (!found) {
+            String candidate = this.connectionIdGenerator();
+            Optional<Connection> d = connRepo.findByConnectionId(candidate);
+            if (!d.isPresent()) {
+                found = true;
+                result = candidate;
+            }
+        }
+        return result;
+    }
+
+
+    public String connectionIdGenerator() {
+        String SAFE_ALPHABET_STRING = "234679CDFGHJKMNPRTWXYZ";
+        char[] SAFE_ALPHABET = SAFE_ALPHABET_STRING.toCharArray();
+        Random random = new Random();
+
+        int max = SAFE_ALPHABET.length;
+        int totalNumber = 4;
+
+        StringBuilder b = new StringBuilder();
+        IntStream stream = random.ints(totalNumber, 0, max);
+        stream.forEach(i -> {
+            b.append(SAFE_ALPHABET[i]);
+        });
+        return b.toString();
+
+    }
     public List<Connection> filter(ConnectionFilter filter) {
 
         List<Connection> candidates = new ArrayList<>();

@@ -145,7 +145,7 @@ public class TopoLibrary {
 
         for (String urn : alpha.getPorts().keySet()) {
             if (beta.getPorts().keySet().contains(urn)) {
-                log.info(" check changes "+urn);
+                // log.info(" check changes "+urn);
                 checkForChanges.add(urn);
             } else {
                 log.info(" will remove port "+urn);

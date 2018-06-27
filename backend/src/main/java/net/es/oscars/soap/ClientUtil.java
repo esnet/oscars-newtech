@@ -28,7 +28,6 @@ public class ClientUtil {
 
     final public static String DEFAULT_REQUESTER = "urn:oscars:nsa:client";
     final public static String DEFAULT_PROVIDER = DEFAULT_REQUESTER;
-    final public static String DEFAULT_PROTOCOL_VERSION = "application/vdn.ogf.nsi.cs.v2.provider+soap";
 
 
     HashMap<String, ConnectionRequesterPort> requesterPorts = new HashMap<String, ConnectionRequesterPort>();
@@ -40,7 +39,7 @@ public class ClientUtil {
      * @param url the URL of the requester to contact
      * @return the ConnectionRequesterPort that you can use at the client
      */
-    private ConnectionRequesterPort createRequesterClient(String url) {
+    public ConnectionRequesterPort createRequesterClient(String url) {
         prepareBus(url);
 
         JaxWsProxyFactoryBean fb = new JaxWsProxyFactoryBean();
@@ -81,34 +80,4 @@ public class ClientUtil {
     }
 
 
-    /**
-     * Creates a basic header with a random Correlation ID and default requester
-     *
-     * @return the generated header
-     */
-    public static Holder<CommonHeaderType> makeClientHeader() {
-        CommonHeaderType hd = new CommonHeaderType();
-        hd.setRequesterNSA(DEFAULT_REQUESTER);
-        hd.setProviderNSA(DEFAULT_PROVIDER);
-        hd.setProtocolVersion(DEFAULT_PROTOCOL_VERSION);
-        hd.setCorrelationId("urn:uuid:" + UUID.randomUUID().toString());
-        Holder<CommonHeaderType> header = new Holder<>();
-        header.value = hd;
-
-        return header;
-    }
-
-    /**
-     * Converts timestamp to an XML time
-     *
-     * @param timestamp the timestamp to convert
-     * @return the XMLGregorianCalendar representaion of the given timestamp
-     * @throws javax.xml.datatype.DatatypeConfigurationException
-     */
-    public static XMLGregorianCalendar unixtimeToXMLGregCal(long timestamp) throws DatatypeConfigurationException {
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTimeInMillis(timestamp);
-
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-    }
 }

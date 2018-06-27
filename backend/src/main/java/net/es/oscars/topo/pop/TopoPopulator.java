@@ -92,9 +92,9 @@ public class TopoPopulator implements StartupComponent {
         log.info("loaded topology");
         devices.forEach(d -> {
             deviceMap.put(d.getUrn(), d);
-            log.info("  d: "+d.getUrn());
+            // log.info("  d: "+d.getUrn());
             d.getPorts().forEach(p -> {
-                log.info("  +- "+p.getUrn());
+                // log.info("  +- "+p.getUrn());
                 portMap.put(p.getUrn(), p);
             });
         });
