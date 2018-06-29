@@ -66,7 +66,7 @@ public class ControlPlaneCheck {
                 checker.getStatuses().put(cs.getDevice(), cs);
                 if (!cs.getControlPlaneStatus().equals(ControlPlaneStatus.OK)) {
                     Integer attempts = checker.getCheckAttempts().get(d);
-                    if (attempts <= pssProperties.getControlPlaneCheckMaxTries()) {
+                    if (attempts < pssProperties.getControlPlaneCheckMaxTries()) {
                         log.info("retrying a failed control plane check, attempt # "+attempts+" for "+d.getUrn());
                         checker.getDevicesToCheck().add(d);
                         checker.getCheckAttempts().put(d, attempts + 1);

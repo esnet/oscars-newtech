@@ -34,7 +34,7 @@ import java.util.*;
 
 @Slf4j
 @Service
-public class TopoPopulator implements StartupComponent {
+public class TopoPopulator {
     private TopoProperties topoProperties;
     private TopoService topoService;
 
@@ -47,41 +47,37 @@ public class TopoPopulator implements StartupComponent {
     }
 
     @Transactional
-    public void startup() throws StartupException {
-        log.info("starting topo populator");
+    public VersionDelta refreshTopology() throws ConsistencyException, IOException {
+        log.info("refreshing topology");
         if (topoProperties == null) {
-            throw new StartupException("No topo stanza in application properties");
+            throw new ConsistencyException("No topo stanza in application properties");
         }
         String devicesFilename = "./config/topo/" + topoProperties.getPrefix() + "-devices.json";
         String adjciesFilename = "./config/topo/" + topoProperties.getPrefix() + "-adjcies.json";
 
-        try {
-            if (!topoService.currentVersion().isPresent()) {
-                log.info("first topology import");
-                // no version, so make an empty first one
-                topoService.nextVersion();
-            }
-
-            Topology current = topoService.currentTopology();
-            log.info("previous topo: dev: "+current.getDevices().size()+" adj: "+current.getAdjcies().size());
-            Topology incoming = this.loadTopology(devicesFilename, adjciesFilename);
-            VersionDelta vd = TopoLibrary.compare(current, incoming);
-            if (vd.isChanged()) {
-
-                Version currentVersion = topoService.currentVersion().get();
-                Version newVersion = topoService.nextVersion();
-                log.info("found topology changes; new valid version will be: "+newVersion.getId());
-
-                // TODO: check how the delta affects existing connections
-                topoService.mergeVersionDelta(vd, currentVersion, newVersion);
-
-            } else {
-                log.info("no topology changes");
-            }
-        } catch (IOException | ConsistencyException ex) {
-            throw new StartupException("Import failed! " + ex.getMessage());
+        if (!topoService.currentVersion().isPresent()) {
+            log.info("first topology import");
+            // no version, so make an empty first one
+            topoService.nextVersion();
         }
-        log.info("topo populator finished");
+
+        Topology current = topoService.currentTopology();
+        log.info("previous topo: dev: " + current.getDevices().size() + " adj: " + current.getAdjcies().size());
+        Topology incoming = this.loadTopology(devicesFilename, adjciesFilename);
+        VersionDelta vd = TopoLibrary.compare(current, incoming);
+        if (vd.isChanged()) {
+
+            Version currentVersion = topoService.currentVersion().get();
+            Version newVersion = topoService.nextVersion();
+            log.info("found topology changes; new valid version will be: " + newVersion.getId());
+
+            // TODO: check how the delta affects existing connections
+            topoService.mergeVersionDelta(vd, currentVersion, newVersion);
+
+        } else {
+            log.info("no topology changes");
+        }
+        return vd;
     }
 
     public Topology loadTopology(String devicesFilename, String adjciesFilename) throws IOException {

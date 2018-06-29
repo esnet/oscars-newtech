@@ -46,6 +46,7 @@ public class TopoService {
     private PssProperties pssProperties;
 
 
+    @Transactional
     public void updateTopo() throws ConsistencyException, TopoException {
         Optional<Version> maybeCurrent = currentVersion();
 

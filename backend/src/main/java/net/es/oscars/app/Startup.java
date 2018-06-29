@@ -1,6 +1,5 @@
 package net.es.oscars.app;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
@@ -8,9 +7,11 @@ import net.es.oscars.app.util.GitRepositoryState;
 import net.es.oscars.app.util.GitRepositoryStatePopulator;
 import net.es.oscars.pss.svc.PssHealthChecker;
 import net.es.oscars.security.db.UserPopulator;
-import net.es.oscars.topo.pop.ConsistencyChecker;
+import net.es.oscars.topo.beans.TopoException;
+import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.TopoPopulator;
 import net.es.oscars.topo.pop.UIPopulator;
+import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -26,9 +27,11 @@ import java.util.concurrent.Executor;
 public class Startup {
 
     private List<StartupComponent> components;
+    private TopoPopulator topoPopulator;
     private StartupProperties startupProperties;
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
     private PssHealthChecker pssHealthChecker;
+    private TopoService topoService;
 
     private boolean inStartup = false;
     private boolean inShutdown = false;
@@ -58,24 +61,26 @@ public class Startup {
 
     @Autowired
     public Startup(StartupProperties startupProperties,
+                   TopoService topoService,
                    TopoPopulator topoPopulator,
                    UserPopulator userPopulator,
                    UIPopulator uiPopulator,
-                   ConsistencyChecker consistencyChecker,
                    PssHealthChecker pssHealthChecker,
                    GitRepositoryStatePopulator gitRepositoryStatePopulator) {
         this.startupProperties = startupProperties;
+        this.topoPopulator = topoPopulator;
+        this.topoService = topoService;
         this.gitRepositoryStatePopulator = gitRepositoryStatePopulator;
         components = new ArrayList<>();
         components.add(userPopulator);
-        components.add(topoPopulator);
         components.add(uiPopulator);
-        components.add(consistencyChecker);
         components.add(gitRepositoryStatePopulator);
         components.add(pssHealthChecker);
     }
 
-    public void onStart() throws IOException {
+    public void onStart() throws IOException, ConsistencyException, TopoException {
+        System.out.println(startupProperties.getBanner());
+
         this.setInStartup(true);
         if (startupProperties.getExit()) {
             this.setInStartup(false);
@@ -83,8 +88,9 @@ public class Startup {
             System.out.println("Exiting (startup.exit is true)");
             System.exit(0);
         }
+        topoPopulator.refreshTopology();
+        topoService.updateTopo();
 
-        System.out.println(startupProperties.getBanner());
         try {
             for (StartupComponent sc : this.components) {
                 sc.startup();
@@ -94,10 +100,10 @@ public class Startup {
             System.out.println("Exiting..");
             System.exit(1);
         }
-
         GitRepositoryState gitRepositoryState = this.gitRepositoryStatePopulator.getGitRepositoryState();
         log.info("OSCARS backend (" + gitRepositoryState.getDescribe() + " on " + gitRepositoryState.getBranch() + ")");
         log.info("Built by " + gitRepositoryState.getBuildUserEmail() + " on " + gitRepositoryState.getBuildHost() + " at " + gitRepositoryState.getBuildTime());
+
 
         log.info("OSCARS startup successful.");
         this.setInStartup(false);
