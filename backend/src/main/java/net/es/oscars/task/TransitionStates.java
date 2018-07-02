@@ -35,11 +35,6 @@ public class TransitionStates {
     private Startup startup;
 
     @Autowired
-    private NsiMappingRepository nsiRepo;
-    @Autowired
-    private NsiStateEngine nsiStateEngine;
-
-    @Autowired
     private NsiService nsiService;
 
     @Scheduled(fixedDelay = 5000)
@@ -53,6 +48,7 @@ public class TransitionStates {
         List<Connection> conns = connRepo.findAll();
         List<Connection> deleteThese = new ArrayList<>();
         List<Connection> archiveThese = new ArrayList<>();
+
         List<NsiMapping> pastEndTime = new ArrayList<>();
         List<NsiMapping> timedOut = new ArrayList<>();
 
@@ -62,9 +58,7 @@ public class TransitionStates {
                     log.info("will delete expired held connection: "+c.getConnectionId());
                     try {
                         Optional<NsiMapping> maybeMapping = nsiService.getMappingForOscarsId(c.getConnectionId());
-                        if (maybeMapping.isPresent()) {
-                            timedOut.add(maybeMapping.get());
-                        }
+                        maybeMapping.ifPresent(timedOut::add);
                     } catch (NsiException ex) {
                         log.error(ex.getMessage(), ex);
                     }
@@ -73,11 +67,10 @@ public class TransitionStates {
             }
             if (c.getPhase().equals(Phase.RESERVED)) {
                 if (c.getReserved().getSchedule().getEnding().isBefore(Instant.now())) {
+                    log.info("will archive (and dismantle if needed) connection: "+c.getConnectionId());
                     try {
                         Optional<NsiMapping> maybeMapping = nsiService.getMappingForOscarsId(c.getConnectionId());
-                        if (maybeMapping.isPresent()) {
-                            pastEndTime.add(maybeMapping.get());
-                        }
+                        maybeMapping.ifPresent(pastEndTime::add);
                     } catch (NsiException ex) {
                         log.error(ex.getMessage(), ex);
                     }

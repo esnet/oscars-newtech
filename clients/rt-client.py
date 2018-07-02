@@ -6,16 +6,19 @@ import json
 import time
 import requests
 
-URL = 'http://localhost:8181/api/conn/simplelist'
+
+URL = 'https://localhost:8201/api/conn/simplelist'
+VERIFY_SSL = False
 
 
 def main():
-    response = requests.get(URL)
+    response = requests.get(URL, verify=VERIFY_SSL)
     carrier = 'es.net'
     layer = 'L2'
     now = int(time.time())
     out = ''
     connections = response.json()
+    # print json.dumps(connections)
     for c in connections:
         c_id = c['connectionId']
         if 'pipes' in c and len(c['pipes']) > 1:
@@ -32,9 +35,11 @@ def main():
         out += pre+'layer-+-L2\n'
         out += pre+'last_update-+-%i\n' % now
         out += pre+'creator-+-%s\n' % c['username']
-
-        # TODO: this might be able to be harvested from tags now
         out += pre+'contact-+-%s\n' % c['username']
+
+        if 'tags' in c and len(c['tags']) > 0:
+            for tag in c['tags']:
+                out += pre+'tags-+-%s-+-%s\n' % (tag['category'], tag['contents'])
 
         src = c['fixtures'][0]['port']+'.'+str(c['fixtures'][0]['vlan'])
         dst = c['fixtures'][1]['port']+'.'+str(c['fixtures'][1]['vlan'])
@@ -46,7 +51,6 @@ def main():
         out += pre+'destination-+-%s\n' % dst
         out += pre+'bandwidth-+-%i000000\n' % c['fixtures'][0]['inMbps']
         out += pre+'vlan-+-%i-%i\n' % (c['fixtures'][0]['vlan'], c['fixtures'][1]['vlan'])
-
         if 'pipes' in c and len(c['pipes']) > 0:
             out += pre+'path-+-0-+-0-+-hop-+-%s\n' % src
             i = 1

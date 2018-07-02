@@ -5,6 +5,7 @@ import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
 import net.es.oscars.app.util.GitRepositoryState;
 import net.es.oscars.app.util.GitRepositoryStatePopulator;
+import net.es.oscars.ext.SlackConnector;
 import net.es.oscars.pss.svc.PssHealthChecker;
 import net.es.oscars.security.db.UserPopulator;
 import net.es.oscars.topo.beans.TopoException;
@@ -31,6 +32,7 @@ public class Startup {
     private StartupProperties startupProperties;
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
     private PssHealthChecker pssHealthChecker;
+    private SlackConnector slackConnector;
     private TopoService topoService;
 
     private boolean inStartup = false;
@@ -64,18 +66,22 @@ public class Startup {
                    TopoService topoService,
                    TopoPopulator topoPopulator,
                    UserPopulator userPopulator,
+                   SlackConnector slackConnector,
                    UIPopulator uiPopulator,
                    PssHealthChecker pssHealthChecker,
                    GitRepositoryStatePopulator gitRepositoryStatePopulator) {
         this.startupProperties = startupProperties;
         this.topoPopulator = topoPopulator;
         this.topoService = topoService;
+        this.slackConnector = slackConnector;
+        this.pssHealthChecker = pssHealthChecker;
         this.gitRepositoryStatePopulator = gitRepositoryStatePopulator;
         components = new ArrayList<>();
         components.add(userPopulator);
         components.add(uiPopulator);
-        components.add(gitRepositoryStatePopulator);
-        components.add(pssHealthChecker);
+        components.add(this.slackConnector);
+        components.add(this.gitRepositoryStatePopulator);
+        components.add(this.pssHealthChecker);
     }
 
     public void onStart() throws IOException, ConsistencyException, TopoException {

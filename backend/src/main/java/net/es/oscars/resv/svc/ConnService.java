@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.ext.SlackConnector;
 import net.es.oscars.pss.svc.PSSAdapter;
 import net.es.oscars.pss.svc.PssResourceService;
 import net.es.oscars.resv.db.ArchivedRepository;
@@ -38,6 +39,9 @@ public class ConnService {
     private ConnectionRepository connRepo;
 
     @Autowired
+    private SlackConnector slack;
+
+    @Autowired
     private LogService logService;
 
     @Autowired
@@ -70,15 +74,20 @@ public class ConnService {
 
 
     public String connectionIdGenerator() {
-        String SAFE_ALPHABET_STRING = "234679CDFGHJKMNPRTWXYZ";
-        char[] SAFE_ALPHABET = SAFE_ALPHABET_STRING.toCharArray();
+        char[] FIRST_LETTER = "CDEFGHJKMNPRTWXYZ".toCharArray();
+        char[] SAFE_ALPHABET = "234679CDFGHJKMNPRTWXYZ".toCharArray();
+
         Random random = new Random();
 
-        int max = SAFE_ALPHABET.length;
-        int totalNumber = 4;
-
         StringBuilder b = new StringBuilder();
+        Integer firstIdx = random.nextInt(FIRST_LETTER.length);
+        char firstLetter = FIRST_LETTER[firstIdx];
+        b.append(firstLetter);
+
+        int max = SAFE_ALPHABET.length;
+        int totalNumber = 3;
         IntStream stream = random.ints(totalNumber, 0, max);
+
         stream.forEach(i -> {
             b.append(SAFE_ALPHABET[i]);
         });
@@ -150,6 +159,8 @@ public class ConnService {
 
         Held h = c.getHeld();
         Boolean valid = true;
+
+        slack.sendMessage("User "+c.getUsername()+" committed reservation "+c.getConnectionId());
 
         String error = "";
         Multigraph<String, DefaultEdge> graph = new Multigraph<>(DefaultEdge.class);
@@ -239,6 +250,14 @@ public class ConnService {
         // if it is ARCHIVED / DESIGN, nothing to do
         if (c.getPhase().equals(Phase.ARCHIVED) || c.getPhase().equals(Phase.DESIGN)) {
             return c.getPhase();
+        }
+        if (c.getPhase().equals(Phase.RESERVED)) {
+            if (c.getState().equals(State.ACTIVE)) {
+                slack.sendMessage("Cancelling active reservation: " + c.getConnectionId());
+
+            } else {
+                slack.sendMessage("Cancelling non-active reservation: " + c.getConnectionId());
+            }
         }
 
             // need to dismantle first, that part relies on Reserved components
