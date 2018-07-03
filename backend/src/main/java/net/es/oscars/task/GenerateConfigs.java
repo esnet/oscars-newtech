@@ -49,6 +49,7 @@ public class GenerateConfigs {
         for (Connection c : conns) {
             if (c.getPhase().equals(Phase.RESERVED)) {
                 if (rcRepo.findByConnectionId(c.getConnectionId()).isEmpty()) {
+                    log.info("connection +"+c.getConnectionId()+" needs router configs to be generated");
                     needConfigs.add(c);
                 }
             }

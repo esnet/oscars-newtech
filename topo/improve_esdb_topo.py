@@ -3,32 +3,54 @@
 
 import json
 import time
+import sys
+import argparse
 from operator import itemgetter
 from itertools import groupby
 
 VLAN_RANGE = '2-4094'
 
-DUAL_PORTS = [
-    'hous-cr5:10/1/3',
-    'srs-rt3:ge-0/1/0',
-    'nash-cr5:10/1/3',
-    'eqx-ash-cr5:10/1/1',
-    'lond-cr5:2/2/1',
-    'aofa-cr5:2/1/1'
-    'atla-cr5:10/1/3'
-]
+SAPS = 'input/saps.json'
+LAGS = 'input/lags.json'
+PORTS = 'input/graphite_ports.json'
+DUAL_PORTS = 'input/dual_ports.json'
+OUTPUT_DEVICES = 'output/devices.json'
+INPUT_DEVICES = 'input/devices.json'
 
 
 def main():
-    lags = json.load(open('input/lags.json', 'r'))
+    parser = argparse.ArgumentParser(description='OSCARS today topology importer')
+    parser.add_argument('-v', '--verbose', action='count', default=0,
+                        help="set verbosity level")
+    parser.add_argument('--input-devices', default=INPUT_DEVICES,
+                        help="Path to devices input file")
+    parser.add_argument('--output-devices', default=OUTPUT_DEVICES,
+                        help="Path to devices output file")
+    parser.add_argument('--lags', default=LAGS,
+                        help="Path to lags input file")
+    parser.add_argument('--dual_ports', default=DUAL_PORTS,
+                        help="Path to dual ports input file")
+    parser.add_argument('--ports', default=PORTS,
+                        help="Path to ports input file")
+    parser.add_argument('--saps', default=SAPS,
+                        help="Path to saps input file")
+    opts = parser.parse_args()
+
+    with open(opts.lags, 'r') as infile:
+        lags = json.load(infile)
 
     # retrieve from https://graphite.es.net/api/west/sap/
-    saps_in = json.load(open('input/saps.json', 'r'))
+    with open(opts.saps, 'r') as infile:
+        saps_in = json.load(infile)
 
     # from
     # wget -4 https://graphite.es.net/api/west/snmp/?interface_descr= > input/graphite_ports.json
     # note: slow operation
-    ports = json.load(open('input/graphite_ports.json', 'r'))
+    with open(opts.ports, 'r') as infile:
+        ports = json.load(infile)
+
+    with open(opts.dual_ports, 'r') as infile:
+        dual_ports = json.load(infile)
 
     saps_by_device = {}
     for sap_in in saps_in:
@@ -71,7 +93,7 @@ def main():
         else:
             print 'outdated: ' + device + ':' + endpoint
 
-    devices = json.load(open('output/devices.json', 'r'))
+    devices = json.load(open(opts.input_devices, 'r'))
     untagged = []
     for device_entry in devices:
         device = device_entry['urn']
@@ -148,13 +170,18 @@ def main():
                         new_reservable = subtracted_vlan(used_vlans, found_port_entry['reservableVlans'])
                         found_port_entry['reservableVlans'] = new_reservable
 
-                    elif ifce_urn in DUAL_PORTS:
+                    elif ifce_urn in dual_ports:
                         reservable_vlans = make_reservable_vlans(used_vlans)
                         found_port_entry['reservableVlans'] = reservable_vlans
                         found_port_entry['capabilities'].append('ETHERNET')
 
                 if not found:
+                    description = graphite_port['description']
+                    if 'oscars-l2circuit' in description:
+                        # Hacky hack hack
+                        used_vlans = []
                     reservable_vlans = make_reservable_vlans(used_vlans)
+
                     port = {
                         'reservableIngressBw': graphite_port['mbps'],
                         'reservableEgressBw': graphite_port['mbps'],
@@ -179,6 +206,8 @@ def main():
                     device_entry['ports'].remove(delete_entry)
 
         for lag in lags:
+            lag_urn = lag['device']+':'+lag['name']
+            lag_tags = []
             if lag['device'] == device:
                 ports_to_del = []
                 for port_entry in device_entry['ports']:
@@ -186,6 +215,12 @@ def main():
                         lag_port_urn = device + ':' + port_name
                         if port_entry['urn'] == lag_port_urn:
                             ports_to_del.append(port_entry)
+                            for tag in port_entry['tags']:
+                                lag_tags.append(tag)
+                        elif port_entry['urn'] == device+':BLANK':
+                            if port_entry not in ports_to_del:
+                                ports_to_del.append(port_entry)
+
                 for port_entry in ports_to_del:
                     device_entry['ports'].remove(port_entry)
                 if lag['enable']:
@@ -201,15 +236,28 @@ def main():
                     port_entry = {
                         'reservableIngressBw': lag['mbps'],
                         'reservableEgressBw': lag['mbps'],
-                        'urn': device + ':' + lag['name'],
+                        'urn': lag_urn,
                         'capabilities': [
                             'ETHERNET'
                         ],
+                        'tags': lag_tags,
                         'reservableVlans': reservable_vlans
                     }
                     device_entry['ports'].append(port_entry)
 
-    print json.dumps(devices, indent=2)
+    error_exit = False
+
+    for device_entry in devices:
+        for port_entry in device_entry['ports']:
+            if 'BLANK' in port_entry['urn']:
+                sys.stderr.write('BLANK port in device '+device_entry['urn']+' - check lags')
+                error_exit = True
+
+    with open(opts.output_devices, 'w') as outfile:
+        json.dump(devices, outfile, indent=2)
+
+    if error_exit:
+        sys.exit("Error encountered")
 
 
 def subtracted_vlan(to_subtract=None, previous_reservable_vlans=None):

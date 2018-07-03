@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -229,7 +230,12 @@ public class PSSAdapter {
         List<Command> commands = new ArrayList<>();
 
         for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
-            commands.add(paramsAdapter.command(CommandType.BUILD, conn, j));
+            if (!existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.BUILD)) {
+                commands.add(paramsAdapter.command(CommandType.BUILD, conn, j));
+            } else {
+                log.info("build commands already exist for "+conn.getConnectionId());
+            }
+
         }
 
         log.info("gathered "+commands.size()+" commands");
@@ -253,7 +259,11 @@ public class PSSAdapter {
         List<Command> commands = new ArrayList<>();
 
         for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
-            commands.add(paramsAdapter.command(CommandType.DISMANTLE, conn, j));
+            if (!existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.DISMANTLE)) {
+                commands.add(paramsAdapter.command(CommandType.DISMANTLE, conn, j));
+            } else {
+                log.info("dismantle commands already exist for "+conn.getConnectionId());
+            }
         }
 
         log.info("gathered "+commands.size()+" commands");
@@ -262,7 +272,17 @@ public class PSSAdapter {
         return commands;
     }
 
-    public List<Command> opCheckCommands(Connection conn) throws PSSException {
+    public boolean existing(String connId, String  deviceUrn, CommandType commandType) {
+        List<RouterCommands> existing = rcr.findByConnectionIdAndDeviceUrn(connId, deviceUrn);
+        for (RouterCommands rc: existing) {
+            if (rc.getType().equals(commandType)) {
+                return  true;
+            }
+        }
+        return false;
+    }
+
+    public List<Command>    opCheckCommands(Connection conn) throws PSSException {
         log.info("gathering op check commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
 
