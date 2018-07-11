@@ -120,13 +120,13 @@ public class NmlController {
             String nsiUrn = nsiService.nsiUrnFromInternal(p.getUrn());
 
             Element bdp = doc.createElementNS(nsBase, "nml-base:BidirectionalPort");
-            bdp.setAttribute("id", nsiUrn + ":+");
+            bdp.setAttribute("id", nsiUrn );
             rootElement.appendChild(bdp);
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdp.appendChild(pgi);
-            pgi.setAttribute("id", nsiUrn + ":+:in");
+            pgi.setAttribute("id", nsiUrn + ":in");
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgo.setAttribute("id", nsiUrn + ":+:out");
+            pgo.setAttribute("id", nsiUrn + ":out");
             bdp.appendChild(pgo);
         }
 
@@ -167,10 +167,10 @@ public class NmlController {
 
 
             Element pgsi = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgsi.setAttribute("id", nsiUrn+":+:in");
+            pgsi.setAttribute("id", nsiUrn+":in");
             ssIRel.appendChild(pgsi);
             Element pgso = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgso.setAttribute("id", nsiUrn+":+:out");
+            pgso.setAttribute("id", nsiUrn+":out");
             ssORel.appendChild(pgso);
         }
 
@@ -197,7 +197,7 @@ public class NmlController {
 
 
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgi.setAttribute("id", nsiUrn+":+:in");
+            pgi.setAttribute("id", nsiUrn+":in");
             pgi.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
             hip.appendChild(pgi);
 
@@ -222,7 +222,7 @@ public class NmlController {
 
 
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgo.setAttribute("id", nsiUrn+":+:out");
+            pgo.setAttribute("id", nsiUrn+":out");
             pgo.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
             hop.appendChild(pgo);
 

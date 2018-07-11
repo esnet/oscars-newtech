@@ -8,6 +8,7 @@ import net.es.oscars.resv.ent.EroHop;
 import net.es.oscars.resv.ent.VlanPipe;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.PcePath;
 import net.es.oscars.web.beans.PceResponse;
@@ -68,8 +69,23 @@ public class AllPathsPCE {
             metricCosts.put(adjcy, cost);
         }
 
+
         TopoUrn src = topoService.getTopoUrnMap().get(requestPipe.getA().getDeviceUrn());
         TopoUrn dst = topoService.getTopoUrnMap().get(requestPipe.getZ().getDeviceUrn());
+
+        if (src == null) {
+            throw new PCEException(requestPipe.getA().getDeviceUrn()+" not found in topology");
+        }
+        if (!src.getUrnType().equals(UrnType.DEVICE)) {
+            throw new PCEException(requestPipe.getA().getDeviceUrn()+" must point to a DEVICE but is "+src.getUrnType());
+        }
+
+        if (dst == null) {
+            throw new PCEException(requestPipe.getZ().getDeviceUrn()+" not found in topology");
+        }
+        if (!dst.getUrnType().equals(UrnType.DEVICE)) {
+            throw new PCEException(requestPipe.getZ().getDeviceUrn()+" must point to a DEVICE but is "+dst.getUrnType());
+        }
 
         // first, get the shortest path (by metric)
 

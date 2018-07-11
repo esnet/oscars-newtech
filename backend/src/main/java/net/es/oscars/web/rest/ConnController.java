@@ -83,12 +83,14 @@ public class ConnController {
 
         Optional<Connection> d = connRepo.findByConnectionId(connectionId);
         if (!d.isPresent()) {
-            log.info("making default connection from bits...");
-            c = connSvc.connectionFromBits(connectionId, username);
+            throw new NoSuchElementException("connection not found for id: "+connectionId);
 
         } else {
             log.info("found connection from connectionId...");
             c = d.get();
+
+
+
         }
         String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(c);
         log.debug("committing conn: \n"+pretty);
@@ -134,6 +136,8 @@ public class ConnController {
         Optional<Connection> c = connRepo.findByConnectionId(connectionId);
         if (!c.isPresent()) {
             throw new NoSuchElementException();
+        } else if (c.get().getPhase().equals(Phase.ARCHIVED)) {
+                throw new IllegalArgumentException("Cannot cancel ARCHIVED connection");
         } else {
             return connSvc.cancel(c.get());
         }

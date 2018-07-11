@@ -22,6 +22,9 @@ public class PceService {
 
 
     public PceResponse calculatePaths(PceRequest request) throws PCEException {
+        if (request.getA().equals(request.getZ())) {
+            throw new PCEException("invalid path request: A is the same as Z "+request.getA());
+        }
 
         VlanJunction aj = VlanJunction.builder()
                 .refId(request.getA())

@@ -24,7 +24,6 @@ public class VlanFixture {
                        @JsonProperty("egressBandwidth") @NonNull Integer egressBandwidth,
                        @JsonProperty("vlan") @NonNull Vlan vlan,
                        @JsonProperty("schedule") Schedule schedule,
-                       @JsonProperty("ethFixtureType") EthFixtureType ethFixtureType,
                        @JsonProperty("commandParams") Set<CommandParam> commandParams) {
         this.connectionId = connectionId;
         this.junction = junction;
@@ -33,7 +32,6 @@ public class VlanFixture {
         this.egressBandwidth = egressBandwidth;
         this.vlan = vlan;
         this.schedule = schedule;
-        this.ethFixtureType = ethFixtureType;
         this.commandParams = commandParams;
     }
 
@@ -73,8 +71,6 @@ public class VlanFixture {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Schedule schedule;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private EthFixtureType ethFixtureType;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

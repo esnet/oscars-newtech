@@ -3,21 +3,16 @@ package net.es.oscars.soap;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.requester.ConnectionRequesterPort;
-import net.es.nsi.lib.soap.gen.nsi_2_0.framework.headers.CommonHeaderType;
 import net.es.oscars.app.props.NsiProperties;
 import org.apache.cxf.ext.logging.LoggingFeature;
+import org.apache.cxf.ext.logging.LoggingInInterceptor;
+import org.apache.cxf.ext.logging.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.ws.Holder;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -58,6 +53,19 @@ public class ClientUtil {
         fb.setProperties(props);
 
         fb.setAddress(url);
+
+
+        // logging
+        LoggingInInterceptor loggingInInterceptor = new LoggingInInterceptor();
+        loggingInInterceptor.setPrettyLogging(true);
+        LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor();
+        loggingOutInterceptor.setPrettyLogging(true);
+
+        fb.getInInterceptors().add(loggingInInterceptor);
+        fb.getInFaultInterceptors().add(loggingInInterceptor);
+        fb.getOutInterceptors().add(loggingOutInterceptor);
+        fb.getOutFaultInterceptors().add(loggingOutInterceptor);
+
         fb.setServiceClass(ConnectionRequesterPort.class);
 
         return (ConnectionRequesterPort) fb.create();

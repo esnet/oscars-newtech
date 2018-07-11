@@ -43,7 +43,7 @@ public class Startup {
     }
 
     public boolean isInShutdown() {
-        return inShutdown;
+        return this.inShutdown;
     }
 
     public void setInShutdown(boolean inShutdown) {

@@ -54,6 +54,7 @@ public class TransitionStates {
 
         for (Connection c : conns) {
             if (c.getPhase().equals(Phase.HELD)) {
+
                 if (c.getHeld().getExpiration().isBefore(Instant.now())) {
                     log.info("will delete expired held connection: "+c.getConnectionId());
                     try {

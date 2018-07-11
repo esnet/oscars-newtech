@@ -287,5 +287,65 @@ public class ResvLibrary {
         return min;
     }
 
+    public static Map<String, Integer> decideIdentifier(Map<String, Set<IntRange>> requested,
+                                                        Map<String, Set<IntRange>> available) {
+
+        Map<String, Integer> result = new HashMap<>();
+
+        // first, try to find an identifier that is within all of the available / requested ranges
+        Map<String, Set<IntRange>> search = new HashMap<>();
+        for (String r : requested.keySet()) {
+            search.put(r+"-req", requested.get(r));
+            log.info("req: "+r+" : "+IntRange.asString(requested.get(r)));
+        }
+        for (String a : available.keySet()) {
+            search.put(a+"-avail", available.get(a));
+            log.info("avail: "+a+" : "+IntRange.asString(available.get(a)));
+        }
+
+        Integer least = IntRange.leastInAll(search);
+        if (least != null) {
+            for (String r : requested.keySet()) {
+                result.put(r, least);
+            }
+            log.info("identifier available for all: "+least);
+            return result;
+        }
+
+
+        // if we couldn't find contained in all, we now try to find one per each requested / avail pair
+        // make sure to not double-pick the same vlan for the same port
+        Map<String, Set<Integer>> pickedOnPorts = new HashMap<>();
+        for (String key : requested.keySet()) {
+            String[] reqParts = key.split("#");
+            String urn = reqParts[0];
+            Set<IntRange> req = requested.get(key);
+            Set<IntRange> avail = available.get(urn);
+            if (pickedOnPorts.containsKey(urn)) {
+                Set<Integer> picked = pickedOnPorts.get(urn);
+                // need to subtract already picked from available
+                for (Integer ident : picked) {
+                    avail = IntRange.subtractFromSet(avail, ident);
+                }
+            }
+
+
+            search = new HashMap<>();
+            search.put("req", req);
+            search.put("avail", avail);
+            least = IntRange.leastInAll(search);
+            log.info("identifier available / requested for "+key+": "+least);
+            if (pickedOnPorts.containsKey(urn)) {
+                pickedOnPorts.get(urn).add(least);
+            } else {
+                Set<Integer> idents = new HashSet<>();
+                idents.add(least);
+                pickedOnPorts.put(urn, idents);
+            }
+            result.put(key, least);
+        }
+        return result;
+
+    }
 
 }

@@ -10,6 +10,7 @@ import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.nsi.ent.NsiMapping;
 import net.es.oscars.nsi.svc.NsiService;
 import net.es.oscars.nsi.svc.NsiStateEngine;
+import net.es.oscars.resv.svc.ConnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,11 +20,17 @@ import javax.xml.ws.Holder;
 @Component
 public class NsiProvider implements ConnectionProviderPort {
 
+    private NsiService nsiService;
+    private NsiStateEngine stateEngine;
 
     @Autowired
-    private NsiService nsiService;
+    private ConnService connSvc;
+
     @Autowired
-    private NsiStateEngine stateEngine;
+    public NsiProvider(NsiService nsiService, NsiStateEngine stateEngine) {
+        this.nsiService = nsiService;
+        this.stateEngine = stateEngine;
+    }
 
     @Override
     public GenericAcknowledgmentType provision(GenericRequestType parameters, Holder<CommonHeaderType> header) throws ServiceException {
@@ -31,7 +38,7 @@ public class NsiProvider implements ConnectionProviderPort {
             nsiService.processHeader(header.value);
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.provision(header.value, mapping);
-        } catch (NsiException | InterruptedException ex) {
+        } catch (NsiException ex) {
             log.error(ex.getMessage(),ex);
             throw new ServiceException(ex.getMessage());
         }
@@ -46,7 +53,7 @@ public class NsiProvider implements ConnectionProviderPort {
             nsiService.processHeader(header.value);
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.commit(header.value, mapping);
-        } catch (NsiException | InterruptedException ex) {
+        } catch (NsiException ex) {
             log.error(ex.getMessage(),ex);
             throw new ServiceException(ex.getMessage());
         }
@@ -61,7 +68,7 @@ public class NsiProvider implements ConnectionProviderPort {
             nsiService.processHeader(header.value);
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.terminate(header.value, mapping);
-        } catch (NsiException | InterruptedException ex) {
+        } catch (NsiException ex) {
             log.error(ex.getMessage(),ex);
             throw new ServiceException(ex.getMessage());
         }
@@ -79,18 +86,19 @@ public class NsiProvider implements ConnectionProviderPort {
             log.error(ex.getMessage(),ex);
             throw new ServiceException(ex.getMessage());
         }
+        if (reserve.getConnectionId() == null) {
+            String connectionId = connSvc.generateConnectionId();
+            reserve.setConnectionId(connectionId);
 
+        }
         NsiMapping mapping = stateEngine.newMapping(
                 reserve.getConnectionId(),
                 reserve.getGlobalReservationId(),
-                header.value.getProtocolVersion());
-        try {
-            log.info("triggering async reserve");
-            nsiService.reserve(header.value, reserve, mapping);
-            log.info("returning reserve ack");
-        } catch (InterruptedException ex) {
-            log.error(ex.getMessage(), ex);
-        }
+                header.value.getRequesterNSA());
+
+        log.info("triggering async reserve");
+        nsiService.reserve(header.value, reserve, mapping);
+        log.info("returning reserve ack");
 
         ReserveResponseType rrt = new ReserveResponseType();
         rrt.setConnectionId(mapping.getNsiConnectionId());
@@ -117,7 +125,7 @@ public class NsiProvider implements ConnectionProviderPort {
             nsiService.processHeader(header.value);
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.release(header.value, mapping);
-        } catch (NsiException | InterruptedException ex) {
+        } catch (NsiException ex) {
             log.error(ex.getMessage(),ex);
             throw new ServiceException(ex.getMessage());
         }
@@ -132,7 +140,7 @@ public class NsiProvider implements ConnectionProviderPort {
             nsiService.processHeader(header.value);
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.abort(header.value, mapping);
-        } catch (NsiException | InterruptedException ex) {
+        } catch (NsiException ex) {
             log.error(ex.getMessage(),ex);
             throw new ServiceException(ex.getMessage());
         }
@@ -143,38 +151,44 @@ public class NsiProvider implements ConnectionProviderPort {
 
     /* queries */
 
+    // TODO
     @Override
     public GenericAcknowledgmentType queryNotification(QueryNotificationType queryNotification, Holder<CommonHeaderType> header) throws ServiceException {
         return null;
     }
 
+    // TODO
     @Override
     public QueryResultConfirmedType queryResultSync(QueryResultType queryResultSync, Holder<CommonHeaderType> header) throws Error {
         return null;
     }
 
 
+    // TODO
     @Override
     public QuerySummaryConfirmedType querySummarySync(QueryType querySummarySync, Holder<CommonHeaderType> header) throws Error {
         return null;
     }
 
+    // TODO
     @Override
     public GenericAcknowledgmentType queryRecursive(QueryType queryRecursive, Holder<CommonHeaderType> header) throws ServiceException {
         return null;
     }
 
-
+    // TODO
     @Override
     public GenericAcknowledgmentType querySummary(QueryType querySummary, Holder<CommonHeaderType> header) throws ServiceException {
         return null;
     }
 
+    // TODO
     @Override
     public GenericAcknowledgmentType queryResult(QueryResultType queryResult, Holder<CommonHeaderType> header) throws ServiceException {
         return null;
     }
 
+    // TODO
     @Override
     public QueryNotificationConfirmedType queryNotificationSync(QueryNotificationType queryNotificationSync, Holder<CommonHeaderType> header) throws Error {
         return null;

@@ -8,8 +8,8 @@ import net.es.oscars.resv.enums.BwDirection;
 import net.es.oscars.resv.svc.ResvLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;

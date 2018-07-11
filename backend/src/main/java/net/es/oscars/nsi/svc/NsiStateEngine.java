@@ -3,6 +3,7 @@ package net.es.oscars.nsi.svc;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.ServiceException;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.*;
 import net.es.oscars.app.exc.NsiException;
+import net.es.oscars.nsi.beans.NsiErrors;
 import net.es.oscars.nsi.beans.NsiEvent;
 import net.es.oscars.nsi.db.NsiMappingRepository;
 import net.es.oscars.nsi.ent.NsiMapping;
@@ -53,23 +54,23 @@ public class NsiStateEngine {
 
         if (event.equals(NsiEvent.RESV_START)) {
             if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_START)) {
-                throw new NsiException("Invalid reservation state " + mapping.getReservationState());
+                throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
             }
             mapping.setReservationState(ReservationStateEnumType.RESERVE_CHECKING);
 
         } else if (event.equals(NsiEvent.RESV_FL)) {
             if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_CHECKING)) {
-                throw new NsiException("Invalid reservation state " + mapping.getReservationState());
+                throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
             }
 
             mapping.setReservationState(ReservationStateEnumType.RESERVE_FAILED);
         } else if (event.equals(NsiEvent.RESV_CF)) {
             if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_CHECKING)) {
-                throw new NsiException("Invalid reservation state " + mapping.getReservationState());
+                throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
             }
             mapping.setReservationState(ReservationStateEnumType.RESERVE_HELD);
         } else {
-            throw new NsiException("Invalid event " + event);
+            throw new NsiException("Invalid event " + event, NsiErrors.TRANS_ERROR);
         }
         nsiRepo.save(mapping);
 
@@ -79,17 +80,17 @@ public class NsiStateEngine {
     public void provision(NsiEvent event, NsiMapping mapping) throws NsiException {
         if (event.equals(NsiEvent.PROV_START)) {
             if (!mapping.getProvisionState().equals(ProvisionStateEnumType.RELEASED)) {
-                throw new NsiException("Invalid prov state " + mapping.getProvisionState());
+                throw new NsiException("Invalid prov state " + mapping.getProvisionState(), NsiErrors.TRANS_ERROR);
             }
             mapping.setProvisionState(ProvisionStateEnumType.PROVISIONING);
         } else if (event.equals(NsiEvent.PROV_CF)) {
             if (!mapping.getProvisionState().equals(ProvisionStateEnumType.PROVISIONING)) {
-                throw new NsiException("Invalid prov state " + mapping.getProvisionState());
+                throw new NsiException("Invalid prov state " + mapping.getProvisionState(), NsiErrors.TRANS_ERROR);
             }
             mapping.setProvisionState(ProvisionStateEnumType.PROVISIONED);
 
         } else {
-            throw new NsiException("Invalid event " + event);
+            throw new NsiException("Invalid event " + event, NsiErrors.TRANS_ERROR);
         }
         nsiRepo.save(mapping);
 
@@ -98,17 +99,17 @@ public class NsiStateEngine {
     public void release(NsiEvent event, NsiMapping mapping) throws NsiException {
         if (event.equals(NsiEvent.REL_START)) {
             if (!mapping.getProvisionState().equals(ProvisionStateEnumType.PROVISIONED)) {
-                throw new NsiException("Invalid prov state " + mapping.getProvisionState());
+                throw new NsiException("Invalid prov state " + mapping.getProvisionState(), NsiErrors.TRANS_ERROR);
             }
             mapping.setProvisionState(ProvisionStateEnumType.RELEASING);
         } else if (event.equals(NsiEvent.REL_CF)) {
             if (!mapping.getProvisionState().equals(ProvisionStateEnumType.RELEASING)) {
-                throw new NsiException("Invalid prov state " + mapping.getProvisionState());
+                throw new NsiException("Invalid prov state " + mapping.getProvisionState(), NsiErrors.TRANS_ERROR);
             }
             mapping.setProvisionState(ProvisionStateEnumType.RELEASED);
 
         } else {
-            throw new NsiException("Invalid event " + event);
+            throw new NsiException("Invalid event " + event, NsiErrors.TRANS_ERROR);
         }
         nsiRepo.save(mapping);
 
@@ -118,7 +119,7 @@ public class NsiStateEngine {
     public void resvTimedOut(NsiMapping mapping) throws NsiException {
 
         if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_HELD)) {
-            throw new NsiException("Invalid reservation state " + mapping.getReservationState());
+            throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
         }
         mapping.setReservationState(ReservationStateEnumType.RESERVE_TIMEOUT);
         nsiRepo.save(mapping);
@@ -131,7 +132,7 @@ public class NsiStateEngine {
         allowedStates.add(LifecycleStateEnumType.FAILED);
 
         if (!allowedStates.contains(mapping.getLifecycleState())) {
-            throw new NsiException("Invalid lifecycle state " + mapping.getLifecycleState());
+            throw new NsiException("Invalid lifecycle state " + mapping.getLifecycleState(), NsiErrors.TRANS_ERROR);
         }
         mapping.setLifecycleState(LifecycleStateEnumType.TERMINATING);
         nsiRepo.save(mapping);
@@ -142,7 +143,7 @@ public class NsiStateEngine {
         allowedStates.add(LifecycleStateEnumType.TERMINATING);
 
         if (!allowedStates.contains(mapping.getLifecycleState())) {
-            throw new NsiException("Invalid lifecycle state " + mapping.getLifecycleState());
+            throw new NsiException("Invalid lifecycle state " + mapping.getLifecycleState(), NsiErrors.TRANS_ERROR);
         }
         mapping.setLifecycleState(LifecycleStateEnumType.TERMINATED);
 
@@ -155,7 +156,7 @@ public class NsiStateEngine {
         Set<LifecycleStateEnumType> allowedStates = new HashSet<>();
         allowedStates.add(LifecycleStateEnumType.CREATED);
         if (!allowedStates.contains(mapping.getLifecycleState())) {
-            throw new NsiException("Invalid lifecycle state " + mapping.getLifecycleState());
+            throw new NsiException("Invalid lifecycle state " + mapping.getLifecycleState(), NsiErrors.TRANS_ERROR);
         }
         mapping.setLifecycleState(LifecycleStateEnumType.PASSED_END_TIME);
         nsiRepo.save(mapping);
@@ -166,7 +167,7 @@ public class NsiStateEngine {
         Set<LifecycleStateEnumType> allowedStates = new HashSet<>();
         allowedStates.add(LifecycleStateEnumType.CREATED);
         if (!allowedStates.contains(mapping.getLifecycleState())) {
-            throw new NsiException("Invalid lifecycle state " + mapping.getLifecycleState());
+            throw new NsiException("Invalid lifecycle state " + mapping.getLifecycleState(), NsiErrors.TRANS_ERROR);
         }
         mapping.setLifecycleState(LifecycleStateEnumType.FAILED);
         nsiRepo.save(mapping);
@@ -176,7 +177,7 @@ public class NsiStateEngine {
     public void commit(NsiEvent event, NsiMapping mapping) throws NsiException {
 
         if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_HELD)) {
-            throw new NsiException("Invalid reservation state " + mapping.getReservationState());
+            throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
         }
 
         if (event.equals(NsiEvent.COMMIT_START)) {
@@ -186,7 +187,7 @@ public class NsiStateEngine {
         } else if (event.equals(NsiEvent.COMMIT_CF)) {
             mapping.setReservationState(ReservationStateEnumType.RESERVE_START);
         } else {
-            throw new NsiException("Invalid event " + event);
+            throw new NsiException("Invalid event " + event, NsiErrors.TRANS_ERROR);
         }
         nsiRepo.save(mapping);
     }
@@ -195,18 +196,18 @@ public class NsiStateEngine {
 
         if (event.equals(NsiEvent.ABORT_START)) {
             if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_HELD)) {
-                throw new NsiException("Invalid reservation state " + mapping.getReservationState());
+                throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
             }
             mapping.setReservationState(ReservationStateEnumType.RESERVE_ABORTING);
 
         } else if (event.equals(NsiEvent.ABORT_CF)) {
             if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_ABORTING)) {
-                throw new NsiException("Invalid reservation state " + mapping.getReservationState());
+                throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
             }
             mapping.setReservationState(ReservationStateEnumType.RESERVE_START);
 
         } else {
-            throw new NsiException("Invalid event " + event);
+            throw new NsiException("Invalid event " + event, NsiErrors.TRANS_ERROR);
         }
         nsiRepo.save(mapping);
 
