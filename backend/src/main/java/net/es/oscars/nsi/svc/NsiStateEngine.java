@@ -176,15 +176,21 @@ public class NsiStateEngine {
 
     public void commit(NsiEvent event, NsiMapping mapping) throws NsiException {
 
-        if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_HELD)) {
-            throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
-        }
 
         if (event.equals(NsiEvent.COMMIT_START)) {
+            if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_HELD)) {
+                throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
+            }
             mapping.setReservationState(ReservationStateEnumType.RESERVE_COMMITTING);
         } else if (event.equals(NsiEvent.COMMIT_FL)) {
+            if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_COMMITTING)) {
+                throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
+            }
             mapping.setReservationState(ReservationStateEnumType.RESERVE_START);
         } else if (event.equals(NsiEvent.COMMIT_CF)) {
+            if (!mapping.getReservationState().equals(ReservationStateEnumType.RESERVE_COMMITTING)) {
+                throw new NsiException("Invalid reservation state " + mapping.getReservationState(), NsiErrors.TRANS_ERROR);
+            }
             mapping.setReservationState(ReservationStateEnumType.RESERVE_START);
         } else {
             throw new NsiException("Invalid event " + event, NsiErrors.TRANS_ERROR);

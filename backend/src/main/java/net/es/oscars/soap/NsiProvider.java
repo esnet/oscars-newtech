@@ -7,6 +7,7 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.connection.provider.ConnectionProviderPor
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.*;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.headers.CommonHeaderType;
 import net.es.oscars.app.exc.NsiException;
+import net.es.oscars.nsi.beans.NsiErrors;
 import net.es.oscars.nsi.ent.NsiMapping;
 import net.es.oscars.nsi.svc.NsiService;
 import net.es.oscars.nsi.svc.NsiStateEngine;
@@ -39,7 +40,7 @@ public class NsiProvider implements ConnectionProviderPort {
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.provision(header.value, mapping);
         } catch (NsiException ex) {
-            log.error(ex.getMessage(),ex);
+            log.error(ex.getMessage(), ex);
             throw new ServiceException(ex.getMessage());
         }
 
@@ -54,7 +55,7 @@ public class NsiProvider implements ConnectionProviderPort {
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.commit(header.value, mapping);
         } catch (NsiException ex) {
-            log.error(ex.getMessage(),ex);
+            log.error(ex.getMessage(), ex);
             throw new ServiceException(ex.getMessage());
         }
 
@@ -69,7 +70,7 @@ public class NsiProvider implements ConnectionProviderPort {
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.terminate(header.value, mapping);
         } catch (NsiException ex) {
-            log.error(ex.getMessage(),ex);
+            log.error(ex.getMessage(), ex);
             throw new ServiceException(ex.getMessage());
         }
 
@@ -83,7 +84,7 @@ public class NsiProvider implements ConnectionProviderPort {
         try {
             nsiService.processHeader(header.value);
         } catch (NsiException ex) {
-            log.error(ex.getMessage(),ex);
+            log.error(ex.getMessage(), ex);
             throw new ServiceException(ex.getMessage());
         }
         if (reserve.getConnectionId() == null) {
@@ -126,7 +127,7 @@ public class NsiProvider implements ConnectionProviderPort {
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.release(header.value, mapping);
         } catch (NsiException ex) {
-            log.error(ex.getMessage(),ex);
+            log.error(ex.getMessage(), ex);
             throw new ServiceException(ex.getMessage());
         }
 
@@ -141,7 +142,7 @@ public class NsiProvider implements ConnectionProviderPort {
             NsiMapping mapping = nsiService.getMapping(parameters.getConnectionId());
             nsiService.abort(header.value, mapping);
         } catch (NsiException ex) {
-            log.error(ex.getMessage(),ex);
+            log.error(ex.getMessage(), ex);
             throw new ServiceException(ex.getMessage());
         }
 
@@ -151,47 +152,76 @@ public class NsiProvider implements ConnectionProviderPort {
 
     /* queries */
 
-    // TODO
+
     @Override
-    public GenericAcknowledgmentType queryNotification(QueryNotificationType queryNotification, Holder<CommonHeaderType> header) throws ServiceException {
-        return null;
+    public QuerySummaryConfirmedType querySummarySync(QueryType querySummary,
+                                                      Holder<CommonHeaderType> header) throws Error {
+        try {
+            nsiService.processHeader(header.value);
+        } catch (NsiException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new Error(ex.getMessage());
+        }
+
+        log.info("starting sync query");
+        try {
+            QuerySummaryConfirmedType qsct = nsiService.query(querySummary);
+            nsiService.makeResponseHeader(header.value);
+            return qsct;
+        } catch (NsiException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new Error(ex.getMessage());
+        }
+
     }
 
-    // TODO
     @Override
-    public QueryResultConfirmedType queryResultSync(QueryResultType queryResultSync, Holder<CommonHeaderType> header) throws Error {
-        return null;
+    public GenericAcknowledgmentType querySummary(QueryType querySummary,
+                                                  Holder<CommonHeaderType> header) throws ServiceException {
+        try {
+            nsiService.processHeader(header.value);
+        } catch (NsiException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new ServiceException(ex.getMessage());
+        }
+        log.info("starting async query");
+        nsiService.queryAsync(header.value, querySummary);
+
+
+        nsiService.makeResponseHeader(header.value);
+        return new GenericAcknowledgmentType();
     }
 
 
-    // TODO
     @Override
-    public QuerySummaryConfirmedType querySummarySync(QueryType querySummarySync, Holder<CommonHeaderType> header) throws Error {
-        return null;
+    public GenericAcknowledgmentType queryNotification(QueryNotificationType queryNotification,
+                                                       Holder<CommonHeaderType> header) throws ServiceException {
+        throw new ServiceException(NsiErrors.UNIMPLEMENTED + " - not implemented");
     }
 
-    // TODO
     @Override
-    public GenericAcknowledgmentType queryRecursive(QueryType queryRecursive, Holder<CommonHeaderType> header) throws ServiceException {
-        return null;
+    public QueryResultConfirmedType queryResultSync(QueryResultType queryResultSync,
+                                                    Holder<CommonHeaderType> header) throws Error {
+        throw new Error(NsiErrors.UNIMPLEMENTED + " - not implemented");
     }
 
-    // TODO
     @Override
-    public GenericAcknowledgmentType querySummary(QueryType querySummary, Holder<CommonHeaderType> header) throws ServiceException {
-        return null;
+    public GenericAcknowledgmentType queryResult(QueryResultType queryResult,
+                                                 Holder<CommonHeaderType> header) throws ServiceException {
+        throw new ServiceException(NsiErrors.UNIMPLEMENTED + " - not implemented");
     }
 
-    // TODO
     @Override
-    public GenericAcknowledgmentType queryResult(QueryResultType queryResult, Holder<CommonHeaderType> header) throws ServiceException {
-        return null;
+    public GenericAcknowledgmentType queryRecursive(QueryType queryRecursive,
+                                                    Holder<CommonHeaderType> header) throws ServiceException {
+        throw new ServiceException(NsiErrors.UNIMPLEMENTED + " - not implemented");
     }
 
-    // TODO
     @Override
-    public QueryNotificationConfirmedType queryNotificationSync(QueryNotificationType queryNotificationSync, Holder<CommonHeaderType> header) throws Error {
-        return null;
+    public QueryNotificationConfirmedType queryNotificationSync(QueryNotificationType queryNotificationSync,
+                                                                Holder<CommonHeaderType> header) throws Error {
+        throw new Error(NsiErrors.UNIMPLEMENTED + " - not implemented");
+
     }
 
 }

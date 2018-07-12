@@ -59,6 +59,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
+import javax.xml.ws.WebServiceException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -132,25 +133,29 @@ public class NsiService {
                 NsiHoldResult result = this.submitHold(rt, mapping, header);
                 if (result.getSuccess()) {
                     log.info("successful reserve, sending confirm");
-                    this.reserveConfirmCallback(mapping, header);
                     nsiStateEngine.reserve(NsiEvent.RESV_CF, mapping);
+                    try {
+                        this.reserveConfirmCallback(mapping, header);
+                    } catch (WebServiceException | ServiceException cex) {
+                        log.error("reserve succeeded: then callback failed", cex);
+                    }
 
                 } else {
                     log.error("error reserving");
-                    this.errCallback(NsiEvent.RESV_FL, mapping,
-                            result.getErrorMessage(),
-                            result.getErrorCode().toString(), header.getCorrelationId());
                     nsiStateEngine.reserve(NsiEvent.RESV_FL, mapping);
-
+                    try {
+                        this.errCallback(NsiEvent.RESV_FL, mapping,
+                                result.getErrorMessage(),
+                                result.getErrorCode().toString(), header.getCorrelationId());
+                    } catch (WebServiceException | ServiceException cex) {
+                        log.error("reserve failed: then callback failed", cex);
+                    }
                 }
             } catch (RuntimeException ex) {
                 log.error("serious error", ex);
 
             } catch (NsiException ex) {
                 log.error("internal error", ex);
-
-            } catch (ServiceException ex) {
-                log.error("resv callback failed", ex);
 
             }
             log.info("ending reserve");
@@ -169,8 +174,14 @@ public class NsiService {
                 }
                 connSvc.commit(c);
                 nsiStateEngine.commit(NsiEvent.COMMIT_CF, mapping);
+
                 log.info("completed commit");
-                this.okCallback(NsiEvent.COMMIT_CF, mapping, header);
+                try {
+                    this.okCallback(NsiEvent.COMMIT_CF, mapping, header);
+                    log.info("sent commit confirmed callback");
+                } catch (WebServiceException | ServiceException ex) {
+                    log.error("commit confirmed callback failed", ex);
+                }
             } catch (PSSException | PCEException | NsiException ex) {
                 log.error("failed commit");
                 log.error(ex.getMessage(), ex);
@@ -182,11 +193,11 @@ public class NsiService {
                 } catch (NsiException nex) {
                     log.error("commit failed: then internal error", nex);
 
-                } catch (ServiceException cex) {
+                } catch (WebServiceException | ServiceException cex) {
                     log.error("commit failed: then callback failed", cex);
                 }
-            } catch (ServiceException ex) {
-                log.error("commit confirm: then callback failed", ex);
+            } catch (RuntimeException ex) {
+                log.error("serious error", ex);
             }
             log.info("ending commit");
             return null;
@@ -206,11 +217,16 @@ public class NsiService {
                 connSvc.cancel(c);
                 log.info("completed abort");
                 nsiStateEngine.abort(NsiEvent.ABORT_CF, mapping);
-                this.okCallback(NsiEvent.ABORT_CF, mapping, header);
+                try {
+                    this.okCallback(NsiEvent.ABORT_CF, mapping, header);
+                } catch (WebServiceException | ServiceException ex) {
+                    log.error("abort confirmed callback failed", ex);
+                }
+
             } catch (NsiException ex) {
                 log.error("internal error", ex);
-            } catch (ServiceException ex) {
-                log.error("abort confirm callback failed", ex);
+            } catch (RuntimeException ex) {
+                log.error("serious error", ex);
             }
             return null;
         });
@@ -221,10 +237,16 @@ public class NsiService {
         Executors.newCachedThreadPool().submit(() -> {
             log.info("starting provision task");
             try {
-                try {
-                    Connection c = this.getOscarsConnection(mapping);
+                Connection c = this.getOscarsConnection(mapping);
+                if (!c.getPhase().equals(Phase.RESERVED)) {
+                    log.error("cannot provision unless RESERVED");
+                    return null;
+                }
 
-                    nsiStateEngine.provision(NsiEvent.PROV_START, mapping);
+                nsiStateEngine.provision(NsiEvent.PROV_START, mapping);
+                if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
+                    c.setMode(BuildMode.AUTOMATIC);
+                } else {
                     try {
                         c.setState(pssAdapter.build(c));
                     } catch (PSSException ex) {
@@ -232,18 +254,24 @@ public class NsiService {
                         c.setState(State.FAILED);
                         log.error(ex.getMessage(), ex);
                     }
-                    connRepo.save(c);
-
-                    nsiStateEngine.provision(NsiEvent.PROV_CF, mapping);
-                    log.info("completed provision");
-
-                } catch (NsiException ex) {
-                    log.error("provision internal error", ex);
                 }
-                this.okCallback(NsiEvent.PROV_CF, mapping, header);
-                log.info("completed provision confirm callback");
-            } catch (ServiceException ex) {
-                log.error("provision confirm callback failed", ex);
+                connRepo.save(c);
+
+                nsiStateEngine.provision(NsiEvent.PROV_CF, mapping);
+
+                try {
+                    this.okCallback(NsiEvent.PROV_CF, mapping, header);
+                    log.info("completed provision confirm callback");
+                } catch (WebServiceException | ServiceException ex) {
+                    log.error("provision confirmed callback failed", ex);
+                }
+
+                log.info("completed provision");
+            } catch (RuntimeException ex) {
+                log.error("serious error", ex);
+
+            } catch (NsiException ex) {
+                log.error("provision internal error", ex);
             }
             return null;
         });
@@ -254,10 +282,17 @@ public class NsiService {
         Executors.newCachedThreadPool().submit(() -> {
             log.info("starting release task");
             try {
-                try {
-                    Connection c = this.getOscarsConnection(mapping);
+                Connection c = this.getOscarsConnection(mapping);
+                if (!c.getPhase().equals(Phase.RESERVED)) {
+                    log.error("cannot provision unless RESERVED");
+                    return null;
+                }
 
-                    nsiStateEngine.release(NsiEvent.REL_START, mapping);
+                nsiStateEngine.release(NsiEvent.REL_START, mapping);
+
+                if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
+                    c.setMode(BuildMode.MANUAL);
+                } else {
                     try {
                         c.setState(pssAdapter.dismantle(c));
                     } catch (PSSException ex) {
@@ -265,18 +300,24 @@ public class NsiService {
                         c.setState(State.FAILED);
                         log.error(ex.getMessage(), ex);
                     }
-                    connRepo.save(c);
-
-                    nsiStateEngine.release(NsiEvent.REL_CF, mapping);
-                    log.info("completed release");
-
-                } catch (NsiException ex) {
-                    log.error("release internal error", ex);
                 }
-                this.okCallback(NsiEvent.REL_CF, mapping, header);
-                log.info("completed release confirm callback");
-            } catch (ServiceException ex) {
-                log.error("release confirm callback failed", ex);
+                connRepo.save(c);
+
+                nsiStateEngine.release(NsiEvent.REL_CF, mapping);
+
+                try {
+                    this.okCallback(NsiEvent.REL_CF, mapping, header);
+                } catch (WebServiceException | ServiceException ex) {
+                    log.error("release confirmed callback failed", ex);
+                }
+                log.info("completed release");
+
+
+            } catch (RuntimeException ex) {
+                log.error("serious error", ex);
+
+            } catch (NsiException ex) {
+                log.error("release internal error", ex);
             }
             return null;
         });
@@ -295,13 +336,18 @@ public class NsiService {
                 nsiStateEngine.termStart(mapping);
                 log.info("completed terminate");
                 nsiStateEngine.termConfirm(mapping);
-                log.info("sent term cf callback");
-                this.okCallback(NsiEvent.TERM_CF, mapping, header);
+                try {
+                    this.okCallback(NsiEvent.TERM_CF, mapping, header);
+                    log.info("sent term cf callback");
+                } catch (WebServiceException | ServiceException ex) {
+                    log.error("term confirmed callback failed", ex);
+                }
+            } catch (RuntimeException ex) {
+                log.error("serious error", ex);
+
             } catch (NsiException ex) {
                 log.error("failed terminate, internal error");
                 log.error(ex.getMessage(), ex);
-            } catch (ServiceException ex) {
-                log.error("term confirm callback failed", ex);
             }
 
             return null;
@@ -325,6 +371,9 @@ public class NsiService {
             } catch (NsiException ex) {
                 log.error("failed terminate, internal error");
                 log.error(ex.getMessage(), ex);
+            } catch (RuntimeException ex) {
+                log.error("serious error", ex);
+
             } catch (ServiceException ex) {
                 log.error("term confirm callback failed", ex);
             }
@@ -332,6 +381,96 @@ public class NsiService {
             return null;
         });
 
+    }
+
+    public void queryAsync(CommonHeaderType header, QueryType query) {
+        Executors.newCachedThreadPool().submit(() -> {
+            try {
+                log.info("starting async query task");
+                String nsaId = header.getRequesterNSA();
+                String corrId = header.getCorrelationId();
+                if (!this.getRequesterNsa(nsaId).isPresent()) {
+                    throw new NsiException("Unknown requester nsa id " + nsaId, NsiErrors.SEC_ERROR);
+                }
+
+                Holder<CommonHeaderType> outHeader = this.makeClientHeader(nsaId, corrId);
+                NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
+
+                ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA.getCallbackUrl());
+                QuerySummaryConfirmedType qsct = this.query(query);
+                try {
+                    port.querySummaryConfirmed(qsct, outHeader);
+
+                } catch (ServiceException | WebServiceException ex) {
+                    log.error("could not perform query callback");
+                    log.error(ex.getMessage(), ex);
+                }
+            } catch (RuntimeException ex) {
+                log.error(ex.getMessage(), ex);
+            }
+
+            return null;
+        });
+    }
+
+    @Transactional
+    public QuerySummaryConfirmedType query(QueryType query) throws NsiException {
+        QuerySummaryConfirmedType qsct = new QuerySummaryConfirmedType();
+        try {
+            ZonedDateTime zd = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
+            GregorianCalendar c = GregorianCalendar.from(zd);
+            XMLGregorianCalendar xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+
+            qsct.setLastModified(xgc);
+        } catch (DatatypeConfigurationException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new NsiException(ex.getMessage(), NsiErrors.NRM_ERROR);
+        }
+        if (query.getIfModifiedSince() != null ) {
+            throw new NsiException("IMS not supported yet", NsiErrors.UNIMPLEMENTED);
+        }
+
+        Set<NsiMapping> mappings = new HashSet<>();
+        for (String connId : query.getConnectionId()) {
+            mappings.addAll(nsiRepo.findByNsiConnectionId(connId));
+        }
+        for (String gri : query.getGlobalReservationId()) {
+            mappings.addAll(nsiRepo.findByNsiGri(gri));
+        }
+        Long resultId = 0L;
+        for (NsiMapping mapping : mappings) {
+            QuerySummaryResultType qsrt = this.toQSRT(mapping);
+            qsrt.setResultId(resultId);
+            qsct.getReservation().add(qsrt);
+            resultId++;
+        }
+        return qsct;
+    }
+
+    public QuerySummaryResultType toQSRT(NsiMapping mapping) throws NsiException {
+        Connection c = this.getOscarsConnection(mapping);
+        QuerySummaryResultType qsrt = new QuerySummaryResultType();
+        qsrt.setConnectionId(mapping.getNsiConnectionId());
+
+        QuerySummaryResultCriteriaType qsrct = new QuerySummaryResultCriteriaType();
+        qsrct.setServiceType(SERVICE_TYPE);
+        qsrct.setVersion(0);
+
+        P2PServiceBaseType p2p = makeP2P(c);
+
+        net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
+                = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
+
+        qsrct.getAny().add(p2pof.createP2Ps(p2p));
+        qsrt.getCriteria().add(qsrct);
+
+        qsrt.setDescription(c.getDescription());
+        qsrt.setGlobalReservationId(mapping.getNsiGri());
+        qsrt.setRequesterNSA(mapping.getNsaId());
+        ConnectionStatesType cst = this.makeConnectionStates(mapping, c);
+        qsrt.setConnectionStates(cst);
+        qsrt.setNotificationId(0L);
+        return qsrt;
     }
 
     /* triggered events from TransitionStates periodic tasks */
@@ -494,6 +633,8 @@ public class NsiService {
                 Pipe p = Pipe.builder()
                         .mbps(mbps)
                         .ero(ero)
+                        .a(junctions.get(0).getDevice())
+                        .z(junctions.get(1).getDevice())
                         .pceMode(PceMode.BEST)
                         .build();
                 List<Pipe> result = new ArrayList<>();
@@ -567,16 +708,16 @@ public class NsiService {
         }
 
         Map<String, Set<IntRange>> requestedVlans = new HashMap<>();
-        requestedVlans.put(a_urn.getPort().getUrn()+"#A", aVlansSet);
-        requestedVlans.put(z_urn.getPort().getUrn()+"#Z", zVlansSet);
+        requestedVlans.put(a_urn.getPort().getUrn() + "#A", aVlansSet);
+        requestedVlans.put(z_urn.getPort().getUrn() + "#Z", zVlansSet);
 
         Map<String, Set<IntRange>> availVlans = new HashMap<>();
         availVlans.put(a_urn.getPort().getUrn(), aAvail.getVlanRanges());
         availVlans.put(z_urn.getPort().getUrn(), zAvail.getVlanRanges());
 
         Map<String, Integer> vlans = ResvLibrary.decideIdentifier(requestedVlans, availVlans);
-        Integer aVlanId = vlans.get(a_urn.getPort().getUrn()+"#A");
-        Integer zVlanId = vlans.get(z_urn.getPort().getUrn()+"#Z");
+        Integer aVlanId = vlans.get(a_urn.getPort().getUrn() + "#A");
+        Integer zVlanId = vlans.get(z_urn.getPort().getUrn() + "#Z");
 
         if (aVlanId == null) {
             throw new NsiException("vlan(s) unavailable for " + src, NsiErrors.UNAVAIL_ERROR);
@@ -634,14 +775,14 @@ public class NsiService {
                         Integer vlan = Integer.valueOf(parts[0]);
                         vlanRange.setFloor(vlan);
                         vlanRange.setCeiling(vlan);
-                        log.info("vlan range for "+stp+" : "+vlan);
+                        log.info("vlan range for " + stp + " : " + vlan);
                         return vlanRange;
                     } else if (parts.length == 2) {
                         Integer f = Integer.valueOf(parts[0]);
                         Integer c = Integer.valueOf(parts[1]);
                         vlanRange.setFloor(f);
                         vlanRange.setCeiling(c);
-                        log.info("vlan range for "+stp+" : "+f+" - "+c);
+                        log.info("vlan range for " + stp + " : " + f + " - " + c);
                         return vlanRange;
 
                     }
@@ -688,7 +829,6 @@ public class NsiService {
         NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
 
         ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA.getCallbackUrl());
-        Client client = ClientProxy.getClient(port);
 
         GenericConfirmedType gct = new GenericConfirmedType();
         gct.setConnectionId(mapping.getNsiConnectionId());
@@ -711,48 +851,10 @@ public class NsiService {
         rct.setCriteria(rcct);
         rcct.setServiceType(SERVICE_TYPE);
         rcct.setVersion(0);
+
+        P2PServiceBaseType p2p = makeP2P(c);
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
                 = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
-
-        P2PServiceBaseType p2p = new P2PServiceBaseType();
-
-        Components cmp = c.getHeld().getCmp();
-        VlanFixture a = cmp.getFixtures().get(0);
-        VlanFixture z = cmp.getFixtures().get(1);
-        String srcStp = this.nsiUrnFromInternal(a.getPortUrn()) + "?vlan=" + a.getVlan().getVlanId();
-        String dstStp = this.nsiUrnFromInternal(z.getPortUrn()) + "?vlan=" + z.getVlan().getVlanId();
-        List<String> strEro = new ArrayList<>();
-        if (cmp.getPipes() == null || cmp.getPipes().isEmpty()) {
-            strEro.add(srcStp);
-            strEro.add(dstStp);
-        } else {
-            VlanPipe p = cmp.getPipes().get(0);
-            strEro.add(srcStp);
-
-            for (EroHop hop : p.getAzERO()) {
-                strEro.add(this.nsiUrnFromInternal(hop.getUrn()));
-            }
-            strEro.add(dstStp);
-        }
-
-        StpListType ero = new StpListType();
-        for (int i = 0; i < strEro.size(); i++) {
-
-            OrderedStpType ostp = new OrderedStpType();
-            ostp.setStp(strEro.get(i));
-            ostp.setOrder(i);
-
-            ero.getOrderedSTP().add(ostp);
-
-        }
-
-        p2p.setSourceSTP(srcStp);
-        p2p.setDestSTP(dstStp);
-        p2p.setCapacity(a.getIngressBandwidth() * 1000000L);
-        p2p.setEro(ero);
-        p2p.setDirectionality(DirectionalityType.BIDIRECTIONAL);
-        p2p.setSymmetricPath(true);
-
         rcct.getAny().add(p2pof.createP2Ps(p2p));
 
         try {
@@ -783,7 +885,6 @@ public class NsiService {
         String corrId = inHeader.getCorrelationId();
 
         Holder<CommonHeaderType> outHeader = this.makeClientHeader(nsaId, corrId);
-        Connection c = this.getOscarsConnection(mapping);
         if (event.equals(NsiEvent.ABORT_CF)) {
             port.reserveAbortConfirmed(gct, outHeader);
 
@@ -797,6 +898,50 @@ public class NsiService {
             port.releaseConfirmed(gct, outHeader);
         }
 
+    }
+
+    public P2PServiceBaseType makeP2P(Connection c) {
+
+        P2PServiceBaseType p2p = new P2PServiceBaseType();
+
+        Components cmp = c.getHeld().getCmp();
+        VlanFixture a = cmp.getFixtures().get(0);
+        VlanFixture z = cmp.getFixtures().get(1);
+        String srcStp = this.nsiUrnFromInternal(a.getPortUrn()) + "?vlan=" + a.getVlan().getVlanId();
+        String dstStp = this.nsiUrnFromInternal(z.getPortUrn()) + "?vlan=" + z.getVlan().getVlanId();
+        List<String> strEro = new ArrayList<>();
+        if (cmp.getPipes() == null || cmp.getPipes().isEmpty()) {
+            strEro.add(srcStp);
+            strEro.add(dstStp);
+        } else {
+            VlanPipe p = cmp.getPipes().get(0);
+            strEro.add(srcStp);
+            for (int i = 0; i < p.getAzERO().size(); i++) {
+                // skip devices in NSI ERO
+                if (i % 3 != 0) {
+                    strEro.add(this.nsiUrnFromInternal(p.getAzERO().get(i).getUrn()));
+                }
+            }
+            strEro.add(dstStp);
+        }
+
+        StpListType ero = new StpListType();
+        for (int i = 0; i < strEro.size(); i++) {
+            OrderedStpType ostp = new OrderedStpType();
+            ostp.setStp(strEro.get(i));
+            ostp.setOrder(i);
+
+            ero.getOrderedSTP().add(ostp);
+
+        }
+
+        p2p.setSourceSTP(srcStp);
+        p2p.setDestSTP(dstStp);
+        p2p.setCapacity(a.getIngressBandwidth() * 1000000L);
+        p2p.setEro(ero);
+        p2p.setDirectionality(DirectionalityType.BIDIRECTIONAL);
+        p2p.setSymmetricPath(true);
+        return p2p;
     }
 
     public void errCallback(NsiEvent event, NsiMapping mapping, String error, String errNum, String corrId)
@@ -922,7 +1067,7 @@ public class NsiService {
 
         Instant e = sch.getEnding();
         ZonedDateTime zde = ZonedDateTime.ofInstant(e, ZoneId.systemDefault());
-        GregorianCalendar ce = GregorianCalendar.from(zde   );
+        GregorianCalendar ce = GregorianCalendar.from(zde);
 
         try {
             XMLGregorianCalendar xgb = DatatypeFactory.newInstance().newXMLGregorianCalendar(cb);
@@ -942,15 +1087,6 @@ public class NsiService {
             throw new NsiException("internal error", NsiErrors.NRM_ERROR);
         }
 
-    }
-
-    public void getAttrs(ReserveType reserve, Holder<CommonHeaderType> header) {
-        header.value.getCorrelationId();
-        header.value.getReplyTo();
-        header.value.getProviderNSA();
-
-        String connId = reserve.getConnectionId();
-        String corrId = header.value.getCorrelationId();
     }
 
 
@@ -1037,7 +1173,7 @@ public class NsiService {
     public void processHeader(CommonHeaderType inHeader) throws NsiException {
         String error = "";
         boolean hasError = false;
-        if (inHeader.getProviderNSA().equals(providerNsa)) {
+        if (!inHeader.getProviderNSA().equals(providerNsa)) {
             hasError = true;
             error += "provider nsa does not match\n";
         }

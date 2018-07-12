@@ -56,6 +56,7 @@ public class ClientUtil {
 
 
         // logging
+        /*
         LoggingInInterceptor loggingInInterceptor = new LoggingInInterceptor();
         loggingInInterceptor.setPrettyLogging(true);
         LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor();
@@ -65,6 +66,7 @@ public class ClientUtil {
         fb.getInFaultInterceptors().add(loggingInInterceptor);
         fb.getOutInterceptors().add(loggingOutInterceptor);
         fb.getOutFaultInterceptors().add(loggingOutInterceptor);
+        */
 
         fb.setServiceClass(ConnectionRequesterPort.class);
 
@@ -82,7 +84,7 @@ public class ClientUtil {
 
         // TODO: fix these
 
-        System.setProperty("javax.net.ssl.trustStore", "DoNotUsecacerts");
+        // System.setProperty("javax.net.ssl.trustStore", "DoNotUsecacerts");
 
 
     }

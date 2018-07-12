@@ -208,9 +208,7 @@ public class ConnService {
 
         this.archiveFromReserved(c);
 
-        Held held = c.getHeld();
         c.setHeld(null);
-        heldRepo.delete(held);
         connRepo.save(c);
 
         // TODO: set the user
