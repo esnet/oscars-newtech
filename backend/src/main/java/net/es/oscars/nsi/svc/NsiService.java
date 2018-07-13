@@ -46,9 +46,6 @@ import net.es.oscars.web.simple.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.cxf.endpoint.Client;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.transport.http.HTTPConduit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -396,7 +393,7 @@ public class NsiService {
                 Holder<CommonHeaderType> outHeader = this.makeClientHeader(nsaId, corrId);
                 NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
 
-                ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA.getCallbackUrl());
+                ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA);
                 QuerySummaryConfirmedType qsct = this.query(query);
                 try {
                     port.querySummaryConfirmed(qsct, outHeader);
@@ -828,7 +825,7 @@ public class NsiService {
         }
         NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
 
-        ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA.getCallbackUrl());
+        ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA);
 
         GenericConfirmedType gct = new GenericConfirmedType();
         gct.setConnectionId(mapping.getNsiConnectionId());
@@ -876,8 +873,7 @@ public class NsiService {
         }
         NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
 
-        ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA.getCallbackUrl());
-        Client client = ClientProxy.getClient(port);
+        ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA);
 
         GenericConfirmedType gct = new GenericConfirmedType();
         gct.setConnectionId(mapping.getNsiConnectionId());
@@ -899,6 +895,7 @@ public class NsiService {
         }
 
     }
+
 
     public P2PServiceBaseType makeP2P(Connection c) {
 
@@ -952,10 +949,7 @@ public class NsiService {
         }
         NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
 
-        ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA.getCallbackUrl());
-        Client client = ClientProxy.getClient(port);
-
-        HTTPConduit conduit = (HTTPConduit) client.getConduit();
+        ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA);
 
         Holder<CommonHeaderType> outHeader = this.makeClientHeader(nsaId, corrId);
 

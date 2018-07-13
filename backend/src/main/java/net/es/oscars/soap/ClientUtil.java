@@ -3,14 +3,31 @@ package net.es.oscars.soap;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.requester.ConnectionRequesterPort;
+import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.app.props.NsiProperties;
+import net.es.oscars.nsi.beans.NsiErrors;
+import net.es.oscars.nsi.ent.NsiRequesterNSA;
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
+import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.ext.logging.LoggingFeature;
-import org.apache.cxf.ext.logging.LoggingInInterceptor;
-import org.apache.cxf.ext.logging.LoggingOutInterceptor;
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.apache.cxf.transport.http.HTTPConduit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,11 +36,7 @@ import java.util.Map;
 public class ClientUtil {
 
     @Autowired
-    private NsiProperties props;
-
-    final public static String DEFAULT_REQUESTER = "urn:oscars:nsa:client";
-    final public static String DEFAULT_PROVIDER = DEFAULT_REQUESTER;
-
+    private NsiProperties nsiProps;
 
     HashMap<String, ConnectionRequesterPort> requesterPorts = new HashMap<String, ConnectionRequesterPort>();
 
@@ -31,11 +44,13 @@ public class ClientUtil {
     /**
      * Creates a client for interacting with an NSA requester
      *
-     * @param url the URL of the requester to contact
+     * @param requesterNSA the details of the requester to contact
      * @return the ConnectionRequesterPort that you can use at the client
      */
-    public ConnectionRequesterPort createRequesterClient(String url) {
-        prepareBus(url);
+    public ConnectionRequesterPort createRequesterClient(NsiRequesterNSA requesterNSA) throws NsiException {
+        if (this.requesterPorts.containsKey(requesterNSA.getCallbackUrl())) {
+            return this.requesterPorts.get(requesterNSA.getCallbackUrl());
+        }
 
         JaxWsProxyFactoryBean fb = new JaxWsProxyFactoryBean();
         LoggingFeature lf = new LoggingFeature();
@@ -52,41 +67,48 @@ public class ClientUtil {
                 });
         fb.setProperties(props);
 
-        fb.setAddress(url);
-
-
-        // logging
-        /*
-        LoggingInInterceptor loggingInInterceptor = new LoggingInInterceptor();
-        loggingInInterceptor.setPrettyLogging(true);
-        LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor();
-        loggingOutInterceptor.setPrettyLogging(true);
-
-        fb.getInInterceptors().add(loggingInInterceptor);
-        fb.getInFaultInterceptors().add(loggingInInterceptor);
-        fb.getOutInterceptors().add(loggingOutInterceptor);
-        fb.getOutFaultInterceptors().add(loggingOutInterceptor);
-        */
+        fb.setAddress(requesterNSA.getCallbackUrl());
 
         fb.setServiceClass(ConnectionRequesterPort.class);
 
-        return (ConnectionRequesterPort) fb.create();
+        ConnectionRequesterPort port = (ConnectionRequesterPort) fb.create();
+        Client client = ClientProxy.getClient(port);
+        this.configureConduit(client, requesterNSA);
 
+        this.requesterPorts.put(requesterNSA.getCallbackUrl(), port);
+
+        return port;
     }
 
+    private void configureConduit(Client client, NsiRequesterNSA requesterNSA) throws NsiException {
+        HTTPConduit conduit = (HTTPConduit) client.getConduit();
+        if (requesterNSA.getCallbackUrl().startsWith("https")) {
 
-    /**
-     * Configures SSL and other basic client settings
-     *
-     * @param urlString the URL of the server to contact
-     */
-    private void prepareBus(String urlString) {
+            try {
+                KeyStore keyStore = KeyStore.getInstance(nsiProps.getKeyStoreType());
+                InputStream fileStream = new FileInputStream(nsiProps.getKeyStore());
+                keyStore.load(fileStream, nsiProps.getKeyStorePassword().toCharArray());
 
-        // TODO: fix these
+                TrustManagerFactory tmfactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                tmfactory.init(keyStore);
+                TrustManager[] tms = tmfactory.getTrustManagers();
 
-        // System.setProperty("javax.net.ssl.trustStore", "DoNotUsecacerts");
+                KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                kmfactory.init(keyStore, nsiProps.getKeyStorePassword().toCharArray());
+                KeyManager[] kms = kmfactory.getKeyManagers();
+
+                TLSClientParameters tlsParams = new TLSClientParameters();
+                tlsParams.setTrustManagers(tms);
+                tlsParams.setKeyManagers(kms);
+                conduit.setTlsClientParameters(tlsParams);
 
 
+            } catch (KeyStoreException | IOException | UnrecoverableKeyException |
+                     NoSuchAlgorithmException | CertificateException ex) {
+                log.error(ex.getMessage(), ex);
+                throw new NsiException(ex.getMessage(), NsiErrors.NRM_ERROR);
+            }
+        }
     }
 
 
