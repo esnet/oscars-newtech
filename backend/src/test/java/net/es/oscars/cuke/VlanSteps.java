@@ -10,7 +10,7 @@ import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.TopoUrn;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Slf4j

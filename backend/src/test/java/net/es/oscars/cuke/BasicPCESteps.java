@@ -16,7 +16,7 @@ import net.es.oscars.web.beans.PcePath;
 import net.es.oscars.web.beans.PceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Slf4j

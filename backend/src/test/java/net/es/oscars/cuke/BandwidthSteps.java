@@ -9,7 +9,7 @@ import net.es.oscars.resv.enums.BwDirection;
 import net.es.oscars.resv.svc.ResvLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.*;
 
