@@ -185,6 +185,9 @@ public class PSSAdapter {
         List<CommandResponse> responses = new ArrayList<>();
 
         int threadNum = commands.size();
+        if (threadNum == 0) {
+            return responses;
+        }
         ExecutorService executor = Executors.newFixedThreadPool(threadNum);
 
         List<FutureTask<CommandResponse>> taskList = new ArrayList<>();
@@ -207,6 +210,9 @@ public class PSSAdapter {
             throws InterruptedException, ExecutionException {
         List<CommandStatus> statuses = new ArrayList<>();
         int threadNum = commandIds.size();
+        if (threadNum == 0 ) {
+            return statuses;
+        }
         ExecutorService executor = Executors.newFixedThreadPool(threadNum);
 
         List<FutureTask<CommandStatus>> taskList = new ArrayList<>();
@@ -230,12 +236,11 @@ public class PSSAdapter {
         List<Command> commands = new ArrayList<>();
 
         for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
-            if (!existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.BUILD)) {
-                commands.add(paramsAdapter.command(CommandType.BUILD, conn, j));
-            } else {
-                log.info("build commands already exist for "+conn.getConnectionId());
+            RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.BUILD);
+            if (existing != null) {
+                log.info("dismantle commands already exist for "+conn.getConnectionId());
             }
-
+            commands.add(paramsAdapter.command(CommandType.BUILD, conn, j, existing));
         }
 
         log.info("gathered "+commands.size()+" commands");
@@ -247,6 +252,7 @@ public class PSSAdapter {
     public List<Command> dismantleCommands(Connection conn) throws PSSException {
         log.info("gathering dismantle commands for " + conn.getConnectionId());
 
+        /*
         try {
             String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(conn);
             log.debug(pretty);
@@ -255,15 +261,16 @@ public class PSSAdapter {
             e.printStackTrace();
 
         }
+        */
 
         List<Command> commands = new ArrayList<>();
 
         for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
-            if (!existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.DISMANTLE)) {
-                commands.add(paramsAdapter.command(CommandType.DISMANTLE, conn, j));
-            } else {
+            RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.DISMANTLE);
+            if (existing != null) {
                 log.info("dismantle commands already exist for "+conn.getConnectionId());
             }
+            commands.add(paramsAdapter.command(CommandType.DISMANTLE, conn, j, existing));
         }
 
         log.info("gathered "+commands.size()+" commands");
@@ -272,22 +279,22 @@ public class PSSAdapter {
         return commands;
     }
 
-    public boolean existing(String connId, String  deviceUrn, CommandType commandType) {
+    public RouterCommands existing(String connId, String  deviceUrn, CommandType commandType) {
         List<RouterCommands> existing = rcr.findByConnectionIdAndDeviceUrn(connId, deviceUrn);
         for (RouterCommands rc: existing) {
             if (rc.getType().equals(commandType)) {
-                return  true;
+                return  rc;
             }
         }
-        return false;
+        return null;
     }
 
-    public List<Command>    opCheckCommands(Connection conn) throws PSSException {
+    public List<Command> opCheckCommands(Connection conn) throws PSSException {
         log.info("gathering op check commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
 
         for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
-            commands.add(paramsAdapter.command(CommandType.OPERATIONAL_STATUS, conn, j));
+            commands.add(paramsAdapter.command(CommandType.OPERATIONAL_STATUS, conn, j, null));
         }
 
         log.info("gathered "+commands.size()+" commands");

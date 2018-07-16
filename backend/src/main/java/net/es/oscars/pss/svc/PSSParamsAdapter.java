@@ -7,6 +7,7 @@ import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.pss.params.alu.AluParams;
 import net.es.oscars.dto.pss.params.mx.MxParams;
+import net.es.oscars.pss.ent.RouterCommands;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.enums.UrnType;
@@ -35,10 +36,13 @@ public class PSSParamsAdapter {
         this.pssProperties = pssProperties;
     }
 
-    public Command command(CommandType type, Connection c, VlanJunction j) throws PSSException {
+    public Command command(CommandType type, Connection c, VlanJunction j, RouterCommands existing) throws PSSException {
         log.info("making command for "+j.getDeviceUrn());
 
         Command cmd = makeCmd(c.getConnectionId(), type, j.getDeviceUrn());
+        if (existing != null) {
+            return cmd;
+        }
 
         switch (cmd.getModel()) {
             case ALCATEL_SR7750:
