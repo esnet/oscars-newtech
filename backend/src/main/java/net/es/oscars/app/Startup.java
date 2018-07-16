@@ -12,6 +12,7 @@ import net.es.oscars.topo.beans.TopoException;
 import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.TopoPopulator;
 import net.es.oscars.topo.pop.UIPopulator;
+import net.es.oscars.topo.svc.ConsistencyService;
 import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +35,7 @@ public class Startup {
     private PssHealthChecker pssHealthChecker;
     private SlackConnector slackConnector;
     private TopoService topoService;
+    private ConsistencyService consistencySvc;
 
     private boolean inStartup = false;
     private boolean inShutdown = false;
@@ -68,12 +70,14 @@ public class Startup {
                    UserPopulator userPopulator,
                    SlackConnector slackConnector,
                    UIPopulator uiPopulator,
+                   ConsistencyService consistencySvc,
                    PssHealthChecker pssHealthChecker,
                    GitRepositoryStatePopulator gitRepositoryStatePopulator) {
         this.startupProperties = startupProperties;
         this.topoPopulator = topoPopulator;
         this.topoService = topoService;
         this.slackConnector = slackConnector;
+        this.consistencySvc = consistencySvc;
         this.pssHealthChecker = pssHealthChecker;
         this.gitRepositoryStatePopulator = gitRepositoryStatePopulator;
         components = new ArrayList<>();
@@ -96,13 +100,14 @@ public class Startup {
         }
         topoPopulator.refreshTopology();
         topoService.updateTopo();
+        consistencySvc.checkConsistency();
 
         try {
             for (StartupComponent sc : this.components) {
                 sc.startup();
             }
         } catch (StartupException ex) {
-            ex.printStackTrace();;
+            ex.printStackTrace();
             System.out.println("Exiting..");
             System.exit(1);
         }

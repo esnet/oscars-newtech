@@ -8,21 +8,18 @@ import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.topo.beans.ConsistencyReport;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.TopoUrn;
-import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
 import net.es.oscars.topo.db.PortRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.pop.ConsistencyException;
-import net.es.oscars.topo.pop.UIPopulator;
-import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.*;
 
 
@@ -30,54 +27,59 @@ import java.util.*;
 @Service
 @Component
 @Transactional
-public class ConsistencySvc {
+public class ConsistencyService {
     private ConnectionRepository connRepo;
-    private PortAdjcyRepository adjcyRepo;
 
     private DeviceRepository deviceRepo;
     private PortRepository portRepo;
 
-    private UIPopulator ui;
+
+    private ConsistencyReport latestReport;
 
     private TopoService ts;
 
     @Autowired
-    public ConsistencySvc(PortAdjcyRepository adjcyRepo,
-                          PortRepository portRepo,
-                          DeviceRepository deviceRepo,
-                          ConnectionRepository connRepo,
-                          UIPopulator ui,
-                          TopoService ts) {
-        this.adjcyRepo = adjcyRepo;
+    public ConsistencyService(PortRepository portRepo,
+                              DeviceRepository deviceRepo,
+                              ConnectionRepository connRepo,
+                              TopoService ts) {
         this.portRepo = portRepo;
         this.deviceRepo = deviceRepo;
         this.connRepo = connRepo;
-        this.ui = ui;
         this.ts = ts;
+        this.latestReport = ConsistencyReport.builder()
+                .topologyUpdated(Instant.MIN)
+                .generated(Instant.now())
+                .issuesByUrn(new HashMap<>())
+                .issuesByConnectionId(new HashMap<>())
+                .build();
+    }
+    public ConsistencyReport getLatestReport() {
+        return this.latestReport;
     }
 
-    public List<ConsistencyReport> checkConsistency(VersionDelta vd) {
+    public void checkConsistency() throws ConsistencyException {
         log.info("checking topology consistency..");
 
-        // TODO: implement this
-
-        log.info("checking connection references");
-        List<ConsistencyReport> crs = new ArrayList<>();
+        ConsistencyReport cr = ConsistencyReport.builder()
+                .issuesByConnectionId(new HashMap<>())
+                .issuesByUrn(new HashMap<>())
+                .generated(Instant.now())
+                .topologyUpdated(ts.currentVersion().orElseThrow(ConsistencyException::new).getUpdated())
+                .build();
 
         List<Connection> reserved = connRepo.findByPhase(Phase.RESERVED);
         for (Connection c : reserved) {
-            crs.add(this.checkConnection(c));
+            this.checkConnection(c, cr);
         }
         List<Connection> held = connRepo.findByPhase(Phase.HELD);
         for (Connection c : held) {
-            crs.add(this.checkConnection(c));
+            this.checkConnection(c, cr);
         }
-        return crs;
+        this.latestReport = cr;
     }
 
-    public ConsistencyReport checkConnection(Connection c) {
-        ConsistencyReport cr = ConsistencyReport.builder().build();
-        Map<String, String> errors = new HashMap<>();
+    public void checkConnection(Connection c, ConsistencyReport cr) {
 
         Components cmp = c.getReserved().getCmp();
         for (VlanJunction vj : cmp.getJunctions()) {
@@ -85,18 +87,23 @@ public class ConsistencySvc {
             try {
                 Device d = this.checkDeviceUrn(devUrn);
                 if (!d.getVersion().getValid()) {
-                    errors.put(devUrn, "junction device not valid");
+                    cr.addConnectionError(c.getConnectionId(), "not valid device "+devUrn+" found in junction");
+                    cr.addUrnError(devUrn, "is not valid device but found in junction for "+c.getConnectionId());
                 }
             } catch (ConsistencyException ex) {
-                errors.put(devUrn, ex.getMessage());
+                cr.addConnectionError(c.getConnectionId(), ex.getMessage());
+                cr.addUrnError(devUrn, ex.getMessage());
             }
         }
+
         for (VlanFixture f : cmp.getFixtures()) {
             String portUrn = f.getPortUrn();
             try {
                 Port p = this.checkPortUrn(portUrn);
                 if (!p.getVersion().getValid()) {
-                    errors.put(portUrn, "junction device not valid");
+                    cr.addConnectionError(c.getConnectionId(), "not valid port "+portUrn+" found in fixture");
+                    cr.addUrnError(portUrn, "is not valid port but found in fixture for "+c.getConnectionId());
+
                 } else {
                     // TODO: check capacity for ports
 
@@ -108,11 +115,13 @@ public class ConsistencySvc {
                         }
                     }
                     if (!contained) {
-                        errors.put(portUrn, "vlan " + vlanId + " not in ranges");
+                        cr.addConnectionError(c.getConnectionId(), "port "+portUrn+" does not contain in vlan ranges: "+vlanId);
+                        cr.addUrnError(portUrn, "port "+portUrn+" does not contain in vlan ranges: "+vlanId+" found in "+c.getConnectionId());
                     }
                 }
             } catch (ConsistencyException ex) {
-                errors.put(portUrn, ex.getMessage());
+                cr.addConnectionError(c.getConnectionId(), ex.getMessage());
+                cr.addUrnError(portUrn, ex.getMessage());
             }
         }
         for (VlanPipe pipe : cmp.getPipes()) {
@@ -125,7 +134,8 @@ public class ConsistencySvc {
                     if (maybeDev.isPresent()) {
                         Device d = maybeDev.get();
                         if (!d.getVersion().getValid()) {
-                            errors.put(urn, "ERO hop invalid device");
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid device, urn: "+urn);
+                            cr.addUrnError(urn, "pipe ero hop has invalid device, urn: "+urn+" for connId: "+c.getConnectionId());
 
                         } else {
                             log.error("Internal error: valid device missing from current topo! "+urn);
@@ -134,14 +144,16 @@ public class ConsistencySvc {
                     } else if (maybePort.isPresent()) {
                         Port p = maybePort.get();
                         if (!p.getVersion().getValid()) {
-                            errors.put(urn, "ERO hop invalid port");
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid port, urn: "+urn);
+                            cr.addUrnError(urn, "pipe ero hop has invalid port, urn: "+urn+" for connId: "+c.getConnectionId());
 
                         } else {
                             log.error("Internal error: valid device missing from current topo! "+urn);
                         }
 
                     } else {
-                        errors.put(urn, "ERO hop urn missing");
+                        cr.addConnectionError(c.getConnectionId(), "ero hop completely missing in topo, urn: "+urn);
+                        cr.addUrnError(urn, "pipe ero hop completely missing in topo, urn: "+urn+" for connId: "+c.getConnectionId());
                     }
 
                 } else {
@@ -150,27 +162,31 @@ public class ConsistencySvc {
                         Port p = topoUrn.getPort();
                         // TODO: check capacity for ports
                         if (p == null) {
-                            errors.put(urn, "ERO hop missing port");
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has missing port , urn: "+urn);
+                            cr.addUrnError(urn, "pipe ero hop has missing port, urn: "+urn+" for connId: "+c.getConnectionId());
                         } else if (!p.getVersion().getValid()) {
-                            errors.put(urn, "ERO hop invalid port");
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid port , urn: "+urn);
+                            cr.addUrnError(urn, "pipe ero hop has invalid port, urn: "+urn+" for connId: "+c.getConnectionId());
                         }
                     } else if (topoUrn.getUrnType().equals(UrnType.DEVICE)) {
                         Device d = topoUrn.getDevice();
                         if (d == null) {
-                            errors.put(urn, "ERO hop missing device");
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has missing device , urn: "+urn);
+                            cr.addUrnError(urn, "pipe ero hop has missing device, urn: "+urn+" for connId: "+c.getConnectionId());
                         } else if (!d.getVersion().getValid()) {
-                            errors.put(urn, "ERO hop invalid device");
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid device , urn: "+urn);
+                            cr.addUrnError(urn, "pipe ero hop has invalid device, urn: "+urn+" for connId: "+c.getConnectionId());
                         }
 
                     } else {
-                        errors.put(urn, "invalid topology URN type");
+                        cr.addConnectionError(c.getConnectionId(), "ero hop has invalid type, urn: "+urn);
+                        cr.addUrnError(urn, "pipe ero hop has invalid type, urn: "+urn+" for connId: "+c.getConnectionId());
 
                     }
 
                 }
             }
         }
-        return cr;
 
     }
 

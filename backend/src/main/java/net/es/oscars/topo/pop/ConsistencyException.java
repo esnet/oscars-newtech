@@ -5,11 +5,17 @@ import java.util.List;
 import java.util.Map;
 
 public class ConsistencyException extends Exception {
-    private Map<ConsistencyError, List<String >> errorMap = new HashMap<>();
-    public Map<ConsistencyError, List<String >> getErrorMap() {
+    private Map<ConsistencyError, List<String>> errorMap = new HashMap<>();
+
+    public Map<ConsistencyError, List<String>> getErrorMap() {
         return this.errorMap;
     }
+
     public ConsistencyException(String msg) {
         super(msg);
+    }
+
+    public ConsistencyException() {
+        super();
     }
 }

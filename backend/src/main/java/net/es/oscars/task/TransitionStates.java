@@ -84,13 +84,6 @@ public class TransitionStates {
                 }
             }
         }
-        connRepo.delete(deleteThese);
-
-        archiveThese.forEach(c -> {
-            c.setPhase(Phase.ARCHIVED);
-            c.setReserved(null);
-            connRepo.save(c);
-        });
 
         for (NsiMapping mapping : pastEndTime) {
             nsiService.pastEndTime(mapping);
@@ -98,6 +91,15 @@ public class TransitionStates {
         for (NsiMapping mapping : timedOut) {
             nsiService.resvTimedOut(mapping);
         }
+
+
+        connRepo.delete(deleteThese);
+
+        archiveThese.forEach(c -> {
+            c.setPhase(Phase.ARCHIVED);
+            c.setReserved(null);
+            connRepo.save(c);
+        });
 
 
     }

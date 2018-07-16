@@ -7,7 +7,7 @@ import net.es.oscars.topo.beans.TopoException;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.db.VersionRepository;
 import net.es.oscars.topo.ent.Version;
-import net.es.oscars.topo.svc.ConsistencySvc;
+import net.es.oscars.topo.svc.ConsistencyService;
 import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.TopoPopulator;
 import net.es.oscars.topo.svc.TopoService;
@@ -38,12 +38,12 @@ public class RefreshTopology {
     private TopoProperties topoProperties;
 
     @Autowired
-    private ConsistencySvc consistencySvc;
+    private ConsistencyService consistencySvc;
 
     @Autowired
     private VersionRepository versionRepo;
 
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 10000)
     @Transactional
     public void processingLoop() {
         if (startup.isInStartup() || startup.isInShutdown()) {
@@ -74,8 +74,8 @@ public class RefreshTopology {
                         v.setUpdated(Instant.now());
                         versionRepo.save(v);
                     } else {
-                        consistencySvc.checkConsistency(vd);
                         topoService.updateTopo();
+                        consistencySvc.checkConsistency();
                     }
 
                 }
