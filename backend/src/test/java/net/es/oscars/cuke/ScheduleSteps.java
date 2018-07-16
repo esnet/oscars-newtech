@@ -8,7 +8,7 @@ import net.es.oscars.resv.ent.Schedule;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ResvLibrary;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

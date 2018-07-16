@@ -296,10 +296,10 @@
       {
         "reservableIngressBw": 100000, 
         "tags": [
-          "chic-cr5->in-gpop(as19782):100ge(vlan):site_conn-b_v4v6:show:ren-intercloud", 
+          "chic-cr5->in-gpop(as19782):100ge(vlan):conn-b_v4v6:show:ren-intercloud", 
           "to_in-gigapop_ip-b", 
-          "chic-cr5->flr(as11096):100ge(vlan):al2s:show:ren-intercloud", 
-          "to_flr_v4", 
+          "chic-cr5->flr(as11096):100ge:al2s_conn-a_v4:show:ren-intercloud", 
+          "to_flr_ip-a", 
           "chic-cr5->internet2(as11537):100ge(vlan):al2s:show:ren-intercloud", 
           "to_internet2-v4"
         ], 
@@ -350,7 +350,7 @@
           "to_uwmadison-b", 
           "chic-cr5->uiowa:100ge(vlan):ip-b:show:edu-intercloud", 
           "to_uiowa-b", 
-          "chic-cr5->in-gpop(as19782):100ge(vlan):site_conn-a_v4v6:show:ren-intercloud", 
+          "chic-cr5->in-gpop(as19782):100ge(vlan):conn-a_v4v6:show:ren-intercloud", 
           "to_in-gigapop_ip-a"
         ], 
         "urn": "chic-cr5:8/2/1", 
@@ -436,6 +436,28 @@
           {
             "ceiling": 4093, 
             "floor": 663
+          }
+        ], 
+        "reservableEgressBw": 1000
+      }, 
+      {
+        "reservableIngressBw": 1000, 
+        "tags": [
+          "srs-rt3->doenet-srs(as65006):1ge(vlan):site_conn-a_v4v6:show:test", 
+          "ge-1/3/0.10"
+        ], 
+        "urn": "srs-rt3:ge-1/3/0", 
+        "capabilities": [
+          "ETHERNET"
+        ], 
+        "reservableVlans": [
+          {
+            "ceiling": 9, 
+            "floor": 2
+          }, 
+          {
+            "ceiling": 4093, 
+            "floor": 11
           }
         ], 
         "reservableEgressBw": 1000
@@ -938,7 +960,7 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "newy-cr5->bnl-rt3:10ge(vlan):site_conn-a_v4:show:intercloud", 
+          "newy-cr5->esnet(as65291):10ge(vlan):site_conn-a_v4_dc-east:show:intercloud", 
           "to_bnl-rt3_ip-a_v4"
         ], 
         "urn": "newy-cr5:10/1/9", 
@@ -1525,7 +1547,7 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "sacr-cr5->esnet-rt5(as65292):10ge:site_conn-b_v4:show:intercloud", 
+          "sacr-cr5->esnet(as65292):10ge:site_conn-b_v4_dc-west:show:intercloud", 
           "to_esnet-rt5_ip-b_v4"
         ], 
         "urn": "sacr-cr5:10/1/6", 
@@ -2029,6 +2051,24 @@
           "to_elpa-pt1"
         ], 
         "urn": "elpa-cr5:10/1/4", 
+        "capabilities": [
+          "ETHERNET"
+        ], 
+        "reservableVlans": [
+          {
+            "ceiling": 4094, 
+            "floor": 2
+          }
+        ], 
+        "reservableEgressBw": 10000
+      }, 
+      {
+        "reservableIngressBw": 10000, 
+        "tags": [
+          "elpa-cr5->ga-rt2:10ge:ip-a:show:test", 
+          "to_ga-rt2_ip-a"
+        ], 
+        "urn": "elpa-cr5:10/1/5", 
         "capabilities": [
           "ETHERNET"
         ], 
@@ -3579,7 +3619,7 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "sunn-cr5->esnet-rt5(as65292):10ge:site_conn-c_v4v6:show:intercloud", 
+          "sunn-cr5->esnet(as65292):10ge:site_conn-c_v4v6_dc-west:show:intercloud", 
           "to_esnet-rt5_ip-c"
         ], 
         "urn": "sunn-cr5:10/1/2", 
@@ -3651,10 +3691,10 @@
           "to_pwave-779", 
           "sunn-cr5->pwave:100ge(vlan-9Kmtu):pwave(lax):show:ren-intercloud", 
           "to_pwave-780-9K", 
-          "sunn-cr5->pwave:100ge(vlan):pwave(snv):show:ren-intercloud", 
-          "to_pwave-705", 
           "sunn-cr5->pwave:100ge(vlan-9Kmtu):pwave(sea):show:ren-intercloud", 
           "to_pwave-778-9K", 
+          "sunn-cr5->pwave:100ge(vlan):pwave(snv):show:ren-intercloud", 
+          "to_pwave-705", 
           "sunn-cr5->pwave:100ge(vlan):pwave(lax):show:ren-intercloud", 
           "to_pwave-781"
         ], 
@@ -4752,7 +4792,7 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "fnal-mr2->anl-dr:10ge:site_conn-e_v4_dr:show:intercloud", 
+          "fnal-mr2->anl(as683):10ge:site_conn-e_v4_dr:show:intercloud", 
           "xe-8/3/0.1800"
         ], 
         "urn": "fnal-mr2:xe-8/3/0", 
@@ -4976,6 +5016,16 @@
     "type": "ROUTER", 
     "ports": [
       {
+        "ipv4Address": "134.55.39.197", 
+        "reservableIngressBw": 100000, 
+        "urn": "amst-cr5:5/1/1", 
+        "capabilities": [
+          "MPLS"
+        ], 
+        "reservableEgressBw": 100000, 
+        "ifce": "to_bost-cr5_ip-b"
+      }, 
+      {
         "ipv4Address": "134.55.209.57", 
         "reservableIngressBw": 100000, 
         "urn": "amst-cr5:1/1/1", 
@@ -5050,24 +5100,6 @@
           }
         ], 
         "reservableEgressBw": 10000
-      }, 
-      {
-        "reservableIngressBw": 100000, 
-        "tags": [
-          "amst-cr5->bost-cr5:100ge:ip-b:show:intracloud", 
-          "to_bost-cr5_ip-b"
-        ], 
-        "urn": "amst-cr5:5/1/1", 
-        "capabilities": [
-          "ETHERNET"
-        ], 
-        "reservableVlans": [
-          {
-            "ceiling": 4094, 
-            "floor": 2
-          }
-        ], 
-        "reservableEgressBw": 100000
       }, 
       {
         "reservableIngressBw": 100000, 
@@ -5413,7 +5445,7 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "aofa-cr5->bnl-rt3:10ge(vlan):site_conn-a_v4:show:intercloud", 
+          "aofa-cr5->esnet(as65291):10ge(vlan):site_conn-a_v4_dc-east:show:intercloud", 
           "to_bnl-rt3_ip-a_v4"
         ], 
         "urn": "aofa-cr5:10/1/9", 
@@ -5779,7 +5811,7 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "nersc-mr2->xo-osf-rt1:10ge:geni-site:show:intercloud", 
+          "nersc-mr2->xo-osf-rt1:10ge:geni:show:intercloud", 
           "xe-7/3/0.999"
         ], 
         "urn": "nersc-mr2:xe-7/3/0", 
@@ -5986,6 +6018,24 @@
       {
         "reservableIngressBw": 100000, 
         "tags": [
+          "star-cr5->star-ixia-port1:100ge:ip-a:show:test", 
+          "to_star-ixia_ip-a"
+        ], 
+        "urn": "star-cr5:3/2/1", 
+        "capabilities": [
+          "ETHERNET"
+        ], 
+        "reservableVlans": [
+          {
+            "ceiling": 4094, 
+            "floor": 2
+          }
+        ], 
+        "reservableEgressBw": 100000
+      }, 
+      {
+        "reservableIngressBw": 100000, 
+        "tags": [
           "star-cr5->fnal(as3152):100ge:site_conn-b_backup_v4:show:na", 
           "to_fnal_ip-b_v4"
         ], 
@@ -6086,10 +6136,12 @@
       {
         "reservableIngressBw": 100000, 
         "tags": [
-          "star-cr5->star-ixia-port1:100ge:ip-a:show:test", 
-          "to_star-ixia_ip-a"
+          "star-cr5->fnal(as3152):100ge:site_conn-c_21:show:test", 
+          "to_fnal_rx", 
+          "star-cr5->fnal(as3152):100ge:site_conn-c_20:show:test", 
+          "to_fnal_tx"
         ], 
-        "urn": "star-cr5:3/2/1", 
+        "urn": "star-cr5:BLANK", 
         "capabilities": [
           "ETHERNET"
         ], 
@@ -6201,7 +6253,7 @@
           "xe-0/2/0.919", 
           "snll-mr2->mgt-stub1:ge:access-local:show:intracloud", 
           "xe-0/2/0.909", 
-          "snll-mr2->snla-discom(as377):ge:site-ex-v4:show:intercloud", 
+          "snll-mr2->snla(as377):ge:site_conn-e_discom_v4:show:intercloud", 
           "xe-0/2/0.1150", 
           "snll-mr2->snll(as3562):1ge:site_conn-b_v4_mirror:show:intercloud", 
           "xe-0/2/0.1167"
@@ -6343,6 +6395,16 @@
         "ifce": "to_newy-cr5_ip-a"
       }, 
       {
+        "ipv4Address": "134.55.39.198", 
+        "reservableIngressBw": 100000, 
+        "urn": "bost-cr5:3/1/1", 
+        "capabilities": [
+          "MPLS"
+        ], 
+        "reservableEgressBw": 100000, 
+        "ifce": "to_amst-cr5_ip-b"
+      }, 
+      {
         "ipv4Address": "134.55.218.189", 
         "reservableIngressBw": 100000, 
         "urn": "bost-cr5:2/1/1", 
@@ -6429,24 +6491,6 @@
           }
         ], 
         "reservableEgressBw": 40000
-      }, 
-      {
-        "reservableIngressBw": 100000, 
-        "tags": [
-          "bost-cr5->amst-cr5:100ge:ip-b:show:intracloud", 
-          "to_amst-cr5_ip-b"
-        ], 
-        "urn": "bost-cr5:3/1/1", 
-        "capabilities": [
-          "ETHERNET"
-        ], 
-        "reservableVlans": [
-          {
-            "ceiling": 4094, 
-            "floor": 2
-          }
-        ], 
-        "reservableEgressBw": 100000
       }, 
       {
         "reservableIngressBw": 10000, 
@@ -6607,7 +6651,7 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "lbl-mr2->esnet-testbed:10ge:site_vpn-gw:show:intercloud", 
+          "lbl-mr2->esnet-testbed:10ge:vpn-gw:show:intercloud", 
           "xe-7/0/0.1406"
         ], 
         "urn": "lbl-mr2:xe-7/0/0", 
@@ -6701,12 +6745,12 @@
       {
         "reservableIngressBw": 1000, 
         "tags": [
-          "lbl-mr2->esnet:1ge:testbed_site_ndn_mgt:show:intercloud", 
-          "ge-9/1/0.1009", 
-          "lbl-mr2->test-diskpt2-mgt:ge(vlan):perf-test:show:intracloud", 
-          "ge-9/1/0.924", 
           "lbl-mr2->ipmi:ge(vlan):access-local:hide:intercloud", 
           "ge-9/1/0.913", 
+          "lbl-mr2->test-diskpt2-mgt:ge(vlan):perf-test:show:intracloud", 
+          "ge-9/1/0.924", 
+          "lbl-mr2->esnet:1ge:testbed_site_ndn_mgt:show:intercloud", 
+          "ge-9/1/0.1009", 
           "lbl-mr2->es-stub:ge(vlan):access-local:show:intracloud", 
           "ge-9/1/0.909"
         ], 
@@ -6984,10 +7028,10 @@
       {
         "reservableIngressBw": 10000, 
         "tags": [
-          "netl-alb-rt1->netl-alb-owamp:ge::show:intercloud", 
-          "xe-2/0/3.919", 
           "netl-alb-rt1->es-stub:10ge(vlan):access-local:show:intracloud", 
-          "xe-2/0/3.909"
+          "xe-2/0/3.909", 
+          "netl-alb-rt1->netl-alb-owamp:ge::show:intercloud", 
+          "xe-2/0/3.919"
         ], 
         "urn": "netl-alb-rt1:xe-2/0/3", 
         "capabilities": [
@@ -7111,6 +7155,24 @@
           }
         ], 
         "reservableEgressBw": 10000
+      }, 
+      {
+        "reservableIngressBw": 100000, 
+        "tags": [
+          "kans-cr5->gpn(as11317):100ge:conn-a_v4v6:show:ren-intercloud", 
+          "to_gpn_ip-a"
+        ], 
+        "urn": "kans-cr5:4/1/1", 
+        "capabilities": [
+          "ETHERNET"
+        ], 
+        "reservableVlans": [
+          {
+            "ceiling": 4094, 
+            "floor": 2
+          }
+        ], 
+        "reservableEgressBw": 100000
       }
     ]
   }

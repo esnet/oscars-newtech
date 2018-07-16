@@ -10,7 +10,6 @@ import net.es.oscars.pss.ent.RouterCommands;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.resv.enums.BuildMode;
-import net.es.oscars.resv.enums.EthFixtureType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.resv.svc.ConnService;
@@ -222,11 +221,7 @@ public class MigrationEngine {
                 conversionError = true;
                 continue;
             }
-            EthFixtureType et = EthFixtureType.ALU_SAP;
             TopoUrn deviceUrn = urnMap.get(inFixture.getJunction());
-            if (!deviceUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
-                et = EthFixtureType.JUNOS_IFCE;
-            }
             Set<CommandParam> fcps = new HashSet<>();
             if (deviceUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
                 for (InPssResResource ipr : inResv.getPss().getRes().getResources()) {
@@ -257,7 +252,6 @@ public class MigrationEngine {
                     .commandParams(fcps)
                     .ingressBandwidth(inResv.getMbps())
                     .egressBandwidth(inResv.getMbps())
-                    .ethFixtureType(et)
                     .junction(vj)
                     .portUrn(portUrnStr)
                     .schedule(s)

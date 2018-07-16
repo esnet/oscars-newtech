@@ -119,7 +119,7 @@ The main application. Handles reservation requests, determines which path (if an
 * **web** - REST endpoints 
 
 #### shared 
-A collection of shared classes used by the different modules. 
+A collection of shared classes used by both the PSS and backend modules. Mostly Data Transfer Objects (DTOs).
 
 #### pss
 The Path Setup Subsystem. The core sends commands to it, and it generates appropriate config and then commits it to network devices through rancid. 
@@ -127,5 +127,11 @@ The Path Setup Subsystem. The core sends commands to it, and it generates approp
 #### topo
 Topology-related scripts and utilities; currently mostly ESnet-specific Python code. 
 
-#### core
-Deprecated
+#### clients
+Various clients for the new REST API. 
+
+#### nsi
+XML classes for the NSI data types.
+
+#### migration
+Scripts and code for migrating OSCARS 0.6 reservations to 1.0. 

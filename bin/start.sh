@@ -4,7 +4,7 @@ function tabname {
 }
 tabname "oscars"
 
-version="1.0.7"
+version="1.0.9"
 
 orig_dir=`pwd`
 

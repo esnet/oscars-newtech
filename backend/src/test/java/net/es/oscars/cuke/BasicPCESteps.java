@@ -16,7 +16,7 @@ import net.es.oscars.web.beans.PcePath;
 import net.es.oscars.web.beans.PceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Slf4j
@@ -69,6 +69,7 @@ public class BasicPCESteps extends CucumberSteps {
     @Then("^the resulting AZ ERO is:$")
     public void the_resulting_AZ_ERO_is(List<String> ero) throws Throwable {
         List<EroHop> hops = world.pipeEros.get(EroDirection.A_TO_Z);
+        assert hops != null;
         assert hops.size() == ero.size();
         for (int i = 0 ; i < ero.size() ; i++) {
             assert (hops.get(i).getUrn().equals(ero.get(i)));

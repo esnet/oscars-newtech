@@ -90,6 +90,8 @@ public class TopoLibrary {
         }
         for (String urn : beta.getDevices().keySet()) {
             if (!alpha.getDevices().keySet().contains(urn)) {
+                // the ports will get added by the port delta
+                beta.getDevices().get(urn).setPorts(new HashSet<>());
                 added.put(urn, beta.getDevices().get(urn));
             }
         }
@@ -143,17 +145,17 @@ public class TopoLibrary {
 
         for (String urn : alpha.getPorts().keySet()) {
             if (beta.getPorts().keySet().contains(urn)) {
-                log.info(" check changes "+urn);
+                // log.info(" check changes "+urn);
                 checkForChanges.add(urn);
             } else {
-                log.info(" removed port "+urn);
+                log.info(" will remove port "+urn);
                 removed.put(urn, alpha.getPorts().get(urn));
             }
         }
 
         for (String urn : beta.getPorts().keySet()) {
             if (!alpha.getPorts().keySet().contains(urn)) {
-                log.info(" added port "+urn);
+                log.info(" will add port "+urn);
                 added.put(urn, beta.getPorts().get(urn));
             }
         }

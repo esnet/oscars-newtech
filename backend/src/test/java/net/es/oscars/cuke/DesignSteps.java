@@ -11,8 +11,8 @@ import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.svc.DesignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.io.File;
 import java.util.Optional;
 

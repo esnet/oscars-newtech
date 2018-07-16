@@ -57,36 +57,11 @@ public class ConnController {
         }
 
 
-        boolean found = false;
-        String result = "";
-        while (!found) {
-            String candidate = this.connectionIdGenerator();
-            Optional<Connection> d = connRepo.findByConnectionId(candidate);
-            if (!d.isPresent()) {
-                found = true;
-                result = candidate;
-            }
-        }
-        return result;
+        return connSvc.generateConnectionId();
 
 
     }
-    private String connectionIdGenerator() {
-        String SAFE_ALPHABET_STRING = "234679CDFGHJKMNPRTWXYZ";
-        char[] SAFE_ALPHABET = SAFE_ALPHABET_STRING.toCharArray();
-        Random random = new Random();
 
-        int max = SAFE_ALPHABET.length;
-        int totalNumber = 4;
-
-        StringBuilder b = new StringBuilder();
-        IntStream stream = random.ints(totalNumber, 0, max);
-        stream.forEach(i -> {
-            b.append(SAFE_ALPHABET[i]);
-        });
-        return b.toString();
-
-    }
 
     @RequestMapping(value = "/protected/conn/commit", method = RequestMethod.POST)
     @ResponseBody
@@ -108,12 +83,14 @@ public class ConnController {
 
         Optional<Connection> d = connRepo.findByConnectionId(connectionId);
         if (!d.isPresent()) {
-            log.info("making default connection from bits...");
-            c = connSvc.connectionFromBits(connectionId, username);
+            throw new NoSuchElementException("connection not found for id: "+connectionId);
 
         } else {
             log.info("found connection from connectionId...");
             c = d.get();
+
+
+
         }
         String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(c);
         log.debug("committing conn: \n"+pretty);
@@ -159,6 +136,8 @@ public class ConnController {
         Optional<Connection> c = connRepo.findByConnectionId(connectionId);
         if (!c.isPresent()) {
             throw new NoSuchElementException();
+        } else if (c.get().getPhase().equals(Phase.ARCHIVED)) {
+                throw new IllegalArgumentException("Cannot cancel ARCHIVED connection");
         } else {
             return connSvc.cancel(c.get());
         }

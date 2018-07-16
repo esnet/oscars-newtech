@@ -181,6 +181,7 @@ public class RancidRunner {
                 // log.debug("output is: " + output);
 
             } catch (InvalidExitValueException ex) {
+                log.error(ex.getMessage(), ex);
 
                 throw new ControlPlaneException("error running Rancid!");
 
@@ -197,6 +198,7 @@ public class RancidRunner {
                             .redirectError(Slf4jStream.ofCaller().asError())
                             .execute();
                 } catch (InvalidExitValueException rmEx) {
+                    log.error(rmEx.getMessage(), rmEx);
                     log.error("could not rm scp'd file; likely scp never happened");
                 }
 

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>newtech</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>1.0.8</version>
+        <version>1.0.9</version>
     </parent>
 
     <organization>
@@ -202,6 +202,10 @@
             <artifactId>hsqldb</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.ullink.slack</groupId>
+            <artifactId>simpleslackapi</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>info.cukes</groupId>
@@ -262,6 +266,7 @@
                 </executions>
                 <configuration>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.basedir}/src/main/resources/git.properties</generateGitPropertiesFilename>
                 </configuration>
             </plugin>
 

@@ -20,15 +20,14 @@ public class PortAdjcy {
     @GeneratedValue
     private Long id;
 
-    @NonNull
     @ManyToOne
     private Port a;
 
-    @NonNull
     @ManyToOne
     private Port z;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable
     private Map<Layer, Long> metrics = new HashMap<>();
 
     @ManyToOne

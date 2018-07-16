@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.PssProperties;
-import net.es.oscars.app.props.TopoProperties;
 import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.db.DeviceRepository;
@@ -23,8 +21,8 @@ import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.pop.ConsistencyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.*;
 
@@ -48,12 +46,13 @@ public class TopoService {
     private PssProperties pssProperties;
 
 
+    @Transactional
     public void updateTopo() throws ConsistencyException, TopoException {
         Optional<Version> maybeCurrent = currentVersion();
 
         if (maybeCurrent.isPresent()) {
             Version current = maybeCurrent.get();
-            log.info("updating topo to version: "+current.getId());
+            log.info("updating pathfinding topo to version: " + current.getId());
             List<Device> devices = deviceRepo.findByVersion(current);
             List<PortAdjcy> adjcies = adjcyRepo.findByVersion(current);
 
@@ -65,9 +64,8 @@ public class TopoService {
             this.topoAdjcies.addAll(topoAdjciesFromPortAdjcies(adjcies));
 
 
-
-            log.info("updated with "+this.topoAdjcies.size()+" topo adjacencies");
-        } else  {
+            log.info("updated with " + this.topoAdjcies.size() + " topo adjacencies");
+        } else {
             throw new TopoException("no valid topology version!");
         }
 
@@ -92,275 +90,472 @@ public class TopoService {
         if (maybeCurrent.isPresent()) {
             Version noLongerValid = maybeCurrent.get();
             noLongerValid.setValid(false);
-            log.info("setting version to invalid: "+noLongerValid.getId());
+            log.info("setting version to invalid: " + noLongerValid.getId());
             versionRepo.save(noLongerValid);
         }
 
         versionRepo.save(newVersion);
+        versionRepo.flush();
         return newVersion;
     }
 
     @Transactional
     public void mergeVersionDelta(VersionDelta vd, Version currentVersion, Version newVersion) throws ConsistencyException {
-        log.info("merging version delta, new version : "+newVersion.getId());
-        /*
+        log.info("merging version delta, new version : " + newVersion.getId());
         String pretty = null;
         try {
             pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(vd);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        log.info(pretty);
-        */
+//        log.info(pretty);
+
         Delta<Device> dd = vd.getDeviceDelta();
         Delta<PortAdjcy> ad = vd.getAdjcyDelta();
         Delta<Port> pd = vd.getPortDelta();
 
-
-        // to delete gone devices, we don't do anything; we just won't update their version
-
-        int addedDevs = 0;
-        // now add new devices
-        for (Device d: dd.getAdded().values()) {
-            // fist check if it exists in the repo at all
-            //      (the delta is against the latest version only)
-            if (deviceRepo.findByUrn(d.getUrn()).isPresent()) {
-                // this means it's present in the db but its has an invalid version
-                Version v = deviceRepo.findByUrn(d.getUrn()).get().getVersion();
-                if (v.getValid()) {
-                    throw new ConsistencyException("merge error: device in valid version but also present in delta");
-                }
-                dd.getModified().put(d.getUrn(), d);
-
-            } else {
-                // it was not present in the database; just add and save it
-                // this will also
-                d.setVersion(newVersion);
-                for (Port p : d.getPorts()) {
-                    p.setVersion(newVersion);
-                }
-                deviceRepo.save(d);
-                for (Port p : d.getPorts()) {
-                    pd.getAdded().remove(p.getUrn());
-                }
+        for (String urn : dd.getRemoved().keySet()) {
+            if (dd.getUnchanged().keySet().contains(urn)) {
+                throw new ConsistencyException("removed and unchanged delta for "+urn);
             }
-            addedDevs++;
-        }
-        log.debug("done adding new devices, added: "+addedDevs);
-
-        int unchangedDevices = 0;
-        // now handle unchanged devices; these too need to be set to latest version
-        for (Device d: dd.getUnchanged().values()) {
-            Optional<Device> maybeDev = deviceRepo.findByUrn(d.getUrn());
-            if (maybeDev.isPresent()) {
-                Device savedDevice = maybeDev.get();
-                savedDevice.setVersion(newVersion);
-
-            } else {
-                throw new ConsistencyException("merge error: unchanged device in delta not found in repo");
+            if (dd.getModified().keySet().contains(urn)) {
+                throw new ConsistencyException("removed and modified delta for "+urn);
             }
-            unchangedDevices++;
+            if (dd.getAdded().keySet().contains(urn)) {
+                throw new ConsistencyException("removed and added delta for "+urn);
+            }
         }
-        log.debug("done updating version for unchanged devices: "+unchangedDevices+" entries");
 
-        deviceRepo.flush();
-        int modifiedDevs = 0;
-        int modifiedPorts = 0;
-        int addedPorts = 0;
+        for (String urn : dd.getModified().keySet()) {
+            if (dd.getUnchanged().keySet().contains(urn)) {
+                throw new ConsistencyException("modified and unchanged delta for "+urn);
+            }
+            if (dd.getAdded().keySet().contains(urn)) {
+                throw new ConsistencyException("modified and added delta for "+urn);
+            }
+        }
+        for (String urn : dd.getUnchanged().keySet()) {
+            if (dd.getAdded().keySet().contains(urn)) {
+                throw new ConsistencyException("unchanged and added delta for "+urn);
+            }
+        }
 
-        // then merge modified ones including the ports
-        log.debug("now modifying devices");
-        for (Device md: dd.getModified().values()) {
-            log.debug(" modifying "+md.getUrn());
-            Device prev = deviceRepo.findByUrn(md.getUrn()).orElseThrow(NoSuchElementException::new);
-            prev.setCapabilities(md.getCapabilities());
-            prev.setIpv4Address(md.getIpv4Address());
-            prev.setIpv6Address(md.getIpv6Address());
-            prev.setModel(md.getModel());
-            prev.setReservableVlans(md.getReservableVlans());
-            prev.setType(md.getType());
-            prev.setVersion(newVersion);
+            Map<String, Device> devicesToMakeInvalid = new HashMap<>();
+        Map<String, Device> devicesToUpdateVersion = new HashMap<>();
+        Map<String, Device> devicesToAdd = new HashMap<>();
+        Map<String, Device> devicesToUpdate = new HashMap<>();
+        Map<String, Device> devicesUpdateTarget = new HashMap<>();
+        Map<String, Device> devicesStore = new HashMap<>();
 
-            Set<String> handledPorts = new HashSet<>();
-
-            for (Port ap: pd.getAdded().values()) {
-                Optional<Port> maybeExists = portRepo.findByUrn(ap.getUrn());
-                if (maybeExists.isPresent()) {
-                    // it exists in the repo so instead of adding we need to modify it instead
-                    pd.getModified().put(ap.getUrn(), ap);
-                    ap.setVersion(newVersion);
-                    handledPorts.add(ap.getUrn());
+        for (Device d : dd.getAdded().values()) {
+            // need to add the entry
+            Optional<Device> maybeExists = deviceRepo.findByUrn(d.getUrn());
+            if (!maybeExists.isPresent()) {
+                devicesToAdd.put(d.getUrn(), d);
+            } else {
+                Device prev = maybeExists.get();
+                if (prev.getVersion().getValid()) {
+                    throw new ConsistencyException("trying to re-add already valid device "+d.getUrn());
                 } else {
-                    if (ap.getDevice().getUrn().equals(prev.getUrn())) {
-                        ap.setDevice(prev);
-                        ap.setVersion(newVersion);
-                        prev.getPorts().add(ap);
-                        handledPorts.add(ap.getUrn());
-                    }
+                    // adding a previously invalid device: set to valid, update
+                    devicesToUpdateVersion.put(d.getUrn(), prev);
+                    devicesToUpdate.put(d.getUrn(), prev);
+                    devicesUpdateTarget.put(d.getUrn(), d);
                 }
-                addedPorts++;
             }
-            for (String p : handledPorts) {
-                pd.getAdded().remove(p);
+        }
+
+        for (Device d : dd.getRemoved().values()) {
+            Optional<Device> maybeExists = deviceRepo.findByUrn(d.getUrn());
+            if (!maybeExists.isPresent()) {
+                throw new ConsistencyException("trying to remove missing device "+d.getUrn());
+            } else {
+                Device prev = maybeExists.get();
+                devicesToMakeInvalid.put(d.getUrn(), prev);
             }
-            handledPorts.clear();
-
-            for (Port mp: pd.getModified().values()) {
-                if (mp.getDevice().getUrn().equals(prev.getUrn())) {
-                    boolean found = false;
-                    Port prevPort = null;
-
-                    for (Port pp : prev.getPorts()) {
-                        if (pp.getUrn().equals(mp.getUrn())) {
-                            found = true;
-                            prevPort = pp;
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        throw new ConsistencyException("error locating modified port" + mp.getUrn());
-                    }
-                    prevPort.setVersion(newVersion);
-                    prevPort.setCapabilities(mp.getCapabilities());
-                    prevPort.setTags(mp.getTags());
-                    prevPort.setDevice(prev);
-                    prevPort.setIpv4Address(mp.getIpv4Address());
-                    prevPort.setIpv6Address(mp.getIpv6Address());
-                    prevPort.setReservableVlans(mp.getReservableVlans());
-                    prevPort.setReservableIngressBw(mp.getReservableIngressBw());
-                    prevPort.setReservableEgressBw(mp.getReservableEgressBw());
-                    handledPorts.add(mp.getUrn());
-                }
-                modifiedPorts++;
+        }
+        for (Device d : dd.getModified().values()) {
+            Optional<Device> maybeExists = deviceRepo.findByUrn(d.getUrn());
+            if (!maybeExists.isPresent()) {
+                throw new ConsistencyException("trying to modify missing device "+d.getUrn());
+            } else {
+                Device prev = maybeExists.get();
+                devicesToUpdateVersion.put(d.getUrn(), prev);
+                devicesToUpdate.put(d.getUrn(), prev);
+                devicesUpdateTarget.put(d.getUrn(), d);
             }
-            for (String p : handledPorts) {
-                pd.getModified().remove(p);
-            }
-            handledPorts.clear();
+        }
 
-            modifiedDevs++;
+        Integer unchangedDevices = 0;
+        for (Device d : dd.getUnchanged().values()) {
+            // need to add the entry
+            Optional<Device> maybeExists = deviceRepo.findByUrn(d.getUrn());
+            if (!maybeExists.isPresent()) {
+                throw new ConsistencyException("trying to keep unchanged missing device "+d.getUrn());
+            } else {
+                Device prev = maybeExists.get();
+                devicesToUpdateVersion.put(d.getUrn(), prev);
+                unchangedDevices++;
+            }
+        }
+
+
+
+
+        Integer addedDevices = 0;
+        for (String urn : devicesToAdd.keySet()) {
+            Device d = devicesToAdd.get(urn);
+            d.setVersion(newVersion);
+            log.info("adding d: "+d.getUrn());
+            deviceRepo.save(d);
+            devicesStore.put(urn, d);
+            addedDevices++;
+        }
+
+
+        Integer versionUpdatedDevices = 0;
+        for (String urn : devicesToUpdateVersion.keySet()) {
+            Device d = devicesToUpdateVersion.get(urn);
+            log.info("updating version d: "+d.getUrn());
+            d.setVersion(newVersion);
+            deviceRepo.save(d);
+            devicesStore.put(urn, d);
+            versionUpdatedDevices++;
+        }
+
+        Integer dataUpdatedDevices = 0;
+        for (String urn : devicesToUpdate.keySet()) {
+            Device prev = devicesToUpdate.get(urn);
+            Device next = devicesUpdateTarget.get(urn);
+            log.info("updating data d: "+urn);
+
+            prev.setCapabilities(next.getCapabilities());
+            prev.setIpv4Address(next.getIpv4Address());
+            prev.setIpv6Address(next.getIpv6Address());
+            prev.setModel(next.getModel());
+            prev.setReservableVlans(next.getReservableVlans());
+            prev.setType(next.getType());
             deviceRepo.save(prev);
+            devicesStore.put(urn, prev);
+            dataUpdatedDevices++;
+        }
+
+        Integer invalidatedDevices = 0;
+        for (String urn : devicesToMakeInvalid.keySet()) {
+            invalidatedDevices++;
+            Device prev = devicesToMakeInvalid.get(urn);
+            devicesStore.put(urn, prev);
         }
         deviceRepo.flush();
-        portRepo.flush();
-        log.debug("done modifying devices, modified: "+modifiedDevs);
-        log.debug("                     invalidated: "+dd.getRemoved().values().size());
-        log.debug("     + modified ports: "+modifiedPorts);
-        log.debug("     + added ports: "+addedPorts);
+
+        log.info("finished merging devices");
+        log.info("   added          :   "+addedDevices);
+        log.info("   ver updated    :   "+versionUpdatedDevices);
+        log.info("    + unchanged     :   "+unchangedDevices);
+        log.info("    + data updated  :   "+dataUpdatedDevices);
+        log.info("   invalidated    :   "+invalidatedDevices);
+
+        Map<String, Port> portsToMakeInvalid = new HashMap<>();
+        Map<String, Port> portsToUpdateVersion = new HashMap<>();
+        Map<String, Port> portsToAdd = new HashMap<>();
+        Map<String, Port> portsToUpdate = new HashMap<>();
+        Map<String, Port> portsUpdateTarget = new HashMap<>();
+        Map<String, Port> portsStore = new HashMap<>();
 
 
-        int unchangedPorts = 0;
-        // now for unchanged ports; these too need to be set to latest version
-        for (Port p: pd.getUnchanged().values()) {
-            Optional<Port> maybePort = portRepo.findByUrn(p.getUrn());
-            if (maybePort.isPresent()) {
-                Port savedPort = maybePort.get();
-                savedPort.setVersion(newVersion);
-
+        for (Port p : pd.getAdded().values()) {
+            // need to add the entry
+            Optional<Port> maybeExists = portRepo.findByUrn(p.getUrn());
+            if (!maybeExists.isPresent()) {
+                portsToAdd.put(p.getUrn(), p);
             } else {
-                throw new ConsistencyException("merge error: unchanged port in delta not found in repo");
+                Port prev = maybeExists.get();
+                if (prev.getVersion().getValid()) {
+                    throw new ConsistencyException("trying to re-add already valid port "+p.getUrn());
+                } else {
+                    // adding a previously invalid port: set to valid, update
+                    portsToUpdateVersion.put(p.getUrn(), prev);
+                    portsToUpdate.put(p.getUrn(), prev);
+                    portsUpdateTarget.put(p.getUrn(), p);
+                }
             }
-            unchangedPorts++;
         }
+
 
         for (Port p : pd.getRemoved().values()) {
-            log.info(" invalidating port "+p.getUrn()+" , version id stays: "+p.getVersion().getId());
+            Optional<Port> maybeExists = portRepo.findByUrn(p.getUrn());
+            if (!maybeExists.isPresent()) {
+                throw new ConsistencyException("trying to remove missing port "+p.getUrn());
+            } else {
+                Port prev = maybeExists.get();
+                portsToMakeInvalid.put(p.getUrn(), prev);
+            }
+        }
+
+        for (Port p : pd.getModified().values()) {
+            Optional<Port> maybeExists = portRepo.findByUrn(p.getUrn());
+            if (!maybeExists.isPresent()) {
+                throw new ConsistencyException("trying to modify missing port "+p.getUrn());
+            } else {
+                Port prev = maybeExists.get();
+                portsToUpdateVersion.put(p.getUrn(), prev);
+                portsToUpdate.put(p.getUrn(), prev);
+                portsUpdateTarget.put(p.getUrn(), p);
+            }
+        }
+
+        for (Port p : pd.getUnchanged().values()) {
+            // need to add the entry
+            Optional<Port> maybeExists = portRepo.findByUrn(p.getUrn());
+            if (!maybeExists.isPresent()) {
+                throw new ConsistencyException("trying to keep unchanged missing port "+p.getUrn());
+            } else {
+                Port prev = maybeExists.get();
+                portsToUpdateVersion.put(p.getUrn(), prev);
+            }
+        }
+
+
+        Integer addedPorts = 0;
+        for (String urn : portsToAdd.keySet()) {
+            Port p = portsToAdd.get(urn);
+            p.setVersion(newVersion);
+            String deviceUrn = p.getDevice().getUrn();
+            if (!devicesStore.keySet().contains(deviceUrn)) {
+                throw new ConsistencyException("new port pointing to unknown device: "+urn);
+            }
+
+            Device d = devicesStore.get(deviceUrn);
+            for (Port ep : d.getPorts()) {
+                if (ep.getUrn().equals(urn)) {
+                    throw new ConsistencyException("new port already in device port set: "+urn);
+                }
+            }
+            log.info("adding p: "+p.getUrn());
+            d.getPorts().add(p);
+
+            portRepo.save(p);
+            deviceRepo.save(d);
+
+            portsStore.put(urn, p);
+            addedPorts++;
+        }
+
+        Integer versionUpdatedPorts = 0;
+        for (String urn : portsToUpdateVersion.keySet()) {
+            Port p = portsToUpdateVersion.get(urn);
+            log.info("updating version p: "+urn);
+            p.setVersion(newVersion);
+            portRepo.save(p);
+            portsStore.put(urn, p);
+            versionUpdatedPorts++;
+        }
+
+        Integer dataUpdatedPorts = 0;
+        for (String urn : portsToUpdate.keySet()) {
+            log.info("updating data p: "+urn);
+            Port prev = portsToUpdate.get(urn);
+            Port next = portsUpdateTarget.get(urn);
+            Device dev = devicesStore.get(prev.getDevice().getUrn());
+
+            if (!prev.getDevice().getUrn()
+                    .equals(next.getDevice().getUrn())) {
+                String msg = "attempting to update port to a different device "+urn+" ("+dev.getUrn()+")";
+                log.error(msg);
+                throw new ConsistencyException(msg);
+            }
+
+            boolean fromDev = false;
+            for (Port p : dev.getPorts()) {
+                if (p.getUrn().equals(urn)) {
+                    fromDev = true;
+                    prev = p;
+                }
+            }
+            if (!fromDev) {
+                throw new ConsistencyException("data updated port not found in device "+urn);
+            }
+            prev.setDevice(dev);
+            prev.setCapabilities(next.getCapabilities());
+            prev.setTags(next.getTags());
+            prev.setIpv4Address(next.getIpv4Address());
+            prev.setIpv6Address(next.getIpv6Address());
+            prev.setReservableVlans(next.getReservableVlans());
+            prev.setReservableIngressBw(next.getReservableIngressBw());
+            prev.setReservableEgressBw(next.getReservableEgressBw());
+
+            portRepo.save(prev);
+            portsStore.put(urn, prev);
+            dataUpdatedPorts++;
+        }
+
+        Integer invalidatedPorts = 0;
+        for (String urn : portsToMakeInvalid.keySet()) {
+            invalidatedPorts++;
+            Port prev = portsToMakeInvalid.get(urn);
+            portsStore.put(urn, prev);
         }
         portRepo.flush();
-        log.debug("   unchanged ports: "+unchangedPorts+" entries");
-        log.debug(" invalidated ports: "+pd.getRemoved().values().size());
+
+        log.info("finished merging ports");
+        log.info("   added        :   "+addedPorts);
+        log.info("   ver updated  :   "+versionUpdatedPorts);
+        log.info("   data updated :   "+dataUpdatedPorts);
+        log.info("   invalidated  :   "+invalidatedPorts);
 
 
-        // to invalidate adjacencies that no longer exist, do nothing, just don't set the new version
-        // now modify existing ones
-        int modifiedAdjs = 0;
-        for (PortAdjcy pa: ad.getModified().values()) {
-            log.warn("modifying an adjcy: "+pa.getA().getUrn()+ " -- "+pa.getZ().getUrn());
-            boolean found = false;
-            PortAdjcy prev = null;
-            for (PortAdjcy candidate : adjcyRepo.findByVersion(currentVersion)) {
-                if (candidate.getA().getUrn().equals(pa.getA().getUrn()) &&
-                        candidate.getZ().getUrn().equals(pa.getZ().getUrn())) {
-                    prev = candidate;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                throw new ConsistencyException("adjcy in modified delta does not exist in repo");
-            }
-            for (Layer l : prev.getMetrics().keySet()) {
-                if (!pa.getMetrics().keySet().contains(l)) {
-                    log.debug("  removing a metric for "+l.toString());
-                    prev.getMetrics().remove(l);
-                }
-            }
-            for (Layer l : pa.getMetrics().keySet()) {
-                Long newMetric = pa.getMetrics().get(l);
-                if (!prev.getMetrics().containsKey(l)) {
-                    log.debug("  adding a metric for "+l.toString() + " to "+newMetric);
-                    prev.getMetrics().put(l, newMetric);
 
+        Map<String, PortAdjcy> adjciesToMakeInvalid = new HashMap<>();
+        Map<String, PortAdjcy> adjciesToUpdateVersion = new HashMap<>();
+        Map<String, PortAdjcy> adjciesToAdd = new HashMap<>();
+        Map<String, PortAdjcy> adjciesToUpdate = new HashMap<>();
+        Map<String, PortAdjcy> adjciesUpdateTarget = new HashMap<>();
+        Map<String, PortAdjcy> adjciesStore = new HashMap<>();
+
+
+
+        for (PortAdjcy pa : ad.getAdded().values()) {
+            String aUrn = pa.getA().getUrn();
+            String zUrn = pa.getZ().getUrn();
+            Optional<PortAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
+            if (!maybeExists.isPresent()) {
+                adjciesToAdd.put(pa.getUrn(), pa);
+            } else {
+                PortAdjcy prev = maybeExists.get();
+                if (prev.getVersion().getValid()) {
+                    throw new ConsistencyException("trying to re-add already valid adjcy "+pa.getUrn());
                 } else {
-                    Long prevMetric = prev.getMetrics().get(l);
-                    if (!prevMetric.equals(newMetric)) {
-                        log.debug("  replacing metric for "+l.toString() + " to "+newMetric);
-                        prev.getMetrics().put(l, newMetric);
-                    }
+                    // adding a previously invalid adjcy: set to valid, update
+                    adjciesToUpdateVersion.put(pa.getUrn(), prev);
+                    adjciesToUpdate.put(pa.getUrn(), prev);
+                    adjciesUpdateTarget.put(pa.getUrn(), pa);
                 }
             }
-
-            prev.setVersion(newVersion);
-            adjcyRepo.save(prev);
-
-            modifiedAdjs ++;
         }
 
-        adjcyRepo.flush();
-        log.debug("done modifying adjacencies: modified: "+modifiedAdjs);
-        log.debug("                        invalidated : "+ad.getRemoved().values().size());
 
 
-        int addedAdjs = 0;
+        for (PortAdjcy pa : ad.getRemoved().values()) {
+            String aUrn = pa.getA().getUrn();
+            String zUrn = pa.getZ().getUrn();
+            Optional<PortAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
+            if (!maybeExists.isPresent()) {
+                throw new ConsistencyException("trying to remove missing adjcy "+pa.getUrn());
+            } else {
+                PortAdjcy prev = maybeExists.get();
+                adjciesToMakeInvalid.put(pa.getUrn(), prev);
+            }
+        }
 
-        // finally add new adjacencies; this is done last to make sure the ports we refer to have been added already
-        for (PortAdjcy pa: ad.getAdded().values()) {
-            // log.info("adding an adjcy: "+pa.getA().getUrn()+ " -- "+pa.getZ().getUrn());
-            // fix port object refs
-            pa.setA(portRepo.findByUrn(pa.getA().getUrn()).orElseThrow(NoSuchElementException::new));
-            pa.setZ(portRepo.findByUrn(pa.getZ().getUrn()).orElseThrow(NoSuchElementException::new));
+        for (PortAdjcy pa : ad.getModified().values()) {
+            String aUrn = pa.getA().getUrn();
+            String zUrn = pa.getZ().getUrn();
+            Optional<PortAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
+            if (!maybeExists.isPresent()) {
+                throw new ConsistencyException("trying to modify missing adjcy "+pa.getUrn());
+            } else {
+                PortAdjcy prev = maybeExists.get();
+                adjciesToUpdateVersion.put(pa.getUrn(), prev);
+                adjciesToUpdate.put(pa.getUrn(), prev);
+                adjciesUpdateTarget.put(pa.getUrn(), pa);
+            }
+        }
+
+        for (PortAdjcy pa : ad.getUnchanged().values()) {
+            String aUrn = pa.getA().getUrn();
+            String zUrn = pa.getZ().getUrn();
+            Optional<PortAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
+
+            if (!maybeExists.isPresent()) {
+                throw new ConsistencyException("trying to keep unchanged missing adjcy "+pa.getUrn());
+            } else {
+                PortAdjcy prev = maybeExists.get();
+                adjciesToUpdateVersion.put(pa.getUrn(), prev);
+            }
+        }
+
+        Integer addedAdjcies = 0;
+        for (String urn : adjciesToAdd.keySet()) {
+            log.info("adding pa: "+urn);
+            PortAdjcy pa = adjciesToAdd.get(urn);
             pa.setVersion(newVersion);
-            pa.getA().getAdjciesWhereA().add(pa);
-            pa.getZ().getAdjciesWhereZ().add(pa);
+            String aUrn = pa.getA().getUrn();
+            String zUrn = pa.getZ().getUrn();
+            if (!portsStore.keySet().contains(aUrn)) {
+                throw new ConsistencyException("new adjcy pointing to unknown a: "+urn);
+            }
+            if (!portsStore.keySet().contains(zUrn)) {
+                throw new ConsistencyException("new adjcy pointing to unknown z: "+urn);
+            }
+            pa.setA(portsStore.get(aUrn));
+            pa.setZ(portsStore.get(zUrn));
             adjcyRepo.save(pa);
-            addedAdjs++;
-        }
-        log.debug("done adding adjacencies: added: "+addedAdjs);
 
-        int unchangedAdjs = 0;
-        // now handle unchanged adjacencies; these too need to be set to latest version
-        for (PortAdjcy pa: ad.getUnchanged().values()) {
-            PortAdjcy existing = null;
-            boolean found = false;
-            for (PortAdjcy candidate : adjcyRepo.findByVersion(currentVersion)) {
-                if (candidate.getA().getUrn().equals(pa.getA().getUrn()) &&
-                        candidate.getZ().getUrn().equals(pa.getZ().getUrn())) {
-                    existing = candidate;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                throw new ConsistencyException("adjcy in modified delta does not exist in repo");
-            }
-            existing.setVersion(newVersion);
-            adjcyRepo.save(existing);
-            unchangedAdjs++;
+            portsStore.get(aUrn).getAdjciesWhereA().add(pa);
+            portsStore.get(zUrn).getAdjciesWhereZ().add(pa);
+            portRepo.save(pa.getA());
+            portRepo.save(pa.getZ());
 
+            if (aUrn.equals("A:2")) {
+                log.info("all adjcies");
+                adjcyRepo.findAll().forEach( adjcy -> {
+                    log.info((adjcy.getUrn()));
+                });
+            }
+
+            adjciesStore.put(urn, pa);
+            addedAdjcies++;
         }
-        log.debug("done updating version for unchanged adjacencies: "+unchangedAdjs+" entries");
+        portRepo.flush();
         adjcyRepo.flush();
+
+        Integer versionUpdatedAdjcies = 0;
+        for (String urn : adjciesToUpdateVersion.keySet()) {
+            PortAdjcy pa = adjciesToUpdateVersion.get(urn);
+            log.info("updating version pa: "+urn);
+            pa.setVersion(newVersion);
+            adjcyRepo.save(pa);
+            adjciesStore.put(urn, pa);
+            versionUpdatedAdjcies++;
+        }
+
+
+        Integer dataUpdatedAdjcies = 0;
+        for (String urn : adjciesToUpdate.keySet()) {
+            log.info("updating data pa: "+urn);
+            PortAdjcy prev = adjciesToUpdate.get(urn);
+            PortAdjcy next = adjciesUpdateTarget.get(urn);
+
+            if (!prev.getA().getUrn().equals(next.getA().getUrn())) {
+                throw new ConsistencyException("attempting to update port adjcy with different A: "+urn);
+            }
+            if (!prev.getZ().getUrn().equals(next.getZ().getUrn())) {
+                throw new ConsistencyException("attempting to update port adjcy with different Z: "+urn);
+            }
+            prev.getMetrics().clear();
+            prev.getMetrics().putAll(next.getMetrics());
+            adjcyRepo.save(prev);
+            adjciesStore.put(urn, prev);
+
+            dataUpdatedAdjcies++;
+        }
+
+        Integer invalidatedAdjcies = 0;
+        for (String urn : adjciesToMakeInvalid.keySet()) {
+            invalidatedAdjcies++;
+            PortAdjcy prev = adjciesToMakeInvalid.get(urn);
+            adjciesStore.put(urn, prev);
+        }
+        adjcyRepo.flush();
+
+
+        log.info("finished merging adjacencies");
+        log.info("   added        :   "+addedAdjcies);
+        log.info("   ver updated  :   "+versionUpdatedAdjcies);
+        log.info("   data updated :   "+dataUpdatedAdjcies);
+        log.info("   invalidated  :   "+invalidatedAdjcies);
+
+        log.info("finished merging topology delta.");
 
     }
 
@@ -385,17 +580,17 @@ public class TopoService {
             });
 
             adjcies = adjcyRepo.findByVersion(versions.get(0));
-            log.info("found "+devices.size()+" devices in version "+versions.get(0).getId());
-            log.info("found "+adjcies.size()+" adjcies in version "+versions.get(0).getId());
+            log.info("found " + devices.size() + " devices in version " + versions.get(0).getId());
+            log.info("found " + adjcies.size() + " adjcies in version " + versions.get(0).getId());
             t.setDevices(deviceMap);
             t.setAdjcies(adjcies);
 
-            log.info(" current topo:");
+//            log.info(" current topo:");
             devices.forEach(d -> {
-                log.info(" d: "+d.getUrn());
+//                log.info(" d: "+d.getUrn());
                 for (Port p : d.getPorts()) {
                     if (p.getVersion() != null && p.getVersion().getValid()) {
-                        log.info(" +- "+p.getUrn());
+//                        log.info(" +- "+p.getUrn());
                         portMap.put(p.getUrn(), p);
                     }
                 }
@@ -407,108 +602,130 @@ public class TopoService {
     }
 
 
-
     private Map<String, TopoUrn> urnsFromDevices(List<Device> devices) {
         Map<String, TopoUrn> urns = new HashMap<>();
 
         devices.forEach(d -> {
-            // make a copy of the IntRanges otherwise it'd be set by reference
-            Set<IntRange> drv = new HashSet<>();
-            drv.addAll(IntRange.mergeIntRanges(d.getReservableVlans()));
-            Set<Layer> dCaps = new HashSet<>();
-            dCaps.addAll(d.getCapabilities());
+            if (d.getVersion().getValid()) {
 
-            TopoUrn deviceUrn = TopoUrn.builder()
-                    .urn(d.getUrn())
-                    .urnType(UrnType.DEVICE)
-                    .device(d)
-                    .reservableVlans(drv)
-                    .capabilities(dCaps)
-                    .reservableCommandParams(new HashSet<>())
-                    .build();
-
-            // for all devices, if this is MPLS-capable, reserve a VC id
-            if (d.getCapabilities().contains(Layer.MPLS)) {
-                Set<IntRange> vcIdRanges = IntRange.fromExpression(pssProperties.getVcidRange());
-                ReservableCommandParam vcCp = ReservableCommandParam.builder()
-                        .type(CommandParamType.VC_ID)
-                        .reservableRanges(vcIdRanges)
-                        .build();
-                deviceUrn.getReservableCommandParams().add(vcCp);
-            }
-
-            // for ALUs, add SVC, SDP and QOS ids as reservable
-            if (d.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
-
-                Set<IntRange> svcIdRanges = IntRange.fromExpression(pssProperties.getAluSvcidRange());
-                ReservableCommandParam aluSvcCp = ReservableCommandParam.builder()
-                        .type(CommandParamType.ALU_SVC_ID)
-                        .reservableRanges(svcIdRanges)
-                        .build();
-                deviceUrn.getReservableCommandParams().add(aluSvcCp);
-
-
-                Set<IntRange> sdpIdRanges = IntRange.fromExpression(pssProperties.getAluSdpidRange());
-                ReservableCommandParam aluSdpCp = ReservableCommandParam.builder()
-                        .type(CommandParamType.ALU_SDP_ID)
-                        .reservableRanges(sdpIdRanges)
-                        .build();
-                deviceUrn.getReservableCommandParams().add(aluSdpCp);
-
-                Set<IntRange> qosIdRanges = IntRange.fromExpression(pssProperties.getAluQosidRange());
-                ReservableCommandParam aluQosCp = ReservableCommandParam.builder()
-                        .type(CommandParamType.ALU_QOS_POLICY_ID)
-                        .reservableRanges(qosIdRanges)
-                        .build();
-                deviceUrn.getReservableCommandParams().add(aluQosCp);
-            }
-            urns.put(d.getUrn(), deviceUrn);
-
-            d.getPorts().forEach(p -> {
                 // make a copy of the IntRanges otherwise it'd be set by reference
-                Set<IntRange> prv = new HashSet<>();
-                prv.addAll(IntRange.mergeIntRanges(p.getReservableVlans()));
-                Set<Layer> pCaps = new HashSet<>();
-                pCaps.addAll(p.getCapabilities());
+                Set<IntRange> drv = new HashSet<>();
+                drv.addAll(IntRange.mergeIntRanges(d.getReservableVlans()));
+                Set<Layer> dCaps = new HashSet<>();
+                dCaps.addAll(d.getCapabilities());
 
-                TopoUrn portUrn = TopoUrn.builder()
-                        .urn(p.getUrn())
-                        .urnType(UrnType.PORT)
-                        .capabilities(pCaps)
+                TopoUrn deviceUrn = TopoUrn.builder()
+                        .urn(d.getUrn())
+                        .urnType(UrnType.DEVICE)
                         .device(d)
-                        .port(p)
-                        .reservableIngressBw(p.getReservableIngressBw())
-                        .reservableEgressBw(p.getReservableEgressBw())
-                        .reservableVlans(prv)
+                        .reservableVlans(drv)
+                        .capabilities(dCaps)
                         .reservableCommandParams(new HashSet<>())
                         .build();
 
+                // for all devices, if this is MPLS-capable, reserve a VC id
+                if (d.getCapabilities().contains(Layer.MPLS)) {
+                    Set<IntRange> vcIdRanges = IntRange.fromExpression(pssProperties.getVcidRange());
+                    ReservableCommandParam vcCp = ReservableCommandParam.builder()
+                            .type(CommandParamType.VC_ID)
+                            .reservableRanges(vcIdRanges)
+                            .build();
+                    deviceUrn.getReservableCommandParams().add(vcCp);
+                }
 
-                urns.put(p.getUrn(), portUrn);
+                // for ALUs, add SVC, SDP and QOS ids as reservable
+                if (d.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
 
-            });
+                    Set<IntRange> svcIdRanges = IntRange.fromExpression(pssProperties.getAluSvcidRange());
+                    ReservableCommandParam aluSvcCp = ReservableCommandParam.builder()
+                            .type(CommandParamType.ALU_SVC_ID)
+                            .reservableRanges(svcIdRanges)
+                            .build();
+                    deviceUrn.getReservableCommandParams().add(aluSvcCp);
+
+
+                    Set<IntRange> sdpIdRanges = IntRange.fromExpression(pssProperties.getAluSdpidRange());
+                    ReservableCommandParam aluSdpCp = ReservableCommandParam.builder()
+                            .type(CommandParamType.ALU_SDP_ID)
+                            .reservableRanges(sdpIdRanges)
+                            .build();
+                    deviceUrn.getReservableCommandParams().add(aluSdpCp);
+
+                    Set<IntRange> qosIdRanges = IntRange.fromExpression(pssProperties.getAluQosidRange());
+                    ReservableCommandParam aluQosCp = ReservableCommandParam.builder()
+                            .type(CommandParamType.ALU_QOS_POLICY_ID)
+                            .reservableRanges(qosIdRanges)
+                            .build();
+                    deviceUrn.getReservableCommandParams().add(aluQosCp);
+                }
+                urns.put(d.getUrn(), deviceUrn);
+
+                d.getPorts().forEach(p -> {
+                    if (p.getVersion().getValid()) {
+                        // make a copy of the IntRanges otherwise it'd be set by reference
+                        Set<IntRange> prv = new HashSet<>();
+                        prv.addAll(IntRange.mergeIntRanges(p.getReservableVlans()));
+                        Set<Layer> pCaps = new HashSet<>();
+                        pCaps.addAll(p.getCapabilities());
+
+                        TopoUrn portUrn = TopoUrn.builder()
+                                .urn(p.getUrn())
+                                .urnType(UrnType.PORT)
+                                .capabilities(pCaps)
+                                .device(d)
+                                .port(p)
+                                .reservableIngressBw(p.getReservableIngressBw())
+                                .reservableEgressBw(p.getReservableEgressBw())
+                                .reservableVlans(prv)
+                                .reservableCommandParams(new HashSet<>())
+                                .build();
+
+
+                        urns.put(p.getUrn(), portUrn);
+                    } else {
+                        log.info("not adding invalid port " + p.getUrn());
+                    }
+                });
+            } else {
+                log.info("not adding invalid device " + d.getUrn());
+
+            }
+
         });
 
         return urns;
 
     }
+
     private List<TopoAdjcy> topoAdjciesFromPortAdjcies(List<PortAdjcy> portAdjcies) throws TopoException {
         List<TopoAdjcy> adjcies = new ArrayList<>();
 
         for (PortAdjcy pa : portAdjcies) {
+            if (pa.getVersion() == null) {
+                log.info("null port adjcy: " + pa.getUrn());
+                continue;
+            } else if (!pa.getVersion().getValid()) {
+                log.info("invalid port adjcy: " + pa.getUrn());
+                continue;
+            }
             // all our adjcies should point to ports in the topoUrnMap
 
             if (!this.topoUrnMap.containsKey(pa.getA().getUrn())) {
-                log.error(pa.getA().getUrn()+" -- "+pa.getZ().getUrn());
+                log.error(pa.getA().getUrn() + " -- " + pa.getZ().getUrn());
 
-                throw new TopoException("missing A "+pa.getA().getUrn());
+                throw new TopoException("missing A " + pa.getA().getUrn());
 
             } else if (!this.topoUrnMap.containsKey(pa.getZ().getUrn())) {
 
-                log.error(pa.getA().getUrn()+" -- "+pa.getZ().getUrn());
-                throw new TopoException("missing Z "+pa.getZ().getUrn());
+                log.error(pa.getA().getUrn() + " -- " + pa.getZ().getUrn());
+                throw new TopoException("missing Z " + pa.getZ().getUrn());
+            } else if (!pa.getA().getVersion().getValid()) {
+                throw new TopoException("invalid A in adjcy" + pa.getUrn());
+            } else if (!pa.getZ().getVersion().getValid()) {
+                throw new TopoException("invalid Z in adjcy" + pa.getUrn());
 
             } else {
+
                 TopoUrn aUrn = this.topoUrnMap.get(pa.getA().getUrn());
                 TopoUrn zUrn = this.topoUrnMap.get(pa.getZ().getUrn());
                 Map<Layer, Long> metrics = new HashMap<>();
@@ -528,10 +745,13 @@ public class TopoService {
 
     private List<TopoAdjcy> topoAdjciesFromDevices(List<Device> devices) throws TopoException {
         List<TopoAdjcy> adjcies = new ArrayList<>();
-        for (Device d: devices) {
+        for (Device d : devices) {
             if (this.topoUrnMap.containsKey(d.getUrn())) {
                 TopoUrn deviceUrn = this.topoUrnMap.get(d.getUrn());
                 for (Port p : d.getPorts()) {
+                    if (p.getVersion() == null || !p.getVersion().getValid()) {
+                        continue;
+                    }
                     if (this.topoUrnMap.containsKey(p.getUrn())) {
                         TopoUrn portUrn = this.topoUrnMap.get(p.getUrn());
                         TopoAdjcy az = TopoAdjcy.builder()
@@ -549,11 +769,11 @@ public class TopoService {
                         adjcies.add(az);
                         adjcies.add(za);
                     } else {
-                        throw new TopoException("missing a port urn!");
+                        throw new TopoException("missing a port urn "+p.getUrn());
                     }
                 }
             } else {
-                throw new TopoException("missing a device urn!");
+                throw new TopoException("missing a device urn "+d.getUrn());
             }
         }
 

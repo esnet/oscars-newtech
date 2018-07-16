@@ -6,6 +6,7 @@ import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.resv.svc.ResvLibrary;
 import net.es.oscars.resv.svc.ResvService;
+import net.es.oscars.topo.beans.ConsistencyReport;
 import net.es.oscars.topo.beans.PortBwVlan;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.Topology;
@@ -15,6 +16,7 @@ import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.pop.ConsistencyException;
+import net.es.oscars.topo.svc.ConsistencyService;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.Interval;
 import net.es.oscars.web.beans.SimpleAdjcy;
@@ -31,6 +33,9 @@ public class TopoController {
 
     @Autowired
     private TopoService topoService;
+
+    @Autowired
+    private ConsistencyService consistencySvc;
 
     @Autowired
     private ResvService resvService;
@@ -72,7 +77,8 @@ public class TopoController {
             for (Device d : topology.getDevices().values()) {
                 List<Port> ports = new ArrayList<>();
                 for (Port p: d.getPorts()) {
-                    if (p.getCapabilities().contains(Layer.ETHERNET)) {
+                    if (p.getCapabilities().contains(Layer.ETHERNET)
+                            && p.getVersion() != null && p.getVersion().getValid()) {
                         ports.add(p);
                     }
                 }
@@ -161,5 +167,17 @@ public class TopoController {
 
     }
 
+    @RequestMapping(value = "/api/topo/report", method = RequestMethod.GET)
+    @ResponseBody
+    public ConsistencyReport report() throws StartupException  {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+        return consistencySvc.getLatestReport();
+
+
+    }
 
 }

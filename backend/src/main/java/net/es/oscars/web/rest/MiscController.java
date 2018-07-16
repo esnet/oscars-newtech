@@ -3,53 +3,60 @@ package net.es.oscars.web.rest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.File;
 
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
-import java.util.stream.Stream;
 
+import org.apache.commons.io.input.ReversedLinesFileReader;
 
 
 @RestController
 @Slf4j
 public class MiscController {
 
-    public static String logfile = "backend.log";
+    @Value("${logging.file}")
+    private String logfile;
 
     @RequestMapping(value = "/api/version", method = RequestMethod.GET)
     public String getVersion() {
-        return "1.0.8";
+        return "1.0.9";
     }
 
 
-    @RequestMapping(value = "/api/log", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public StreamingResponseBody getLog() {
-        return new StreamingResponseBody() {
+    @RequestMapping(value = "/api/log", method = RequestMethod.GET)
+    public String getLog() {
 
-            @Override
-            public void writeTo(OutputStream out) throws IOException {
-                Stream<String> stream = Files.lines(Paths.get(MiscController.logfile));
+        String out = "";
+        try {
+            File file = new File(logfile);
+            int n_lines = 1000;
+            int counter = 0;
+            boolean gotAll = false;
+            ReversedLinesFileReader reader = new ReversedLinesFileReader(file);
+            while (!gotAll) {
+                String line = reader.readLine();
+                if (line == null) {
+                    gotAll = true;
 
-                stream.forEach(s -> {
-                    String o = s + "\n";
-                    try {
-                        out.write(o.getBytes());
-                    } catch (IOException ex) {
-                        //
+                } else {
+                    out = reader.readLine() + "\n" + out;
+                    counter++;
+                    if (counter >= n_lines) {
+                        gotAll = true;
                     }
-                });
-
-                out.flush();
+                }
             }
-        };
+            reader.close();
+        } catch (IOException ex) {
+            log.error(ex.getMessage(), ex);
+            out = "internal error getting log: "+ex.getMessage();
+        }
+
+        return out;
     }
 
 }
