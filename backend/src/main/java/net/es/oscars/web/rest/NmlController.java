@@ -29,6 +29,9 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -41,6 +44,31 @@ public class NmlController {
     @Value("${nml.topo-name}")
     private String topoName;
 
+    @Value("${nml.base-url}")
+    private String baseUrl;
+
+
+    @Value("${nsi.provider-nsa}")
+    private String providerNsa;
+
+    @Value("${nsi.nsa-name}")
+    private String nsaName;
+
+    @Value("${nsi.nsa-contact}")
+    private String nsaContact;
+
+    @Value("${nsi.nsa-location}")
+    private String nsaLocation;
+
+    @Value("${resv.timeout}")
+    private Integer resvTimeout;
+
+
+    public static String NSA_PROVIDER_TYPE = "application/vnd.ogf.nsi.cs.v2.provider+soap";
+    public static String NSA_TOPO_TYPE = "application/vnd.ogf.nsi.topology.v2+xml";
+    public static String NSA_FEATURE_UPA = "vnd.ogf.nsi.cs.v2.role.uPA";
+    public static String NSA_FEATURE_TIMEOUT = "org.ogf.nsi.cs.v2.commitTimeout";
+
     @Autowired
     private TopoService topoService;
 
@@ -49,7 +77,10 @@ public class NmlController {
 
     private static String nsBase = "http://schemas.ogf.org/nml/2013/05/base#";
     private static String nsDefs = "http://schemas.ogf.org/nsi/2013/12/services/definition";
-    private static String nsEth  = "http://schemas.ogf.org/nml/2012/10/ethernet";
+    private static String nsEth = "http://schemas.ogf.org/nml/2012/10/ethernet";
+
+    private static String nsDiscovery = "http://schemas.ogf.org/nsi/2014/02/discovery/nsa";
+    private static String nsVcard = "urn:ietf:params:xml:ns:vcard-4.0";
 
 
     @GetMapping(value = "/api/topo/nml")
@@ -62,14 +93,14 @@ public class NmlController {
         Topology topology = topoService.currentTopology();
         List<Port> edgePorts = new ArrayList<>();
         for (Device d : topology.getDevices().values()) {
-            for (Port p: d.getPorts()) {
+            for (Port p : d.getPorts()) {
                 if (p.getCapabilities().contains(Layer.ETHERNET) && !p.getReservableVlans().isEmpty()) {
                     edgePorts.add(p);
                 }
             }
         }
 
-        String prefix = topoId+":";
+        String prefix = topoId + ":";
         String granularity = "1000000";
         String minRc = "0";
 
@@ -82,7 +113,6 @@ public class NmlController {
         GregorianCalendar oneDayc = new GregorianCalendar();
         oneDayc.setTimeInMillis(oneDay.toEpochMilli());
         XMLGregorianCalendar oneDayx = DatatypeFactory.newInstance().newXMLGregorianCalendar(nowc);
-
 
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -115,12 +145,11 @@ public class NmlController {
         rootElement.appendChild(lifetime);
 
 
-
         for (Port p : edgePorts) {
             String nsiUrn = nsiService.nsiUrnFromInternal(p.getUrn());
 
             Element bdp = doc.createElementNS(nsBase, "nml-base:BidirectionalPort");
-            bdp.setAttribute("id", nsiUrn );
+            bdp.setAttribute("id", nsiUrn);
             rootElement.appendChild(bdp);
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdp.appendChild(pgi);
@@ -131,7 +160,7 @@ public class NmlController {
         }
 
         Element serviceDefinition = doc.createElementNS(nsDefs, "nsi-defs:serviceDefinition");
-        serviceDefinition.setAttribute("id", prefix+"ServiceDefinition:EVTS.A-GOLE");
+        serviceDefinition.setAttribute("id", prefix + "ServiceDefinition:EVTS.A-GOLE");
         rootElement.appendChild(serviceDefinition);
         Element sdName = doc.createElementNS(nsDefs, "name");
         sdName.setTextContent("GLIF Automated GOLE Ethernet VLAN Transfer Service");
@@ -144,7 +173,7 @@ public class NmlController {
         ssRel.setAttribute("type", "http://schemas.ogf.org/nml/2013/05/base#hasService");
         rootElement.appendChild(ssRel);
         Element sSvc = doc.createElementNS(nsBase, "nml-base:SwitchingService");
-        sSvc.setAttribute("id", prefix+"ServiceDomain:EVTS.A-GOLE");
+        sSvc.setAttribute("id", prefix + "ServiceDomain:EVTS.A-GOLE");
         sSvc.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
         sSvc.setAttribute("labelSwapping", "true");
         sSvc.setAttribute("labelType", "http://schemas.ogf.org/nml/2012/10/ethernet#vlan");
@@ -157,9 +186,8 @@ public class NmlController {
         sSvc.appendChild(ssORel);
 
 
-
         Element ssSd = doc.createElementNS(nsDefs, "nsi-defs:serviceDefinition");
-        ssSd.setAttribute("id", prefix+"ServiceDefinition:EVTS.A-GOLE");
+        ssSd.setAttribute("id", prefix + "ServiceDefinition:EVTS.A-GOLE");
         sSvc.appendChild(ssSd);
 
         for (Port p : edgePorts) {
@@ -167,13 +195,12 @@ public class NmlController {
 
 
             Element pgsi = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgsi.setAttribute("id", nsiUrn+":in");
+            pgsi.setAttribute("id", nsiUrn + ":in");
             ssIRel.appendChild(pgsi);
             Element pgso = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgso.setAttribute("id", nsiUrn+":out");
+            pgso.setAttribute("id", nsiUrn + ":out");
             ssORel.appendChild(pgso);
         }
-
 
 
         Element hip = doc.createElementNS(nsBase, "nml-base:Relation");
@@ -189,7 +216,7 @@ public class NmlController {
                 if (r.getFloor().equals(r.getCeiling())) {
                     parts.add(r.getFloor().toString());
                 } else {
-                    parts.add(r.getFloor()+"-"+r.getCeiling());
+                    parts.add(r.getFloor() + "-" + r.getCeiling());
                 }
             }
             String vlans = String.join(",", parts);
@@ -197,7 +224,7 @@ public class NmlController {
 
 
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgi.setAttribute("id", nsiUrn+":in");
+            pgi.setAttribute("id", nsiUrn + ":in");
             pgi.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
             hip.appendChild(pgi);
 
@@ -205,8 +232,9 @@ public class NmlController {
             ilg.setAttribute("labeltype", "http://schemas.ogf.org/nml/2012/10/ethernet#vlan");
             ilg.setTextContent(vlans);
             pgi.appendChild(ilg);
+            
             Element imxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");
-            String ibps = p.getReservableIngressBw().toString()+ "000000";
+            String ibps = p.getReservableIngressBw().toString() + "000000";
             imxrc.setTextContent(ibps);
             Element imnrc = doc.createElementNS(nsEth, "nml-eth:minimumReservableCapacity");
             imnrc.setTextContent(minRc);
@@ -220,9 +248,8 @@ public class NmlController {
             pgi.appendChild(igrn);
 
 
-
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            pgo.setAttribute("id", nsiUrn+":out");
+            pgo.setAttribute("id", nsiUrn + ":out");
             pgo.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
             hop.appendChild(pgo);
 
@@ -263,8 +290,191 @@ public class NmlController {
         out.close();
     }
 
+    @GetMapping(value = "/api/nsa/discovery")
+    public void getNsaDiscovery(HttpServletResponse res) throws Exception {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+
+        Optional<Version> maybeVersion = topoService.currentVersion();
+        if (!maybeVersion.isPresent()) {
+            throw new InternalError("no valid topology version");
+        }
+
+        String[] locParts = nsaLocation.split(",");
+        String longitude = locParts[0];
+        String latitude = locParts[1];
+
+        String[] contactParts = nsaContact.split(",");
+        String contactName = contactParts[0];
+        String contactEmail = contactParts[1];
+        String[] cnParts = contactName.split("\\s+");
+        String cnGiven = cnParts[0];
+        String cnSurname = cnParts[1];
+
+        Version v = maybeVersion.get();
+        Topology topology = topoService.currentTopology();
+        String xmlVersion = formatter.format(v.getUpdated());
+
+        Instant now = Instant.now();
+        GregorianCalendar nowc = new GregorianCalendar();
+        nowc.setTimeInMillis(now.toEpochMilli());
+        XMLGregorianCalendar nowx = DatatypeFactory.newInstance().newXMLGregorianCalendar(nowc);
+
+        Instant threeMonths = now.plus(90, ChronoUnit.DAYS);
+        String expires = formatter.format(threeMonths);
+
+        String soapUrl = baseUrl + "/services/provider";
+        String topoUrl = baseUrl + "/api/topo/nml";
+
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware(true);
 
 
+        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+        Document doc = docBuilder.newDocument();
+        Element rootElement = doc.createElementNS(nsDiscovery, "disc:nsa");
+
+        rootElement.setAttribute("expires", expires);
+        rootElement.setAttribute("id", providerNsa);
+        rootElement.setAttribute("version", xmlVersion);
+
+        rootElement.setAttribute("xmlns:disc", nsDiscovery);
+        rootElement.setAttribute("xmlns:vc", nsVcard);
+        doc.appendChild(rootElement);
+
+
+        Element dName = doc.createElementNS(nsDiscovery, "disc:name");
+        dName.setTextContent(nsaName);
+        rootElement.appendChild(dName);
+
+        Element dSwVer = doc.createElementNS(nsDiscovery, "disc:softwareVersion");
+        dSwVer.setTextContent(MiscController.version);
+        rootElement.appendChild(dSwVer);
+
+        Element dStartTime = doc.createElementNS(nsDiscovery, "disc:startTime");
+        dStartTime.setTextContent(xmlVersion);
+        rootElement.appendChild(dStartTime);
+
+        // contact vcard
+        Element dAdminContact = doc.createElementNS(nsDiscovery, "disc:adminContact");
+        rootElement.appendChild(dAdminContact);
+        Element vVcard = doc.createElementNS(nsVcard, "vc:vcard");
+        dAdminContact.appendChild(vVcard);
+
+        Element vUid = doc.createElementNS(nsVcard, "vc:uid");
+        vVcard.appendChild(vUid);
+        Element vUri = doc.createElementNS(nsVcard, "vc:uri");
+        vUri.setTextContent(soapUrl + "#adminContact");
+        vUid.appendChild(vUri);
+
+        Element vProdId = doc.createElementNS(nsVcard, "vc:prodid");
+        Element vProdText = doc.createElementNS(nsVcard, "vc:text");
+        vProdText.setTextContent(nsaName);
+        vProdId.appendChild(vProdText);
+        vVcard.appendChild(vProdId);
+
+        Element vRev = doc.createElementNS(nsVcard, "vc:rev");
+        Element vTimestamp = doc.createElementNS(nsVcard, "vc:timestamp");
+        vTimestamp.setTextContent(xmlVersion);
+        vRev.appendChild(vTimestamp);
+        vVcard.appendChild(vRev);
+
+
+        Element vKind = doc.createElementNS(nsVcard, "vc:kind");
+        Element vKindText = doc.createElementNS(nsVcard, "vc:text");
+        vKindText.setTextContent("individual");
+        vKind.appendChild(vKindText);
+        vVcard.appendChild(vKind);
+
+        Element vFn = doc.createElementNS(nsVcard, "vc:fn");
+        Element vFnText = doc.createElementNS(nsVcard, "vc:text");
+        vFnText.setTextContent(contactName);
+        vFn.appendChild(vKindText);
+        vVcard.appendChild(vFn);
+
+        Element vN = doc.createElementNS(nsVcard, "vc:n");
+        Element vSurname = doc.createElementNS(nsVcard, "vc:surname");
+        vSurname.setTextContent(cnSurname);
+        Element vGiven = doc.createElementNS(nsVcard, "vc:given");
+        vGiven.setTextContent(cnGiven);
+        vN.appendChild(vSurname);
+        vN.appendChild(vGiven);
+        vVcard.appendChild(vN);
+
+        Element vEmail = doc.createElementNS(nsVcard, "vc:email");
+        Element vEmailText = doc.createElementNS(nsVcard, "vc:text");
+        vEmailText.setTextContent(contactEmail);
+        vEmail.appendChild(vEmailText);
+        vVcard.appendChild(vEmail);
+
+        // lat and long
+        Element dLocation = doc.createElementNS(nsDiscovery, "disc:location");
+        Element dLongitude = doc.createElementNS(nsDiscovery, "disc:longitude");
+        dLongitude.setTextContent(longitude);
+
+        Element dLatitude = doc.createElementNS(nsDiscovery, "disc:latitude");
+        dLatitude.setTextContent(latitude);
+
+        dLocation.appendChild(dLongitude);
+        dLocation.appendChild(dLatitude);
+        rootElement.appendChild(dLocation);
+
+
+        Element dNetworkId = doc.createElementNS(nsDiscovery, "disc:networkId");
+        dNetworkId.setTextContent(topoId);
+        rootElement.appendChild(dNetworkId);
+
+        Element dPaIfce = doc.createElementNS(nsDiscovery, "disc:interface");
+        Element dPaType= doc.createElementNS(nsDiscovery, "disc:type");
+        dPaType.setTextContent(NSA_PROVIDER_TYPE);
+        dPaIfce.appendChild(dPaType);
+        Element dPaHref = doc.createElementNS(nsDiscovery, "disc:href");
+        dPaHref.setTextContent(soapUrl);
+        dPaIfce.appendChild(dPaHref);
+        rootElement.appendChild(dPaIfce);
+
+        Element dTopoIfce = doc.createElementNS(nsDiscovery, "disc:interface");
+        Element dTopoType= doc.createElementNS(nsDiscovery, "disc:type");
+        dTopoType.setTextContent(NSA_TOPO_TYPE);
+        dTopoIfce.appendChild(dTopoType);
+        Element dTopoHref = doc.createElementNS(nsDiscovery, "disc:href");
+        dTopoHref.setTextContent(topoUrl);
+        dTopoIfce.appendChild(dTopoHref);
+
+        rootElement.appendChild(dTopoIfce);
+
+        Element dFeatureUpa= doc.createElementNS(nsDiscovery, "disc:feature");
+        dFeatureUpa.setAttribute("type", NSA_FEATURE_UPA);
+        rootElement.appendChild(dFeatureUpa);
+
+        Element dFeatureTimeout= doc.createElementNS(nsDiscovery, "disc:feature");
+        dFeatureTimeout.setAttribute("type", NSA_FEATURE_TIMEOUT);
+        dFeatureTimeout.setTextContent(""+resvTimeout);
+        rootElement.appendChild(dFeatureTimeout);
+
+        Element dPeersWith = doc.createElementNS(nsDiscovery, "disc:peersWith");
+        dPeersWith.setAttribute("role", "PA");
+        dPeersWith.setTextContent("urn:ogf:network:es.net:2013:nsa:nsi-aggr-west");
+        rootElement.appendChild(dPeersWith);
+
+
+
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+        StreamResult result = new StreamResult(new StringWriter());
+        DOMSource source = new DOMSource(doc);
+        transformer.transform(source, result);
+
+        String xmlString = result.getWriter().toString();
+
+
+        PrintWriter out = res.getWriter();
+        out.println(xmlString);
+        out.close();
+
+    }
 
 
 }
