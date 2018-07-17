@@ -17,13 +17,14 @@ import org.apache.commons.io.input.ReversedLinesFileReader;
 @RestController
 @Slf4j
 public class MiscController {
+    public static String version = "1.0.9";
 
     @Value("${logging.file}")
     private String logfile;
 
     @RequestMapping(value = "/api/version", method = RequestMethod.GET)
     public String getVersion() {
-        return "1.0.9";
+        return version;
     }
 
 
