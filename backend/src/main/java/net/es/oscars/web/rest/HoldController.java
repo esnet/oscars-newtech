@@ -121,7 +121,7 @@ public class HoldController {
         Optional<Connection> c = connRepo.findByConnectionId(connectionId);
         if (!c.isPresent()){
             throw new IllegalArgumentException("connection not found for "+connectionId);
-        } else if (c.get().getPhase().equals(Phase.HELD)) {
+        } else if (!c.get().getPhase().equals(Phase.HELD)) {
             throw new IllegalArgumentException("connection not in HELD phase for "+connectionId);
         } else {
             connRepo.delete(c.get());
