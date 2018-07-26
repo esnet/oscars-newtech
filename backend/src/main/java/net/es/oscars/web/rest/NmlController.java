@@ -232,7 +232,7 @@ public class NmlController {
             ilg.setAttribute("labeltype", "http://schemas.ogf.org/nml/2012/10/ethernet#vlan");
             ilg.setTextContent(vlans);
             pgi.appendChild(ilg);
-            
+
             Element imxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");
             String ibps = p.getReservableIngressBw().toString() + "000000";
             imxrc.setTextContent(ibps);
@@ -343,20 +343,20 @@ public class NmlController {
         doc.appendChild(rootElement);
 
 
-        Element dName = doc.createElementNS(nsDiscovery, "disc:name");
+        Element dName = doc.createElement("name");
         dName.setTextContent(nsaName);
         rootElement.appendChild(dName);
 
-        Element dSwVer = doc.createElementNS(nsDiscovery, "disc:softwareVersion");
+        Element dSwVer = doc.createElement("softwareVersion");
         dSwVer.setTextContent(MiscController.version);
         rootElement.appendChild(dSwVer);
 
-        Element dStartTime = doc.createElementNS(nsDiscovery, "disc:startTime");
+        Element dStartTime = doc.createElement("startTime");
         dStartTime.setTextContent(xmlVersion);
         rootElement.appendChild(dStartTime);
 
         // contact vcard
-        Element dAdminContact = doc.createElementNS(nsDiscovery, "disc:adminContact");
+        Element dAdminContact = doc.createElement("adminContact");
         rootElement.appendChild(dAdminContact);
         Element vVcard = doc.createElementNS(nsVcard, "vc:vcard");
         dAdminContact.appendChild(vVcard);
@@ -389,7 +389,7 @@ public class NmlController {
         Element vFn = doc.createElementNS(nsVcard, "vc:fn");
         Element vFnText = doc.createElementNS(nsVcard, "vc:text");
         vFnText.setTextContent(contactName);
-        vFn.appendChild(vKindText);
+        vFn.appendChild(vFnText);
         vVcard.appendChild(vFn);
 
         Element vN = doc.createElementNS(nsVcard, "vc:n");
@@ -408,11 +408,11 @@ public class NmlController {
         vVcard.appendChild(vEmail);
 
         // lat and long
-        Element dLocation = doc.createElementNS(nsDiscovery, "disc:location");
-        Element dLongitude = doc.createElementNS(nsDiscovery, "disc:longitude");
+        Element dLocation = doc.createElement("location");
+        Element dLongitude = doc.createElement("longitude");
         dLongitude.setTextContent(longitude);
 
-        Element dLatitude = doc.createElementNS(nsDiscovery, "disc:latitude");
+        Element dLatitude = doc.createElement("latitude");
         dLatitude.setTextContent(latitude);
 
         dLocation.appendChild(dLongitude);
@@ -420,43 +420,42 @@ public class NmlController {
         rootElement.appendChild(dLocation);
 
 
-        Element dNetworkId = doc.createElementNS(nsDiscovery, "disc:networkId");
+        Element dNetworkId = doc.createElement("networkId");
         dNetworkId.setTextContent(topoId);
         rootElement.appendChild(dNetworkId);
 
-        Element dPaIfce = doc.createElementNS(nsDiscovery, "disc:interface");
-        Element dPaType= doc.createElementNS(nsDiscovery, "disc:type");
+        Element dPaIfce = doc.createElement("interface");
+        Element dPaType = doc.createElement("type");
         dPaType.setTextContent(NSA_PROVIDER_TYPE);
         dPaIfce.appendChild(dPaType);
-        Element dPaHref = doc.createElementNS(nsDiscovery, "disc:href");
+        Element dPaHref = doc.createElement("href");
         dPaHref.setTextContent(soapUrl);
         dPaIfce.appendChild(dPaHref);
         rootElement.appendChild(dPaIfce);
 
-        Element dTopoIfce = doc.createElementNS(nsDiscovery, "disc:interface");
-        Element dTopoType= doc.createElementNS(nsDiscovery, "disc:type");
+        Element dTopoIfce = doc.createElement("interface");
+        Element dTopoType = doc.createElement("type");
         dTopoType.setTextContent(NSA_TOPO_TYPE);
         dTopoIfce.appendChild(dTopoType);
-        Element dTopoHref = doc.createElementNS(nsDiscovery, "disc:href");
+        Element dTopoHref = doc.createElement("href");
         dTopoHref.setTextContent(topoUrl);
         dTopoIfce.appendChild(dTopoHref);
 
         rootElement.appendChild(dTopoIfce);
 
-        Element dFeatureUpa= doc.createElementNS(nsDiscovery, "disc:feature");
+        Element dFeatureUpa = doc.createElement("feature");
         dFeatureUpa.setAttribute("type", NSA_FEATURE_UPA);
         rootElement.appendChild(dFeatureUpa);
 
-        Element dFeatureTimeout= doc.createElementNS(nsDiscovery, "disc:feature");
+        Element dFeatureTimeout = doc.createElement("feature");
         dFeatureTimeout.setAttribute("type", NSA_FEATURE_TIMEOUT);
-        dFeatureTimeout.setTextContent(""+resvTimeout);
+        dFeatureTimeout.setTextContent("" + resvTimeout);
         rootElement.appendChild(dFeatureTimeout);
 
-        Element dPeersWith = doc.createElementNS(nsDiscovery, "disc:peersWith");
+        Element dPeersWith = doc.createElement("peersWith");
         dPeersWith.setAttribute("role", "PA");
         dPeersWith.setTextContent("urn:ogf:network:es.net:2013:nsa:nsi-aggr-west");
         rootElement.appendChild(dPeersWith);
-
 
 
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
