@@ -40,3 +40,5 @@ star-tb1:10/1/7:to_mem-pt,2-4094,10
 star-tb1:10/1/8:to_mem-pt,2-4094,10
 star-tb1:10/1/9:to_mem-pt,2-4094,10
 star-tb1:10/1/10:to_mem-pt,2-4094,10
+xo-osf-rt1:xe-0/0/0:nersc-mr2,1000-4094,10,urn:ogf:network:es.net:2013::nersc-mr2:7_3_0:xo-osf-rt1
+xo-osf-rt1:xe-0/0/3:g8264_p64,2-4094,10

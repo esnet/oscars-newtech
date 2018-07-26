@@ -1,0 +1,51 @@
+[
+  {
+    "device": "cern-773-cr5",
+    "name": "lag-1",
+    "ports": ["10/2/1", "10/2/2"],
+    "mbps": 20000,
+    "enable": true
+  },
+  {
+    "device": "cern-513-cr5",
+    "name": "lag-1",
+    "ports": ["10/2/1", "10/2/2"],
+    "mbps": 20000,
+    "enable": true
+  },
+  {
+    "device": "pnwg-cr5",
+    "name": "lag-1",
+    "ports": ["10/1/1", "9/1/5"],
+    "mbps": 20000,
+    "enable": true
+  },
+  {
+    "device": "star-cr5",
+    "name": "lag-1",
+    "ports": ["5/2/1"],
+    "mbps": 100000,
+    "enable": true
+  },
+  {
+    "device": "eqx-ash-cr5",
+    "name": "lag-1",
+    "ports": ["10/1/4"],
+    "mbps": 10000,
+    "enable": false
+  },
+  {
+    "device": "eqx-ash-cr5",
+    "name": "lag-2",
+    "ports": ["10/2/3", "9/2/4"],
+    "mbps": 20000,
+    "enable": true
+  },
+  {
+    "device": "eqx-sj-cr5",
+    "name": "lag-1",
+    "ports": ["10/1/3"],
+    "mbps": 10000,
+    "enable": false
+  }
+]

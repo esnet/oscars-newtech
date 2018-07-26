@@ -149,7 +149,8 @@ def main():
                 if juniper and '.' in ifce:
                     parts = ifce.split('.')
                     ifce = parts[0]
-                    used_vlans.append(int(parts[1]))
+                    if 'oscars' not in description:
+                        used_vlans.append(int(parts[1]))
 
                 ifce_urn = device + ':' + ifce
                 found = False
@@ -197,7 +198,7 @@ def main():
                     device_entry['ports'].append(port)
 
             if delete:
-                delete_urn = device+':'+delete
+                delete_urn = device + ':' + delete
                 delete_entry = None
                 for port_entry in device_entry['ports']:
                     if port_entry['urn'] == delete_urn:
@@ -206,7 +207,7 @@ def main():
                     device_entry['ports'].remove(delete_entry)
 
         for lag in lags:
-            lag_urn = lag['device']+':'+lag['name']
+            lag_urn = lag['device'] + ':' + lag['name']
             lag_tags = []
             if lag['device'] == device:
                 ports_to_del = []
@@ -217,7 +218,7 @@ def main():
                             ports_to_del.append(port_entry)
                             for tag in port_entry['tags']:
                                 lag_tags.append(tag)
-                        elif port_entry['urn'] == device+':BLANK':
+                        elif port_entry['urn'] == device + ':BLANK':
                             if port_entry not in ports_to_del:
                                 ports_to_del.append(port_entry)
 
@@ -250,7 +251,7 @@ def main():
     for device_entry in devices:
         for port_entry in device_entry['ports']:
             if 'BLANK' in port_entry['urn']:
-                sys.stderr.write('BLANK port in device '+device_entry['urn']+' - check lags')
+                sys.stderr.write('BLANK port in device ' + device_entry['urn'] + ' - check lags')
                 error_exit = True
 
     with open(opts.output_devices, 'w') as outfile:
