@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
@@ -285,6 +286,8 @@ public class NmlController {
         String xmlString = result.getWriter().toString();
 
 
+        res.setContentType("application/xml");
+
         PrintWriter out = res.getWriter();
         out.println(xmlString);
         out.close();
@@ -292,7 +295,12 @@ public class NmlController {
 
     @GetMapping(value = "/api/nsa/discovery")
     public void getNsaDiscovery(HttpServletResponse res) throws Exception {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_INSTANT;
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_INSTANT;
+        String pattern = "yyyyMMdd'T'hhmmss'Z'ZZ";
+
+        DateTimeFormatter formatForVcard = DateTimeFormatter
+                .ofPattern(pattern)
+                .withZone(ZoneOffset.systemDefault());
 
         Optional<Version> maybeVersion = topoService.currentVersion();
         if (!maybeVersion.isPresent()) {
@@ -312,7 +320,8 @@ public class NmlController {
 
         Version v = maybeVersion.get();
         Topology topology = topoService.currentTopology();
-        String xmlVersion = formatter.format(v.getUpdated());
+        String xmlVersion = dateFormatter.format(v.getUpdated());
+        String vCardTimestamp = formatForVcard.format(v.getUpdated());
 
         Instant now = Instant.now();
         GregorianCalendar nowc = new GregorianCalendar();
@@ -320,7 +329,7 @@ public class NmlController {
         XMLGregorianCalendar nowx = DatatypeFactory.newInstance().newXMLGregorianCalendar(nowc);
 
         Instant threeMonths = now.plus(90, ChronoUnit.DAYS);
-        String expires = formatter.format(threeMonths);
+        String expires = dateFormatter.format(threeMonths);
 
         String soapUrl = baseUrl + "/services/provider";
         String topoUrl = baseUrl + "/api/topo/nml";
@@ -375,7 +384,7 @@ public class NmlController {
 
         Element vRev = doc.createElementNS(nsVcard, "vc:rev");
         Element vTimestamp = doc.createElementNS(nsVcard, "vc:timestamp");
-        vTimestamp.setTextContent(xmlVersion);
+        vTimestamp.setTextContent(vCardTimestamp);
         vRev.appendChild(vTimestamp);
         vVcard.appendChild(vRev);
 
@@ -470,6 +479,7 @@ public class NmlController {
 
 
         PrintWriter out = res.getWriter();
+        res.setContentType("application/xml");
         out.println(xmlString);
         out.close();
 
