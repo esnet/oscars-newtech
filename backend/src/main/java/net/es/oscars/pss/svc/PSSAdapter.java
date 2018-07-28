@@ -3,11 +3,15 @@ package net.es.oscars.pss.svc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.ServiceException;
+import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.st.ConfigStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
+import net.es.oscars.nsi.ent.NsiMapping;
+import net.es.oscars.nsi.svc.NsiService;
 import net.es.oscars.pss.db.RouterCommandsRepository;
 import net.es.oscars.pss.ent.RouterCommandHistory;
 import net.es.oscars.pss.ent.RouterCommands;
@@ -35,15 +39,17 @@ public class PSSAdapter {
     private RouterCommandsRepository rcr;
     private PSSParamsAdapter paramsAdapter;
     private CommandHistoryRepository historyRepo;
+    private NsiService nsiService;
 
     @Autowired
     public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr,
-                      CommandHistoryRepository historyRepo,
+                      CommandHistoryRepository historyRepo, NsiService nsiService,
                       PSSParamsAdapter paramsAdapter, PssProperties properties) {
         this.pssProxy = pssProxy;
         this.rcr = rcr;
         this.historyRepo = historyRepo;
         this.paramsAdapter = paramsAdapter;
+        this.nsiService = nsiService;
         this.properties = properties;
     }
 
@@ -93,6 +99,7 @@ public class PSSAdapter {
                 result = State.FAILED;
             }
         }
+        this.triggerNsi(conn, result);
         return result;
     }
 
@@ -117,9 +124,21 @@ public class PSSAdapter {
                 result = State.FAILED;
             }
         }
+        this.triggerNsi(conn, result);
         return result;
     }
 
+    public void triggerNsi(Connection c, State newState) {
+        try {
+            Optional<NsiMapping> maybeMapping = nsiService.getMappingForOscarsId(c.getConnectionId());
+            if (maybeMapping.isPresent()) {
+                nsiService.dataplaneCallback(maybeMapping.get(), newState);
+            }
+        } catch (NsiException | ServiceException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+
+    }
 
     public List<CommandStatus> getStableStatuses(List<Command> commands) throws PSSException {
         try {

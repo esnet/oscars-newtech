@@ -29,10 +29,8 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -105,15 +103,18 @@ public class NmlController {
         String granularity = "1000000";
         String minRc = "0";
 
-        Instant now = Instant.now();
-        Instant oneDay = now.plus(1, ChronoUnit.DAYS);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_INSTANT;
 
-        GregorianCalendar nowc = new GregorianCalendar();
-        nowc.setTimeInMillis(now.toEpochMilli());
-        XMLGregorianCalendar nowx = DatatypeFactory.newInstance().newXMLGregorianCalendar(nowc);
-        GregorianCalendar oneDayc = new GregorianCalendar();
-        oneDayc.setTimeInMillis(oneDay.toEpochMilli());
-        XMLGregorianCalendar oneDayx = DatatypeFactory.newInstance().newXMLGregorianCalendar(nowc);
+        Instant now = Instant.now();
+        Instant topoExpiration = now.plus(1, ChronoUnit.DAYS);
+
+        GregorianCalendar nowC = new GregorianCalendar();
+        nowC.setTimeInMillis(now.toEpochMilli());
+        XMLGregorianCalendar nowX = DatatypeFactory.newInstance().newXMLGregorianCalendar(nowC);
+
+        GregorianCalendar endC = new GregorianCalendar();
+        endC.setTimeInMillis(topoExpiration.toEpochMilli());
+        XMLGregorianCalendar endX = DatatypeFactory.newInstance().newXMLGregorianCalendar(endC);
 
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -129,7 +130,7 @@ public class NmlController {
         rootElement.setAttribute("xmlns:nsi-defs", nsDefs);
 
 
-        rootElement.setAttribute("version", v.getId().toString());
+        rootElement.setAttribute("version", dateFormatter.format(now));
         rootElement.setAttribute("id", topoId);
         Element tName = doc.createElementNS(nsBase, "nml-base:name");
         tName.setTextContent(topoName);
@@ -137,10 +138,10 @@ public class NmlController {
 
         Element lifetime = doc.createElementNS(nsBase, "nml-base:Lifetime");
         Element lStart = doc.createElementNS(nsBase, "nml-base:start");
-        lStart.setTextContent(nowx.toString());
+        lStart.setTextContent(nowX.toString());
         lifetime.appendChild(lStart);
         Element lEnd = doc.createElementNS(nsBase, "nml-base:end");
-        lEnd.setTextContent(oneDayx.toString());
+        lEnd.setTextContent(endX.toString());
         lifetime.appendChild(lEnd);
 
         rootElement.appendChild(lifetime);
@@ -163,10 +164,10 @@ public class NmlController {
         Element serviceDefinition = doc.createElementNS(nsDefs, "nsi-defs:serviceDefinition");
         serviceDefinition.setAttribute("id", prefix + "ServiceDefinition:EVTS.A-GOLE");
         rootElement.appendChild(serviceDefinition);
-        Element sdName = doc.createElementNS(nsDefs, "name");
+        Element sdName = doc.createElement("name");
         sdName.setTextContent("GLIF Automated GOLE Ethernet VLAN Transfer Service");
         serviceDefinition.appendChild(sdName);
-        Element svcType = doc.createElementNS(nsDefs, "serviceType");
+        Element svcType = doc.createElement("serviceType");
         svcType.setTextContent("http://services.ogf.org/nsi/2013/12/descriptions/EVTS.A-GOLE");
         serviceDefinition.appendChild(svcType);
 
@@ -234,6 +235,7 @@ public class NmlController {
             ilg.setTextContent(vlans);
             pgi.appendChild(ilg);
 
+            /*
             Element imxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");
             String ibps = p.getReservableIngressBw().toString() + "000000";
             imxrc.setTextContent(ibps);
@@ -247,6 +249,7 @@ public class NmlController {
             pgi.appendChild(imnrc);
             pgi.appendChild(icap);
             pgi.appendChild(igrn);
+            */
 
 
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
@@ -258,6 +261,7 @@ public class NmlController {
             olg.setAttribute("labeltype", "http://schemas.ogf.org/nml/2012/10/ethernet#vlan");
             olg.setTextContent(vlans);
             pgo.appendChild(olg);
+            /*
             Element omxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");
             String obps = p.getReservableEgressBw() + "000000";
             omxrc.setTextContent(obps);
@@ -271,6 +275,7 @@ public class NmlController {
             pgo.appendChild(omnrc);
             pgo.appendChild(ocap);
             pgo.appendChild(ogrn);
+            */
 
 
         }
@@ -296,7 +301,7 @@ public class NmlController {
     @GetMapping(value = "/api/nsa/discovery")
     public void getNsaDiscovery(HttpServletResponse res) throws Exception {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_INSTANT;
-        String pattern = "yyyyMMdd'T'hhmmss'Z'ZZ";
+        String pattern = "yyyyMMdd'T'hhmmssZZ";
 
         DateTimeFormatter formatForVcard = DateTimeFormatter
                 .ofPattern(pattern)
@@ -320,6 +325,8 @@ public class NmlController {
 
         Version v = maybeVersion.get();
         Topology topology = topoService.currentTopology();
+
+
         String xmlVersion = dateFormatter.format(v.getUpdated());
         String vCardTimestamp = formatForVcard.format(v.getUpdated());
 

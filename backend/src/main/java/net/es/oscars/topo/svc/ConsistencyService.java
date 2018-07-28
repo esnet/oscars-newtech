@@ -80,6 +80,9 @@ public class ConsistencyService {
     }
 
     public void checkConnection(Connection c, ConsistencyReport cr) {
+        if (!c.getPhase().equals(Phase.RESERVED)) {
+            return;
+        }
 
         Components cmp = c.getReserved().getCmp();
         for (VlanJunction vj : cmp.getJunctions()) {

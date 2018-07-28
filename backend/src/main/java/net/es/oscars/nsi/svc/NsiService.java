@@ -241,17 +241,9 @@ public class NsiService {
                 }
 
                 nsiStateEngine.provision(NsiEvent.PROV_START, mapping);
-                if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
-                    c.setMode(BuildMode.AUTOMATIC);
-                } else {
-                    try {
-                        c.setState(pssAdapter.build(c));
-                    } catch (PSSException ex) {
-                        // TODO: trigger a forcedEnd?
-                        c.setState(State.FAILED);
-                        log.error(ex.getMessage(), ex);
-                    }
-                }
+
+
+                c.setMode(BuildMode.AUTOMATIC);
                 connRepo.save(c);
 
                 nsiStateEngine.provision(NsiEvent.PROV_CF, mapping);
@@ -287,15 +279,17 @@ public class NsiService {
 
                 nsiStateEngine.release(NsiEvent.REL_START, mapping);
 
-                if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
-                    c.setMode(BuildMode.MANUAL);
-                } else {
-                    try {
-                        c.setState(pssAdapter.dismantle(c));
-                    } catch (PSSException ex) {
-                        // TODO: trigger a forcedEnd?
-                        c.setState(State.FAILED);
-                        log.error(ex.getMessage(), ex);
+                c.setMode(BuildMode.MANUAL);
+                // if we are after start time, we will need to tear down
+                if (Instant.now().isAfter(c.getReserved().getSchedule().getBeginning())) {
+                    if (c.getState().equals(State.ACTIVE)) {
+                        try {
+                            c.setState(pssAdapter.dismantle(c));
+                        } catch (PSSException ex) {
+                            // TODO: trigger a forcedEnd?
+                            c.setState(State.FAILED);
+                            log.error(ex.getMessage(), ex);
+                        }
                     }
                 }
                 connRepo.save(c);
@@ -863,6 +857,49 @@ public class NsiService {
         port.reserveConfirmed(rct, outHeader);
     }
 
+    public void dataplaneCallback(NsiMapping mapping, State st) throws NsiException, ServiceException {
+        log.info("OK callback");
+        String nsaId = mapping.getNsaId();
+        if (!this.getRequesterNsa(nsaId).isPresent()) {
+            throw new NsiException("Unknown requester nsa id " + nsaId, NsiErrors.SEC_ERROR);
+        }
+        NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
+
+        ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA);
+        net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.ObjectFactory of =
+                new net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.ObjectFactory();
+
+        DataPlaneStateChangeRequestType dsrt = of.createDataPlaneStateChangeRequestType();
+        DataPlaneStatusType dst = new DataPlaneStatusType();
+        dsrt.setConnectionId(mapping.getNsiConnectionId());
+
+        try {
+            ZonedDateTime zd = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
+            GregorianCalendar c = GregorianCalendar.from(zd);
+            XMLGregorianCalendar xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+
+            dsrt.setTimeStamp(xgc);
+
+        } catch (DatatypeConfigurationException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new NsiException(ex.getMessage(), NsiErrors.NRM_ERROR);
+        }
+
+        dst.setActive(false);
+
+        if (st.equals(State.ACTIVE)) {
+            dst.setActive(true);
+        }
+        dst.setVersion(mapping.getDataplaneVersion());
+        dst.setVersionConsistent(true);
+        dsrt.setDataPlaneStatus(dst);
+
+        String corrId = this.newCorrelationId();
+        Holder<CommonHeaderType> outHeader = this.makeClientHeader(nsaId, corrId);
+        port.dataPlaneStateChange(dsrt, outHeader);
+
+    }
+
     @Transactional
     public void okCallback(NsiEvent event, NsiMapping mapping, CommonHeaderType inHeader)
             throws NsiException, ServiceException {
@@ -1074,7 +1111,7 @@ public class NsiService {
             ScheduleType st = of.createScheduleType();
 
             st.setStartTime(of.createScheduleTypeStartTime(xgb));
-            st.setEndTime(of.createScheduleTypeStartTime(xge));
+            st.setEndTime(of.createScheduleTypeEndTime(xge));
             return st;
         } catch (DatatypeConfigurationException ex) {
             log.error(ex.getMessage(), ex);

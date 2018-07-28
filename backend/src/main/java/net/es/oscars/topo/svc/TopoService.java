@@ -145,7 +145,6 @@ public class TopoService {
         Map<String, Device> devicesToAdd = new HashMap<>();
         Map<String, Device> devicesToUpdate = new HashMap<>();
         Map<String, Device> devicesUpdateTarget = new HashMap<>();
-        Map<String, Device> devicesStore = new HashMap<>();
 
         for (Device d : dd.getAdded().values()) {
             // need to add the entry
@@ -208,7 +207,6 @@ public class TopoService {
             d.setVersion(newVersion);
             log.info("adding d: "+d.getUrn());
             deviceRepo.save(d);
-            devicesStore.put(urn, d);
             addedDevices++;
         }
 
@@ -219,7 +217,6 @@ public class TopoService {
             log.info("updating version d: "+d.getUrn());
             d.setVersion(newVersion);
             deviceRepo.save(d);
-            devicesStore.put(urn, d);
             versionUpdatedDevices++;
         }
 
@@ -236,7 +233,6 @@ public class TopoService {
             prev.setReservableVlans(next.getReservableVlans());
             prev.setType(next.getType());
             deviceRepo.save(prev);
-            devicesStore.put(urn, prev);
             dataUpdatedDevices++;
         }
 
@@ -244,9 +240,7 @@ public class TopoService {
         for (String urn : devicesToMakeInvalid.keySet()) {
             invalidatedDevices++;
             Device prev = devicesToMakeInvalid.get(urn);
-            devicesStore.put(urn, prev);
         }
-        deviceRepo.flush();
 
         log.info("finished merging devices");
         log.info("   added          :   "+addedDevices);
@@ -260,7 +254,6 @@ public class TopoService {
         Map<String, Port> portsToAdd = new HashMap<>();
         Map<String, Port> portsToUpdate = new HashMap<>();
         Map<String, Port> portsUpdateTarget = new HashMap<>();
-        Map<String, Port> portsStore = new HashMap<>();
 
 
         for (Port p : pd.getAdded().values()) {
@@ -321,11 +314,12 @@ public class TopoService {
             Port p = portsToAdd.get(urn);
             p.setVersion(newVersion);
             String deviceUrn = p.getDevice().getUrn();
-            if (!devicesStore.keySet().contains(deviceUrn)) {
+            Optional<Device> maybeDevice = deviceRepo.findByUrn(deviceUrn);
+            if (!maybeDevice.isPresent()) {
                 throw new ConsistencyException("new port pointing to unknown device: "+urn);
             }
 
-            Device d = devicesStore.get(deviceUrn);
+            Device d = maybeDevice.get();
             for (Port ep : d.getPorts()) {
                 if (ep.getUrn().equals(urn)) {
                     throw new ConsistencyException("new port already in device port set: "+urn);
@@ -333,11 +327,9 @@ public class TopoService {
             }
             log.info("adding p: "+p.getUrn());
             d.getPorts().add(p);
-
-            portRepo.save(p);
+            p.setDevice(d);
             deviceRepo.save(d);
 
-            portsStore.put(urn, p);
             addedPorts++;
         }
 
@@ -347,7 +339,6 @@ public class TopoService {
             log.info("updating version p: "+urn);
             p.setVersion(newVersion);
             portRepo.save(p);
-            portsStore.put(urn, p);
             versionUpdatedPorts++;
         }
 
@@ -356,7 +347,12 @@ public class TopoService {
             log.info("updating data p: "+urn);
             Port prev = portsToUpdate.get(urn);
             Port next = portsUpdateTarget.get(urn);
-            Device dev = devicesStore.get(prev.getDevice().getUrn());
+
+            Optional<Device> maybeDevice = deviceRepo.findByUrn(prev.getDevice().getUrn());
+            if (!maybeDevice.isPresent()) {
+                throw new ConsistencyException("new port pointing to unknown device: "+urn);
+            }
+            Device dev = maybeDevice.get();
 
             if (!prev.getDevice().getUrn()
                     .equals(next.getDevice().getUrn())) {
@@ -385,17 +381,23 @@ public class TopoService {
             prev.setReservableEgressBw(next.getReservableEgressBw());
 
             portRepo.save(prev);
-            portsStore.put(urn, prev);
             dataUpdatedPorts++;
         }
 
         Integer invalidatedPorts = 0;
         for (String urn : portsToMakeInvalid.keySet()) {
-            invalidatedPorts++;
             Port prev = portsToMakeInvalid.get(urn);
-            portsStore.put(urn, prev);
+            log.debug("invalidating port "+urn);
+            Optional<Device> maybeDevice = deviceRepo.findByUrn(prev.getDevice().getUrn());
+            if (!maybeDevice.isPresent()) {
+                throw new ConsistencyException("new port pointing to unknown device: "+urn);
+            }
+            Device d = maybeDevice.get();
+
+            prev.setDevice(d);
+            portRepo.save(prev);
+            invalidatedPorts++;
         }
-        portRepo.flush();
 
         log.info("finished merging ports");
         log.info("   added        :   "+addedPorts);
@@ -410,7 +412,6 @@ public class TopoService {
         Map<String, PortAdjcy> adjciesToAdd = new HashMap<>();
         Map<String, PortAdjcy> adjciesToUpdate = new HashMap<>();
         Map<String, PortAdjcy> adjciesUpdateTarget = new HashMap<>();
-        Map<String, PortAdjcy> adjciesStore = new HashMap<>();
 
 
 
@@ -481,33 +482,20 @@ public class TopoService {
             pa.setVersion(newVersion);
             String aUrn = pa.getA().getUrn();
             String zUrn = pa.getZ().getUrn();
-            if (!portsStore.keySet().contains(aUrn)) {
+            Optional<Port> maybeA = portRepo.findByUrn(aUrn);
+            Optional<Port> maybeZ = portRepo.findByUrn(zUrn);
+            if (!maybeA.isPresent()) {
                 throw new ConsistencyException("new adjcy pointing to unknown a: "+urn);
             }
-            if (!portsStore.keySet().contains(zUrn)) {
+            if (!maybeZ.isPresent()) {
                 throw new ConsistencyException("new adjcy pointing to unknown z: "+urn);
             }
-            pa.setA(portsStore.get(aUrn));
-            pa.setZ(portsStore.get(zUrn));
+            pa.setA(maybeA.get());
+            pa.setZ(maybeZ.get());
             adjcyRepo.save(pa);
 
-            portsStore.get(aUrn).getAdjciesWhereA().add(pa);
-            portsStore.get(zUrn).getAdjciesWhereZ().add(pa);
-            portRepo.save(pa.getA());
-            portRepo.save(pa.getZ());
-
-            if (aUrn.equals("A:2")) {
-                log.info("all adjcies");
-                adjcyRepo.findAll().forEach( adjcy -> {
-                    log.info((adjcy.getUrn()));
-                });
-            }
-
-            adjciesStore.put(urn, pa);
             addedAdjcies++;
         }
-        portRepo.flush();
-        adjcyRepo.flush();
 
         Integer versionUpdatedAdjcies = 0;
         for (String urn : adjciesToUpdateVersion.keySet()) {
@@ -515,7 +503,6 @@ public class TopoService {
             log.info("updating version pa: "+urn);
             pa.setVersion(newVersion);
             adjcyRepo.save(pa);
-            adjciesStore.put(urn, pa);
             versionUpdatedAdjcies++;
         }
 
@@ -535,18 +522,16 @@ public class TopoService {
             prev.getMetrics().clear();
             prev.getMetrics().putAll(next.getMetrics());
             adjcyRepo.save(prev);
-            adjciesStore.put(urn, prev);
 
             dataUpdatedAdjcies++;
         }
+
 
         Integer invalidatedAdjcies = 0;
         for (String urn : adjciesToMakeInvalid.keySet()) {
             invalidatedAdjcies++;
             PortAdjcy prev = adjciesToMakeInvalid.get(urn);
-            adjciesStore.put(urn, prev);
         }
-        adjcyRepo.flush();
 
 
         log.info("finished merging adjacencies");

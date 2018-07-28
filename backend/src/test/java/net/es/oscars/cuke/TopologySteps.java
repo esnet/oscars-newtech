@@ -71,11 +71,6 @@ public class TopologySteps extends CucumberSteps {
     public void clear_topo() throws Throwable {
 
         log.info("clearing adjacencies");
-        for (Port p : portRepo.findAll()) {
-            p.setAdjciesWhereA(new HashSet<>());
-            p.setAdjciesWhereZ(new HashSet<>());
-            portRepo.save(p);
-        }
         adjcyRepo.deleteAll();
         adjcyRepo.flush();
 
