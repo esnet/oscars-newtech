@@ -457,9 +457,22 @@ public class ConnService {
         Instant end;
 
         String connectionId = in.getConnectionId();
-        if (connectionId == null || connectionId.equals("")) {
-            error += "empty or null connection id\n";
+        if (connectionId == null) {
+            error += "null connection id\n";
             valid = false;
+        } else {
+            if (!connectionId.matches("^[a-zA-Z][a-zA-Z0-9_\\-]+$")) {
+                error += "connection id invalid format \n";
+                valid = false;
+            }
+            if (connectionId.length() > 12) {
+                error += "connection id too long\n";
+                valid = false;
+            } else if (connectionId.length() < 4) {
+                error += "connection id too short\n";
+                valid = false;
+
+            }
         }
         if (in.getBegin() == null) {
             error += "null begin field\n";
