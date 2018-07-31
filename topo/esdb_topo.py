@@ -18,6 +18,7 @@ import argparse
 import os
 import sys
 import requests
+from timeit import default_timer as timer
 from operator import itemgetter
 from itertools import groupby
 
@@ -28,9 +29,11 @@ from esnet.topology.today_to_ip_addresses import get_ip_addrs
 from esnet.topology.today_to_vlan import get_vlans
 
 ESDB_URL = "https://esdb.es.net/esdb_api/v1"
-
-OUTPUT_DEVICES = "output/devices.json"
-OUTPUT_ADJCIES = "output/adjacencies.json"
+OUTPUT_DIR = './output'
+SAVE_DIR = './output'
+DEVICES = "devices.json"
+ADJCIES = "adjacencies.json"
+TODAY = "output/today.json"
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -74,29 +77,68 @@ def main():
                         help="set verbosity level")
     parser.add_argument('-t', '--token', default=None,
                         help="API authentication token")
+    parser.add_argument('-f', '--fast', action='count', default=0,
+                        help="Fast mode (use saved today.json)")
+    parser.add_argument('-s', '--save', action='count', default=0,
+                        help="save today.json for fast run")
+    parser.add_argument('--today', default=TODAY,
+                        help="Filaname for today.json (for fast / save)")
+    parser.add_argument('--save-dir', default=SAVE_DIR,
+                        help="Save directory (for fast /save)")
+
     parser.add_argument('--token-path', default=None,
                         help="Path to file containing API authentication token")
-    parser.add_argument('--output-devices', default=OUTPUT_DEVICES,
-                        help="Path to devices output file")
-    parser.add_argument('--output-adjacencies', default=OUTPUT_ADJCIES,
-                        help="Path to IS-IS adjacencies output file")
+    parser.add_argument('-o', '--output-dir', default=OUTPUT_DIR,
+                        help="Output directory")
+
+    parser.add_argument('--devices', default=DEVICES,
+                        help="Name of devices output file")
+    parser.add_argument('--adjacencies', default=ADJCIES,
+                        help="Name of adjacencies output file")
 
     opts = parser.parse_args()
 
     token = get_token(opts)
 
     # print "ESDB on " + ESDB_URL + " with key " + token
-
-    r = requests.get(ESDB_URL + '/topology/today/1',
-                     headers=dict(Authorization='Token {0}'.format(token)))
-
-    if r.status_code != requests.codes.ok:
-        print "error:  " + r.text
+    if opts.fast and opts.save:
+        print >> sys.stderr, "--save and --fast mutually exclusive"
         exit(1)
+
+    today_save_path = opts.save_dir + '/' + opts.today
+
+    # future: add lat /long
+    # eq = requests.get(ESDB_URL + '/equipment/?limit=0&detail=list',
+    #                 headers=dict(Authorization='Token {0}'.format(token)))
+    # equipment = eq.json()
+
+    # loc = requests.get(ESDB_URL + '/location/?limit=0',
+    #                   headers=dict(Authorization='Token {0}'.format(token)))
+    # locations = loc.json()
+
+    if not opts.fast:
+        if opts.verbose:
+            print "retrieving today.json from ESDB"
+        r = requests.get(ESDB_URL + '/topology/today/1',
+                         headers=dict(Authorization='Token {0}'.format(token)))
+        if r.status_code != requests.codes.ok:
+            print "error:  " + r.text
+            exit(1)
+        snapshot = r.json()['topology_snapshots'][0]['data']
+    else:
+        if opts.verbose:
+            print "loading today.json from " + today_save_path
+        with open(today_save_path, 'r') as infile:
+            snapshot = json.load(fp=infile)
+
+    if opts.save:
+        if opts.verbose:
+            print "saving today.json to " + today_save_path
+        with open(today_save_path, 'w') as outfile:
+            json.dump(obj=snapshot, fp=outfile, indent=2)
 
     # Get the first snapshot that got returned.  Since we didn't ask for one
     # in particular, we should have gotten only the current snapshot.
-    snapshot = r.json()['topology_snapshots'][0]['data']
     today = snapshot['today']
     # print json.dumps(today, indent=2)
 
@@ -125,11 +167,20 @@ def main():
     #    pp.pprint(oscars_devices)
     merge_addrs(oscars_devices=oscars_devices, addrs=addrs, isis_adjcies=isis_adjcies)
 
+    # FUTURE: add lat / long
+    # add_locations(oscars_devices=oscars_devices, equip=equipment, locations=locations)
+
+    dev_save_path = opts.output_dir + '/' + opts.devices
+    adj_save_path = opts.output_dir + '/' + opts.adjacencies
     # Dump output files
-    with open(opts.output_devices, 'w') as outfile:
+    if opts.verbose:
+        print "saving devices to " + dev_save_path
+    with open(dev_save_path, 'w') as outfile:
         json.dump(oscars_devices, outfile, indent=2)
 
-    with open(opts.output_adjacencies, 'w') as outfile:
+    if opts.verbose:
+        print "saving adjacencies to " + adj_save_path
+    with open(adj_save_path, 'w') as outfile:
         json.dump(oscars_adjcies, outfile, indent=2)
 
 
@@ -289,6 +340,24 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=Non
 
                     if not found_port and keep_port:
                         device["ports"].append(ifce_data)
+
+
+def add_locations(oscars_devices=None, equip=None, locations=None):
+    locs_by_id = {}
+    equip_by_name = {}
+    for entry in equip['results']:
+        equip_by_name[entry['name']] = entry
+    for entry in locations['results']:
+        locs_by_id[entry['id']] = entry
+    for device in oscars_devices:
+        if device['urn'] in equip_by_name:
+            equip_entry = equip_by_name[device['urn']]
+            loc_entry = locs_by_id[equip_entry['location']['id']]
+            device['latitude'] = loc_entry['latitude']
+            device['longitude'] = loc_entry['longitude']
+        else:
+            print >> sys.stderr, "device not found in ESDB equipment: "+device['urn']
+            exit(1)
 
 
 def merge_isis_ports(oscars_devices=None, igp_portmap=None):

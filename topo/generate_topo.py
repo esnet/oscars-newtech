@@ -13,9 +13,11 @@ def main():
         'FAST': True,
         'TMP_DIR': tempfile.gettempdir(),
         'OUTPUT_DIR': "./output",
+        'SAVE_DIR': "./output",
         'TOPO_PREFIX': '',
         'DUAL_PORTS': "input/dual_ports.json",
         'LAGS': "input/lags.json",
+        'TODAY': "today.json",
         'SAPS': "saps.json",
         'PORTS': "ports.json"
     }
@@ -38,18 +40,25 @@ def main():
     parser.add_argument('--dual_ports', default=defaults['DUAL_PORTS'],
                         help="Path to dual ports input file")
 
+    parser.add_argument('--save-dir', default=defaults['SAVE_DIR'],
+                        help="Save directory (for fast/ save mode)")
+    parser.add_argument('--today', default=defaults['TODAY'],
+                        help="Path to today file (read fast / write save mode)")
     parser.add_argument('--saps', default=defaults['SAPS'],
-                        help="Path to saps file (for fast / save mode)")
+                        help="Path to saps file (read fast / write save mode)")
     parser.add_argument('--ports', default=defaults['PORTS'],
-                        help="Path to ports file (for fast / save mode)")
+                        help="Path to ports file (read fast / write save mode)")
 
     opts = parser.parse_args()
     if opts.fast and opts.save:
-        print >> sys.stderr, "output dir is not a directory: " + opts.output_dir
+        print >> sys.stderr, "--save and --fast mutually exclusive"
         exit(1)
 
-    initial_devs = opts.tmp_dir + "/oscars_topo_devs.json"
-    initial_adjs = opts.tmp_dir + "/oscars_topo_adjs.json"
+    tmp_devs_file = "oscars_tmp_devs.json"
+    tmp_adjs_file = "oscars_tmp_adjs.json"
+
+    initial_devs = opts.tmp_dir+"/"+tmp_devs_file
+    initial_adjs = opts.tmp_dir+"/"+tmp_adjs_file
 
     output_adjs = opts.output_dir + "/" + opts.prefix + "adjcies.json"
     output_devs = opts.output_dir + "/" + opts.prefix + "devices.json"
@@ -73,8 +82,8 @@ def main():
             exit(1)
 
     if opts.fast or opts.save:
-        ports = opts.output_dir + "/" + opts.ports
-        saps = opts.output_dir + "/" + opts.saps
+        ports = opts.save_dir + "/" + opts.ports
+        saps = opts.save_dir + "/" + opts.saps
 
     if not opts.fast:
         graphite_base_url = "https://graphite.es.net/api/west"
@@ -104,7 +113,20 @@ def main():
         if opts.verbose:
             print "saved files to " + ports + " " + saps
 
-    esdb_topo = "./esdb_topo.py --output-devices=" + initial_devs + " --output-adjacencies=" + initial_adjs
+    esdb_output_dir = opts.tmp_dir
+    esdb_verbose_arg = ''
+    if opts.verbose:
+        esdb_verbose_arg = '-v'
+
+    esdb_op_arg = ''
+    if opts.save:
+        esdb_op_arg = '--save --save-dir=' + opts.save_dir + ' --today ' + opts.today
+
+    if opts.fast:
+        esdb_op_arg = '--fast --save-dir=' + opts.save_dir + ' --today ' + opts.today
+
+    esdb_topo = "./esdb_topo.py " + esdb_verbose_arg + " " + esdb_op_arg + " --output-dir=" + esdb_output_dir \
+                + " --devices=" + tmp_devs_file + " --adjacencies=" + tmp_adjs_file
     if opts.verbose:
         print "processing today.json"
         print esdb_topo
@@ -129,7 +151,10 @@ def main():
     if opts.verbose:
         print 'cleaning temp files'
     os.remove(initial_devs)
-    if not opts.save or opts.fast:
+
+    if not (opts.save or opts.fast):
+        if opts.verbose:
+            print 'removing ports and saps saved files'
         os.remove(ports)
         os.remove(saps)
 
