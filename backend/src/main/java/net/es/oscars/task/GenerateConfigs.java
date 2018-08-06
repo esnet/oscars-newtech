@@ -39,7 +39,7 @@ public class GenerateConfigs {
     @Transactional
     public void processingLoop() {
         if (startup.isInStartup() || startup.isInShutdown()) {
-            log.info("application in startup or shutdown; skipping config generation");
+//            log.info("application in startup or shutdown; skipping config generation");
             return;
         }
 

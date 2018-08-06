@@ -47,7 +47,7 @@ public class RefreshTopology {
     @Transactional
     public void processingLoop() {
         if (startup.isInStartup() || startup.isInShutdown()) {
-            log.info("application in startup or shutdown; will start refreshing topology later");
+//            log.info("application in startup or shutdown; will start refreshing topology later");
             return;
         }
         try {

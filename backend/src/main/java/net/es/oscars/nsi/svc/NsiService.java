@@ -417,7 +417,7 @@ public class NsiService {
             log.error(ex.getMessage(), ex);
             throw new NsiException(ex.getMessage(), NsiErrors.NRM_ERROR);
         }
-        if (query.getIfModifiedSince() != null ) {
+        if (query.getIfModifiedSince() != null) {
             throw new NsiException("IMS not supported yet", NsiErrors.UNIMPLEMENTED);
         }
 
@@ -447,7 +447,7 @@ public class NsiService {
         qsrct.setServiceType(SERVICE_TYPE);
         qsrct.setVersion(0);
 
-        P2PServiceBaseType p2p = makeP2P(c);
+        P2PServiceBaseType p2p = makeP2P(c.getReserved().getCmp());
 
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
                 = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
@@ -678,10 +678,25 @@ public class NsiService {
         }
 
         Set<IntRange> aVlansSet = new HashSet<>();
-        aVlansSet.add(this.getVlanRange(src));
+        IntRange aRange = this.getVlanRange(src);
+        aVlansSet.add(aRange);
 
         Set<IntRange> zVlansSet = new HashSet<>();
-        zVlansSet.add(this.getVlanRange(dst));
+        IntRange zRange = this.getVlanRange(dst);
+        zVlansSet.add(zRange);
+
+        // check if they're trying a
+        if (a_urn.getPort().getUrn().equals(z_urn.getPort().getUrn())) {
+            if (aRange.getFloor().equals(aRange.getCeiling())) {
+                if (zRange.getFloor().equals(zRange.getCeiling())) {
+                    if (aRange.getFloor().equals(zRange.getFloor())) {
+                        throw new NsiException(
+                                "Cannot provision same port.vlan for both src and dst", NsiErrors.MSG_ERROR);
+                    }
+                }
+            }
+        }
+
 
         Map<String, PortBwVlan> available = resvService.available(interval, null);
         PortBwVlan aAvail = available.get(a_urn.getUrn());
@@ -716,6 +731,7 @@ public class NsiService {
         } else if (zVlanId == null) {
             throw new NsiException("vlan(s) unavailable for " + dst, NsiErrors.UNAVAIL_ERROR);
         }
+
 
         Fixture aF = Fixture.builder()
                 .junction(aJ.getDevice())
@@ -762,20 +778,25 @@ public class NsiService {
                 if (label.equals("vlan")) {
                     String[] parts = value.split("-");
 
-                    if (parts.length == 1) {
-                        Integer vlan = Integer.valueOf(parts[0]);
-                        vlanRange.setFloor(vlan);
-                        vlanRange.setCeiling(vlan);
-                        log.info("vlan range for " + stp + " : " + vlan);
-                        return vlanRange;
-                    } else if (parts.length == 2) {
-                        Integer f = Integer.valueOf(parts[0]);
-                        Integer c = Integer.valueOf(parts[1]);
-                        vlanRange.setFloor(f);
-                        vlanRange.setCeiling(c);
-                        log.info("vlan range for " + stp + " : " + f + " - " + c);
-                        return vlanRange;
+                    try {
+                        if (parts.length == 1) {
+                            Integer vlan = Integer.valueOf(parts[0]);
+                            vlanRange.setFloor(vlan);
+                            vlanRange.setCeiling(vlan);
+                            log.info("vlan range for " + stp + " : " + vlan);
+                            return vlanRange;
 
+                        } else if (parts.length == 2) {
+                            Integer f = Integer.valueOf(parts[0]);
+                            Integer c = Integer.valueOf(parts[1]);
+                            vlanRange.setFloor(f);
+                            vlanRange.setCeiling(c);
+                            log.info("vlan range for " + stp + " : " + f + " - " + c);
+                            return vlanRange;
+
+                        }
+                    } catch (NumberFormatException ex) {
+                        throw new NsiException("Could not parse vlan id parameter", NsiErrors.MSG_ERROR);
                     }
                 } else {
                     log.info("label-value: " + lvParts[0] + " = " + lvParts[1]);
@@ -843,7 +864,7 @@ public class NsiService {
         rcct.setServiceType(SERVICE_TYPE);
         rcct.setVersion(0);
 
-        P2PServiceBaseType p2p = makeP2P(c);
+        P2PServiceBaseType p2p = makeP2P(c.getHeld().getCmp());
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
                 = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
         rcct.getAny().add(p2pof.createP2Ps(p2p));
@@ -934,11 +955,10 @@ public class NsiService {
     }
 
 
-    public P2PServiceBaseType makeP2P(Connection c) {
+    public P2PServiceBaseType makeP2P(Components cmp) {
 
         P2PServiceBaseType p2p = new P2PServiceBaseType();
 
-        Components cmp = c.getHeld().getCmp();
         VlanFixture a = cmp.getFixtures().get(0);
         VlanFixture z = cmp.getFixtures().get(1);
         String srcStp = this.nsiUrnFromInternal(a.getPortUrn()) + "?vlan=" + a.getVlan().getVlanId();

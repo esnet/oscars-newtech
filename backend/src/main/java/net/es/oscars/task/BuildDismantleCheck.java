@@ -37,7 +37,7 @@ public class BuildDismantleCheck {
     @Transactional
     public void buildDismantleOnSchedule() {
         if (startup.isInStartup() || startup.isInShutdown()) {
-            log.info("application in startup or shutdown; skipping state transitions");
+            // log.info("application in startup or shutdown; skipping state transitions");
             return;
         }
 

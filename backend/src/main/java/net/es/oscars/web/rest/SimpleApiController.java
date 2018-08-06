@@ -3,10 +3,12 @@ package net.es.oscars.web.rest;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.resv.ent.CommandParam;
 import net.es.oscars.resv.ent.Components;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.Tag;
 import net.es.oscars.resv.enums.Phase;
+import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.web.beans.ConnectionFilter;
 import net.es.oscars.web.simple.*;
 import net.es.oscars.web.beans.PceRequest;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 
 @RestController
@@ -71,7 +74,6 @@ public class SimpleApiController {
     }
 
 
-
     @RequestMapping(value = "/protected/simple/uncommit", method = RequestMethod.POST)
     @ResponseBody
     public void uncommit(@RequestBody String connectionId) throws StartupException {
@@ -90,30 +92,43 @@ public class SimpleApiController {
 
     }
 
+    @RequestMapping(value = "/api/simple/info", method = RequestMethod.POST)
+    @ResponseBody
+    public SimpleConnection info(@RequestBody String connectionId) throws StartupException {
+        Connection c = connController.info(connectionId);
+        if (c == null) {
+            return  null;
+        } else {
+            return fromConnection(c, false);
+        }
+
+    }
 
     @RequestMapping(value = "/api/conn/simplelist", method = RequestMethod.GET)
     @ResponseBody
-    public List<SimpleConnection> simpleList() throws StartupException{
+    public List<SimpleConnection> simpleList(
+            @RequestParam(defaultValue = "0", required = false) Integer include_svc_id) throws StartupException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
             throw new StartupException("OSCARS shutting down");
         }
+        Boolean return_svc_ids = (include_svc_id == null || include_svc_id > 0);
         ConnectionFilter f = ConnectionFilter.builder().phase(Phase.RESERVED).build();
         List<Connection> connections = connController.list(f);
         List<SimpleConnection> result = new ArrayList<>();
-        for (Connection c: connections) {
-            result.add(fromConnection(c));
+        for (Connection c : connections) {
+            result.add(fromConnection(c, return_svc_ids));
         }
         return result;
-
     }
 
-    public SimpleConnection fromConnection(Connection c) {
+    public SimpleConnection fromConnection(Connection c, Boolean return_svc_ids) {
+
         Long b = c.getArchived().getSchedule().getBeginning().getEpochSecond();
-        Long e  =c.getArchived().getSchedule().getEnding().getEpochSecond();
+        Long e = c.getArchived().getSchedule().getEnding().getEpochSecond();
         List<SimpleTag> simpleTags = new ArrayList<>();
-        for (Tag t: c.getTags()) {
+        for (Tag t : c.getTags()) {
             simpleTags.add(SimpleTag.builder()
                     .category(t.getCategory())
                     .contents(t.getContents())
@@ -125,15 +140,32 @@ public class SimpleApiController {
         Components cmp = c.getArchived().getCmp();
 
         cmp.getFixtures().forEach(f -> {
-            fixtures.add(Fixture.builder()
+            Fixture simpleF = Fixture.builder()
                     .inMbps(f.getIngressBandwidth())
                     .outMbps(f.getEgressBandwidth())
                     .port(f.getPortUrn())
                     .junction(f.getJunction().getDeviceUrn())
                     .vlan(f.getVlan().getVlanId())
-                    .build());
+                    .build();
+            if (return_svc_ids) {
+                Set<CommandParam> cps = f.getJunction().getCommandParams();
+                Integer svcId = null;
+                for (CommandParam cp : cps) {
+                    if (cp.getParamType().equals(CommandParamType.ALU_SVC_ID)) {
+                        if (svcId == null) {
+                            svcId = cp.getResource();
+                        } else if (svcId < cp.getResource()) {
+                            svcId = cp.getResource();
+                        }
+
+                    }
+                }
+                simpleF.setSvcId(svcId);
+            }
+
+            fixtures.add(simpleF);
         });
-        cmp.getJunctions().forEach(j-> {
+        cmp.getJunctions().forEach(j -> {
             junctions.add(Junction.builder()
                     .device(j.getDeviceUrn())
                     .build());
@@ -152,7 +184,7 @@ public class SimpleApiController {
                     .build());
         });
 
-        return(SimpleConnection.builder()
+        return (SimpleConnection.builder()
                 .begin(b.intValue())
                 .end(e.intValue())
                 .connectionId(c.getConnectionId())

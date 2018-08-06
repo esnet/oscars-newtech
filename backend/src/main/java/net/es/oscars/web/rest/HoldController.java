@@ -12,6 +12,7 @@ import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.resv.svc.LogService;
 import net.es.oscars.web.beans.CurrentlyHeldEntry;
+import net.es.oscars.web.beans.HoldException;
 import net.es.oscars.web.simple.SimpleConnection;
 import net.es.oscars.web.simple.Validity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +135,7 @@ public class HoldController {
     @Transactional
     public SimpleConnection hold(Authentication authentication,
                                  @RequestBody SimpleConnection in)
-            throws StartupException, JsonProcessingException {
+            throws StartupException, HoldException {
 
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
@@ -146,7 +147,7 @@ public class HoldController {
             in.setValidity(v);
             log.info("did not update invalid connection "+in.getConnectionId());
             log.info("reason: "+v.getMessage());
-            throw new IllegalArgumentException(v.getMessage());
+            throw new HoldException(v.getMessage());
         }
 
         String username = authentication.getName();
@@ -158,7 +159,7 @@ public class HoldController {
 
         String connectionId = in.getConnectionId();
 
-        String prettyNew = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(in);
+        // String prettyNew = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(in);
         // log.debug("incoming conn: \n" + prettyNew);
 
         Optional<Connection> maybeConnection = connRepo.findByConnectionId(connectionId);
@@ -169,12 +170,12 @@ public class HoldController {
             }
 
             log.info("overwriting previous connection for " + connectionId);
-            String prettyPrv = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(prev);
+            // String prettyPrv = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(prev);
             // log.debug("prev conn: "+prev.getId()+"\n" + prettyPrv);
 
             connSvc.updateConnection(in, prev);
 
-            String prettyUpd = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(prev);
+            // String prettyUpd = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(prev);
             // log.debug("updated conn: "+prev.getId()+"\n" + prettyUpd);
 
             connRepo.save(prev);
@@ -190,7 +191,7 @@ public class HoldController {
             logService.logEvent(in.getConnectionId(), ev);
             Connection c = connSvc.toNewConnection(in);
 
-            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(c);
+            // String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(c);
             // log.debug("new conn:\n" + pretty);
             connRepo.save(c);
         }
@@ -205,7 +206,7 @@ public class HoldController {
     @Transactional
     public SimpleConnection pceHold(Authentication authentication,
                                  @RequestBody SimpleConnection in)
-            throws StartupException, JsonProcessingException {
+            throws StartupException, HoldException {
 
         return this.hold(authentication, in);
     }

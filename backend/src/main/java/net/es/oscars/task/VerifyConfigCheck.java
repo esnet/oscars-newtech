@@ -36,7 +36,7 @@ public class VerifyConfigCheck {
     @Transactional
     public void processingLoop() {
         if (startup.isInStartup() || startup.isInShutdown()) {
-            log.info("application in startup or shutdown; will perform verifications later");
+//            log.info("application in startup or shutdown; will perform verifications later");
             return;
         }
         ObjectMapper m = new ObjectMapper();

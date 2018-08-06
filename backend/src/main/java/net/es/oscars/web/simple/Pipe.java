@@ -1,5 +1,6 @@
 package net.es.oscars.web.simple;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class Pipe {
 
     protected List<String> ero = new ArrayList<>();
     protected List<String> exclude = new ArrayList<>();
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     protected Validity validity;
 
 }

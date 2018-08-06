@@ -1,5 +1,6 @@
 package net.es.oscars.web.simple;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class SimpleConnection {
     protected List<Fixture> fixtures = new ArrayList<>();
     protected List<SimpleTag> tags;
     protected String description;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     protected Validity validity;
 
 }

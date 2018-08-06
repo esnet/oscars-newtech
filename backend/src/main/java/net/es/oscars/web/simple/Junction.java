@@ -1,5 +1,6 @@
 package net.es.oscars.web.simple;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Junction {
     protected String device;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     protected Validity validity;
 
 }

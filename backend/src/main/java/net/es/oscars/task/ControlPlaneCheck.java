@@ -49,7 +49,7 @@ public class ControlPlaneCheck {
     @Transactional
     public void processingLoop() {
         if (startup.isInStartup() || startup.isInShutdown()) {
-            log.info("application in startup or shutdown; will perform health check later");
+//            log.info("application in startup or shutdown; will perform health check later");
             return;
         }
 
