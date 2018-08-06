@@ -4,3 +4,4 @@
 */node_modules
 core/src/main/resources/static/built/*
 !core/src/main/resources/static/built/index.html
+/backend/src/main/resources/git.properties

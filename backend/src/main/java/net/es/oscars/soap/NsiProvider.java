@@ -165,7 +165,7 @@ public class NsiProvider implements ConnectionProviderPort {
 
         log.info("starting sync query");
         try {
-            QuerySummaryConfirmedType qsct = nsiService.query(querySummary);
+            QuerySummaryConfirmedType qsct = nsiService.querySummary(querySummary);
             nsiService.makeResponseHeader(header.value);
             return qsct;
         } catch (NsiException ex) {
@@ -214,7 +214,17 @@ public class NsiProvider implements ConnectionProviderPort {
     @Override
     public GenericAcknowledgmentType queryRecursive(QueryType queryRecursive,
                                                     Holder<CommonHeaderType> header) throws ServiceException {
-        throw new ServiceException(NsiErrors.UNIMPLEMENTED + " - not implemented");
+        try {
+            nsiService.processHeader(header.value);
+        } catch (NsiException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new ServiceException(ex.getMessage());
+        }
+        log.info("starting recursive query");
+        nsiService.queryRecursive(header.value, queryRecursive);
+
+        nsiService.makeResponseHeader(header.value);
+        return new GenericAcknowledgmentType();
     }
 
     @Override

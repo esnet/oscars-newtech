@@ -394,7 +394,7 @@ public class NsiService {
                 NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
 
                 ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA);
-                QuerySummaryConfirmedType qsct = this.query(query);
+                QuerySummaryConfirmedType qsct = this.querySummary(query);
                 try {
                     port.querySummaryConfirmed(qsct, outHeader);
 
@@ -410,8 +410,62 @@ public class NsiService {
         });
     }
 
+
+    public void queryRecursive(CommonHeaderType header, QueryType query) {
+        Executors.newCachedThreadPool().submit(() -> {
+            try {
+                log.info("starting recursive query task");
+                String nsaId = header.getRequesterNSA();
+                String corrId = header.getCorrelationId();
+                if (!this.getRequesterNsa(nsaId).isPresent()) {
+                    throw new NsiException("Unknown requester nsa id " + nsaId, NsiErrors.SEC_ERROR);
+                }
+
+                Holder<CommonHeaderType> outHeader = this.makeClientHeader(nsaId, corrId);
+                NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
+
+                ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA);
+                QueryRecursiveConfirmedType qrct = this.queryRecursive(query);
+                try {
+                    port.queryRecursiveConfirmed(qrct, outHeader);
+
+                } catch (ServiceException | WebServiceException ex) {
+                    log.error("could not perform query callback");
+                    log.error(ex.getMessage(), ex);
+                }
+            } catch (RuntimeException ex) {
+                log.error(ex.getMessage(), ex);
+            }
+
+            return null;
+        });
+    }
+
     @Transactional
-    public QuerySummaryConfirmedType query(QueryType query) throws NsiException {
+    public QueryRecursiveConfirmedType queryRecursive(QueryType query) throws NsiException {
+        QueryRecursiveConfirmedType qrct = new QueryRecursiveConfirmedType();
+
+        Set<NsiMapping> mappings = new HashSet<>();
+        for (String connId : query.getConnectionId()) {
+            mappings.addAll(nsiRepo.findByNsiConnectionId(connId));
+        }
+        for (String gri : query.getGlobalReservationId()) {
+            mappings.addAll(nsiRepo.findByNsiGri(gri));
+        }
+
+        Long resultId = 0L;
+        for (NsiMapping mapping : mappings) {
+            QueryRecursiveResultType qrrt = this.toQRRT(mapping);
+            qrrt.setResultId(resultId);
+            qrct.getReservation().add(qrrt);
+            resultId++;
+        }
+        return qrct;
+    }
+
+
+    @Transactional
+    public QuerySummaryConfirmedType querySummary(QueryType query) throws NsiException {
         QuerySummaryConfirmedType qsct = new QuerySummaryConfirmedType();
         try {
             ZonedDateTime zd = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
@@ -442,6 +496,43 @@ public class NsiService {
             resultId++;
         }
         return qsct;
+    }
+
+    public QueryRecursiveResultType toQRRT(NsiMapping mapping) throws NsiException {
+        Connection c = this.getOscarsConnection(mapping);
+        QueryRecursiveResultType qrrt = new QueryRecursiveResultType();
+        qrrt.setConnectionId(mapping.getNsiConnectionId());
+
+        QueryRecursiveResultCriteriaType qsrct = new QueryRecursiveResultCriteriaType();
+        qsrct.setServiceType(SERVICE_TYPE);
+        qsrct.setVersion(0);
+        Components cmp = null;
+
+        if (c.getPhase().equals(Phase.ARCHIVED)) {
+            cmp = c.getArchived().getCmp();
+        } else if (c.getPhase().equals(Phase.RESERVED)) {
+            cmp = c.getReserved().getCmp();
+        } else if (c.getPhase().equals(Phase.HELD)) {
+            cmp = c.getHeld().getCmp();
+        } else {
+            throw new NsiException("Internal error", NsiErrors.NRM_ERROR);
+        }
+
+        P2PServiceBaseType p2p = makeP2P(cmp);
+
+        net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
+                = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
+
+        qsrct.getAny().add(p2pof.createP2Ps(p2p));
+        qrrt.getCriteria().add(qsrct);
+
+        qrrt.setDescription(c.getDescription());
+        qrrt.setGlobalReservationId(mapping.getNsiGri());
+        qrrt.setRequesterNSA(mapping.getNsaId());
+        ConnectionStatesType cst = this.makeConnectionStates(mapping, c);
+        qrrt.setConnectionStates(cst);
+        qrrt.setNotificationId(0L);
+        return qrrt;
     }
 
     public QuerySummaryResultType toQSRT(NsiMapping mapping) throws NsiException {
