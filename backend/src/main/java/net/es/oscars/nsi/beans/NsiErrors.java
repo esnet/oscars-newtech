@@ -13,7 +13,8 @@ public enum NsiErrors {
     LOOKUP_ERROR ("00406"),
     NRM_ERROR ("00500"),
     UNAVAIL_ERROR ("00600"),
-    SVC_ERROR ("00700");
+    SVC_ERROR ("00700"),
+    UNKNOWN_STP ("00701");
 
 
     private String code;

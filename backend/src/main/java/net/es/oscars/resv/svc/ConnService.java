@@ -18,6 +18,7 @@ import net.es.oscars.resv.enums.State;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
 import net.es.oscars.web.beans.ConnectionFilter;
+import net.es.oscars.web.beans.HoldException;
 import net.es.oscars.web.beans.Interval;
 import net.es.oscars.web.simple.Fixture;
 import net.es.oscars.web.simple.Pipe;
@@ -445,13 +446,13 @@ public class ConnService {
     }
 
     public Validity validateConnection(SimpleConnection in)
-            throws NoSuchElementException, IllegalArgumentException {
+            throws HoldException {
 
         String error = "";
         Boolean valid = true;
         Boolean validInterval = true;
         if (in == null) {
-            throw new IllegalArgumentException("null connection");
+            throw new HoldException("null connection");
         }
         Instant begin = Instant.now();
         Instant end;

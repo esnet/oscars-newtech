@@ -8,6 +8,7 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.connection.requester.ConnectionRequesterP
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.*;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.headers.CommonHeaderType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.ServiceExceptionType;
+import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.TypeValuePairType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.P2PServiceBaseType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.types.DirectionalityType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.types.OrderedStpType;
@@ -38,10 +39,7 @@ import net.es.oscars.topo.beans.PortBwVlan;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
-import net.es.oscars.web.beans.Interval;
-import net.es.oscars.web.beans.PceMode;
-import net.es.oscars.web.beans.PceRequest;
-import net.es.oscars.web.beans.PceResponse;
+import net.es.oscars.web.beans.*;
 import net.es.oscars.web.simple.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -117,6 +115,11 @@ public class NsiService {
     @Autowired
     private PSSAdapter pssAdapter;
 
+    private static String nsBase = "http://schemas.ogf.org/nml/2013/05/base#";
+    private static String nsDefs = "http://schemas.ogf.org/nsi/2013/12/services/definition";
+    private static String nsEth = "http://schemas.ogf.org/nml/2012/10/ethernet";
+    public static String nsTypes = "http://schemas.ogf.org/nsi/2013/12/framework/types";
+
 
     /* async operations */
     public void reserve(CommonHeaderType header, ReserveType rt, NsiMapping mapping) {
@@ -143,7 +146,9 @@ public class NsiService {
                     try {
                         this.errCallback(NsiEvent.RESV_FL, mapping,
                                 result.getErrorMessage(),
-                                result.getErrorCode().toString(), header.getCorrelationId());
+                                result.getErrorCode().toString(),
+                                result.getTvps(),
+                                header.getCorrelationId());
                     } catch (WebServiceException | ServiceException cex) {
                         log.error("reserve failed: then callback failed", cex);
                     }
@@ -186,6 +191,7 @@ public class NsiService {
                     nsiStateEngine.commit(NsiEvent.COMMIT_FL, mapping);
                     this.errCallback(NsiEvent.COMMIT_FL, mapping,
                             ex.getMessage(), NsiErrors.NRM_ERROR.toString(),
+                            new ArrayList<>(),
                             header.getCorrelationId());
                 } catch (NsiException nex) {
                     log.error("commit failed: then internal error", nex);
@@ -446,6 +452,19 @@ public class NsiService {
         QuerySummaryResultCriteriaType qsrct = new QuerySummaryResultCriteriaType();
         qsrct.setServiceType(SERVICE_TYPE);
         qsrct.setVersion(0);
+        Components cmp = null;
+
+        if (c.getPhase().equals(Phase.RESERVED)) {
+            cmp = c.getReserved().getCmp();
+
+        } else if (c.getPhase().equals(Phase.ARCHIVED)) {
+            cmp = c.getArchived().getCmp();
+
+        } else if (c.getPhase().equals(Phase.HELD)) {
+            cmp = c.getHeld().getCmp();
+        } else {
+            throw new NsiException("Internal error", NsiErrors.NRM_ERROR);
+        }
 
         P2PServiceBaseType p2p = makeP2P(c.getReserved().getCmp());
 
@@ -472,7 +491,8 @@ public class NsiService {
             try {
                 nsiStateEngine.resvTimedOut(mapping);
                 this.errCallback(NsiEvent.RESV_TIMEOUT, mapping,
-                        "reservation timeout", "", this.newCorrelationId());
+                        "reservation timeout", "", new ArrayList<>(),
+                        this.newCorrelationId());
             } catch (ServiceException ex) {
                 log.error("timeout callback failed", ex);
             } catch (NsiException ex) {
@@ -521,6 +541,7 @@ public class NsiService {
         tags.add(SimpleTag.builder().category("nsi").contents("").build());
 
         List<String> include = new ArrayList<>();
+        List<TypeValuePairType> tvps = new ArrayList<>();
 
 
         if (p2p.getEro() != null) {
@@ -558,6 +579,26 @@ public class NsiService {
             } catch (JsonProcessingException ex) {
                 log.error(ex.getMessage(), ex);
             }
+            // add a validity check
+            try {
+                Validity v = connSvc.validateConnection(simpleConnection);
+
+                if (!v.isValid()) {
+                    throw new NsiException("Invalid input: "+v.getMessage(), NsiErrors.MSG_ERROR);
+                }
+
+            } catch (HoldException ex) {
+                TypeValuePairType tvp = new TypeValuePairType();
+                tvp.setNamespace(nsTypes);
+                tvp.setType("connectionId");
+
+                return NsiHoldResult.builder()
+                        .errorCode(NsiErrors.MSG_ERROR)
+                        .success(false)
+                        .errorMessage("No connection id")
+                        .tvps(tvps)
+                        .build();
+            }
 
             Connection c = connSvc.toNewConnection(simpleConnection);
             try {
@@ -568,6 +609,8 @@ public class NsiService {
                 log.error(ex.getMessage(), ex);
             }
 
+
+
             log.info("saving new connection");
             connRepo.save(c);
             mapping.setOscarsConnectionId(c.getConnectionId());
@@ -575,6 +618,7 @@ public class NsiService {
                     .errorCode(NsiErrors.OK)
                     .success(true)
                     .errorMessage("")
+                    .tvps(tvps)
                     .build();
 
         } catch (NsiException ex) {
@@ -725,6 +769,9 @@ public class NsiService {
         Integer aVlanId = vlans.get(a_urn.getPort().getUrn() + "#A");
         Integer zVlanId = vlans.get(z_urn.getPort().getUrn() + "#Z");
 
+        /* TODO: return 00701 - issue #200
+
+         */
         if (aVlanId == null) {
             throw new NsiException("vlan(s) unavailable for " + src, NsiErrors.UNAVAIL_ERROR);
 
@@ -998,7 +1045,7 @@ public class NsiService {
         return p2p;
     }
 
-    public void errCallback(NsiEvent event, NsiMapping mapping, String error, String errNum, String corrId)
+    public void errCallback(NsiEvent event, NsiMapping mapping, String error, String errNum, List<TypeValuePairType> tvps ,String corrId)
             throws NsiException, ServiceException {
         String nsaId = mapping.getNsaId();
         if (!this.getRequesterNsa(nsaId).isPresent()) {
@@ -1012,8 +1059,9 @@ public class NsiService {
 
 
         GenericFailedType gft = new GenericFailedType();
+
         gft.setConnectionId(mapping.getNsiConnectionId());
-        gft.setServiceException(this.makeSET(error, errNum, mapping));
+        gft.setServiceException(this.makeSET(error, errNum, tvps, mapping));
 
         if (!event.equals(NsiEvent.RESV_FL)) {
             Connection c = this.getOscarsConnection(mapping);
@@ -1046,13 +1094,14 @@ public class NsiService {
 
     /* utility / shared funcs */
 
-    public ServiceExceptionType makeSET(String error, String errNum, NsiMapping mapping) {
+    public ServiceExceptionType makeSET(String error, String errNum, List<TypeValuePairType> tvps, NsiMapping mapping) {
         ServiceExceptionType exceptionType = new ServiceExceptionType();
         exceptionType.setConnectionId(mapping.getNsiConnectionId());
         exceptionType.setNsaId(providerNsa);
         exceptionType.setServiceType(SERVICE_TYPE);
         exceptionType.setText(error);
         exceptionType.setErrorId(errNum);
+        exceptionType.getVariables().getVariable().addAll(tvps);
 
         return exceptionType;
     }
