@@ -97,114 +97,119 @@ def main():
     untagged = []
     for device_entry in devices:
         device = device_entry['urn']
-        for graphite_port in by_device[device]:
-            if graphite_port['mbps'] == 0:
-                continue
-            ifce = str(graphite_port['ifce'])
-            description = graphite_port['description']
+        if device not in by_device:
+            print "Could not find " + device + " from today.json in graphite\n" \
+                  + "  - possibly decom'd but " + device + ".rt not cleaned up in PMC.\n"
+        else:
+            for graphite_port in by_device[device]:
+                if graphite_port['mbps'] == 0:
+                    continue
+                ifce = str(graphite_port['ifce'])
+                description = graphite_port['description']
 
-            relevant = False
-            juniper = False
-            delete = None
-
-            if ifce[0].isdigit():
-                relevant = True
-            if ifce.startswith('ge'):
-                relevant = True
-                juniper = True
-            if ifce.startswith('xe'):
-                relevant = True
-                juniper = True
-            if ifce.startswith('ae'):
-                relevant = True
-                juniper = True
-            if ifce.startswith('et'):
-                relevant = True
-                juniper = True
-
-            if ifce.startswith('to_'):
                 relevant = False
-                # until i can get vlan info
+                juniper = False
+                delete = None
 
-            if '32767' in ifce:
-                relevant = False
-            if description == '':
-                relevant = False
+                if ifce[0].isdigit():
+                    relevant = True
+                if ifce.startswith('ge'):
+                    relevant = True
+                    juniper = True
+                if ifce.startswith('xe'):
+                    relevant = True
+                    juniper = True
+                if ifce.startswith('ae'):
+                    relevant = True
+                    juniper = True
+                if ifce.startswith('et'):
+                    relevant = True
+                    juniper = True
 
-            if relevant:
-                used_vlans = []
+                if ifce.startswith('to_'):
+                    relevant = False
+                    # until i can get vlan info
 
-                if device in saps_by_device:
-                    for sap in saps_by_device[device]:
-                        if sap['port'] == ifce:
-                            if 'oscars' not in sap['desc']:
-                                used_vlans.append(int(sap['vlan']))
+                if '32767' in ifce:
+                    relevant = False
+                if description == '':
+                    relevant = False
 
-                if juniper and '.' not in ifce:
-                    for u_entry in untagged:
-                        if u_entry['device'] == device and u_entry['port'] == ifce:
-                            delete = ifce
-                            # print 'found base port for untagged: '+device+':'+ifce
+                if relevant:
+                    used_vlans = []
 
-                if juniper and '.' in ifce:
-                    parts = ifce.split('.')
-                    ifce = parts[0]
-                    if 'oscars' not in description:
-                        used_vlans.append(int(parts[1]))
+                    if device in saps_by_device:
+                        for sap in saps_by_device[device]:
+                            if sap['port'] == ifce:
+                                if 'oscars' not in sap['desc']:
+                                    used_vlans.append(int(sap['vlan']))
 
-                ifce_urn = device + ':' + ifce
-                found = False
-                found_port_entry = None
+                    if juniper and '.' not in ifce:
+                        for u_entry in untagged:
+                            if u_entry['device'] == device and u_entry['port'] == ifce:
+                                delete = ifce
+                                # print 'found base port for untagged: '+device+':'+ifce
 
-                for port_entry in device_entry['ports']:
-                    if ifce_urn == port_entry['urn']:
-                        found = True
-                        found_port_entry = port_entry
-                        break
-                    if 'ifce' in port_entry and ifce == port_entry['ifce']:
-                        found = True
-                        found_port_entry = port_entry
-                        break
+                    if juniper and '.' in ifce:
+                        parts = ifce.split('.')
+                        ifce = parts[0]
+                        if 'oscars' not in description:
+                            used_vlans.append(int(parts[1]))
 
-                if found and len(used_vlans) > 0:
-                    if 'reservableVlans' in found_port_entry:
-                        new_reservable = subtracted_vlan(used_vlans, found_port_entry['reservableVlans'])
-                        found_port_entry['reservableVlans'] = new_reservable
+                    ifce_urn = device + ':' + ifce
+                    found = False
+                    found_port_entry = None
 
-                    elif ifce_urn in dual_ports:
+                    for port_entry in device_entry['ports']:
+                        if ifce_urn == port_entry['urn']:
+                            found = True
+                            found_port_entry = port_entry
+                            break
+                        if 'ifce' in port_entry and ifce == port_entry['ifce']:
+                            found = True
+                            found_port_entry = port_entry
+                            break
+
+                    if found and len(used_vlans) > 0:
+                        if 'reservableVlans' in found_port_entry:
+                            new_reservable = subtracted_vlan(used_vlans, found_port_entry['reservableVlans'])
+                            found_port_entry['reservableVlans'] = new_reservable
+
+                        elif ifce_urn in dual_ports:
+                            reservable_vlans = make_reservable_vlans(used_vlans)
+                            found_port_entry['reservableVlans'] = reservable_vlans
+                            found_port_entry['capabilities'].append('ETHERNET')
+
+                    if not found:
+                        description = graphite_port['description']
+                        if 'oscars-l2circuit' in description:
+                            # Hacky hack hack
+                            used_vlans = []
                         reservable_vlans = make_reservable_vlans(used_vlans)
-                        found_port_entry['reservableVlans'] = reservable_vlans
-                        found_port_entry['capabilities'].append('ETHERNET')
 
-                if not found:
-                    description = graphite_port['description']
-                    if 'oscars-l2circuit' in description:
-                        # Hacky hack hack
-                        used_vlans = []
-                    reservable_vlans = make_reservable_vlans(used_vlans)
+                        port = {
+                            'reservableIngressBw': graphite_port['mbps'],
+                            'reservableEgressBw': graphite_port['mbps'],
+                            'tags': [
+                                graphite_port['description']
+                            ],
+                            'urn': ifce_urn,
+                            'capabilities': [
+                                'ETHERNET'
+                            ],
+                            'reservableVlans': reservable_vlans
+                        }
+                        device_entry['ports'].append(port)
 
-                    port = {
-                        'reservableIngressBw': graphite_port['mbps'],
-                        'reservableEgressBw': graphite_port['mbps'],
-                        'tags': [
-                            graphite_port['description']
-                        ],
-                        'urn': ifce_urn,
-                        'capabilities': [
-                            'ETHERNET'
-                        ],
-                        'reservableVlans': reservable_vlans
-                    }
-                    device_entry['ports'].append(port)
-
-            if delete:
-                delete_urn = device + ':' + delete
-                delete_entry = None
-                for port_entry in device_entry['ports']:
-                    if port_entry['urn'] == delete_urn:
-                        delete_entry = port_entry
-                if delete_entry:
-                    device_entry['ports'].remove(delete_entry)
+                if delete:
+                    delete_urn = device + ':' + delete
+                    delete_entry = None
+                    for port_entry in device_entry['ports']:
+                        if port_entry['urn'] == delete_urn:
+                            delete_entry = port_entry
+                    if delete_entry:
+                        device_entry['ports'].remove(delete_entry)
+            # end : for graphite_port in by_device[device]:
 
         for lag in lags:
             lag_urn = lag['device'] + ':' + lag['name']
