@@ -466,7 +466,7 @@ public class NsiService {
             throw new NsiException("Internal error", NsiErrors.NRM_ERROR);
         }
 
-        P2PServiceBaseType p2p = makeP2P(c.getReserved().getCmp());
+        P2PServiceBaseType p2p = makeP2P(cmp);
 
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
                 = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
