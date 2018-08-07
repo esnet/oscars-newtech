@@ -119,8 +119,8 @@ public class TopoLibrary {
             if (!changed) {
                 unchanged.put(aDevice.getUrn(), aDevice);
             } else {
-                log.info("will modify "+aDevice.getUrn());
-                modified.put(aDevice.getUrn(), aDevice);
+                log.info("will modify " + urn);
+                modified.put(urn, bDevice);
             }
         }
 
@@ -148,14 +148,14 @@ public class TopoLibrary {
                 // log.info(" check changes "+urn);
                 checkForChanges.add(urn);
             } else {
-                log.info(" will remove port "+urn);
+                log.info(" will remove port " + urn);
                 removed.put(urn, alpha.getPorts().get(urn));
             }
         }
 
         for (String urn : beta.getPorts().keySet()) {
             if (!alpha.getPorts().keySet().contains(urn)) {
-                log.info(" will add port "+urn);
+                log.info(" will add port " + urn);
                 added.put(urn, beta.getPorts().get(urn));
             }
         }
@@ -163,39 +163,74 @@ public class TopoLibrary {
         for (String urn : checkForChanges) {
             Port aPort = alpha.getPorts().get(urn);
             Port bPort = beta.getPorts().get(urn);
+            // avoid null values
+            if (bPort.getIpv4Address() == null) {
+                bPort.setIpv4Address("");
+            }
+            if (bPort.getIpv6Address() == null) {
+                bPort.setIpv6Address("");
+            }
+            if (bPort.getReservableVlans() == null) {
+                bPort.setReservableVlans(new HashSet<>());
+            }
+            if (bPort.getIfce() == null) {
+                bPort.setIfce("");
+            }
+            if (bPort.getCapabilities() == null) {
+                bPort.setCapabilities(new HashSet<>());
+            }
+            if (bPort.getTags() == null) {
+                bPort.setTags(new ArrayList<>());
+            }
+
             boolean changed = false;
             if (aPort.getIpv4Address() == null) {
-                if (bPort.getIpv4Address() != null) {
-                    changed = true;
-                }
+                log.debug(urn + " changed ipv4 (from null)");
+                changed = true;
 
             } else if (!aPort.getIpv4Address().equals(bPort.getIpv4Address())) {
+                log.debug(urn + " changed ipv4");
                 changed = true;
             }
+
+            if (aPort.getIfce() == null) {
+                log.debug(urn + " changed ifce (from null)");
+                changed = true;
+            } else if (!aPort.getIfce().equals(bPort.getIfce())) {
+                log.debug(urn + " changed ifce");
+                changed = true;
+            }
+
+            if (aPort.getTags() == null) {
+                log.debug(urn + " changed tags (from null)");
+                changed = true;
+            } else if (!aPort.getTags().equals(bPort.getTags())) {
+                log.debug(urn + " changed tags");
+                changed = true;
+            }
+
             if (!aPort.getCapabilities().equals(bPort.getCapabilities())) {
+                log.debug(urn + " changed caps");
                 changed = true;
             }
             if (!aPort.getReservableIngressBw().equals(bPort.getReservableIngressBw())) {
+                log.debug(urn + " changed ibw");
                 changed = true;
             }
             if (!aPort.getReservableEgressBw().equals(bPort.getReservableEgressBw())) {
+                log.debug(urn + " changed ebw");
                 changed = true;
             }
             if (!aPort.getReservableVlans().equals(bPort.getReservableVlans())) {
+                log.debug(urn + " changed vlans");
                 changed = true;
             }
-            if (aPort.getTags() == null) {
-                if (bPort.getTags() != null) {
-                    changed = true;
-                }
-            } else if (!aPort.getTags().equals(bPort.getTags())) {
-                changed = true;
-            }
+
             if (changed) {
                 // log.info("will modify "+aPort.getUrn());
-                modified.put(aPort.getUrn(), aPort);
+                modified.put(urn, bPort);
             } else {
-                unchanged.put(aPort.getUrn(), aPort);
+                unchanged.put(urn, aPort);
             }
 
         }
@@ -215,7 +250,7 @@ public class TopoLibrary {
         Map<String, PortAdjcy> unchanged = new HashMap<>();
 
         for (PortAdjcy aAdjcy : alpha) {
-            String adjcyStr = aAdjcy.getA().getUrn()+ " -- "+aAdjcy.getZ().getUrn();
+            String adjcyStr = aAdjcy.getA().getUrn() + " -- " + aAdjcy.getZ().getUrn();
             PortAdjcy newAdjcy = null;
 
             String a_a_urn = aAdjcy.getA().getUrn();
@@ -229,23 +264,23 @@ public class TopoLibrary {
                     found = true;
                     for (Layer l : aAdjcy.getMetrics().keySet()) {
                         if (!bAdjcy.getMetrics().containsKey(l)) {
-                            log.info("  removed a metric "+l+ " on "+adjcyStr);
+                            log.info("  removed a metric " + l + " on " + adjcyStr);
                             changed = true;
                         }
                     }
                     for (Layer l : bAdjcy.getMetrics().keySet()) {
                         if (!aAdjcy.getMetrics().containsKey(l)) {
-                            log.info("  added a metric "+l+ " on "+adjcyStr);
+                            log.info("  added a metric " + l + " on " + adjcyStr);
                             changed = true;
                         }
                     }
 
-                    if ( !changed) {
+                    if (!changed) {
                         for (Layer l : aAdjcy.getMetrics().keySet()) {
                             Long aMetric = aAdjcy.getMetrics().get(l);
                             Long bMetric = bAdjcy.getMetrics().get(l);
                             if (!aMetric.equals(bMetric)) {
-                                log.info("  modified metric "+l+ " on "+adjcyStr);
+                                log.info("  modified metric " + l + " on " + adjcyStr);
                                 changed = true;
                             }
                         }

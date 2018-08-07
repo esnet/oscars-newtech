@@ -14,10 +14,9 @@ import java.util.Set;
 @Data
 @Entity
 @Builder
-@ToString(exclude={"device", "adjciesWhereA", "adjciesWhereZ"})
 @AllArgsConstructor(suppressConstructorProperties=true)
 @NoArgsConstructor
-@EqualsAndHashCode(exclude={"device", "adjciesWhereA", "adjciesWhereZ"})
+@EqualsAndHashCode(exclude={"device", "capabilities", "reservableVlans", "tags"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
                   property = "urn")
 public class Port {
@@ -71,6 +70,8 @@ public class Port {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Layer> capabilities = new HashSet<>();
 
-
+    public String toString() {
+        return this.getClass().getSimpleName() + "-" + getId();
+    }
 
 }

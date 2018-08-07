@@ -304,6 +304,18 @@ public class MigrationEngine {
                             conversionError = true;
                         }
                     }
+                    if (!found) {
+                        if (inHop.getAddr() != null) {
+                            log.debug("attempting to locate port from addr "+inHop.getAddr());
+                            for (Port p : dev.getDevice().getPorts()) {
+                                if (p.getIpv4Address() != null && p.getIpv4Address().equals(inHop.getAddr())) {
+                                    found = true;
+                                    hopUrn = p.getUrn();
+                                }
+                            }
+
+                        }
+                    }
 
                     if (!found) {
                         log.error("hop port urn not found in topo " + hopUrn);

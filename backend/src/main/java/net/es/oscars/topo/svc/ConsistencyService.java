@@ -59,7 +59,7 @@ public class ConsistencyService {
     }
 
     public void checkConsistency() throws ConsistencyException {
-        log.info("checking topology consistency..");
+        log.info("Checking topology consistency.");
 
         ConsistencyReport cr = ConsistencyReport.builder()
                 .issuesByConnectionId(new HashMap<>())
@@ -77,6 +77,7 @@ public class ConsistencyService {
             this.checkConnection(c, cr);
         }
         this.latestReport = cr;
+        log.info("Generated consistency report.");
     }
 
     public void checkConnection(Connection c, ConsistencyReport cr) {

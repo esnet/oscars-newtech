@@ -18,11 +18,13 @@ public class Pipe {
     protected String a;
     protected String z;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     protected Integer mbps;
 
     protected Integer azMbps;
     protected Integer zaMbps;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     protected PceMode pceMode;
 
     protected List<String> ero = new ArrayList<>();

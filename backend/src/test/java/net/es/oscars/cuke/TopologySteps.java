@@ -18,6 +18,7 @@ import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.TopoPopulator;
 import net.es.oscars.topo.svc.TopoLibrary;
 import net.es.oscars.topo.svc.TopoService;
+import net.es.oscars.topo.svc.UpdateSvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -29,6 +30,8 @@ import java.util.*;
 public class TopologySteps extends CucumberSteps {
     @Autowired
     private TopoService topoService;
+    @Autowired
+    private UpdateSvc updateSvc;
 
     @Autowired
     private DeviceRepository deviceRepo;
@@ -139,10 +142,10 @@ public class TopologySteps extends CucumberSteps {
 
     @When("^I merge the new topology$")
     public void i_merge_the_new_topology() throws Throwable {
-        Version newVersion = topoService.nextVersion();
+        Version newVersion = updateSvc.nextVersion();
         Version current = topoService.currentVersion().orElseThrow(NoSuchElementException::new);
         try {
-            topoService.mergeVersionDelta(vd, current, newVersion);
+            updateSvc.mergeVersionDelta(vd, newVersion);
         } catch (ConsistencyException ex) {
             ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());

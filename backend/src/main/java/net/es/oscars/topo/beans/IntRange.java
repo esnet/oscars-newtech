@@ -1,9 +1,6 @@
 package net.es.oscars.topo.beans;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,6 +15,8 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 @Builder
 @Embeddable
+@EqualsAndHashCode
+
 @Slf4j
 public class IntRange {
     private Integer floor;
@@ -148,6 +147,8 @@ public class IntRange {
         return result;
 
     }
+
+
 
     public static String asString(Collection<IntRange> ranges) {
         ranges = mergeIntRanges(ranges);

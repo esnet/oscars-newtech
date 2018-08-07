@@ -22,6 +22,7 @@ import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.svc.TopoLibrary;
 import net.es.oscars.topo.svc.TopoService;
+import net.es.oscars.topo.svc.UpdateSvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,45 +38,42 @@ import java.util.*;
 public class TopoPopulator {
     private TopoProperties topoProperties;
     private TopoService topoService;
+    private UpdateSvc updateSvc;
 
 
     @Autowired
     public TopoPopulator(TopoService topoService,
+                         UpdateSvc updateSvc,
                          TopoProperties topoProperties) {
         this.topoProperties = topoProperties;
+        this.updateSvc = updateSvc;
         this.topoService = topoService;
     }
 
-    @Transactional
     public VersionDelta refreshTopology() throws ConsistencyException, IOException {
         log.info("refreshing topology");
         if (topoProperties == null) {
-            throw new ConsistencyException("No topo stanza in application properties");
+            throw new ConsistencyException("Could not load topology properties!");
         }
         String devicesFilename = "./config/topo/" + topoProperties.getPrefix() + "-devices.json";
         String adjciesFilename = "./config/topo/" + topoProperties.getPrefix() + "-adjcies.json";
 
         if (!topoService.currentVersion().isPresent()) {
-            log.info("first topology import");
+            log.info("No topology versions found; must be the very first topology load.");
             // no version, so make an empty first one
-            topoService.nextVersion();
+            updateSvc.nextVersion();
         }
 
         Topology current = topoService.currentTopology();
-        log.info("previous topo: dev: " + current.getDevices().size() + " adj: " + current.getAdjcies().size());
+        log.debug("Existing topology: dev: " + current.getDevices().size() + " adj: " + current.getAdjcies().size());
         Topology incoming = this.loadTopology(devicesFilename, adjciesFilename);
         VersionDelta vd = TopoLibrary.compare(current, incoming);
         if (vd.isChanged()) {
-
-            Version currentVersion = topoService.currentVersion().get();
-            Version newVersion = topoService.nextVersion();
-            log.info("found topology changes; new valid version will be: " + newVersion.getId());
-
-            // TODO: check how the delta affects existing connections
-            topoService.mergeVersionDelta(vd, currentVersion, newVersion);
-
+            log.info("Found some topology changes; adding a new version.");
+            Version newVersion = updateSvc.nextVersion();
+            updateSvc.mergeVersionDelta(vd, newVersion);
         } else {
-            log.info("no topology changes");
+            log.debug("No topology changes.");
         }
         return vd;
     }
@@ -85,7 +83,7 @@ public class TopoPopulator {
         List<Device> devices = loadDevicesFromFile(devicesFilename);
         Map<String, Port> portMap = new HashMap<>();
         Map<String, Device> deviceMap = new HashMap<>();
-        log.info("loaded topology");
+        log.debug("Loaded topology from " + devicesFilename + " , " + adjciesFilename);
         devices.forEach(d -> {
             deviceMap.put(d.getUrn(), d);
             // log.info("  d: "+d.getUrn());
@@ -131,7 +129,9 @@ public class TopoPopulator {
                 PortAdjcy adjcy = PortAdjcy.builder().a(a).z(z).metrics(metrics).build();
                 result.add(adjcy);
             } else {
-                log.error("could not import adjcy: " + t.getA() + " -- " + t.getZ());
+                log.error("Could not load an adjacency: " + t.getA() + " -- " + t.getZ());
+                log.error("  " + t.getA() + " in topology? : " + portMap.containsKey(t.getA()));
+                log.error("  " + t.getZ() + " in topology? : " + portMap.containsKey(t.getZ()));
             }
         });
         return result;
