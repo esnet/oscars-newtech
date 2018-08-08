@@ -5,7 +5,7 @@
     <parent>
         <artifactId>newtech</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>1.0.13</version>
+        <version>1.0.14</version>
     </parent>
 
     <organization>
@@ -324,9 +324,6 @@
                                 <source>
                                     <location>${project.basedir}/bin/install_db.sh</location>
                                 </source>
-                                <source>
-                                    <location>${project.basedir}/../topo/esdb_topo.py</location>
-                                </source>
                             </sources>
                         </mapping>
                         <mapping>
@@ -348,21 +345,6 @@
                             <sources>
                                 <source>
                                     <location>${project.basedir}/config/application.properties</location>
-                                </source>
-                                <source>
-                                    <location>${project.basedir}/config/oscars.jks</location>
-                                </source>
-                            </sources>
-                        </mapping>
-                        <mapping>
-                            <directory>${rpm.home}/config/topo</directory>
-                            <configuration>true</configuration>
-                            <sources>
-                                <source>
-                                    <location>${project.basedir}/config/topo/</location>
-                                    <includes>
-                                        <include>*.json</include>
-                                    </includes>
                                 </source>
                             </sources>
                         </mapping>

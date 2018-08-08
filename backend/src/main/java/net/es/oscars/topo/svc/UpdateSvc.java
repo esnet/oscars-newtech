@@ -164,7 +164,6 @@ public class UpdateSvc {
             log.info("inserting p: " + p.getUrn() + " to " + deviceUrn);
 
             int prevPortsNum = d.getPorts().size();
-            portRepo.save(p);
             d.getPorts().add(p);
             p.setDevice(d);
             deviceRepo.save(d);
@@ -178,17 +177,72 @@ public class UpdateSvc {
 
         int versionUpdatedPorts = 0;
         for (String urn : portsToUpdateVersion.keySet()) {
+            /*
+            Port prev = portsToUpdateVersion.get(urn);
+
+
+            ImmutablePair<Port, Device> existing = this.getExistingPort(prev);
+            Port port = existing.getLeft();
+            Device dev = existing.getRight();
+
+            log.debug("updating version p: " + urn);
+            port.setVersion(newVersion);
+            port.setDevice(dev);
+
+            int prevPortsNum = dev.getPorts().size();
+            deviceRepo.save(dev);
+            int nowPortsNum = dev.getPorts().size();
+            if (nowPortsNum != prevPortsNum) {
+                throw new ConsistencyException("device port size mismatch");
+            }*/
+
             Port prev = portsToUpdateVersion.get(urn);
             prev.setVersion(newVersion);
             portRepo.save(prev);
-
             versionUpdatedPorts++;
         }
 
         int dataUpdatedPorts = 0;
         for (String urn : portsToUpdate.keySet()) {
             log.debug("updating data p: " + urn);
+            /*
+            Port prev = portsToUpdate.get(urn);
+            Port next = portsUpdateTarget.get(urn);
 
+            ImmutablePair<Port, Device> existing = this.getExistingPort(prev);
+            Port port = existing.getLeft();
+            Device dev = existing.getRight();
+
+            port.setDevice(dev);
+            log.debug(urn + " <- caps "+next.getCapabilities().toString());
+            port.setCapabilities(next.getCapabilities());
+            log.debug(urn + " <- ifce "+next.getIfce());
+            port.setIfce(next.getIfce());
+            if (next.getTags() == null) {
+                log.debug(urn + " <- tags : null");
+
+            } else {
+                log.debug(urn + " <- tags "+next.getTags().toString());
+
+            }
+            port.setTags(next.getTags());
+            log.debug(urn + " <- ipv4 "+next.getIpv4Address());
+            port.setIpv4Address(next.getIpv4Address());
+            log.debug(urn + " <- ipv6 "+next.getIpv4Address());
+            port.setIpv6Address(next.getIpv6Address());
+            log.debug(urn + " <- vlans "+next.getReservableVlans().toString());
+            port.setReservableVlans(next.getReservableVlans());
+
+            port.setReservableIngressBw(next.getReservableIngressBw());
+            port.setReservableEgressBw(next.getReservableEgressBw());
+            int prevPortsNum = dev.getPorts().size();
+            portRepo.save(port);
+            deviceRepo.save(dev);
+            int nowPortsNum = dev.getPorts().size();
+            if (nowPortsNum != prevPortsNum) {
+                throw new ConsistencyException("internal error: device port size mismatch");
+            }
+            */
             Port port = portsToUpdate.get(urn);
             Port next = portsUpdateTarget.get(urn);
 
@@ -214,6 +268,7 @@ public class UpdateSvc {
             port.setReservableIngressBw(next.getReservableIngressBw());
             port.setReservableEgressBw(next.getReservableEgressBw());
             portRepo.save(port);
+
             dataUpdatedPorts++;
         }
 

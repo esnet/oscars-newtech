@@ -100,6 +100,10 @@ def main():
 
     token = get_token(opts)
 
+    r = requests.get(ESDB_URL + '/equipment/?limit=0&detail=list',
+                     headers=dict(Authorization='Token {0}'.format(token)))
+    r.json()
+
     # print "ESDB on " + ESDB_URL + " with key " + token
     if opts.fast and opts.save:
         print >> sys.stderr, "--save and --fast mutually exclusive"

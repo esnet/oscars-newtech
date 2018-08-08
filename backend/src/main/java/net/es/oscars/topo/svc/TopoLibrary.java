@@ -90,7 +90,7 @@ public class TopoLibrary {
         }
         for (String urn : beta.getDevices().keySet()) {
             if (!alpha.getDevices().keySet().contains(urn)) {
-                // the ports will get added by the port delta
+                // set ports to empty; they will get added by the port delta
                 beta.getDevices().get(urn).setPorts(new HashSet<>());
                 added.put(urn, beta.getDevices().get(urn));
             }

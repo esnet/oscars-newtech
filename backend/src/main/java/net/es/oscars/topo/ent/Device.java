@@ -61,7 +61,7 @@ public class Device {
     private Set<Layer> capabilities = new HashSet<>();
 
     @NonNull
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Port> ports = new HashSet<>();
 
