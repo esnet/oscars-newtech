@@ -1,6 +1,7 @@
 package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.security.db.UserRepository;
 import net.es.oscars.security.ent.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,12 @@ public class AdminController {
     }
 
     private UserRepository userRepo;
+    @ExceptionHandler(StartupException.class)
+
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public void handleStartup(StartupException ex) {
+        log.warn("Still in startup");
+    }
 
 
     @ExceptionHandler(NoSuchElementException.class)

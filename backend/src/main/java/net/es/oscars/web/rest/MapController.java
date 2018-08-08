@@ -1,5 +1,6 @@
 package net.es.oscars.web.rest;
 
+import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.topo.beans.*;
@@ -11,16 +12,15 @@ import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.UIPopulator;
 import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
+@Slf4j
 public class MapController {
 
     @Autowired
@@ -34,6 +34,13 @@ public class MapController {
     private Startup startup;
     @Autowired
     private UIPopulator uiPopulator;
+
+    @ExceptionHandler(StartupException.class)
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public void handleStartup(StartupException ex) {
+        log.warn("Still in startup");
+    }
+
 
     @RequestMapping(value = "/api/map", method = RequestMethod.GET)
     @ResponseBody

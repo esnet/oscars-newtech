@@ -33,6 +33,13 @@ public class SimpleApiController {
     @Autowired
     private Startup startup;
 
+    @ExceptionHandler(StartupException.class)
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public void handleStartup(StartupException ex) {
+        log.warn("Still in startup");
+    }
+
+
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public void handleResourceNotFoundException(NoSuchElementException ex) {

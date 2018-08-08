@@ -3,6 +3,7 @@ package net.es.oscars.task;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.app.util.DbAccess;
 import net.es.oscars.pss.db.RouterCommandsRepository;
 import net.es.oscars.pss.svc.PSSAdapter;
 import net.es.oscars.resv.db.ConnectionRepository;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 @Slf4j
@@ -32,10 +34,12 @@ public class GenerateConfigs {
 
     @Autowired
     private PSSAdapter pssAdapter;
+    @Autowired
+    private DbAccess dbAccess;
 
     private Map<String, Integer> attempts = new HashMap<>();
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 5000)
     @Transactional
     public void processingLoop() {
         if (startup.isInStartup() || startup.isInShutdown()) {
@@ -43,40 +47,48 @@ public class GenerateConfigs {
             return;
         }
 
-        List<Connection> conns = connRepo.findAll();
+        ReentrantLock connLock = dbAccess.getConnLock();
+        connLock.lock();
+        try {
+            // log.debug("locking connections");
 
-        List<Connection> needConfigs = new ArrayList<>();
-        for (Connection c : conns) {
-            if (c.getPhase().equals(Phase.RESERVED)) {
+            List<Connection> conns = connRepo.findByPhase(Phase.RESERVED);
+
+            List<Connection> needConfigs = new ArrayList<>();
+            for (Connection c : conns) {
                 if (rcRepo.findByConnectionId(c.getConnectionId()).isEmpty()) {
                     log.info("connection +"+c.getConnectionId()+" needs router configs to be generated");
                     needConfigs.add(c);
                 }
             }
-        }
 
+            for (Connection c: needConfigs) {
+                Integer tried = 0;
+                Integer maxTries = 3;
+                if (attempts.containsKey(c.getConnectionId())) {
+                    tried = attempts.get(c.getConnectionId());
+                }
+                if (tried < maxTries) {
+                    tried = tried + 1;
+                    try {
+                        pssAdapter.generateConfig(c);
+                    } catch (PSSException e) {
+                        attempts.put(c.getConnectionId(), tried);
+                        e.printStackTrace();
+                    }
 
-        for (Connection c: needConfigs) {
-            Integer tried = 0;
-            Integer maxTries = 3;
-            if (attempts.containsKey(c.getConnectionId())) {
-                tried = attempts.get(c.getConnectionId());
-            }
-            if (tried < maxTries) {
-                tried = tried + 1;
-                try {
-                    pssAdapter.generateConfig(c);
-                } catch (PSSException e) {
-                    attempts.put(c.getConnectionId(), tried);
-                    e.printStackTrace();
+                } else if (tried.equals(maxTries)){
+                    log.error(" stopping trying to generate config for "+c.getConnectionId());
+                    attempts.put(c.getConnectionId(), maxTries + 1);
                 }
 
-            } else if (tried.equals(maxTries)){
-                log.error(" stopping trying to generate config for "+c.getConnectionId());
-                attempts.put(c.getConnectionId(), maxTries + 1);
             }
 
+        } finally {
+            // log.debug("unlocking connections");
+            connLock.unlock();
         }
+
 
 
     }

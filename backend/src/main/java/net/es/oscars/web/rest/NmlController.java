@@ -1,6 +1,8 @@
 package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.Startup;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.nsi.beans.NsiPeering;
 import net.es.oscars.nsi.svc.NsiPopulator;
 import net.es.oscars.nsi.svc.NsiService;
@@ -13,6 +15,7 @@ import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Document;
@@ -66,12 +69,6 @@ public class NmlController {
     @Value("${resv.timeout}")
     private Integer resvTimeout;
 
-
-    public static String NSA_PROVIDER_TYPE = "application/vnd.ogf.nsi.cs.v2.provider+soap";
-    public static String NSA_TOPO_TYPE = "application/vnd.ogf.nsi.topology.v2+xml";
-    public static String NSA_FEATURE_UPA = "vnd.ogf.nsi.cs.v2.role.uPA";
-    public static String NSA_FEATURE_TIMEOUT = "org.ogf.nsi.cs.v2.commitTimeout";
-
     @Autowired
     private TopoService topoService;
 
@@ -81,6 +78,15 @@ public class NmlController {
     @Autowired
     private NsiPopulator nsiPopulator;
 
+    @Autowired
+    private Startup startup;
+
+    public static String NSA_PROVIDER_TYPE = "application/vnd.ogf.nsi.cs.v2.provider+soap";
+    public static String NSA_TOPO_TYPE = "application/vnd.ogf.nsi.topology.v2+xml";
+    public static String NSA_FEATURE_UPA = "vnd.ogf.nsi.cs.v2.role.uPA";
+    public static String NSA_FEATURE_TIMEOUT = "org.ogf.nsi.cs.v2.commitTimeout";
+
+
     private static String nsBase = "http://schemas.ogf.org/nml/2013/05/base#";
     private static String nsDefs = "http://schemas.ogf.org/nsi/2013/12/services/definition";
     private static String nsEth = "http://schemas.ogf.org/nml/2012/10/ethernet";
@@ -88,9 +94,20 @@ public class NmlController {
     private static String nsDiscovery = "http://schemas.ogf.org/nsi/2014/02/discovery/nsa";
     private static String nsVcard = "urn:ietf:params:xml:ns:vcard-4.0";
 
+    @ExceptionHandler(StartupException.class)
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public void handleStartup(StartupException ex) {
+        log.warn("Still in startup");
+    }
+
 
     @GetMapping(value = "/api/topo/nml")
     public void getTopologyXml(HttpServletResponse res) throws Exception {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
 
 
         Optional<Version> maybeVersion = topoService.currentVersion();
@@ -357,6 +374,13 @@ public class NmlController {
 
     @GetMapping(value = "/api/nsa/discovery")
     public void getNsaDiscovery(HttpServletResponse res) throws Exception {
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
+
         DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_INSTANT;
         String pattern = "yyyyMMdd'T'hhmmssZZ";
 

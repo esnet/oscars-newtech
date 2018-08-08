@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.app.util.DbAccess;
 import net.es.oscars.ext.SlackConnector;
 import net.es.oscars.pss.svc.PSSAdapter;
 import net.es.oscars.pss.svc.PssResourceService;
@@ -36,6 +37,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
 
 @Service
@@ -73,6 +75,9 @@ public class ConnService {
 
     @Autowired
     private PSSAdapter pssAdapter;
+    @Autowired
+    private DbAccess dbAccess;
+
 
     public String generateConnectionId() {
         boolean found = false;
@@ -202,15 +207,27 @@ public class ConnService {
         }
 
 
-        c.setPhase(Phase.RESERVED);
+        ReentrantLock connLock = dbAccess.getConnLock();
+        if (connLock.isLocked()) {
+            log.debug("connection lock already locked; will need to wait to complete commit");
+        }
+        connLock.lock();
+        try {
+            // log.debug("got connection lock ");
+            c.setPhase(Phase.RESERVED);
 
-        this.reservedFromHeld(c);
-        this.pssResourceService.reserve(c);
+            this.reservedFromHeld(c);
+            this.pssResourceService.reserve(c);
 
-        this.archiveFromReserved(c);
+            this.archiveFromReserved(c);
 
-        c.setHeld(null);
-        connRepo.save(c);
+            c.setHeld(null);
+            connRepo.saveAndFlush(c);
+
+        } finally {
+            // log.debug("unlocked connections");
+            connLock.unlock();
+        }
 
         // TODO: set the user
         Event ev = Event.builder()
@@ -233,7 +250,7 @@ public class ConnService {
         Held h = this.heldFromReserved(c);
         c.setReserved(null);
         c.setHeld(h);
-        connRepo.save(c);
+        connRepo.saveAndFlush(c);
         return Phase.HELD;
 
     }
@@ -242,6 +259,7 @@ public class ConnService {
         // if it is HELD or DESIGN, delete it
         if (c.getPhase().equals(Phase.HELD) ||  c.getPhase().equals(Phase.DESIGN)) {
             connRepo.delete(c);
+            connRepo.flush();
             return Phase.HELD;
         }
         // if it is ARCHIVED , nothing to do
@@ -273,10 +291,6 @@ public class ConnService {
             }
         }
 
-        // then, archive it
-        c.setPhase(Phase.ARCHIVED);
-        c.setHeld(null);
-        c.setReserved(null);
 
         // TODO: somehow set the user that cancelled
         Event ev = Event.builder()
@@ -288,8 +302,25 @@ public class ConnService {
                 .build();
         logService.logEvent(c.getConnectionId(), ev);
 
+        ReentrantLock connLock = dbAccess.getConnLock();
+        if (connLock.isLocked()) {
+            log.debug("connection lock already locked; will need to wait to complete cancel");
+        }
+        connLock.lock();
+        try {
+            // log.debug("got connection lock ");
+            // then, archive it
+            c.setPhase(Phase.ARCHIVED);
+            c.setHeld(null);
+            c.setReserved(null);
+            connRepo.saveAndFlush(c);
 
-        connRepo.save(c);
+        } finally {
+            // log.debug("unlocked connections");
+            connLock.unlock();
+        }
+
+
         return Phase.ARCHIVED;
     }
 

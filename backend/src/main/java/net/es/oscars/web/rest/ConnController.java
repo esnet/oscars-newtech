@@ -40,6 +40,13 @@ public class ConnController {
     @Autowired
     private ConnService connSvc;
 
+    @ExceptionHandler(StartupException.class)
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public void handleStartup(StartupException ex) {
+        log.warn("Still in startup");
+    }
+
+
 
     @RequestMapping(value = "/protected/conn/generateId", method = RequestMethod.GET)
     @ResponseBody

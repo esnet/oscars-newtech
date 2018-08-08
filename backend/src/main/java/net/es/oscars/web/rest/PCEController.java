@@ -31,6 +31,11 @@ public class PCEController {
     public void handleResourceNotFoundException(NoSuchElementException ex) {
         log.warn("requested an item which did not exist", ex);
     }
+    @ExceptionHandler(StartupException.class)
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public void handleStartup(StartupException ex) {
+        log.warn("Still in startup");
+    }
 
 
 

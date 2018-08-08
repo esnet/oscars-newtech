@@ -1,13 +1,13 @@
 package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.StartupException;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -21,6 +21,14 @@ public class MiscController {
 
     @Value("${logging.file}")
     private String logfile;
+
+    @ExceptionHandler(StartupException.class)
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public void handleStartup(StartupException ex) {
+        log.warn("Still in startup");
+    }
+
+
 
     @RequestMapping(value = "/api/version", method = RequestMethod.GET)
     public String getVersion() {

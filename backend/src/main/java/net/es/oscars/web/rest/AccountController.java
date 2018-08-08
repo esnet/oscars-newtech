@@ -1,6 +1,7 @@
 package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.security.db.UserRepository;
 import net.es.oscars.security.ent.User;
 import net.es.oscars.security.jwt.JwtAuthenticationRequest;
@@ -8,6 +9,7 @@ import net.es.oscars.security.jwt.JwtAuthenticationResponse;
 import net.es.oscars.security.jwt.JwtTokenUtil;
 import net.es.oscars.web.beans.PasswordChange;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +38,11 @@ public class AccountController {
     private UserDetailsService userDetailsService;
 
     private UserRepository userRepo;
+    @ExceptionHandler(StartupException.class)
+    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    public void handleStartup(StartupException ex) {
+        log.warn("Still in startup");
+    }
 
     @Autowired
     public AccountController(UserRepository userRepo, AuthenticationManager authenticationManager,
