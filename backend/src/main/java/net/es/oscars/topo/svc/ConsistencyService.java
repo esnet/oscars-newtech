@@ -12,6 +12,7 @@ import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
+import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.pop.ConsistencyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ public class ConsistencyService {
                 .issuesByConnectionId(new HashMap<>())
                 .build();
     }
+
     public ConsistencyReport getLatestReport() {
         return this.latestReport;
     }
@@ -91,8 +93,8 @@ public class ConsistencyService {
             try {
                 Device d = this.checkDeviceUrn(devUrn);
                 if (!d.getVersion().getValid()) {
-                    cr.addConnectionError(c.getConnectionId(), "not valid device "+devUrn+" found in junction");
-                    cr.addUrnError(devUrn, "is not valid device but found in junction for "+c.getConnectionId());
+                    cr.addConnectionError(c.getConnectionId(), "not valid device " + devUrn + " found in junction");
+                    cr.addUrnError(devUrn, "is not valid device but found in junction for " + c.getConnectionId());
                 }
             } catch (ConsistencyException ex) {
                 cr.addConnectionError(c.getConnectionId(), ex.getMessage());
@@ -105,22 +107,28 @@ public class ConsistencyService {
             try {
                 Port p = this.checkPortUrn(portUrn);
                 if (!p.getVersion().getValid()) {
-                    cr.addConnectionError(c.getConnectionId(), "not valid port "+portUrn+" found in fixture");
-                    cr.addUrnError(portUrn, "is not valid port but found in fixture for "+c.getConnectionId());
+                    cr.addConnectionError(c.getConnectionId(), "not valid port " + portUrn + " found in fixture");
+                    cr.addUrnError(portUrn, "is not valid port but found in fixture for " + c.getConnectionId());
 
                 } else {
                     // TODO: check capacity for ports
+                    if (!p.getCapabilities().contains(Layer.ETHERNET)) {
+                        cr.addConnectionError(c.getConnectionId(), "port " + portUrn + " does not have ETHERNET capability; check topology");
+                        cr.addUrnError(portUrn, "port " + portUrn + " does not have ETHERNET capability, but found in " + c.getConnectionId());
 
-                    Integer vlanId = f.getVlan().getVlanId();
-                    boolean contained = false;
-                    for (IntRange vlanRange : p.getReservableVlans()) {
-                        if (vlanRange.contains(vlanId)) {
-                            contained = true;
+                    } else {
+
+                        Integer vlanId = f.getVlan().getVlanId();
+                        boolean contained = false;
+                        for (IntRange vlanRange : p.getReservableVlans()) {
+                            if (vlanRange.contains(vlanId)) {
+                                contained = true;
+                            }
                         }
-                    }
-                    if (!contained) {
-                        cr.addConnectionError(c.getConnectionId(), "port "+portUrn+" does not contain in vlan ranges: "+vlanId);
-                        cr.addUrnError(portUrn, "port "+portUrn+" does not contain in vlan ranges: "+vlanId+" found in "+c.getConnectionId());
+                        if (!contained) {
+                            cr.addConnectionError(c.getConnectionId(), "port " + portUrn + " does not contain in vlan ranges: " + vlanId);
+                            cr.addUrnError(portUrn, "port " + portUrn + " does not contain in vlan ranges: " + vlanId + " found in " + c.getConnectionId());
+                        }
                     }
                 }
             } catch (ConsistencyException ex) {
@@ -138,26 +146,26 @@ public class ConsistencyService {
                     if (maybeDev.isPresent()) {
                         Device d = maybeDev.get();
                         if (!d.getVersion().getValid()) {
-                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid device, urn: "+urn);
-                            cr.addUrnError(urn, "pipe ero hop has invalid device, urn: "+urn+" for connId: "+c.getConnectionId());
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid device, urn: " + urn);
+                            cr.addUrnError(urn, "pipe ero hop has invalid device, urn: " + urn + " for connId: " + c.getConnectionId());
 
                         } else {
-                            log.error("Internal error: valid device missing from current topo! "+urn);
+                            log.error("Internal error: valid device missing from current topo! " + urn);
                         }
 
                     } else if (maybePort.isPresent()) {
                         Port p = maybePort.get();
                         if (!p.getVersion().getValid()) {
-                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid port, urn: "+urn);
-                            cr.addUrnError(urn, "pipe ero hop has invalid port, urn: "+urn+" for connId: "+c.getConnectionId());
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid port, urn: " + urn);
+                            cr.addUrnError(urn, "pipe ero hop has invalid port, urn: " + urn + " for connId: " + c.getConnectionId());
 
                         } else {
-                            log.error("Internal error: valid device missing from current topo! "+urn);
+                            log.error("Internal error: valid device missing from current topo! " + urn);
                         }
 
                     } else {
-                        cr.addConnectionError(c.getConnectionId(), "ero hop completely missing in topo, urn: "+urn);
-                        cr.addUrnError(urn, "pipe ero hop completely missing in topo, urn: "+urn+" for connId: "+c.getConnectionId());
+                        cr.addConnectionError(c.getConnectionId(), "ero hop completely missing in topo, urn: " + urn);
+                        cr.addUrnError(urn, "pipe ero hop completely missing in topo, urn: " + urn + " for connId: " + c.getConnectionId());
                     }
 
                 } else {
@@ -166,25 +174,25 @@ public class ConsistencyService {
                         Port p = topoUrn.getPort();
                         // TODO: check capacity for ports
                         if (p == null) {
-                            cr.addConnectionError(c.getConnectionId(), "ero hop has missing port , urn: "+urn);
-                            cr.addUrnError(urn, "pipe ero hop has missing port, urn: "+urn+" for connId: "+c.getConnectionId());
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has missing port , urn: " + urn);
+                            cr.addUrnError(urn, "pipe ero hop has missing port, urn: " + urn + " for connId: " + c.getConnectionId());
                         } else if (!p.getVersion().getValid()) {
-                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid port , urn: "+urn);
-                            cr.addUrnError(urn, "pipe ero hop has invalid port, urn: "+urn+" for connId: "+c.getConnectionId());
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid port , urn: " + urn);
+                            cr.addUrnError(urn, "pipe ero hop has invalid port, urn: " + urn + " for connId: " + c.getConnectionId());
                         }
                     } else if (topoUrn.getUrnType().equals(UrnType.DEVICE)) {
                         Device d = topoUrn.getDevice();
                         if (d == null) {
-                            cr.addConnectionError(c.getConnectionId(), "ero hop has missing device , urn: "+urn);
-                            cr.addUrnError(urn, "pipe ero hop has missing device, urn: "+urn+" for connId: "+c.getConnectionId());
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has missing device , urn: " + urn);
+                            cr.addUrnError(urn, "pipe ero hop has missing device, urn: " + urn + " for connId: " + c.getConnectionId());
                         } else if (!d.getVersion().getValid()) {
-                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid device , urn: "+urn);
-                            cr.addUrnError(urn, "pipe ero hop has invalid device, urn: "+urn+" for connId: "+c.getConnectionId());
+                            cr.addConnectionError(c.getConnectionId(), "ero hop has invalid device , urn: " + urn);
+                            cr.addUrnError(urn, "pipe ero hop has invalid device, urn: " + urn + " for connId: " + c.getConnectionId());
                         }
 
                     } else {
-                        cr.addConnectionError(c.getConnectionId(), "ero hop has invalid type, urn: "+urn);
-                        cr.addUrnError(urn, "pipe ero hop has invalid type, urn: "+urn+" for connId: "+c.getConnectionId());
+                        cr.addConnectionError(c.getConnectionId(), "ero hop has invalid type, urn: " + urn);
+                        cr.addUrnError(urn, "pipe ero hop has invalid type, urn: " + urn + " for connId: " + c.getConnectionId());
 
                     }
 
