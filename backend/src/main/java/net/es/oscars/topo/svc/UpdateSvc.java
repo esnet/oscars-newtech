@@ -3,7 +3,6 @@ package net.es.oscars.topo.svc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
-import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.topo.beans.Delta;
 import net.es.oscars.topo.beans.VersionDelta;
@@ -16,9 +15,8 @@ import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
 import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.pop.ConsistencyException;
-import org.opensaml.xml.signature.P;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -182,9 +180,9 @@ public class UpdateSvc {
         for (String urn : portsToUpdateVersion.keySet()) {
             Port prev = portsToUpdateVersion.get(urn);
 
-            Pair<Port, Device> existing = this.getExistingPort(prev);
-            Port port = existing.getKey();
-            Device dev = existing.getValue();
+            ImmutablePair<Port, Device> existing = this.getExistingPort(prev);
+            Port port = existing.getLeft();
+            Device dev = existing.getRight();
 
             log.debug("updating version p: " + urn);
             port.setVersion(newVersion);
@@ -206,61 +204,29 @@ public class UpdateSvc {
             Port prev = portsToUpdate.get(urn);
             Port next = portsUpdateTarget.get(urn);
 
-            Pair<Port, Device> existing = this.getExistingPort(prev);
-            Port port = existing.getKey();
-            Device dev = existing.getValue();
+            ImmutablePair<Port, Device> existing = this.getExistingPort(prev);
+            Port port = existing.getLeft();
+            Device dev = existing.getRight();
 
             port.setDevice(dev);
-
-            if (next.getCapabilities() == null) {
-                log.debug(urn + " <- caps (empty)");
-                port.setCapabilities(new HashSet<>());
-            } else {
-                log.debug(urn + " <- caps "+next.getCapabilities().toString());
-                port.setCapabilities(next.getCapabilities());
-            }
-
-            if (next.getIfce() == null) {
-                log.debug(urn + " <- ifce (empty)");
-                port.setIfce("");
-            } else {
-                log.debug(urn + " <- ifce "+next.getIfce());
-                port.setIfce(next.getIfce());
-
-            }
-
+            log.debug(urn + " <- caps "+next.getCapabilities().toString());
+            port.setCapabilities(next.getCapabilities());
+            log.debug(urn + " <- ifce "+next.getIfce());
+            port.setIfce(next.getIfce());
             if (next.getTags() == null) {
-                log.debug(urn + " <- tags (empty)");
-                port.setTags(new ArrayList<>());
+                log.debug(urn + " <- tags : null");
+
             } else {
                 log.debug(urn + " <- tags "+next.getTags().toString());
-                port.setTags(next.getTags());
-            }
-
-            if (next.getIpv4Address() == null) {
-                log.debug(urn + " <- ipv4 (empty)");
-                port.setIpv4Address("");
-            } else {
-                log.debug(urn + " <- ipv4 "+next.getIpv4Address());
-                port.setIpv4Address(next.getIpv4Address());
 
             }
-            if (next.getIpv6Address() == null) {
-                log.debug(urn + " <- ipv6 (empty)");
-                port.setIpv6Address("");
-            } else {
-                log.debug(urn + " <- ipv6 "+next.getIpv4Address());
-                port.setIpv6Address(next.getIpv6Address());
-
-            }
-
-            if (port.getReservableVlans() == null) {
-                log.debug(urn + " <- vlans (empty)");
-                port.setReservableVlans(new HashSet<>());
-            } else {
-                log.debug(urn + " <- vlans "+next.getReservableVlans().toString());
-                port.setReservableVlans(next.getReservableVlans());
-            }
+            port.setTags(next.getTags());
+            log.debug(urn + " <- ipv4 "+next.getIpv4Address());
+            port.setIpv4Address(next.getIpv4Address());
+            log.debug(urn + " <- ipv6 "+next.getIpv4Address());
+            port.setIpv6Address(next.getIpv6Address());
+            log.debug(urn + " <- vlans "+next.getReservableVlans().toString());
+            port.setReservableVlans(next.getReservableVlans());
 
             port.setReservableIngressBw(next.getReservableIngressBw());
             port.setReservableEgressBw(next.getReservableEgressBw());
@@ -295,7 +261,7 @@ public class UpdateSvc {
         deviceRepo.flush();
     }
 
-    public Pair<Port, Device> getExistingPort(Port port) throws ConsistencyException {
+    public ImmutablePair<Port, Device> getExistingPort(Port port) throws ConsistencyException {
         String deviceUrn = port.getDevice().getUrn();
         String urn = port.getUrn();
 
@@ -327,7 +293,7 @@ public class UpdateSvc {
         if (!foundInDevice) {
             throw new ConsistencyException("data updated port not found in device " + urn);
         } else {
-            return new Pair<>(resultPort, dev);
+            return new ImmutablePair<>(resultPort, dev);
         }
 
     }

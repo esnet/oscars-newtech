@@ -163,47 +163,32 @@ public class TopoLibrary {
         for (String urn : checkForChanges) {
             Port aPort = alpha.getPorts().get(urn);
             Port bPort = beta.getPorts().get(urn);
-            // avoid null values
-            if (bPort.getIpv4Address() == null) {
-                bPort.setIpv4Address("");
-            }
-            if (bPort.getIpv6Address() == null) {
-                bPort.setIpv6Address("");
-            }
-            if (bPort.getReservableVlans() == null) {
-                bPort.setReservableVlans(new HashSet<>());
-            }
-            if (bPort.getIfce() == null) {
-                bPort.setIfce("");
-            }
-            if (bPort.getCapabilities() == null) {
-                bPort.setCapabilities(new HashSet<>());
-            }
-            if (bPort.getTags() == null) {
-                bPort.setTags(new ArrayList<>());
-            }
-
             boolean changed = false;
             if (aPort.getIpv4Address() == null) {
-                log.debug(urn + " changed ipv4 (from null)");
-                changed = true;
-
+                if (bPort.getIpv4Address() != null) {
+                    log.debug(urn + " changed ipv4 (from null)");
+                    changed = true;
+                }
             } else if (!aPort.getIpv4Address().equals(bPort.getIpv4Address())) {
                 log.debug(urn + " changed ipv4");
                 changed = true;
             }
 
             if (aPort.getIfce() == null) {
-                log.debug(urn + " changed ifce (from null)");
-                changed = true;
+                if (bPort.getIfce() != null) {
+                    log.debug(urn + " changed ifce (from null)");
+                    changed = true;
+                }
             } else if (!aPort.getIfce().equals(bPort.getIfce())) {
                 log.debug(urn + " changed ifce");
                 changed = true;
             }
 
             if (aPort.getTags() == null) {
-                log.debug(urn + " changed tags (from null)");
-                changed = true;
+                if (bPort.getTags() != null) {
+                    log.debug(urn + " changed tags (from null)");
+                    changed = true;
+                }
             } else if (!aPort.getTags().equals(bPort.getTags())) {
                 log.debug(urn + " changed tags");
                 changed = true;
