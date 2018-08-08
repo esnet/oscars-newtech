@@ -15,6 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
+@EqualsAndHashCode(exclude={"a", "z"})
 public class PortAdjcy {
     @Id
     @GeneratedValue
@@ -46,5 +47,9 @@ public class PortAdjcy {
         // we can get() because the stream is not empty
         return reservableBandwidths.stream().min(Integer::compare).get();
     }
+    public String toString() {
+        return this.getClass().getSimpleName() + "-" +this.getUrn()+" "+ getId();
+    }
+
 
 }

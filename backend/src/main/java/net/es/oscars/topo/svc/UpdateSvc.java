@@ -179,36 +179,19 @@ public class UpdateSvc {
         int versionUpdatedPorts = 0;
         for (String urn : portsToUpdateVersion.keySet()) {
             Port prev = portsToUpdateVersion.get(urn);
+            prev.setVersion(newVersion);
+            portRepo.save(prev);
 
-            ImmutablePair<Port, Device> existing = this.getExistingPort(prev);
-            Port port = existing.getLeft();
-            Device dev = existing.getRight();
-
-            log.debug("updating version p: " + urn);
-            port.setVersion(newVersion);
-            port.setDevice(dev);
-            portRepo.save(port);
-
-            int prevPortsNum = dev.getPorts().size();
-            deviceRepo.save(dev);
-            int nowPortsNum = dev.getPorts().size();
-            if (nowPortsNum != prevPortsNum) {
-                throw new ConsistencyException("device port size mismatch");
-            }
             versionUpdatedPorts++;
         }
 
         int dataUpdatedPorts = 0;
         for (String urn : portsToUpdate.keySet()) {
             log.debug("updating data p: " + urn);
-            Port prev = portsToUpdate.get(urn);
+
+            Port port = portsToUpdate.get(urn);
             Port next = portsUpdateTarget.get(urn);
 
-            ImmutablePair<Port, Device> existing = this.getExistingPort(prev);
-            Port port = existing.getLeft();
-            Device dev = existing.getRight();
-
-            port.setDevice(dev);
             log.debug(urn + " <- caps "+next.getCapabilities().toString());
             port.setCapabilities(next.getCapabilities());
             log.debug(urn + " <- ifce "+next.getIfce());
@@ -230,14 +213,7 @@ public class UpdateSvc {
 
             port.setReservableIngressBw(next.getReservableIngressBw());
             port.setReservableEgressBw(next.getReservableEgressBw());
-            int prevPortsNum = dev.getPorts().size();
             portRepo.save(port);
-            deviceRepo.save(dev);
-            int nowPortsNum = dev.getPorts().size();
-            if (nowPortsNum != prevPortsNum) {
-                throw new ConsistencyException("internal error: device port size mismatch");
-            }
-
             dataUpdatedPorts++;
         }
 
@@ -262,6 +238,8 @@ public class UpdateSvc {
     }
 
     public ImmutablePair<Port, Device> getExistingPort(Port port) throws ConsistencyException {
+        final long startTime = System.currentTimeMillis();
+
         String deviceUrn = port.getDevice().getUrn();
         String urn = port.getUrn();
 
@@ -290,6 +268,9 @@ public class UpdateSvc {
                 resultPort = p;
             }
         }
+        final long endTime = System.currentTimeMillis();
+
+        log.debug("getExistingPort execution time: " + (endTime - startTime) );
         if (!foundInDevice) {
             throw new ConsistencyException("data updated port not found in device " + urn);
         } else {
