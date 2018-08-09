@@ -78,8 +78,18 @@ public class ConsistencyService {
         for (Connection c : held) {
             this.checkConnection(c, cr);
         }
+        this.checkBlankPorts(cr);
         this.latestReport = cr;
         log.info("Generated consistency report.");
+    }
+    public void checkBlankPorts(ConsistencyReport cr) {
+        Map<String, TopoUrn> urnMap = ts.getTopoUrnMap();
+        for (String urn: urnMap.keySet()) {
+            if (urn.contains("BLANK")) {
+                cr.addUrnError(urn, "blank port found -  unconfigured lag?");
+            }
+        }
+
     }
 
     public void checkConnection(Connection c, ConsistencyReport cr) {
