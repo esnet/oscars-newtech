@@ -212,10 +212,14 @@ public class AluParamsAdapter {
         List<AluPipeResult> aluPipes = new ArrayList<>();
 
         List<MplsHop> mplsHops = MiscHelper.mplsHops(hops, topoService);
+        String pathName = c.getConnectionId() + "-PATH-WRK-" + p.getZ().getDeviceUrn();
+        pathName = pathName.substring(0, 31);
+        String lspName = c.getConnectionId() + "-LSP-WRK-" + p.getZ().getDeviceUrn();
+        lspName = lspName.substring(0, 31);
 
         MplsPath path = MplsPath.builder()
                 .hops(mplsHops)
-                .name(c.getConnectionId() + "-PATH-WRK-" + p.getZ().getDeviceUrn())
+                .name(pathName)
                 .build();
 
         TopoUrn deviceTopoUrn = topoService.getTopoUrnMap().get(otherJunction.getDeviceUrn());
@@ -240,7 +244,7 @@ public class AluParamsAdapter {
                 .metric(LSP_WRK_METRIC)
                 .to(remoteLoopback)
                 .pathName(path.getName())
-                .name(c.getConnectionId() + "-LSP-WRK-" + p.getZ().getDeviceUrn())
+                .name(lspName)
                 .build();
 
         Integer sdpId = null;
@@ -261,11 +265,12 @@ public class AluParamsAdapter {
         if (sdpId == null) {
             throw new PSSException("no sdp id reserved!");
         }
+        String sdpDescription = c.getConnectionId() + "-SDP-WRK-" + otherJunction.getDeviceUrn();
 
 
         AluSdp sdp = AluSdp.builder()
                 .sdpId(sdpId)
-                .description(c.getConnectionId() + "-SDP-WRK-" + otherJunction.getDeviceUrn())
+                .description(sdpDescription)
                 .farEnd(remoteLoopback)
                 .lspName(lsp.getName())
                 .build();
@@ -286,9 +291,15 @@ public class AluParamsAdapter {
             if (protectSdpId == null) {
                 throw new PSSException("no protect SDP id reserved!");
             }
+            String prtPathName = c.getConnectionId() + "-PATH-PRT-" + p.getZ().getDeviceUrn();
+            prtPathName = prtPathName.substring(0, 31);
+            String prtLspName = c.getConnectionId() + "-LSP-PRT-" + p.getZ().getDeviceUrn();
+            prtLspName = prtLspName.substring(0, 31);
+            String prtSdpDescription = c.getConnectionId() + "-SDP-PRT-" + otherJunction.getDeviceUrn();
+
             MplsPath protectPath = MplsPath.builder()
                     .hops(new ArrayList<>())
-                    .name(c.getConnectionId() + "-PATH-PRT-" + p.getZ().getDeviceUrn())
+                    .name(prtPathName)
                     .build();
 
             Lsp protectLsp = Lsp.builder()
@@ -297,11 +308,11 @@ public class AluParamsAdapter {
                     .metric(LSP_PRT_METRIC)
                     .to(remoteLoopback)
                     .pathName(protectPath.getName())
-                    .name(c.getConnectionId() + "-LSP-PRT-" + p.getZ().getDeviceUrn())
+                    .name(prtLspName)
                     .build();
             AluSdp protectSdp = AluSdp.builder()
                     .sdpId(protectSdpId)
-                    .description(c.getConnectionId() + "-SDP-PRT-" + otherJunction.getDeviceUrn())
+                    .description(prtSdpDescription)
                     .farEnd(remoteLoopback)
                     .lspName(protectLsp.getName())
                     .build();
