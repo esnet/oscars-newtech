@@ -22,6 +22,7 @@
         "junction": "/xyzzy/j/A",
         "ingressBandwidth": 100,
         "egressBandwidth": 100,
+        "strict": false,
         "vlan": {
           "vlanExpression": ""
         }

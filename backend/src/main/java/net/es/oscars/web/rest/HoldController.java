@@ -73,15 +73,21 @@ public class HoldController {
         Instant exp = Instant.now().plus(resvTimeout, ChronoUnit.SECONDS);
         if (maybeConnection.isPresent()) {
             Connection conn = maybeConnection.get();
-            Instant start  = conn.getHeld().getSchedule().getBeginning();
-            // hold time will end at start time, at most
-            if (!start.isAfter(exp)) {
-                exp = start;
+            if (conn.getPhase().equals(Phase.HELD)) {
+                Instant start  = conn.getHeld().getSchedule().getBeginning();
+                // hold time will end at start time, at most
+                if (!start.isAfter(exp)) {
+                    exp = start;
+                }
+
+                conn.getHeld().setExpiration(exp);
+                connRepo.save(conn);
+                return exp;
+            } else {
+                return Instant.MIN;
+
             }
 
-            conn.getHeld().setExpiration(exp);
-            connRepo.save(conn);
-            return exp;
         } else {
             return Instant.MIN;
         }

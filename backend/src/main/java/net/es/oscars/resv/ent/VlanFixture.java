@@ -23,6 +23,7 @@ public class VlanFixture {
                        @JsonProperty("ingressBandwidth") @NonNull Integer ingressBandwidth,
                        @JsonProperty("egressBandwidth") @NonNull Integer egressBandwidth,
                        @JsonProperty("vlan") @NonNull Vlan vlan,
+                       @JsonProperty("strict") @NonNull Boolean strict,
                        @JsonProperty("schedule") Schedule schedule,
                        @JsonProperty("commandParams") Set<CommandParam> commandParams) {
         this.connectionId = connectionId;
@@ -30,6 +31,7 @@ public class VlanFixture {
         this.portUrn = portUrn;
         this.ingressBandwidth = ingressBandwidth;
         this.egressBandwidth = egressBandwidth;
+        this.strict = strict;
         this.vlan = vlan;
         this.schedule = schedule;
         this.commandParams = commandParams;
@@ -56,6 +58,9 @@ public class VlanFixture {
 
     @NonNull
     private Integer egressBandwidth;
+
+    @NonNull
+    private Boolean strict;
 
     // mandatory; a fixture always has a vlan specification associated with it
     @ManyToOne(cascade = CascadeType.ALL)

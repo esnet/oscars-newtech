@@ -221,6 +221,12 @@ public class MigrationEngine {
                 conversionError = true;
                 continue;
             }
+            String policing = inResv.getMisc().getPolicing();
+            boolean strict = false;
+            if ("hard".equals(policing)) {
+                strict = true;
+            }
+
             TopoUrn deviceUrn = urnMap.get(inFixture.getJunction());
             Set<CommandParam> fcps = new HashSet<>();
             if (deviceUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
@@ -253,6 +259,7 @@ public class MigrationEngine {
                     .ingressBandwidth(inResv.getMbps())
                     .egressBandwidth(inResv.getMbps())
                     .junction(vj)
+                    .strict(strict)
                     .portUrn(portUrnStr)
                     .schedule(s)
                     .vlan(v)
@@ -337,6 +344,11 @@ public class MigrationEngine {
                 zaERO.add(EroHop.builder().urn(h.getUrn()).build());
             }
             Collections.reverse(zaERO);
+            String protection = inResv.getMisc().getProtection();
+            boolean protect = false;
+            if ("loose-secondary-path".equals(protection)) {
+                protect = true;
+            }
 
             VlanPipe vp = VlanPipe.builder()
                     .azBandwidth(inResv.getMbps())
@@ -346,6 +358,7 @@ public class MigrationEngine {
                     .connectionId(inResv.getGri())
                     .azERO(azERO)
                     .zaERO(zaERO)
+                    .protect(protect)
                     .schedule(s)
                     .build();
 

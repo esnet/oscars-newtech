@@ -18,6 +18,7 @@
         "portUrn": "denv-cr5:1/1/1",
         "ingressBandwidth": 100,
         "egressBandwidth": 100,
+        "strict": true,
         "vlan": {
           "vlanId": 2000,
           "urn": "denv-cr5:1/1/1",
@@ -28,7 +29,7 @@
         "portUrn": "albq-cr5:1/2/1",
         "ingressBandwidth": 100,
         "egressBandwidth": 100,
-
+        "strict": true,
         "vlan": {
           "vlanId": 2000,
           "urn": "albq-cr5:1/2/1",
@@ -39,6 +40,7 @@
       {
         "a": "####BAD_REF###",
         "z": "/xyzzy/j/albq-cr5",
+        "protect": true,
         "azBandwidth": 100,
         "zaBandwidth": 200
       }

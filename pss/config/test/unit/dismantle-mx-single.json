@@ -46,6 +46,7 @@
       }
     ],
     "mxVpls": {
+      "protectEnabled": false,
       "vcId": 9112,
       "serviceName": "NKJSBD-12",
       "description": "my description",

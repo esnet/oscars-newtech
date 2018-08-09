@@ -20,6 +20,7 @@ public class VlanPipe {
     public VlanPipe(@JsonProperty("connectionId") String connectionId,
                     @JsonProperty("a") @NonNull VlanJunction a,
                     @JsonProperty("z") @NonNull VlanJunction z,
+                    @JsonProperty("protect") @NonNull Boolean protect,
                     @JsonProperty("azBandwidth") @NonNull Integer azBandwidth,
                     @JsonProperty("zaBandwidth") @NonNull Integer zaBandwidth,
                     @JsonProperty("azERO") List<EroHop> azERO,
@@ -32,6 +33,7 @@ public class VlanPipe {
         this.zaERO = zaERO;
         this.a = a;
         this.z = z;
+        this.protect = protect;
         this.schedule = schedule;
     }
 
@@ -48,6 +50,9 @@ public class VlanPipe {
     @NonNull
     @ManyToOne
     private VlanJunction z;
+
+    @NonNull
+    private Boolean protect;
 
     @NonNull
     private Integer azBandwidth;

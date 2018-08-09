@@ -241,12 +241,32 @@ public class MxCommandGenerator {
         }
 
         MxVpls vpls = params.getMxVpls();
+
         // this is allowed to be null
         if (vpls.getLoopback() != null) {
             KeywordWithContext kwc_vpls_loopback = KeywordWithContext.builder()
                     .context("VPLS loopback").keyword(vpls.getLoopback())
                     .build();
             keywordMap.put(kwc_vpls_loopback, ip_criteria);
+        }
+
+        if (vpls.getProtectEnabled() == null) {
+            errorStr.append("vpls protect enabled is null");
+            hasError = true;
+
+        } else{
+            if (vpls.getProtectEnabled()) {
+                if (vpls.getProtectVcId() == null) {
+                    errorStr.append("vpls protect enabled but protect vc id is null");
+
+                } else {
+                    if (vpls.getProtectVcId() <= 0 || vpls.getProtectVcId() > 65534) {
+                        errorStr.append("protect vcid out of range");
+                        hasError = true;
+                    }
+
+                }
+            }
         }
         if (vpls.getVcId() <= 0 || vpls.getVcId() > 65534) {
             errorStr.append("vcid out of range");

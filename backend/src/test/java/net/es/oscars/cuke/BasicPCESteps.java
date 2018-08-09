@@ -45,6 +45,7 @@ public class BasicPCESteps extends CucumberSteps {
         VlanPipe vp = VlanPipe.builder()
                 .a(aj)
                 .z(zj)
+                .protect(true)
                 .azBandwidth(azBw)
                 .zaBandwidth(zaBw).build();
 

@@ -759,6 +759,7 @@ public class NsiService {
                 Pipe p = Pipe.builder()
                         .mbps(mbps)
                         .ero(ero)
+                        .protect(true)
                         .a(junctions.get(0).getDevice())
                         .z(junctions.get(1).getDevice())
                         .pceMode(PceMode.BEST)
@@ -875,12 +876,14 @@ public class NsiService {
                 .junction(aJ.getDevice())
                 .port(a_urn.getPort().getUrn())
                 .mbps(mbps.intValue())
+                .strict(false)
                 .vlan(aVlanId)
                 .build();
         Fixture zF = Fixture.builder()
                 .junction(zJ.getDevice())
                 .port(z_urn.getPort().getUrn())
                 .mbps(mbps.intValue())
+                .strict(false)
                 .vlan(zVlanId)
                 .build();
 

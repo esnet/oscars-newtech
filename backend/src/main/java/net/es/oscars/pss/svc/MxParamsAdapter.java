@@ -29,12 +29,29 @@ public class MxParamsAdapter {
     @Autowired
     private TopoService topoService;
 
+    // TODO: configurize these
+    private final static Integer LSP_WRK_HOLD_PRIORITY = 5;
+    private final static Integer LSP_WRK_SETUP_PRIORITY = 5;
+    private final static Integer LSP_WRK_METRIC = 65000;
+    private final static Integer LSP_PRT_HOLD_PRIORITY = 4;
+    private final static Integer LSP_PRT_SETUP_PRIORITY = 4;
+    private final static Integer LSP_PRT_METRIC = 65100;
+
 
     public MxParams params(Connection c, VlanJunction rvj) throws PSSException {
         Components cmp = c.getReserved().getCmp();
 
-        Integer vcId = -1;
+        Integer vcId = null;
         Integer loopbackInt = null;
+        Integer protectVcId = null;
+        boolean protectEnabled = false;
+
+        for (VlanPipe p : cmp.getPipes()) {
+            if (p.getProtect()) {
+                protectEnabled = true;
+            }
+        }
+
         for (CommandParam rpr : rvj.getCommandParams()) {
             if (rpr.getParamType().equals(CommandParamType.VC_ID)) {
                 vcId = rpr.getResource();
@@ -42,24 +59,22 @@ public class MxParamsAdapter {
             if (rpr.getParamType().equals(CommandParamType.VPLS_LOOPBACK)) {
                 loopbackInt = rpr.getResource();
             }
+            if (rpr.getParamType().equals(CommandParamType.PROTECT_VC_ID)) {
+                protectVcId = rpr.getResource();
+            }
+
         }
-        if (vcId == -1) {
+        if (vcId == null) {
             throw new PSSException("VC id not found!");
         }
-
-        MxVpls vpls = MxVpls.builder()
-                .description(c.getConnectionId())
-                .serviceName(c.getConnectionId())
-                .vcId(vcId)
-                .policyName("oscars-policy-"+c.getConnectionId())
-                .statsFilter("oscars-stats-"+c.getConnectionId())
-                .serviceName("oscars-service-"+c.getConnectionId())
-                .build();
-
+        if (protectEnabled && protectVcId == null) {
+            log.error("no protect VC id even though protected pipes");
+            throw new PSSException("protect VC id not found!");
+        }
 
         List<TaggedIfce> ifces = new ArrayList<>();
 
-        for (VlanFixture rvf : c.getReserved().getCmp().getFixtures()) {
+        for (VlanFixture rvf : cmp.getFixtures()) {
             if (rvf.getJunction().equals(rvj)) {
                 Integer vlan = rvf.getVlan().getVlanId();
 
@@ -76,18 +91,20 @@ public class MxParamsAdapter {
                 TaggedIfce ti = TaggedIfce.builder()
                         .port(port)
                         .vlan(vlan)
-                        .description("OSCARS:"+c.getConnectionId())
+                        .description("OSCARS-" + c.getConnectionId() + ":0:oscars-l2circuit:show:circuit-intercloud")
                         .build();
                 ifces.add(ti);
-
-
             }
         }
 
+        String description = "OSCARS-" + c.getConnectionId();
+        String serviceName = description + "-SVC";
+        String policyName = "OSCARS-" + c.getConnectionId() + "-POLICY";
+        String statsFilter = "OSCARS-" + c.getConnectionId() + "-STATS";
+
+
         List<MxLsp> lsps = new ArrayList<>();
-
         List<MplsPath> paths = new ArrayList<>();
-
         List<MxQos> qos = new ArrayList<>();
 
         boolean isInPipes = false;
@@ -108,29 +125,45 @@ public class MxParamsAdapter {
                 isInPipes = true;
             }
             if (hops != null) {
-                MxPipeResult pr = this.makePipe(other_j, hops, p, mbps, c);
-                paths.add(pr.getPath());
-                lsps.add(pr.getMxLsp());
-                qos.add(pr.getQos());
+                MxPipeResult primary = this.makePipe(other_j, hops, false, p, mbps, c);
+                paths.add(primary.getPath());
+                lsps.add(primary.getMxLsp());
+                qos.add(primary.getQos());
+                if (protectEnabled) {
+                    MxPipeResult protect = this.makePipe(other_j, hops, false, p, mbps, c);
+                    paths.add(protect.getPath());
+                    lsps.add(protect.getMxLsp());
+                    qos.add(protect.getQos());
+                }
             }
         }
 
+        String loopback = null;
         if (isInPipes) {
             if (loopbackInt == null) {
-                throw new PSSException("no loopback reserved for "+rvj.getDeviceUrn());
+                throw new PSSException("no loopback reserved for " + rvj.getDeviceUrn());
             }
             IPv4Address address = new IPv4Address(loopbackInt);
-            vpls.setLoopback(address.toString());
+            loopback = address.toString();
         }
+
+        MxVpls mxVpls = MxVpls.builder()
+                .vcId(vcId)
+                .protectVcId(protectVcId)
+                .protectEnabled(protectEnabled)
+                .description(description)
+                .serviceName(serviceName)
+                .policyName(policyName)
+                .statsFilter(statsFilter)
+                .loopback(loopback)
+                .build();
 
         return MxParams.builder()
                 .ifces(ifces)
-                .qos(qos)
-                .paths(paths)
-                .lsps(lsps)
-                .mxVpls(vpls)
+                .mxVpls(mxVpls)
                 .build();
     }
+
 
     @Data
     private class MxPipeResult {
@@ -140,12 +173,23 @@ public class MxParamsAdapter {
     }
 
 
-    public MxPipeResult makePipe(VlanJunction otherJ, List<EroHop> hops, VlanPipe p, Integer mbps, Connection c) throws PSSException {
-        List<MplsHop>  mplsHops = MiscHelper.mplsHops(hops, topoService);
+    public MxPipeResult makePipe(VlanJunction otherJ, List<EroHop> hops, boolean protect,
+                                 VlanPipe p, Integer mbps, Connection c) throws PSSException {
+        List<MplsHop> mplsHops = MiscHelper.mplsHops(hops, topoService);
 
+        String pathName = "OSCARS-" + c.getConnectionId() + "-PATH";
+        String lspName = "OSCARS-" + c.getConnectionId() + "-LSP";
+
+        if (protect) {
+            pathName += "-PRT-" + p.getZ().getDeviceUrn();
+            lspName += "-PRT-" + p.getZ().getDeviceUrn();
+        } else {
+            pathName += "-WRK-" + p.getZ().getDeviceUrn();
+            lspName += "-WRK-" + p.getZ().getDeviceUrn();
+        }
         MplsPath path = MplsPath.builder()
                 .hops(mplsHops)
-                .name(c.getConnectionId()+"-PATH-"+p.getZ().getDeviceUrn())
+                .name(pathName)
                 .build();
 
         Integer otherLoopbackInt = null;
@@ -155,8 +199,8 @@ public class MxParamsAdapter {
             }
         }
         if (otherLoopbackInt == null) {
-            log.error("no loopback found for "+otherJ.getDeviceUrn());
-            throw new PSSException("no loopback found for "+otherJ.getDeviceUrn());
+            log.error("no loopback found for " + otherJ.getDeviceUrn());
+            throw new PSSException("no loopback found for " + otherJ.getDeviceUrn());
         }
         IPv4Address otherLoopback = new IPv4Address(otherLoopbackInt);
 
@@ -166,29 +210,58 @@ public class MxParamsAdapter {
         }
         String otherAddr = otherDevice.getDevice().getIpv4Address();
 
+        String filterName = "OSCARS-" + c.getConnectionId() + "-FILTER";
+        String policerName = "OSCARS-" + c.getConnectionId() + "-POLICER";
+        Integer holdPriority;
+        Integer setupPriority;
+        Integer lspMetric;
+        Policing policing;
+        MxQosForwarding forwarding;
+        boolean createPolicer;
+
+        if (protect) {
+            filterName += "-PRT-" + otherDevice.getUrn();
+            policerName += "-PRT-" + otherDevice.getUrn();
+            holdPriority = LSP_PRT_HOLD_PRIORITY;
+            setupPriority = LSP_PRT_SETUP_PRIORITY;
+            lspMetric = LSP_PRT_METRIC;
+            forwarding = MxQosForwarding.BEST_EFFORT;
+            policing = Policing.SOFT;
+            createPolicer = false;
+        } else {
+            filterName += "-WRK-" + otherDevice.getUrn();
+            policerName += "-WRK-" + otherDevice.getUrn();
+            holdPriority = LSP_WRK_HOLD_PRIORITY;
+            setupPriority = LSP_WRK_SETUP_PRIORITY;
+            lspMetric = LSP_WRK_METRIC;
+            forwarding = MxQosForwarding.EXPEDITED;
+            policing = Policing.SOFT;
+            createPolicer = true;
+        }
+
+
         Lsp lsp = Lsp.builder()
-                .holdPriority(5)
-                .setupPriority(5)
-                .metric(65000)
+                .holdPriority(holdPriority)
+                .setupPriority(setupPriority)
+                .metric(lspMetric)
                 .to(otherLoopback.toString())
                 .pathName(path.getName())
-                .name(c.getConnectionId()+"-LSP-"+p.getZ().getDeviceUrn())
+                .name(lspName)
                 .build();
 
-        // TODO: customize these...
-        String filterName = "OSCARS-"+c.getConnectionId()+"-"+otherDevice.getUrn();
 
         MxQos qos = MxQos.builder()
-                .createPolicer(true)
+                .createPolicer(createPolicer)
                 .filterName(filterName)
-                .forwarding(MxQosForwarding.EXPEDITED)
+                .forwarding(forwarding)
                 .mbps(mbps)
-                .policerName("OSCARS-"+c.getConnectionId()+"-"+otherDevice.getUrn())
-                .policing(Policing.STRICT)
+                .policerName(policerName)
+                .policing(policing)
                 .build();
 
         MxLsp mxLsp = MxLsp.builder()
                 .lsp(lsp)
+                .primary(!protect)
                 .neighbor(otherAddr)
                 .policeFilter(filterName)
                 .build();

@@ -13,6 +13,9 @@ public class AluVpls {
 
     private Integer svcId;
 
+    public Boolean protectEnabled;
+    private Integer protectVcId;
+
     private List<AluSdpToVcId> sdpToVcIds;
 
     private List<AluSap> saps;

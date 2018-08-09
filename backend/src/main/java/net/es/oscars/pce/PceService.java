@@ -38,6 +38,7 @@ public class PceService {
         VlanPipe bwPipe = VlanPipe.builder()
                 .a(aj)
                 .z(zj)
+                .protect(false)
                 .azBandwidth(request.getAzBw())
                 .zaBandwidth(request.getZaBw()).build();
 

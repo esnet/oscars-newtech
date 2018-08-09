@@ -52,6 +52,7 @@
     ],
     "mxVpls": {
       "vcId": 9112,
+      "protectEnabled": false,
       "serviceName": "NKJSBD-12",
       "description": "my description",
       "policyName": "asddfasd",

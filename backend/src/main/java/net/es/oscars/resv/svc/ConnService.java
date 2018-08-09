@@ -410,6 +410,7 @@ public class ConnService {
                     .junction(jmap.get(f.getJunction().getDeviceUrn()))
                     .portUrn(f.getPortUrn())
                     .vlan(copyVlan(f.getVlan(), sch))
+                    .strict(f.getStrict())
                     .commandParams(copyCommandParams(f.getCommandParams(), sch))
                     .build();
             fixtures.add(fc);
@@ -423,6 +424,7 @@ public class ConnService {
                     .zaBandwidth(p.getZaBandwidth())
                     .connectionId(p.getConnectionId())
                     .schedule(sch)
+                    .protect(p.getProtect())
                     .azERO(copyEro(p.getAzERO()))
                     .zaERO(copyEro(p.getZaERO()))
                     .build();
@@ -768,6 +770,11 @@ public class ConnService {
                         inMbps = f.getMbps();
                         outMbps = f.getMbps();
                     }
+                    Boolean strict = false;
+                    if (f.getStrict() != null) {
+                        strict = f.getStrict();
+                    }
+
                     Vlan vlan = Vlan.builder()
                             .connectionId(in.getConnectionId())
                             .schedule(s)
@@ -781,6 +788,7 @@ public class ConnService {
                             .ingressBandwidth(inMbps)
                             .egressBandwidth(outMbps)
                             .schedule(s)
+                            .strict(strict)
                             .vlan(vlan)
                             .build();
                     cmp.getFixtures().add(vf);
@@ -809,10 +817,15 @@ public class ConnService {
                         azMbps = pipe.getMbps();
                         zaMbps = pipe.getMbps();
                     }
+                    Boolean protect = false;
+                    if (pipe.getProtect() != null) {
+                        protect = pipe.getProtect();
+                    }
 
                     VlanPipe vp = VlanPipe.builder()
                             .a(aj)
                             .z(zj)
+                            .protect(protect)
                             .schedule(s)
                             .azBandwidth(azMbps)
                             .zaBandwidth(zaMbps)

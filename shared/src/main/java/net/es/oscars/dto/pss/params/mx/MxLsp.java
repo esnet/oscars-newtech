@@ -14,6 +14,7 @@ public class MxLsp {
 
     private String neighbor;
     private Lsp lsp;
+    private boolean primary;
 
     private String policeFilter;
 

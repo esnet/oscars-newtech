@@ -1,8 +1,6 @@
 package net.es.oscars.pss.svc;
 
-import inet.ipaddr.IPAddress;
 import inet.ipaddr.ipv4.IPv4Address;
-import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PSSException;
@@ -13,8 +11,6 @@ import net.es.oscars.dto.pss.params.Policing;
 import net.es.oscars.dto.pss.params.alu.*;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.topo.beans.TopoUrn;
-import net.es.oscars.topo.ent.Device;
-import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
@@ -31,13 +27,33 @@ public class AluParamsAdapter {
     @Autowired
     private TopoService topoService;
 
+    // TODO: configurize these
+    private final static Integer LSP_WRK_HOLD_PRIORITY = 5;
+    private final static Integer LSP_WRK_SETUP_PRIORITY = 5;
+    private final static Integer LSP_WRK_METRIC = 65000;
+    private final static Integer LSP_PRT_HOLD_PRIORITY = 4;
+    private final static Integer LSP_PRT_SETUP_PRIORITY = 4;
+    private final static Integer LSP_PRT_METRIC = 65100;
+
     public AluParams params(Connection c, VlanJunction rvj) throws PSSException {
         Integer aluSvcId = null;
         log.info("making ALU params");
         Integer loopback = null;
+        Integer protectVcId = null;
+        boolean protectEnabled = false;
+        Components cmp = c.getReserved().getCmp();
+        for (VlanPipe p : cmp.getPipes()) {
+            if (p.getProtect()) {
+                protectEnabled = true;
+            }
+        }
+
         for (CommandParam rpr : rvj.getCommandParams()) {
             if (rpr.getParamType().equals(CommandParamType.ALU_SVC_ID)) {
                 aluSvcId = rpr.getResource();
+            }
+            if (rpr.getParamType().equals(CommandParamType.PROTECT_VC_ID)) {
+                protectVcId = rpr.getResource();
             }
             if (rpr.getParamType().equals(CommandParamType.VPLS_LOOPBACK)) {
                 loopback = rpr.getResource();
@@ -47,13 +63,15 @@ public class AluParamsAdapter {
             log.error("no ALU SVC ID");
             throw new PSSException("ALU svc id not found!");
         }
+        if (protectEnabled && protectVcId == null) {
+            log.error("no protect VC id even though protected pipes");
+            throw new PSSException("protect VC id not found!");
 
-        Components cmp = c.getReserved().getCmp();
+        }
 
         List<AluQos> qoses = new ArrayList<>();
         List<AluSap> saps = new ArrayList<>();
 
-        // TODO: non-strict policing
         for (VlanFixture rvf : cmp.getFixtures()) {
             if (rvf.getJunction().equals(rvj)) {
                 Integer inQosId = null;
@@ -80,23 +98,27 @@ public class AluParamsAdapter {
                     throw new PSSException("Invalid port URN format");
                 }
                 String port = parts[1];
+                Policing policing = Policing.STRICT;
+                if (rvf.getStrict()) {
+                    policing = Policing.SOFT;
+                }
 
                 String configPortStr = port.replace('/', '_') + '_' + vlan;
                 AluQos inQos = AluQos.builder()
                         .description(c.getConnectionId())
                         .mbps(rvf.getIngressBandwidth())
-                        .policing(Policing.STRICT)
+                        .policing(policing)
                         .policyId(inQosId)
-                        .policyName("IN-"+c.getConnectionId() + "-" + configPortStr )
+                        .policyName("IN-" + c.getConnectionId() + "-" + configPortStr)
                         .type(AluQosType.SAP_INGRESS)
                         .build();
                 qoses.add(inQos);
                 AluQos egQos = AluQos.builder()
                         .description(c.getConnectionId())
                         .mbps(rvf.getEgressBandwidth())
-                        .policing(Policing.STRICT)
+                        .policing(policing)
                         .policyId(egQosId)
-                        .policyName("EG-"+c.getConnectionId() + "-" + configPortStr)
+                        .policyName("EG-" + c.getConnectionId() + "-" + configPortStr)
                         .type(AluQosType.SAP_EGRESS)
                         .build();
                 qoses.add(egQos);
@@ -106,17 +128,21 @@ public class AluParamsAdapter {
                         .ingressQosId(inQosId)
                         .egressQosId(egQosId)
                         .port(port)
-                        .description(c.getConnectionId() + " - " + configPortStr)
+                        .description("OSCARS-"+c.getConnectionId() + ":0:oscars-l2circuit:show:circuit-intercloud")
                         .build();
                 saps.add(sap);
             }
         }
 
 
+
+
         AluVpls vpls = AluVpls.builder()
-                .description(c.getConnectionId()+"-VPLS")
+                .protectVcId(protectVcId)
+                .protectEnabled(protectEnabled)
+                .description(c.getConnectionId() + "-VPLS")
                 .saps(saps)
-                .serviceName("OSCARS-"+c.getConnectionId())
+                .serviceName("OSCARS-" + c.getConnectionId()+"-SVC")
                 .sdpToVcIds(new ArrayList<>())
                 .svcId(aluSvcId)
                 .build();
@@ -145,10 +171,12 @@ public class AluParamsAdapter {
 
             }
             if (hops != null) {
-                AluPipeResult pr = this.makePipe(other_j, hops, p, rvj, c, vpls);
-                sdps.add(pr.getSdp());
-                paths.add(pr.getPath());
-                lsps.add(pr.getLsp());
+                List<AluPipeResult> aluPipes = this.makePipe(other_j, hops, p, rvj, c, vpls);
+                for (AluPipeResult pr : aluPipes) {
+                    sdps.add(pr.getSdp());
+                    paths.add(pr.getPath());
+                    lsps.add(pr.getLsp());
+                }
             }
         }
 
@@ -163,10 +191,10 @@ public class AluParamsAdapter {
 
         if (isInPipes) {
             if (loopback == null) {
-                throw new PSSException("no loopback reserved for "+rvj.getDeviceUrn());
+                throw new PSSException("no loopback reserved for " + rvj.getDeviceUrn());
             }
             IPv4Address address = new IPv4Address(loopback);
-            params.setLoopbackInterface("lo0-"+c.getConnectionId());
+            params.setLoopbackInterface("lo0-" + c.getConnectionId());
             params.setLoopbackAddress(address.toString());
         }
 
@@ -180,13 +208,14 @@ public class AluParamsAdapter {
         private AluSdp sdp;
     }
 
-    public AluPipeResult makePipe(VlanJunction otherJunction, List<EroHop> hops, VlanPipe p, VlanJunction j, Connection c, AluVpls vpls) throws PSSException {
+    public List<AluPipeResult> makePipe(VlanJunction otherJunction, List<EroHop> hops, VlanPipe p, VlanJunction j, Connection c, AluVpls vpls) throws PSSException {
+        List<AluPipeResult> aluPipes = new ArrayList<>();
 
         List<MplsHop> mplsHops = MiscHelper.mplsHops(hops, topoService);
 
         MplsPath path = MplsPath.builder()
                 .hops(mplsHops)
-                .name(c.getConnectionId()+"-PATH-"+p.getZ().getDeviceUrn())
+                .name(c.getConnectionId() + "-PATH-WRK-" + p.getZ().getDeviceUrn())
                 .build();
 
         TopoUrn deviceTopoUrn = topoService.getTopoUrnMap().get(otherJunction.getDeviceUrn());
@@ -206,19 +235,25 @@ public class AluParamsAdapter {
         */
 
         Lsp lsp = Lsp.builder()
-                .holdPriority(5)
-                .setupPriority(5)
-                .metric(65000)
+                .holdPriority(LSP_WRK_HOLD_PRIORITY)
+                .setupPriority(LSP_WRK_SETUP_PRIORITY)
+                .metric(LSP_WRK_METRIC)
                 .to(remoteLoopback)
                 .pathName(path.getName())
-                .name(c.getConnectionId()+"-LSP-"+p.getZ().getDeviceUrn())
+                .name(c.getConnectionId() + "-LSP-WRK-" + p.getZ().getDeviceUrn())
                 .build();
 
         Integer sdpId = null;
-        for (CommandParam cp: j.getCommandParams()) {
+        Integer protectSdpId = null;
+        for (CommandParam cp : j.getCommandParams()) {
             if (cp.getParamType().equals(CommandParamType.ALU_SDP_ID)) {
                 if (cp.getIntent().equals(otherJunction.getDeviceUrn())) {
                     sdpId = cp.getResource();
+                }
+            }
+            if (cp.getParamType().equals(CommandParamType.ALU_PROTECT_SDP_ID)) {
+                if (cp.getIntent().equals(otherJunction.getDeviceUrn())) {
+                    protectSdpId = cp.getResource();
                 }
             }
         }
@@ -230,26 +265,61 @@ public class AluParamsAdapter {
 
         AluSdp sdp = AluSdp.builder()
                 .sdpId(sdpId)
-                .description(c.getConnectionId()+"-SDP-"+otherJunction.getDeviceUrn())
+                .description(c.getConnectionId() + "-SDP-WRK-" + otherJunction.getDeviceUrn())
                 .farEnd(remoteLoopback)
                 .lspName(lsp.getName())
                 .build();
-
-
-        // bleh, side effect! but can't help it
-        AluSdpToVcId sdpToVcId = AluSdpToVcId.builder().sdpId(sdpId).vcId(vpls.getSvcId()).build();
-        vpls.getSdpToVcIds().add(sdpToVcId);
 
 
         AluPipeResult pr = new AluPipeResult();
         pr.setLsp(lsp);
         pr.setPath(path);
         pr.setSdp(sdp);
+        aluPipes.add(pr);
 
-        return pr;
+        // bleh, side effect! but can't help it
+        AluSdpToVcId sdpToVcId = AluSdpToVcId.builder().sdpId(sdpId).vcId(vpls.getSvcId()).build();
+        vpls.getSdpToVcIds().add(sdpToVcId);
+
+
+        if (vpls.getProtectEnabled()) {
+            if (protectSdpId == null) {
+                throw new PSSException("no protect SDP id reserved!");
+            }
+            MplsPath protectPath = MplsPath.builder()
+                    .hops(new ArrayList<>())
+                    .name(c.getConnectionId() + "-PATH-PRT-" + p.getZ().getDeviceUrn())
+                    .build();
+
+            Lsp protectLsp = Lsp.builder()
+                    .holdPriority(LSP_PRT_HOLD_PRIORITY)
+                    .setupPriority(LSP_PRT_SETUP_PRIORITY)
+                    .metric(LSP_PRT_METRIC)
+                    .to(remoteLoopback)
+                    .pathName(protectPath.getName())
+                    .name(c.getConnectionId() + "-LSP-PRT-" + p.getZ().getDeviceUrn())
+                    .build();
+            AluSdp protectSdp = AluSdp.builder()
+                    .sdpId(protectSdpId)
+                    .description(c.getConnectionId() + "-SDP-PRT-" + otherJunction.getDeviceUrn())
+                    .farEnd(remoteLoopback)
+                    .lspName(protectLsp.getName())
+                    .build();
+            AluPipeResult protectAluPipe = new AluPipeResult();
+            protectAluPipe.setLsp(protectLsp);
+            protectAluPipe.setPath(protectPath);
+            protectAluPipe.setSdp(protectSdp);
+
+            AluSdpToVcId protectSdpToVcId = AluSdpToVcId.builder().sdpId(protectSdpId).vcId(vpls.getSvcId()).build();
+            vpls.getSdpToVcIds().add(protectSdpToVcId);
+
+
+            aluPipes.add(protectAluPipe);
+        }
+
+        return aluPipes;
 
     }
-
 
 
 }

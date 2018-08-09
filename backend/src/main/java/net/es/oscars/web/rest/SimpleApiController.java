@@ -8,7 +8,11 @@ import net.es.oscars.resv.ent.Components;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.Tag;
 import net.es.oscars.resv.enums.Phase;
+import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.CommandParamType;
+import net.es.oscars.topo.enums.UrnType;
+import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.ConnectionFilter;
 import net.es.oscars.web.simple.*;
 import net.es.oscars.web.beans.PceRequest;
@@ -17,10 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 
 @RestController
@@ -32,6 +33,8 @@ public class SimpleApiController {
 
     @Autowired
     private Startup startup;
+    @Autowired
+    private TopoService topoService;
 
     @ExceptionHandler(StartupException.class)
     @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
@@ -106,7 +109,7 @@ public class SimpleApiController {
         if (c == null) {
             return  null;
         } else {
-            return fromConnection(c, false);
+            return fromConnection(c, false, false);
         }
 
     }
@@ -125,12 +128,24 @@ public class SimpleApiController {
         List<Connection> connections = connController.list(f);
         List<SimpleConnection> result = new ArrayList<>();
         for (Connection c : connections) {
-            result.add(fromConnection(c, return_svc_ids));
+            result.add(fromConnection(c, return_svc_ids, false));
         }
         return result;
     }
 
-    public SimpleConnection fromConnection(Connection c, Boolean return_svc_ids) {
+    @RequestMapping(value = "/api/conn/pmcList", method = RequestMethod.GET)
+    @ResponseBody
+    public List<SimpleConnection> pmcList() throws StartupException {
+        ConnectionFilter f = ConnectionFilter.builder().phase(Phase.RESERVED).build();
+        List<Connection> connections = connController.list(f);
+        List<SimpleConnection> result = new ArrayList<>();
+        for (Connection c : connections) {
+            result.add(fromConnection(c, false, true));
+        }
+        return result;
+    }
+
+    public SimpleConnection fromConnection(Connection c, Boolean return_svc_ids, Boolean return_ifce_ero) {
 
         Long b = c.getArchived().getSchedule().getBeginning().getEpochSecond();
         Long e = c.getArchived().getSchedule().getEnding().getEpochSecond();
@@ -177,11 +192,38 @@ public class SimpleApiController {
                     .device(j.getDeviceUrn())
                     .build());
         });
+        Map<String, TopoUrn> urnMap = topoService.getTopoUrnMap();
         cmp.getPipes().forEach(p -> {
             List<String> ero = new ArrayList<>();
-            p.getAzERO().forEach(h -> {
-                ero.add(h.getUrn());
-            });
+            if (return_ifce_ero) {
+                p.getAzERO().forEach(h -> {
+                    if (urnMap.containsKey(h.getUrn())) {
+                        TopoUrn topoUrn = urnMap.get(h.getUrn());
+                        if (topoUrn.getUrnType().equals(UrnType.PORT)) {
+                            Port port = topoUrn.getPort();
+
+                            if (port.getIfce() != null && !port.getIfce().equals("")) {
+                                ero.add(port.getIfce());
+                            } else {
+                                ero.add(h.getUrn());
+                            }
+
+                        } else {
+                            ero.add(h.getUrn());
+
+                        }
+
+                    } else {
+                        ero.add(h.getUrn());
+                    }
+                });
+
+            } else {
+                p.getAzERO().forEach(h -> {
+                    ero.add(h.getUrn());
+                });
+
+            }
             pipes.add(Pipe.builder()
                     .azMbps(p.getAzBandwidth())
                     .zaMbps(p.getZaBandwidth())

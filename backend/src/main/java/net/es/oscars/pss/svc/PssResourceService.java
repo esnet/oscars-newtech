@@ -56,7 +56,7 @@ public class PssResourceService {
             Map<String, Set<ReservableCommandParam>> availableParams = resvService.availableParams(interval);
             log.debug("available params:");
 
-            this.reserveGlobals(conn , sched, availableParams);
+            this.reserveGlobals(conn, sched, availableParams);
 
             for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
                 this.reserveByJunction(j, conn, sched, availableParams);
@@ -75,7 +75,7 @@ public class PssResourceService {
 
     @Transactional
     public void reserveGlobals(Connection conn, Schedule sched,
-                                Map<String, Set<ReservableCommandParam>> availableParams) throws PSSException {
+                               Map<String, Set<ReservableCommandParam>> availableParams) throws PSSException {
 
         log.info("reserving globals & per-device. deciding VC id:");
         Interval interval = Interval.builder()
@@ -97,6 +97,8 @@ public class PssResourceService {
          - then add it to the reserved set for each device
           device A: avail: {2, 3, 4, 5, 6, 7, 8, 9, 10 } res: { 4, 5 }
           device B: avail: {3, 4, 5, 6, 7, 8, 9, 10 } res: { 3, 4, 6, 8 }
+
+          if any pipe needs a protect, we do this once more for a protect vc id
          */
 
         List<TopoUrn> topoUrns = new ArrayList<>();
@@ -107,6 +109,13 @@ public class PssResourceService {
             }
             topoUrns.add(urn);
         }
+        boolean needProtect = false;
+        for (VlanPipe p : conn.getReserved().getCmp().getPipes()) {
+            if (p.getProtect()) {
+                needProtect = true;
+            }
+        }
+
 
         Map<String, Set<IntRange>> availVcIds = new HashMap<>();
 //        Set<IntRange> allRanges = new HashSet<>();
@@ -123,9 +132,22 @@ public class PssResourceService {
         if (vcid == null) {
             throw new PSSException("no vcid found!");
         }
+        Integer protectVcId = null;
 
-        log.info("found vc id "+ vcid);
+        if (needProtect) {
+            for (String urn : availVcIds.keySet()) {
+                Set<IntRange> availVcIdsHere = availVcIds.get(urn);
+                availVcIdsHere = IntRange.subtractFromSet(availVcIdsHere, vcid);
+                availVcIds.put(urn, availVcIdsHere);
+            }
+            protectVcId = IntRange.leastInAll(availVcIds);
+            if (protectVcId == null) {
+                throw new PSSException("no protectVcId found!");
+            }
 
+            log.info("found protect VC id " + protectVcId);
+
+        }
         /*
         loopbacks are reserved like so:
 
@@ -147,9 +169,9 @@ public class PssResourceService {
 
         for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
 
-            for (VlanPipe p: conn.getReserved().getCmp().getPipes()) {
+            for (VlanPipe p : conn.getReserved().getCmp().getPipes()) {
                 if (p.getA().getDeviceUrn().equals(j.getDeviceUrn()) || p.getZ().getDeviceUrn().equals(j.getDeviceUrn())) {
-                    log.info("loopback needed for device "+j.getDeviceUrn());
+                    log.info("loopback needed for device " + j.getDeviceUrn());
 
 
                     Integer loopback = Integer.MAX_VALUE;
@@ -161,7 +183,7 @@ public class PssResourceService {
                         }
                     }
                     if (!found) {
-                        throw new PSSException("could not find loopback for "+j.getDeviceUrn()+" pool size: "+availLoopbacks.size());
+                        throw new PSSException("could not find loopback for " + j.getDeviceUrn() + " pool size: " + availLoopbacks.size());
                     }
 
                     availLoopbacks.remove(loopback);
@@ -180,8 +202,7 @@ public class PssResourceService {
             }
 
 
-
-            log.info("reserving VC id for device "+j.getDeviceUrn());
+            log.info("reserving VC id for device " + j.getDeviceUrn());
 
 
             CommandParam vcCp = CommandParam.builder()
@@ -192,10 +213,20 @@ public class PssResourceService {
                     .urn(j.getDeviceUrn())
                     .build();
             j.getCommandParams().add(vcCp);
+            if (needProtect) {
+                log.info("reserving protect VC id for device " + j.getDeviceUrn());
 
+                CommandParam protectVcCp = CommandParam.builder()
+                        .connectionId(conn.getConnectionId())
+                        .paramType(CommandParamType.PROTECT_VC_ID)
+                        .resource(protectVcId)
+                        .schedule(sched)
+                        .urn(j.getDeviceUrn())
+                        .build();
+                j.getCommandParams().add(protectVcCp);
+            }
 
             // for ALUs we also need to reserve an SVC ID globally. Right now: === the VC id
-            // TODO: consider VC & SVC id for backup
             TopoUrn devUrn = topoService.getTopoUrnMap().get(j.getDeviceUrn());
             if (devUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
                 CommandParam svcCp = CommandParam.builder()
@@ -214,7 +245,7 @@ public class PssResourceService {
 
     @Transactional
     public void reserveByJunction(VlanJunction j, Connection conn, Schedule sched,
-                                   Map<String, Set<ReservableCommandParam>> availableParams) throws PSSException {
+                                  Map<String, Set<ReservableCommandParam>> availableParams) throws PSSException {
         log.info("reserving PSS resources by junction : " + j.getDeviceUrn());
         TopoUrn urn = topoService.getTopoUrnMap().get(j.getDeviceUrn());
         if (!urn.getUrnType().equals(UrnType.DEVICE)) {
@@ -222,18 +253,18 @@ public class PssResourceService {
         }
         Device d = urn.getDevice();
         Components cmp = conn.getReserved().getCmp();
-        // for ALUs we need one qos id per fixture; QoS ids are reserved on each device
+        // for ALUs we need one qos id per fixture. QoS ids are reserved on each device
         if (d.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
 
             // first find available QOS ids
             Set<IntRange> availQosIds = new HashSet<>();
-            for (ReservableCommandParam rcp: availableParams.get(d.getUrn())) {
+            for (ReservableCommandParam rcp : availableParams.get(d.getUrn())) {
                 if (rcp.getType().equals(CommandParamType.ALU_QOS_POLICY_ID)) {
                     availQosIds = rcp.getReservableRanges();
                 }
             }
 
-            for (VlanFixture f: cmp.getFixtures()) {
+            for (VlanFixture f : cmp.getFixtures()) {
                 if (f.getJunction().getDeviceUrn().equals(urn.getUrn())) {
                     // this fixture does belong to this junction
                     if (f.getCommandParams() == null) {
@@ -258,14 +289,13 @@ public class PssResourceService {
                     jnctRepo.save(j);
                     fixRepo.save(f);
                 }
-             }
+            }
 
             // also, reserve one SDP id per pipe
-            // TODO: possibly more then one if protect paths
 
 
             Set<IntRange> availSdpIds = new HashSet<>();
-            for (ReservableCommandParam rcp: availableParams.get(d.getUrn())) {
+            for (ReservableCommandParam rcp : availableParams.get(d.getUrn())) {
                 if (rcp.getType().equals(CommandParamType.ALU_SDP_ID)) {
                     availSdpIds = rcp.getReservableRanges();
                 }
@@ -283,22 +313,41 @@ public class PssResourceService {
                     junctionInPipe = true;
                     intent = p.getA().getDeviceUrn();
                 }
+
                 if (junctionInPipe) {
-                    Integer picked = IntRange.minFloor(availSdpIds);
+                    Integer sdpId = IntRange.minFloor(availSdpIds);
 
                     CommandParam sdpIdCp = CommandParam.builder()
                             .connectionId(conn.getConnectionId())
                             .paramType(CommandParamType.ALU_SDP_ID)
                             .intent(intent)
-                            .resource(picked)
+                            .resource(sdpId)
                             .schedule(sched)
                             .urn(d.getUrn())
                             .build();
 
                     j.getCommandParams().add(sdpIdCp);
 
-                    availSdpIds = IntRange.subtractFromSet(availSdpIds, picked);
+                    availSdpIds = IntRange.subtractFromSet(availSdpIds, sdpId);
                     jnctRepo.save(j);
+
+                    if (p.getProtect()) {
+                        Integer protectSdpId = IntRange.minFloor(availSdpIds);
+
+                        CommandParam protectSdpIdCp = CommandParam.builder()
+                                .connectionId(conn.getConnectionId())
+                                .paramType(CommandParamType.ALU_PROTECT_SDP_ID)
+                                .intent(intent)
+                                .resource(protectSdpId)
+                                .schedule(sched)
+                                .urn(d.getUrn())
+                                .build();
+
+                        j.getCommandParams().add(protectSdpIdCp);
+
+                        availSdpIds = IntRange.subtractFromSet(availSdpIds, protectSdpId);
+                        jnctRepo.save(j);
+                    }
                 }
             }
 

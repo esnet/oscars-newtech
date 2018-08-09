@@ -16,6 +16,8 @@ public class Fixture {
 
     protected Integer vlan;
 
+    protected Boolean strict;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected Integer mbps;
     @JsonInclude(JsonInclude.Include.NON_NULL)

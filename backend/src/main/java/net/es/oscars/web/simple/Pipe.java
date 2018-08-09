@@ -23,6 +23,7 @@ public class Pipe {
 
     protected Integer azMbps;
     protected Integer zaMbps;
+    protected Boolean protect;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected PceMode pceMode;
