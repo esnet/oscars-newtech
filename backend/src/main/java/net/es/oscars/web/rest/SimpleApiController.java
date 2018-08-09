@@ -203,7 +203,7 @@ public class SimpleApiController {
                             Port port = topoUrn.getPort();
 
                             if (port.getIfce() != null && !port.getIfce().equals("")) {
-                                ero.add(port.getIfce());
+                                ero.add(port.getDevice().getUrn()+":"+port.getIfce());
                             } else {
                                 ero.add(h.getUrn());
                             }
