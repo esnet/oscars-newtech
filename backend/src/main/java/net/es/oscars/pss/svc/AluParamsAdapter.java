@@ -321,7 +321,9 @@ public class AluParamsAdapter {
             protectAluPipe.setPath(protectPath);
             protectAluPipe.setSdp(protectSdp);
 
-            AluSdpToVcId protectSdpToVcId = AluSdpToVcId.builder().sdpId(protectSdpId).vcId(vpls.getSvcId()).build();
+            AluSdpToVcId protectSdpToVcId = AluSdpToVcId.builder()
+                    .sdpId(protectSdpId)
+                    .vcId(vpls.getProtectVcId()).build();
             vpls.getSdpToVcIds().add(protectSdpToVcId);
 
 

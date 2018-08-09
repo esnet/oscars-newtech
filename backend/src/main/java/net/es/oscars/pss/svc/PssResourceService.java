@@ -132,6 +132,9 @@ public class PssResourceService {
         if (vcid == null) {
             throw new PSSException("no vcid found!");
         }
+
+        log.info("found VC id " + vcid);
+
         Integer protectVcId = null;
 
         if (needProtect) {
@@ -200,10 +203,7 @@ public class PssResourceService {
                     j.getCommandParams().add(loopbackCp);
                 }
             }
-
-
-            log.info("reserving VC id for device " + j.getDeviceUrn());
-
+            log.debug("setting vc id "+vcid+" on "+j.getDeviceUrn());
 
             CommandParam vcCp = CommandParam.builder()
                     .connectionId(conn.getConnectionId())
@@ -214,7 +214,7 @@ public class PssResourceService {
                     .build();
             j.getCommandParams().add(vcCp);
             if (needProtect) {
-                log.info("reserving protect VC id for device " + j.getDeviceUrn());
+                log.debug("setting protect vc id "+protectVcId+" on "+j.getDeviceUrn());
 
                 CommandParam protectVcCp = CommandParam.builder()
                         .connectionId(conn.getConnectionId())
@@ -229,6 +229,7 @@ public class PssResourceService {
             // for ALUs we also need to reserve an SVC ID globally. Right now: === the VC id
             TopoUrn devUrn = topoService.getTopoUrnMap().get(j.getDeviceUrn());
             if (devUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
+                log.debug("setting ALU svc id "+vcid+" on "+j.getDeviceUrn());
                 CommandParam svcCp = CommandParam.builder()
                         .connectionId(conn.getConnectionId())
                         .paramType(CommandParamType.ALU_SVC_ID)
@@ -291,8 +292,9 @@ public class PssResourceService {
                 }
             }
 
-            // also, reserve one SDP id per pipe
+            // also, reserve one SDP id per pipe.. plus one protect
 
+            // SDP ids are reserved similarly to VC ids
 
             Set<IntRange> availSdpIds = new HashSet<>();
             for (ReservableCommandParam rcp : availableParams.get(d.getUrn())) {
@@ -316,6 +318,7 @@ public class PssResourceService {
 
                 if (junctionInPipe) {
                     Integer sdpId = IntRange.minFloor(availSdpIds);
+                    log.debug("reserving ALU SDP id "+sdpId+" on "+d.getUrn());
 
                     CommandParam sdpIdCp = CommandParam.builder()
                             .connectionId(conn.getConnectionId())
@@ -333,6 +336,7 @@ public class PssResourceService {
 
                     if (p.getProtect()) {
                         Integer protectSdpId = IntRange.minFloor(availSdpIds);
+                        log.debug("reserving ALU protect SDP id "+protectSdpId+" on "+d.getUrn());
 
                         CommandParam protectSdpIdCp = CommandParam.builder()
                                 .connectionId(conn.getConnectionId())

@@ -160,6 +160,9 @@ public class MxParamsAdapter {
 
         return MxParams.builder()
                 .ifces(ifces)
+                .lsps(lsps)
+                .paths(paths)
+                .qos(qos)
                 .mxVpls(mxVpls)
                 .build();
     }
