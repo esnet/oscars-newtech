@@ -65,7 +65,6 @@ public class NmlController {
     private String nsaLocation;
 
 
-
     @Value("${resv.timeout}")
     private Integer resvTimeout;
 
@@ -120,7 +119,16 @@ public class NmlController {
         for (Device d : topology.getDevices().values()) {
             for (Port p : d.getPorts()) {
                 if (p.getCapabilities().contains(Layer.ETHERNET) && !p.getReservableVlans().isEmpty()) {
-                    edgePorts.add(p);
+                    boolean allow = false;
+                    for (String filter : nsiPopulator.getFilter()) {
+                        if (p.getUrn().startsWith(filter)) {
+                            allow = true;
+                        }
+
+                    }
+                    if (allow) {
+                        edgePorts.add(p);
+                    }
                 }
             }
         }
@@ -321,7 +329,7 @@ public class NmlController {
 
         for (NsiPeering peering : nsiPopulator.getNotPlusPorts()) {
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            String inUrn = topoId+peering.getIn().getLocal();
+            String inUrn = topoId + peering.getIn().getLocal();
             pgi.setAttribute("id", inUrn);
             pgi.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
             hip.appendChild(pgi);
@@ -331,13 +339,13 @@ public class NmlController {
             ilg.setTextContent(peering.getVlan());
             pgi.appendChild(ilg);
             Element inIsAlias = doc.createElementNS(nsBase, "nml-base:isAlias");
-            Element inRemote  = doc.createElementNS(nsBase, "nml-base:PortGroup");
+            Element inRemote = doc.createElementNS(nsBase, "nml-base:PortGroup");
             inRemote.setAttribute("id", peering.getIn().getRemote());
             inIsAlias.appendChild(inRemote);
             pgi.appendChild(inIsAlias);
 
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            String outUrn = topoId+peering.getOut().getLocal();
+            String outUrn = topoId + peering.getOut().getLocal();
             pgo.setAttribute("id", outUrn);
             pgo.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
 
@@ -346,7 +354,7 @@ public class NmlController {
             olg.setTextContent(peering.getVlan());
             pgo.appendChild(olg);
             Element outIsAlias = doc.createElementNS(nsBase, "nml-base:isAlias");
-            Element outRemote  = doc.createElementNS(nsBase, "nml-base:PortGroup");
+            Element outRemote = doc.createElementNS(nsBase, "nml-base:PortGroup");
             outRemote.setAttribute("id", peering.getOut().getRemote());
             outIsAlias.appendChild(outRemote);
             pgo.appendChild(outIsAlias);

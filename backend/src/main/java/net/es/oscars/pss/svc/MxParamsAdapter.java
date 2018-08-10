@@ -11,8 +11,6 @@ import net.es.oscars.dto.pss.params.Policing;
 import net.es.oscars.dto.pss.params.mx.*;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.topo.beans.TopoUrn;
-import net.es.oscars.topo.ent.Device;
-import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
@@ -180,8 +178,8 @@ public class MxParamsAdapter {
                                  VlanPipe p, Integer mbps, Connection c) throws PSSException {
         List<MplsHop> mplsHops = MiscHelper.mplsHops(hops, topoService);
 
-        String pathName = "OSCARS-" + c.getConnectionId() + "-PATH";
-        String lspName = "OSCARS-" + c.getConnectionId() + "-LSP";
+        String pathName = c.getConnectionId();
+        String lspName = c.getConnectionId();
 
         if (protect) {
             pathName += "-PRT-" + p.getZ().getDeviceUrn();

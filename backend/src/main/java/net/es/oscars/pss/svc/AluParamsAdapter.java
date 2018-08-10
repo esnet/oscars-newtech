@@ -140,7 +140,7 @@ public class AluParamsAdapter {
         AluVpls vpls = AluVpls.builder()
                 .protectVcId(protectVcId)
                 .protectEnabled(protectEnabled)
-                .description(c.getConnectionId() + "-VPLS")
+                .description("OSCARS-"+c.getConnectionId() + "-VPLS")
                 .saps(saps)
                 .serviceName("OSCARS-" + c.getConnectionId()+"-SVC")
                 .sdpToVcIds(new ArrayList<>())
@@ -212,9 +212,9 @@ public class AluParamsAdapter {
         List<AluPipeResult> aluPipes = new ArrayList<>();
 
         List<MplsHop> mplsHops = MiscHelper.mplsHops(hops, topoService);
-        String pathName = c.getConnectionId() + "-PATH-WRK-" + p.getZ().getDeviceUrn();
+        String pathName = c.getConnectionId() + "-WRK-" + p.getZ().getDeviceUrn();
         pathName = pathName.substring(0, 31);
-        String lspName = c.getConnectionId() + "-LSP-WRK-" + p.getZ().getDeviceUrn();
+        String lspName = c.getConnectionId() + "-WRK-" + p.getZ().getDeviceUrn();
         lspName = lspName.substring(0, 31);
 
         MplsPath path = MplsPath.builder()
@@ -265,7 +265,7 @@ public class AluParamsAdapter {
         if (sdpId == null) {
             throw new PSSException("no sdp id reserved!");
         }
-        String sdpDescription = c.getConnectionId() + "-SDP-WRK-" + otherJunction.getDeviceUrn();
+        String sdpDescription = c.getConnectionId() + "-WRK-" + otherJunction.getDeviceUrn();
 
 
         AluSdp sdp = AluSdp.builder()
@@ -291,11 +291,11 @@ public class AluParamsAdapter {
             if (protectSdpId == null) {
                 throw new PSSException("no protect SDP id reserved!");
             }
-            String prtPathName = c.getConnectionId() + "-PATH-PRT-" + p.getZ().getDeviceUrn();
+            String prtPathName = c.getConnectionId() + "-PRT-" + p.getZ().getDeviceUrn();
             prtPathName = prtPathName.substring(0, 31);
-            String prtLspName = c.getConnectionId() + "-LSP-PRT-" + p.getZ().getDeviceUrn();
+            String prtLspName = c.getConnectionId() + "-PRT-" + p.getZ().getDeviceUrn();
             prtLspName = prtLspName.substring(0, 31);
-            String prtSdpDescription = c.getConnectionId() + "-SDP-PRT-" + otherJunction.getDeviceUrn();
+            String prtSdpDescription = c.getConnectionId() + "-PRT-" + otherJunction.getDeviceUrn();
 
             MplsPath protectPath = MplsPath.builder()
                     .hops(new ArrayList<>())

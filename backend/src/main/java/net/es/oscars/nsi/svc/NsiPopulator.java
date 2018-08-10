@@ -20,15 +20,21 @@ public class NsiPopulator implements StartupComponent {
 
     @Value("${nsi.peerings}")
     private File peeringsFile;
+    @Value("${nsi.filter}")
+    private File filterFile;
 
     private List<NsiPeering> peerings;
+    private List<String> filter;
     private Map<String, NsiPeering> plusPorts = new HashMap<>();
     private List<NsiPeering> notPlusPorts = new ArrayList<>();
 
     public void startup() throws StartupException {
 
         if (!peeringsFile.exists()) {
-            throw new StartupException("Peerings file does not exist");
+            throw new StartupException("NSI peerings file does not exist");
+        }
+        if (!filterFile.exists()) {
+            throw new StartupException("NSI filter file does not exist");
         }
         ObjectMapper mapper = new ObjectMapper();
 
@@ -39,7 +45,13 @@ public class NsiPopulator implements StartupComponent {
         }
         log.info("peerings imported for nsi: " + peerings.size());
 
-        Map<String, NsiPeering> byPort = new HashMap<>();
+        try {
+            filter = Arrays.asList(mapper.readValue(filterFile, String[].class));
+        } catch (IOException e) {
+            throw new StartupException(e.getMessage());
+        }
+        log.info("filter imported for nsi: " + filter.size());
+
         for (NsiPeering p : peerings) {
             String[] parts = p.getIn().getLocal().split(":");
             // device:port:id:in|out
