@@ -15,6 +15,7 @@ import net.es.oscars.resv.enums.State;
 import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.web.beans.ConnException;
 import net.es.oscars.web.beans.ConnectionFilter;
+import net.es.oscars.web.beans.ConnectionList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -225,7 +226,7 @@ public class ConnController {
 
     @RequestMapping(value = "/api/conn/list", method = RequestMethod.POST)
     @ResponseBody
-    public List<Connection> list(@RequestBody ConnectionFilter filter) throws StartupException {
+    public ConnectionList list(@RequestBody ConnectionFilter filter) throws StartupException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {

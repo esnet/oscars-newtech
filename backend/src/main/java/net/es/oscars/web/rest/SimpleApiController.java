@@ -116,16 +116,25 @@ public class SimpleApiController {
 
     @RequestMapping(value = "/api/conn/simplelist", method = RequestMethod.GET)
     @ResponseBody
-    public List<SimpleConnection> simpleList(
-            @RequestParam(defaultValue = "0", required = false) Integer include_svc_id) throws StartupException {
+    public List<SimpleConnection> simpleList(@RequestParam(defaultValue = "0", required = false) Integer include_svc_id) throws StartupException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
             throw new StartupException("OSCARS shutting down");
         }
-        Boolean return_svc_ids = (include_svc_id == null || include_svc_id > 0);
-        ConnectionFilter f = ConnectionFilter.builder().phase(Phase.RESERVED).build();
-        List<Connection> connections = connController.list(f);
+
+        boolean return_svc_ids = false;
+        if (include_svc_id != null) {
+            if (include_svc_id > 0) {
+                return_svc_ids = true;
+            }
+        }
+        ConnectionFilter f = ConnectionFilter.builder()
+                .phase(Phase.RESERVED)
+                .sizePerPage(Integer.MAX_VALUE)
+                .page(1)
+                .build();
+        List<Connection> connections = connController.list(f).getConnections();
         List<SimpleConnection> result = new ArrayList<>();
         for (Connection c : connections) {
             result.add(fromConnection(c, return_svc_ids, false));
@@ -136,8 +145,12 @@ public class SimpleApiController {
     @RequestMapping(value = "/api/conn/pmcList", method = RequestMethod.GET)
     @ResponseBody
     public List<SimpleConnection> pmcList() throws StartupException {
-        ConnectionFilter f = ConnectionFilter.builder().phase(Phase.RESERVED).build();
-        List<Connection> connections = connController.list(f);
+        ConnectionFilter f = ConnectionFilter.builder()
+                .phase(Phase.RESERVED)
+                .sizePerPage(Integer.MAX_VALUE)
+                .page(1)
+                .build();
+        List<Connection> connections = connController.list(f).getConnections();
         List<SimpleConnection> result = new ArrayList<>();
         for (Connection c : connections) {
             result.add(fromConnection(c, false, true));

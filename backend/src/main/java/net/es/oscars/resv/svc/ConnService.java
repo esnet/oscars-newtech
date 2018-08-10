@@ -19,6 +19,7 @@ import net.es.oscars.resv.enums.State;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
 import net.es.oscars.web.beans.ConnectionFilter;
+import net.es.oscars.web.beans.ConnectionList;
 import net.es.oscars.web.beans.HoldException;
 import net.es.oscars.web.beans.Interval;
 import net.es.oscars.web.simple.Fixture;
@@ -115,7 +116,7 @@ public class ConnService {
         return b.toString();
 
     }
-    public List<Connection> filter(ConnectionFilter filter) {
+    public ConnectionList filter(ConnectionFilter filter) {
 
         List<Connection> reservedAndArchived = new ArrayList<>();
         // first we don't take into account anything that doesn't have any archived
@@ -207,16 +208,30 @@ public class ConnService {
 
         List<Connection> finalFiltered = vlanFiltered;
         List<Connection> paged = new ArrayList<>();
-        int offset = (filter.getPage() -1) * filter.getSizePerPage();
-        if (offset < finalFiltered.size()) {
-            for (int idx = offset; idx < finalFiltered.size(); idx++) {
-//                log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
+
+        // pages start at 1
+        int firstIdx = (filter.getPage() -1) * filter.getSizePerPage();
+//        log.info("first idx: "+firstIdx);
+        int totalSize = finalFiltered.size();
+        // if past the end, would return empty list
+        if (firstIdx < totalSize) {
+
+            int lastIdx = firstIdx + filter.getSizePerPage();
+            if (lastIdx > totalSize) {
+                lastIdx = totalSize;
+            }
+            for (int idx = firstIdx; idx < lastIdx; idx++) {
+                //                log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
                 paged.add(finalFiltered.get(idx));
             }
         }
+        return ConnectionList.builder()
+                .page(filter.getPage())
+                .sizePerPage(filter.getSizePerPage())
+                .totalSize(totalSize)
+                .connections(paged)
+                .build();
 
-
-        return paged;
 
     }
 
