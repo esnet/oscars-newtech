@@ -17,9 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 
@@ -46,13 +44,14 @@ public class BuildDismantleCheck {
         }
 
         ReentrantLock connLock = dbAccess.getConnLock();
+        Set<Connection> shouldBeBuilt = new HashSet<>();
+        Set<Connection> shouldBeDismantled = new HashSet<>();
+
         boolean gotLock = connLock.tryLock();
         if (gotLock) {
             try {
                 // log.debug("got connection lock");
 
-                Set<Connection> shouldBeBuilt = new HashSet<>();
-                Set<Connection> shouldBeDismantled = new HashSet<>();
                 List<Connection> conns = connRepo.findByPhase(Phase.RESERVED);
                 for (Connection c : conns) {
                     Schedule s = c.getReserved().getSchedule();
@@ -73,32 +72,46 @@ public class BuildDismantleCheck {
                         }
                     }
                 }
+            } finally {
+                // release lock now that we read everything we needed
 
-                if (shouldBeBuilt.size() == 0 && shouldBeDismantled.size() == 0) {
-                    return;
-                }
+                // log.debug("unlocking connections");
+                connLock.unlock();
+            }
 
-                for (Connection c : shouldBeBuilt) {
-                    try {
-                        State s = this.pssAdapter.build(c);
-                        c.setState(s);
-                    } catch (PSSException ex) {
-                        c.setState(State.FAILED);
-                        log.error(ex.getMessage(), ex);
-                    }
-                    connRepo.saveAndFlush(c);
-                }
-                for (Connection c : shouldBeDismantled) {
-                    try {
-                        State s = this.pssAdapter.dismantle(c);
-                        c.setState(s);
-                    } catch (PSSException ex) {
-                        c.setState(State.FAILED);
-                        log.error(ex.getMessage(), ex);
-                    }
-                    connRepo.saveAndFlush(c);
-                }
+            // do the PSS work
 
+            if (shouldBeBuilt.size() == 0 && shouldBeDismantled.size() == 0) {
+                return;
+            }
+            List<Connection> saveThese = new ArrayList<>();
+
+            for (Connection c : shouldBeBuilt) {
+                try {
+                    State s = this.pssAdapter.build(c);
+                    c.setState(s);
+                } catch (PSSException ex) {
+                    c.setState(State.FAILED);
+                    log.error(ex.getMessage(), ex);
+                }
+                saveThese.add(c);
+            }
+            for (Connection c : shouldBeDismantled) {
+                try {
+                    State s = this.pssAdapter.dismantle(c);
+                    c.setState(s);
+                } catch (PSSException ex) {
+                    c.setState(State.FAILED);
+                    log.error(ex.getMessage(), ex);
+                }
+                saveThese.add(c);
+            }
+
+            // lock for the updates
+            connLock.lock();
+            try {
+                connRepo.save(saveThese);
+                connRepo.flush();
             } finally {
                 // log.debug("unlocking connections");
                 connLock.unlock();

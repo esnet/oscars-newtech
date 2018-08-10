@@ -95,10 +95,10 @@ public class MxParamsAdapter {
             }
         }
 
-        String description = "OSCARS-" + c.getConnectionId();
+        String description = c.getConnectionId();
         String serviceName = description + "-SVC";
-        String policyName = "OSCARS-" + c.getConnectionId() + "-POLICY";
-        String statsFilter = "OSCARS-" + c.getConnectionId() + "-STATS";
+        String policyName = c.getConnectionId() + "-POLICY";
+        String statsFilter = c.getConnectionId() + "-STATS";
 
 
         List<MxLsp> lsps = new ArrayList<>();
@@ -211,8 +211,8 @@ public class MxParamsAdapter {
         }
         String otherAddr = otherDevice.getDevice().getIpv4Address();
 
-        String filterName = "OSCARS-" + c.getConnectionId() + "-FILTER";
-        String policerName = "OSCARS-" + c.getConnectionId() + "-POLICER";
+        String filterName = c.getConnectionId();
+        String policerName =  c.getConnectionId();
         Integer holdPriority;
         Integer setupPriority;
         Integer lspMetric;
