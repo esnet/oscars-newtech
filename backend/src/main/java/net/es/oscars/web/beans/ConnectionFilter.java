@@ -15,13 +15,15 @@ import java.util.List;
 @AllArgsConstructor(suppressConstructorProperties=true)
 public class ConnectionFilter {
 
+    private String connectionId;
     private String username;
     private List<Integer> vlans;
     private List<String> ports;
     private String description;
     private Phase phase;
     private State state;
-
+    private int page;
+    private int sizePerPage;
 
 
 }

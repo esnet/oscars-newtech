@@ -84,32 +84,42 @@ public class BuildDismantleCheck {
             if (shouldBeBuilt.size() == 0 && shouldBeDismantled.size() == 0) {
                 return;
             }
-            List<Connection> saveThese = new ArrayList<>();
+            Map<String, State> newStates = new HashMap<>();
 
             for (Connection c : shouldBeBuilt) {
                 try {
                     State s = this.pssAdapter.build(c);
-                    c.setState(s);
+                    newStates.put(c.getConnectionId(), s);
                 } catch (PSSException ex) {
-                    c.setState(State.FAILED);
+                    newStates.put(c.getConnectionId(), State.FAILED);
                     log.error(ex.getMessage(), ex);
                 }
-                saveThese.add(c);
             }
             for (Connection c : shouldBeDismantled) {
                 try {
                     State s = this.pssAdapter.dismantle(c);
-                    c.setState(s);
+                    newStates.put(c.getConnectionId(), s);
                 } catch (PSSException ex) {
-                    c.setState(State.FAILED);
+                    newStates.put(c.getConnectionId(), State.FAILED);
                     log.error(ex.getMessage(), ex);
                 }
-                saveThese.add(c);
             }
 
             // lock for the updates
             connLock.lock();
             try {
+                List<Connection> saveThese = new ArrayList<>();
+                for (String connId : newStates.keySet()) {
+                    Optional<Connection> maybeConn = connRepo.findByConnectionId(connId);
+                    if (maybeConn.isPresent()) {
+                        Connection c = maybeConn.get();
+                        c.setState(newStates.get(connId));
+                        saveThese.add(c);
+                    } else {
+                        log.error("Could not find connection! "+connId);
+                    }
+                }
+
                 connRepo.save(saveThese);
                 connRepo.flush();
             } finally {

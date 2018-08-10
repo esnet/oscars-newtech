@@ -12,13 +12,13 @@
     "vlan": "6-4094"
   },
   {
-    "in": {
-      "local": "star-cr5:6_1_1:star-tb1:out",
-      "remote": "urn:ogf:network:tb.es.net:2013::star-tb1:1_1_1:+:in"
-    },
     "out": {
+      "local": "star-cr5:6_1_1:star-tb1:out",
+      "remote": "urn:ogf:network:tb.es.net:2013::star-tb1:1_1_1:+:out"
+    },
+    "in": {
       "local": "star-cr5:6_1_1:star-tb1:in",
-      "remote": "urn:ogf:network:tb.es.net:2013::star-tb1:1_1_1:+:in"
+      "remote": "urn:ogf:network:tb.es.net:2013::star-tb1:1_1_1:+:out"
     },
     "capacity": "100G",
     "vlan": "6-4094"

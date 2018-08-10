@@ -117,36 +117,106 @@ public class ConnService {
     }
     public List<Connection> filter(ConnectionFilter filter) {
 
-        List<Connection> candidates = new ArrayList<>();
+        List<Connection> reservedAndArchived = new ArrayList<>();
         // first we don't take into account anything that doesn't have any archived
         // i.e. we discount any temporarily held
         connRepo.findAll().forEach(c -> {
             if (c.getArchived() != null) {
-                candidates.add(c);
+                reservedAndArchived.add(c);
             }
         });
-        List<Connection> descFiltered = new ArrayList<>();
+
+        List<Connection> connIdFiltered = reservedAndArchived;
+        if (filter.getConnectionId() != null) {
+            connIdFiltered = new ArrayList<>();
+            for (Connection c: reservedAndArchived) {
+                if (c.getConnectionId().contains(filter.getConnectionId())) {
+                    connIdFiltered.add(c);
+                }
+            }
+        }
+
+        List<Connection> descFiltered = connIdFiltered;
         if (filter.getDescription() != null) {
-            for (Connection c: candidates) {
-                if (c.getDescription().matches(filter.getDescription())) {
+            descFiltered = new ArrayList<>();
+            for (Connection c: connIdFiltered) {
+                if (c.getDescription().contains(filter.getDescription())) {
                     descFiltered.add(c);
                 }
             }
-        } else {
-            descFiltered.addAll(candidates);
         }
-        List<Connection> phaseFiltered = new ArrayList<>();
+
+        List<Connection> phaseFiltered = descFiltered;
         if (filter.getPhase() != null) {
+            phaseFiltered = new ArrayList<>();
             for (Connection c: descFiltered) {
                 if (c.getPhase().equals(filter.getPhase())) {
                     phaseFiltered.add(c);
                 }
             }
-        } else {
-            phaseFiltered.addAll(descFiltered);
         }
 
-        return phaseFiltered;
+        List<Connection> userFiltered = phaseFiltered;
+        if (filter.getUsername() != null) {
+            userFiltered = new ArrayList<>();
+            for (Connection c: phaseFiltered) {
+                if (c.getUsername().contains(filter.getUsername())) {
+                    userFiltered.add(c);
+                }
+            }
+        }
+
+        List<Connection> portFiltered = userFiltered;
+        if (filter.getPorts() != null && !filter.getPorts().isEmpty()) {
+            portFiltered = new ArrayList<>();
+            for (Connection c: userFiltered) {
+                boolean add = false;
+                for (VlanFixture f: c.getArchived().getCmp().getFixtures() ) {
+                    for (String portFilter : filter.getPorts()) {
+                        if (f.getPortUrn().contains(portFilter)) {
+                            add = true;
+                        }
+
+                    }
+                }
+                if (add) {
+                    portFiltered.add(c);
+                }
+            }
+        }
+
+        List<Connection> vlanFiltered = portFiltered;
+        if (filter.getVlans() != null && !filter.getVlans().isEmpty()) {
+            vlanFiltered = new ArrayList<>();
+            for (Connection c: portFiltered) {
+                boolean add = false;
+                for (VlanFixture f: c.getArchived().getCmp().getFixtures() ) {
+                    String fixtureVlanStr = f.getVlan().getVlanId()+"";
+                    for (Integer vlan : filter.getVlans()) {
+                        String vlanStr = ""+vlan;
+                        if (fixtureVlanStr.contains(vlanStr)) {
+                            add = true;
+                        }
+                    }
+                }
+                if (add) {
+                    vlanFiltered.add(c);
+                }
+            }
+        }
+
+        List<Connection> finalFiltered = vlanFiltered;
+        List<Connection> paged = new ArrayList<>();
+        int offset = (filter.getPage() -1) * filter.getSizePerPage();
+        if (offset < finalFiltered.size()) {
+            for (int idx = offset; idx < finalFiltered.size(); idx++) {
+//                log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
+                paged.add(finalFiltered.get(idx));
+            }
+        }
+
+
+        return paged;
 
     }
 
@@ -162,7 +232,7 @@ public class ConnService {
         if (h == null) {
             throw new PCEException("Null held "+c.getConnectionId());
         }
-        Boolean valid = true;
+        boolean valid = true;
 
         slack.sendMessage("User "+c.getUsername()+" committed reservation "+c.getConnectionId());
 

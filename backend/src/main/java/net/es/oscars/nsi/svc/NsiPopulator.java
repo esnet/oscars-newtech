@@ -3,10 +3,9 @@ package net.es.oscars.nsi.svc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.app.StartupComponent;
-import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.app.exc.NsiException;
+import net.es.oscars.nsi.beans.NsiErrors;
 import net.es.oscars.nsi.beans.NsiPeering;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -16,47 +15,29 @@ import java.util.*;
 @Slf4j
 @Component
 @Data
-public class NsiPopulator implements StartupComponent {
-
-    @Value("${nsi.peerings}")
-    private File peeringsFile;
-    @Value("${nsi.filter}")
-    private File filterFile;
+public class NsiPopulator {
 
     private List<NsiPeering> peerings;
     private List<String> filter;
     private Map<String, NsiPeering> plusPorts = new HashMap<>();
     private List<NsiPeering> notPlusPorts = new ArrayList<>();
+    private boolean loaded = false;
 
-    public void startup() throws StartupException {
+    public void loadNsiConfig(File peeringsFile, File filterFile) throws NsiException, IOException {
 
-        if (!peeringsFile.exists()) {
-            throw new StartupException("NSI peerings file does not exist");
-        }
-        if (!filterFile.exists()) {
-            throw new StartupException("NSI filter file does not exist");
-        }
         ObjectMapper mapper = new ObjectMapper();
+        peerings = Arrays.asList(mapper.readValue(peeringsFile, NsiPeering[].class));
 
-        try {
-            peerings = Arrays.asList(mapper.readValue(peeringsFile, NsiPeering[].class));
-        } catch (IOException e) {
-            throw new StartupException(e.getMessage());
-        }
         log.info("peerings imported for nsi: " + peerings.size());
+        filter = Arrays.asList(mapper.readValue(filterFile, String[].class));
 
-        try {
-            filter = Arrays.asList(mapper.readValue(filterFile, String[].class));
-        } catch (IOException e) {
-            throw new StartupException(e.getMessage());
-        }
         log.info("filter imported for nsi: " + filter.size());
 
         for (NsiPeering p : peerings) {
             String[] parts = p.getIn().getLocal().split(":");
             // device:port:id:in|out
             if (parts.length != 4) {
-                throw new StartupException("invalid peering config for "+p.getIn());
+                throw new NsiException("invalid peering config for "+p.getIn(), NsiErrors.NRM_ERROR);
             }
             if (parts[2].equals("+")) {
                 String portUrn = parts[0]+":"+parts[1];
@@ -66,6 +47,7 @@ public class NsiPopulator implements StartupComponent {
                 notPlusPorts.add(p);
             }
         }
+        this.loaded = true;
 
     }
 

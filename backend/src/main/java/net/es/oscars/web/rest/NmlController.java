@@ -13,6 +13,7 @@ import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.svc.TopoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -85,7 +86,6 @@ public class NmlController {
     public static String NSA_FEATURE_UPA = "vnd.ogf.nsi.cs.v2.role.uPA";
     public static String NSA_FEATURE_TIMEOUT = "org.ogf.nsi.cs.v2.commitTimeout";
 
-
     private static String nsBase = "http://schemas.ogf.org/nml/2013/05/base#";
     private static String nsDefs = "http://schemas.ogf.org/nsi/2013/12/services/definition";
     private static String nsEth = "http://schemas.ogf.org/nml/2012/10/ethernet";
@@ -107,6 +107,9 @@ public class NmlController {
         } else if (startup.isInShutdown()) {
             throw new StartupException("OSCARS shutting down");
         }
+        if (!nsiPopulator.isLoaded()) {
+            throw new StartupException("NSI files not loaded");
+        }
 
 
         Optional<Version> maybeVersion = topoService.currentVersion();
@@ -121,7 +124,7 @@ public class NmlController {
                 if (p.getCapabilities().contains(Layer.ETHERNET) && !p.getReservableVlans().isEmpty()) {
                     boolean allow = false;
                     for (String filter : nsiPopulator.getFilter()) {
-                        if (p.getUrn().startsWith(filter)) {
+                        if (p.getUrn().contains(filter)) {
                             allow = true;
                         }
 
@@ -194,6 +197,31 @@ public class NmlController {
             pgo.setAttribute("id", nsiUrn + ":out");
             bdp.appendChild(pgo);
         }
+        for (NsiPeering peering : nsiPopulator.getNotPlusPorts()) {
+            Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
+
+            String inUrn = topoId + peering.getIn().getLocal();
+            String outUrn = topoId + peering.getOut().getLocal();
+
+            String inUrnEnding = StringUtils.right(inUrn, 3);
+            if (!inUrnEnding.equals(":in")) {
+                log.error("invalid NSI peering in.local URN " + inUrn);
+                continue;
+            }
+            String portNsiUrn = inUrn.substring(0, inUrn.length() - 3);
+
+
+            Element bdp = doc.createElementNS(nsBase, "nml-base:BidirectionalPort");
+            bdp.setAttribute("id", portNsiUrn);
+            rootElement.appendChild(bdp);
+            Element bdpgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
+            bdp.appendChild(bdpgi);
+            bdpgi.setAttribute("id", inUrn);
+            Element bdpgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
+            bdpgo.setAttribute("id", outUrn);
+            bdp.appendChild(bdpgo);
+        }
+
 
         Element serviceDefinition = doc.createElementNS(nsDefs, "nsi-defs:serviceDefinition");
         serviceDefinition.setAttribute("id", prefix + "ServiceDefinition:EVTS.A-GOLE");
@@ -226,16 +254,18 @@ public class NmlController {
         ssSd.setAttribute("id", prefix + "ServiceDefinition:EVTS.A-GOLE");
         sSvc.appendChild(ssSd);
 
+        Set<String> addedToIn = new HashSet<>();
+        Set<String> addedToOut = new HashSet<>();
         for (Port p : edgePorts) {
             String nsiUrn = nsiService.nsiUrnFromInternal(p.getUrn());
-
-
             Element pgsi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             pgsi.setAttribute("id", nsiUrn + ":in");
             ssIRel.appendChild(pgsi);
+            addedToIn.add(nsiUrn+":in");
             Element pgso = doc.createElementNS(nsBase, "nml-base:PortGroup");
             pgso.setAttribute("id", nsiUrn + ":out");
             ssORel.appendChild(pgso);
+            addedToOut.add(nsiUrn+":out");
         }
 
 
@@ -328,8 +358,11 @@ public class NmlController {
         }
 
         for (NsiPeering peering : nsiPopulator.getNotPlusPorts()) {
-            Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
+
             String inUrn = topoId + peering.getIn().getLocal();
+            String outUrn = topoId + peering.getOut().getLocal();
+
+            Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             pgi.setAttribute("id", inUrn);
             pgi.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
             hip.appendChild(pgi);
@@ -345,7 +378,6 @@ public class NmlController {
             pgi.appendChild(inIsAlias);
 
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
-            String outUrn = topoId + peering.getOut().getLocal();
             pgo.setAttribute("id", outUrn);
             pgo.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
 
@@ -360,6 +392,16 @@ public class NmlController {
             pgo.appendChild(outIsAlias);
             hop.appendChild(pgo);
 
+            if (!addedToIn.contains(inUrn)) {
+                Element pgsi = doc.createElementNS(nsBase, "nml-base:PortGroup");
+                pgsi.setAttribute("id", inUrn);
+                ssIRel.appendChild(pgsi);
+            }
+            if (!addedToOut.contains(outUrn)) {
+                Element pgso = doc.createElementNS(nsBase, "nml-base:PortGroup");
+                pgso.setAttribute("id", outUrn);
+                ssORel.appendChild(pgso);
+            }
         }
 
         Transformer transformer = TransformerFactory.newInstance().newTransformer();

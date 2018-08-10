@@ -31,7 +31,6 @@ public class Startup {
 
     private List<StartupComponent> components;
     private TopoPopulator topoPopulator;
-    private NsiPopulator nsiPopulator;
     private StartupProperties startupProperties;
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
     private PssHealthChecker pssHealthChecker;
@@ -69,7 +68,6 @@ public class Startup {
     public Startup(StartupProperties startupProperties,
                    TopoService topoService,
                    TopoPopulator topoPopulator,
-                   NsiPopulator nsiPopulator,
                    UserPopulator userPopulator,
                    SlackConnector slackConnector,
                    UIPopulator uiPopulator,
@@ -78,7 +76,6 @@ public class Startup {
                    GitRepositoryStatePopulator gitRepositoryStatePopulator) {
         this.startupProperties = startupProperties;
         this.topoPopulator = topoPopulator;
-        this.nsiPopulator = nsiPopulator;
         this.topoService = topoService;
         this.slackConnector = slackConnector;
         this.consistencySvc = consistencySvc;
@@ -87,7 +84,6 @@ public class Startup {
         components = new ArrayList<>();
         components.add(userPopulator);
         components.add(uiPopulator);
-        components.add(nsiPopulator);
         components.add(this.slackConnector);
         components.add(this.gitRepositoryStatePopulator);
         components.add(this.pssHealthChecker);
