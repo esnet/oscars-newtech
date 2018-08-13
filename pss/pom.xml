@@ -6,7 +6,7 @@
     <parent>
         <artifactId>newtech</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>1.0.17</version>
+        <version>1.0.18</version>
     </parent>
 
     <organization>
