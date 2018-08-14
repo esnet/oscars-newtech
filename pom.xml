@@ -7,7 +7,7 @@
     <groupId>net.es.oscars</groupId>
     <artifactId>newtech</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.18</version>
+    <version>1.0.19</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -246,7 +246,7 @@
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>1.5.13.RELEASE</version>
+                <version>1.5.15.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -259,7 +259,7 @@
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>1.5.13.RELEASE</version>
+                    <version>1.5.15.RELEASE</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

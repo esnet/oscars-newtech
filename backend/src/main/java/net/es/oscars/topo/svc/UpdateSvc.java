@@ -111,8 +111,7 @@ public class UpdateSvc {
             if (!maybeExists.isPresent()) {
                 throw new ConsistencyException("invalidating a missing port " + p.getUrn());
             } else {
-                Port prev = maybeExists.get();
-                portsToMakeInvalid.put(p.getUrn(), prev);
+                portsToMakeInvalid.put(p.getUrn(), maybeExists.get());
             }
         }
 
@@ -164,12 +163,17 @@ public class UpdateSvc {
             log.info("inserting p: " + p.getUrn() + " to " + deviceUrn);
 
             int prevPortsNum = d.getPorts().size();
+
             d.getPorts().add(p);
             p.setDevice(d);
             deviceRepo.save(d);
             int nowPortsNum = d.getPorts().size();
             if (nowPortsNum - prevPortsNum != 1) {
                 throw new ConsistencyException("device port size mismatch");
+            }
+
+            for (Port debugPort : d.getPorts()) {
+                log.debug(debugPort.getUrn()+ " "+debugPort.getDevice().getId());
             }
 
             insertedPorts++;
@@ -276,10 +280,19 @@ public class UpdateSvc {
         for (String urn : portsToMakeInvalid.keySet()) {
             Port prev = portsToMakeInvalid.get(urn);
             log.debug("invalidating port " + urn);
+            if (prev.getVersion().getValid()) {
+                log.error(" invalid port " + urn+" still has valid version "+prev.getVersion().getId());
+            }
             Optional<Device> maybeDevice = deviceRepo.findByUrn(prev.getDevice().getUrn());
             if (!maybeDevice.isPresent()) {
                 throw new ConsistencyException("invalidating a port pointing to an unknown device: " + urn);
+            } else {
+                for (Port p : maybeDevice.get().getPorts()) {
+                    log.debug(p.getUrn());
+                }
+                deviceRepo.save(maybeDevice.get());
             }
+            // portRepo.save(prev);
             invalidatedPorts++;
         }
 
@@ -288,8 +301,6 @@ public class UpdateSvc {
         log.info("   ver updated  :   " + versionUpdatedPorts);
         log.info("   data updated :   " + dataUpdatedPorts);
         log.info("   invalidated  :   " + invalidatedPorts);
-        portRepo.flush();
-        deviceRepo.flush();
     }
 
     public ImmutablePair<Port, Device> getExistingPort(Port port) throws ConsistencyException {

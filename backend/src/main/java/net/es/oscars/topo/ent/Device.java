@@ -8,6 +8,7 @@ import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.enums.DeviceType;
 import net.es.oscars.topo.enums.Layer;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -18,7 +19,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor(suppressConstructorProperties=true)
 @NoArgsConstructor
-@EqualsAndHashCode(exclude={"capabilities", "reservableVlans", "ports"})
+@EqualsAndHashCode(exclude={"capabilities", "reservableVlans", "ports", "id"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
                   property = "urn")
 public class Device {
@@ -33,6 +34,7 @@ public class Device {
 
     @NonNull
     @Column(unique = true)
+    @NaturalId
     private String urn;
 
     @NonNull
@@ -61,11 +63,12 @@ public class Device {
     private Set<Layer> capabilities = new HashSet<>();
 
     @NonNull
-    @OneToMany(cascade = CascadeType.ALL)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "device", orphanRemoval = true)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Port> ports = new HashSet<>();
 
     public String toString() {
-        return this.getClass().getSimpleName() + "-" + getId();
+        return this.getClass().getSimpleName() + "-" + getUrn();
     }
 }

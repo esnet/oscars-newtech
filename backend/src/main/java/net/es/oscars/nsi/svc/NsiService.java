@@ -77,6 +77,9 @@ public class NsiService {
     @Value("${nsi.provider-nsa}")
     private String providerNsa;
 
+    @Value("${nsi.strict-policing}")
+    private boolean strictPolicing;
+
     @Value("#{'${nsi.allowed-requesters}'.split(',')}")
     private List<String> allowedRequesters;
 
@@ -876,14 +879,14 @@ public class NsiService {
                 .junction(aJ.getDevice())
                 .port(a_urn.getPort().getUrn())
                 .mbps(mbps.intValue())
-                .strict(false)
+                .strict(strictPolicing)
                 .vlan(aVlanId)
                 .build();
         Fixture zF = Fixture.builder()
                 .junction(zJ.getDevice())
                 .port(z_urn.getPort().getUrn())
                 .mbps(mbps.intValue())
-                .strict(false)
+                .strict(strictPolicing)
                 .vlan(zVlanId)
                 .build();
 

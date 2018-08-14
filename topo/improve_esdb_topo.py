@@ -257,7 +257,6 @@ def main():
         for port_entry in device_entry['ports']:
             if 'BLANK' in port_entry['urn']:
                 sys.stderr.write('BLANK port in device ' + device_entry['urn'] + ' - check lags')
-                error_exit = True
 
     with open(opts.output_devices, 'w') as outfile:
         json.dump(devices, outfile, indent=2)

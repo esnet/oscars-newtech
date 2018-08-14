@@ -179,6 +179,7 @@ public class SimpleApiController {
                     .inMbps(f.getIngressBandwidth())
                     .outMbps(f.getEgressBandwidth())
                     .port(f.getPortUrn())
+                    .strict(f.getStrict())
                     .junction(f.getJunction().getDeviceUrn())
                     .vlan(f.getVlan().getVlanId())
                     .build();
@@ -242,6 +243,7 @@ public class SimpleApiController {
                     .zaMbps(p.getZaBandwidth())
                     .a(p.getA().getDeviceUrn())
                     .z(p.getZ().getDeviceUrn())
+                    .protect(p.getProtect())
                     .ero(ero)
                     .build());
         });

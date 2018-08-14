@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.enums.Layer;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor(suppressConstructorProperties=true)
 @NoArgsConstructor
-@EqualsAndHashCode(exclude={"device", "capabilities", "reservableVlans", "tags"})
+@EqualsAndHashCode(exclude={"device", "capabilities", "reservableVlans", "tags", "id"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
                   property = "urn")
 public class Port {
@@ -30,6 +31,7 @@ public class Port {
 
 
     @NonNull
+    @NaturalId
     @Column(unique = true)
     private String urn;
 
@@ -71,7 +73,7 @@ public class Port {
     private Set<Layer> capabilities = new HashSet<>();
 
     public String toString() {
-        return this.getClass().getSimpleName() + "-" + getId();
+        return this.getClass().getSimpleName() + "-" + getUrn();
     }
 
 }
