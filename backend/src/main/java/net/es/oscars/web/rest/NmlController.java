@@ -198,10 +198,8 @@ public class NmlController {
             bdp.appendChild(pgo);
         }
         for (NsiPeering peering : nsiPopulator.getNotPlusPorts()) {
-            Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
-
-            String inUrn = topoId + peering.getIn().getLocal();
-            String outUrn = topoId + peering.getOut().getLocal();
+            String inUrn = topoId + ":" + peering.getIn().getLocal();
+            String outUrn = topoId + ":" + peering.getOut().getLocal();
 
             String inUrnEnding = StringUtils.right(inUrn, 3);
             if (!inUrnEnding.equals(":in")) {
@@ -261,11 +259,11 @@ public class NmlController {
             Element pgsi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             pgsi.setAttribute("id", nsiUrn + ":in");
             ssIRel.appendChild(pgsi);
-            addedToIn.add(nsiUrn+":in");
+            addedToIn.add(nsiUrn + ":in");
             Element pgso = doc.createElementNS(nsBase, "nml-base:PortGroup");
             pgso.setAttribute("id", nsiUrn + ":out");
             ssORel.appendChild(pgso);
-            addedToOut.add(nsiUrn+":out");
+            addedToOut.add(nsiUrn + ":out");
         }
 
 
@@ -359,8 +357,8 @@ public class NmlController {
 
         for (NsiPeering peering : nsiPopulator.getNotPlusPorts()) {
 
-            String inUrn = topoId + peering.getIn().getLocal();
-            String outUrn = topoId + peering.getOut().getLocal();
+            String inUrn = topoId + ":" + peering.getIn().getLocal();
+            String outUrn = topoId + ":" + peering.getOut().getLocal();
 
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             pgi.setAttribute("id", inUrn);
@@ -376,6 +374,21 @@ public class NmlController {
             inRemote.setAttribute("id", peering.getIn().getRemote());
             inIsAlias.appendChild(inRemote);
             pgi.appendChild(inIsAlias);
+
+            Element imxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");
+            String ibps = peering.getCapacity().replaceAll("[gG]", "000000000");
+            imxrc.setTextContent(ibps);
+            Element imnrc = doc.createElementNS(nsEth, "nml-eth:minimumReservableCapacity");
+            imnrc.setTextContent(minRc);
+            Element icap = doc.createElementNS(nsEth, "nml-eth:capacity");
+            icap.setTextContent(ibps);
+            Element igrn = doc.createElementNS(nsEth, "nml-eth:granularity");
+            igrn.setTextContent(granularity);
+            pgi.appendChild(imxrc);
+            pgi.appendChild(imnrc);
+            pgi.appendChild(icap);
+            pgi.appendChild(igrn);
+
 
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
             pgo.setAttribute("id", outUrn);
@@ -402,6 +415,20 @@ public class NmlController {
                 pgso.setAttribute("id", outUrn);
                 ssORel.appendChild(pgso);
             }
+
+            Element omxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");
+            String obps = peering.getCapacity().replaceAll("[gG]", "000000000");
+            omxrc.setTextContent(obps);
+            Element omnrc = doc.createElementNS(nsEth, "nml-eth:minimumReservableCapacity");
+            omnrc.setTextContent(minRc);
+            Element ocap = doc.createElementNS(nsEth, "nml-eth:capacity");
+            ocap.setTextContent(obps);
+            Element ogrn = doc.createElementNS(nsEth, "nml-eth:granularity");
+            ogrn.setTextContent(granularity);
+            pgo.appendChild(omxrc);
+            pgo.appendChild(omnrc);
+            pgo.appendChild(ocap);
+            pgo.appendChild(ogrn);
         }
 
         Transformer transformer = TransformerFactory.newInstance().newTransformer();

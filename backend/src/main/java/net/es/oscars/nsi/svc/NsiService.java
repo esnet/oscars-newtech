@@ -55,6 +55,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceException;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -506,9 +507,10 @@ public class NsiService {
         QueryRecursiveResultType qrrt = new QueryRecursiveResultType();
         qrrt.setConnectionId(mapping.getNsiConnectionId());
 
-        QueryRecursiveResultCriteriaType qsrct = new QueryRecursiveResultCriteriaType();
-        qsrct.setServiceType(SERVICE_TYPE);
-        qsrct.setVersion(0);
+        QueryRecursiveResultCriteriaType qrrct = new QueryRecursiveResultCriteriaType();
+        qrrct.setSchedule(this.oscarsToNsiSchedule(c.getArchived().getSchedule()));
+        qrrct.setServiceType(SERVICE_TYPE);
+        qrrct.setVersion(0);
         Components cmp = null;
 
         if (c.getPhase().equals(Phase.ARCHIVED)) {
@@ -526,8 +528,8 @@ public class NsiService {
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
                 = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
 
-        qsrct.getAny().add(p2pof.createP2Ps(p2p));
-        qrrt.getCriteria().add(qsrct);
+        qrrct.getAny().add(p2pof.createP2Ps(p2p));
+        qrrt.getCriteria().add(qrrct);
 
         qrrt.setDescription(c.getDescription());
         qrrt.setGlobalReservationId(mapping.getNsiGri());
@@ -620,7 +622,7 @@ public class NsiService {
 
         ReservationRequestCriteriaType crit = rt.getCriteria();
 
-        Long mbpsLong = p2p.getCapacity() / 1000000L;
+        Long mbpsLong = p2p.getCapacity();
         Integer mbps = mbpsLong.intValue();
 
         Interval interval = this.nsiToOscarsSchedule(crit.getSchedule());
@@ -678,7 +680,7 @@ public class NsiService {
                 Validity v = connSvc.validateConnection(simpleConnection);
 
                 if (!v.isValid()) {
-                    throw new NsiException("Invalid input: "+v.getMessage(), NsiErrors.MSG_ERROR);
+                    throw new NsiException("Invalid input: " + v.getMessage(), NsiErrors.MSG_ERROR);
                 }
 
             } catch (HoldException ex) {
@@ -702,7 +704,6 @@ public class NsiService {
             } catch (JsonProcessingException ex) {
                 log.error(ex.getMessage(), ex);
             }
-
 
 
             log.info("saving new connection");
@@ -788,7 +789,7 @@ public class NsiService {
         String dst = p2p.getDestSTP();
         String in_a = this.internalUrnFromStp(src);
         String in_z = this.internalUrnFromStp(dst);
-        Long mbps = p2p.getCapacity() / 1000000L;
+        Long mbps = p2p.getCapacity();
 
         TopoUrn a_urn = topoService.getTopoUrnMap().get(in_a);
         if (a_urn == null) {
@@ -1135,14 +1136,14 @@ public class NsiService {
 
         p2p.setSourceSTP(srcStp);
         p2p.setDestSTP(dstStp);
-        p2p.setCapacity(a.getIngressBandwidth() * 1000000L);
+        p2p.setCapacity(a.getIngressBandwidth());
         p2p.setEro(ero);
         p2p.setDirectionality(DirectionalityType.BIDIRECTIONAL);
         p2p.setSymmetricPath(true);
         return p2p;
     }
 
-    public void errCallback(NsiEvent event, NsiMapping mapping, String error, String errNum, List<TypeValuePairType> tvps ,String corrId)
+    public void errCallback(NsiEvent event, NsiMapping mapping, String error, String errNum, List<TypeValuePairType> tvps, String corrId)
             throws NsiException, ServiceException {
         String nsaId = mapping.getNsaId();
         if (!this.getRequesterNsa(nsaId).isPresent()) {
@@ -1244,13 +1245,24 @@ public class NsiService {
     }
 
     public Interval nsiToOscarsSchedule(ScheduleType schedule) {
-        XMLGregorianCalendar xst = schedule.getStartTime().getValue();
-        Instant ist = xst.toGregorianCalendar().toInstant();
-        XMLGregorianCalendar xet = schedule.getEndTime().getValue();
-        Instant iet = xet.toGregorianCalendar().toInstant();
+
+
+        Instant beg = Instant.now().plus(30, ChronoUnit.SECONDS);
+        Instant end = beg.plus(Duration.of(24, ChronoUnit.HOURS));
+
+        if (schedule.getStartTime() != null) {
+            XMLGregorianCalendar xst = schedule.getStartTime().getValue();
+            beg = xst.toGregorianCalendar().toInstant();
+        }
+        if (schedule.getEndTime() != null) {
+            XMLGregorianCalendar xet = schedule.getEndTime().getValue();
+            end = xet.toGregorianCalendar().toInstant();
+
+        }
+
         return Interval.builder()
-                .beginning(ist)
-                .ending(iet)
+                .beginning(beg)
+                .ending(end)
                 .build();
     }
 

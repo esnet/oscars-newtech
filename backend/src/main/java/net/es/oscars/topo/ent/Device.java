@@ -64,7 +64,7 @@ public class Device {
 
     @NonNull
     @ElementCollection(fetch = FetchType.EAGER)
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "device", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Port> ports = new HashSet<>();
 

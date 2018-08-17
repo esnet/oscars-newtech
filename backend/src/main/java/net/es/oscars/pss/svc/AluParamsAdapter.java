@@ -99,7 +99,7 @@ public class AluParamsAdapter {
                 }
                 String port = parts[1];
                 Policing policing = Policing.STRICT;
-                if (rvf.getStrict()) {
+                if (!rvf.getStrict()) {
                     policing = Policing.SOFT;
                 }
 

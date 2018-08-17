@@ -35,7 +35,6 @@
 <#-- shared for ingress and egress -->
 /configure qos ${sapType} ${qosId} create
 /configure qos ${sapType} ${qosId} description "${qos.description}"
-/configure qos ${sapType} ${qosId} policy-name "${qos.policyName}"
 /configure qos ${sapType} ${qosId} queue 1 create
 /configure qos ${sapType} ${qosId} fc "ef" create
 /configure qos ${sapType} ${qosId} fc "l1" create
