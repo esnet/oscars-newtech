@@ -485,13 +485,20 @@ public class NsiService {
             throw new NsiException("IMS not supported yet", NsiErrors.UNIMPLEMENTED);
         }
 
+
         Set<NsiMapping> mappings = new HashSet<>();
-        for (String connId : query.getConnectionId()) {
-            mappings.addAll(nsiRepo.findByNsiConnectionId(connId));
+        if (query.getConnectionId().isEmpty() && query.getGlobalReservationId().isEmpty()) {
+            // empty query = find all
+            mappings.addAll(nsiRepo.findAll());
+        } else {
+            for (String connId : query.getConnectionId()) {
+                mappings.addAll(nsiRepo.findByNsiConnectionId(connId));
+            }
+            for (String gri : query.getGlobalReservationId()) {
+                mappings.addAll(nsiRepo.findByNsiGri(gri));
+            }
         }
-        for (String gri : query.getGlobalReservationId()) {
-            mappings.addAll(nsiRepo.findByNsiGri(gri));
-        }
+
         Long resultId = 0L;
         for (NsiMapping mapping : mappings) {
             QuerySummaryResultType qsrt = this.toQSRT(mapping);
@@ -511,17 +518,7 @@ public class NsiService {
         qrrct.setSchedule(this.oscarsToNsiSchedule(c.getArchived().getSchedule()));
         qrrct.setServiceType(SERVICE_TYPE);
         qrrct.setVersion(0);
-        Components cmp = null;
-
-        if (c.getPhase().equals(Phase.ARCHIVED)) {
-            cmp = c.getArchived().getCmp();
-        } else if (c.getPhase().equals(Phase.RESERVED)) {
-            cmp = c.getReserved().getCmp();
-        } else if (c.getPhase().equals(Phase.HELD)) {
-            cmp = c.getHeld().getCmp();
-        } else {
-            throw new NsiException("Internal error", NsiErrors.NRM_ERROR);
-        }
+        Components cmp = NsiService.getComponents(c);
 
         P2PServiceBaseType p2p = makeP2P(cmp);
 
@@ -548,19 +545,7 @@ public class NsiService {
         QuerySummaryResultCriteriaType qsrct = new QuerySummaryResultCriteriaType();
         qsrct.setServiceType(SERVICE_TYPE);
         qsrct.setVersion(0);
-        Components cmp = null;
-
-        if (c.getPhase().equals(Phase.RESERVED)) {
-            cmp = c.getReserved().getCmp();
-
-        } else if (c.getPhase().equals(Phase.ARCHIVED)) {
-            cmp = c.getArchived().getCmp();
-
-        } else if (c.getPhase().equals(Phase.HELD)) {
-            cmp = c.getHeld().getCmp();
-        } else {
-            throw new NsiException("Internal error", NsiErrors.NRM_ERROR);
-        }
+        Components cmp = NsiService.getComponents(c);
 
         P2PServiceBaseType p2p = makeP2P(cmp);
 
@@ -577,6 +562,22 @@ public class NsiService {
         qsrt.setConnectionStates(cst);
         qsrt.setNotificationId(0L);
         return qsrt;
+    }
+
+    private static Components getComponents(Connection c) throws NsiException {
+
+        if (c.getPhase().equals(Phase.RESERVED)) {
+            return c.getReserved().getCmp();
+
+        } else if (c.getPhase().equals(Phase.ARCHIVED)) {
+            return c.getArchived().getCmp();
+
+        } else if (c.getPhase().equals(Phase.HELD)) {
+            return c.getHeld().getCmp();
+        } else {
+            throw new NsiException("Internal error", NsiErrors.NRM_ERROR);
+        }
+
     }
 
     /* triggered events from TransitionStates periodic tasks */

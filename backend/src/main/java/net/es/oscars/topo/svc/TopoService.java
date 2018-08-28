@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.dto.topo.enums.DeviceModel;
+import net.es.oscars.resv.svc.ResvLibrary;
 import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;
@@ -42,6 +43,8 @@ public class TopoService {
     @Autowired
     private PssProperties pssProperties;
 
+    // dumb cache
+    private Map<String, PortBwVlan> baseline = new HashMap<>();
 
     @Transactional
     public void updateTopo() throws ConsistencyException, TopoException {
@@ -59,6 +62,7 @@ public class TopoService {
             // now process all adjacencies
             this.topoAdjcies = topoAdjciesFromDevices(devices);
             this.topoAdjcies.addAll(topoAdjciesFromPortAdjcies(adjcies));
+            this.baseline = new HashMap<>();
 
 
             log.info("updated with " + this.topoAdjcies.size() + " topo adjacencies");
@@ -121,6 +125,13 @@ public class TopoService {
         return t;
     }
 
+
+    public Map<String, PortBwVlan> baseline() {
+        if (this.baseline.size() == 0) {
+            baseline = ResvLibrary.portBwVlans(this.getTopoUrnMap(), new HashSet<>(), new HashMap<>(), new HashMap<>());
+        }
+        return this.baseline;
+    }
 
     private Map<String, TopoUrn> urnsFromDevices(List<Device> devices) {
         Map<String, TopoUrn> urns = new HashMap<>();

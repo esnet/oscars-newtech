@@ -7,7 +7,7 @@
     <groupId>net.es.oscars</groupId>
     <artifactId>newtech</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.20</version>
+    <version>1.0.21</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -15,6 +15,7 @@ import net.es.oscars.pss.svc.PSSAdapter;
 import net.es.oscars.pss.svc.PssHealthChecker;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
+import net.es.oscars.resv.ent.Tag;
 import net.es.oscars.resv.enums.BuildMode;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
@@ -105,7 +106,7 @@ public class PssController {
     @RequestMapping(value = "/protected/pss/regenerate/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     @Transactional
-    public void regenerate(@PathVariable String connectionId) throws StartupException {
+    public void regenerate(@PathVariable String connectionId) throws StartupException, PSSException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
@@ -118,7 +119,12 @@ public class PssController {
         } else {
             Connection c = maybeC.get();
             if (!c.getPhase().equals(Phase.RESERVED)) {
-                throw new IllegalArgumentException("can only regenerate for connections in RESERVED phase");
+                throw new PSSException("can only regenerate for connections in RESERVED phase");
+            }
+            for (Tag t : c.getTags()) {
+                if (t.getCategory().equals("migrated")) {
+                    throw new PSSException("Regeneration not allowed for migrated connections");
+                }
             }
         }
 

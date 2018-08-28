@@ -64,15 +64,22 @@ public class PSSAdapter {
         commands.addAll(this.opCheckCommands(conn));
         for (Command cmd : commands) {
             log.info("asking PSS to gen config for device " + cmd.getDevice()+" connId: "+conn.getConnectionId());
-            GenerateResponse resp = pssProxy.generate(cmd);
-            log.info(resp.getGenerated());
-            RouterCommands rce = RouterCommands.builder()
-                    .connectionId(conn.getConnectionId())
-                    .deviceUrn(cmd.getDevice())
-                    .contents(resp.getGenerated())
-                    .type(resp.getCommandType())
-                    .build();
-            rcr.save(rce);
+            try {
+                GenerateResponse resp = pssProxy.generate(cmd);
+                log.info(resp.getGenerated());
+                RouterCommands rce = RouterCommands.builder()
+                        .connectionId(conn.getConnectionId())
+                        .deviceUrn(cmd.getDevice())
+                        .contents(resp.getGenerated())
+                        .type(resp.getCommandType())
+                        .build();
+                rcr.save(rce);
+            } catch (Exception ex) {
+                log.error("Config generation failed");
+                log.error(ex.getMessage(), ex);
+                throw new PSSException(ex.getMessage());
+            }
+
         }
     }
 

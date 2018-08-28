@@ -6,10 +6,7 @@ import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.resv.svc.ResvLibrary;
 import net.es.oscars.resv.svc.ResvService;
-import net.es.oscars.topo.beans.ConsistencyReport;
-import net.es.oscars.topo.beans.PortBwVlan;
-import net.es.oscars.topo.beans.TopoAdjcy;
-import net.es.oscars.topo.beans.Topology;
+import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.Version;
@@ -131,11 +128,7 @@ public class TopoController {
             throw new StartupException("OSCARS shutting down");
         }
 
-        if (baseline.size() == 0) {
-            // grab everything available
-            baseline = ResvLibrary.portBwVlans(topoService.getTopoUrnMap(), new HashSet<>(), new HashMap<>(), new HashMap<>());
-        }
-        return baseline;
+        return topoService.baseline();
 
     }
 
