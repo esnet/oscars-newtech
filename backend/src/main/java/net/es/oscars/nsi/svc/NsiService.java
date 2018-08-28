@@ -490,22 +490,28 @@ public class NsiService {
         if (query.getConnectionId().isEmpty() && query.getGlobalReservationId().isEmpty()) {
             // empty query = find all
             mappings.addAll(nsiRepo.findAll());
+            log.debug("added all mappings: "+mappings.size());
         } else {
             for (String connId : query.getConnectionId()) {
+                log.debug("added mapping for nsi connId: "+connId);
                 mappings.addAll(nsiRepo.findByNsiConnectionId(connId));
             }
             for (String gri : query.getGlobalReservationId()) {
+                log.debug("added mapping for gri : "+gri);
                 mappings.addAll(nsiRepo.findByNsiGri(gri));
             }
+            log.debug("added by connection & gri: "+mappings.size());
         }
 
         Long resultId = 0L;
         for (NsiMapping mapping : mappings) {
+            log.debug("query result entry "+mapping.getNsiConnectionId()+" --- "+mapping.getOscarsConnectionId());
             QuerySummaryResultType qsrt = this.toQSRT(mapping);
             qsrt.setResultId(resultId);
             qsct.getReservation().add(qsrt);
             resultId++;
         }
+        log.debug("returning results, total: "+resultId);
         return qsct;
     }
 
@@ -515,7 +521,13 @@ public class NsiService {
         qrrt.setConnectionId(mapping.getNsiConnectionId());
 
         QueryRecursiveResultCriteriaType qrrct = new QueryRecursiveResultCriteriaType();
-        qrrct.setSchedule(this.oscarsToNsiSchedule(c.getArchived().getSchedule()));
+        Schedule sch;
+        if (c.getPhase().equals(Phase.HELD)) {
+            sch = c.getHeld().getSchedule();
+        } else {
+            sch = c.getArchived().getSchedule();
+        }
+        qrrct.setSchedule(this.oscarsToNsiSchedule(sch));
         qrrct.setServiceType(SERVICE_TYPE);
         qrrct.setVersion(0);
         Components cmp = NsiService.getComponents(c);
@@ -543,10 +555,17 @@ public class NsiService {
         qsrt.setConnectionId(mapping.getNsiConnectionId());
 
         QuerySummaryResultCriteriaType qsrct = new QuerySummaryResultCriteriaType();
+        Schedule sch;
+        if (c.getPhase().equals(Phase.HELD)) {
+            sch = c.getHeld().getSchedule();
+        } else {
+            sch = c.getArchived().getSchedule();
+        }
+        qsrct.setSchedule(this.oscarsToNsiSchedule(sch));
         qsrct.setServiceType(SERVICE_TYPE);
         qsrct.setVersion(0);
-        Components cmp = NsiService.getComponents(c);
 
+        Components cmp = NsiService.getComponents(c);
         P2PServiceBaseType p2p = makeP2P(cmp);
 
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
@@ -1329,6 +1348,7 @@ public class NsiService {
 
     @Transactional
     public Connection getOscarsConnection(NsiMapping mapping) throws NsiException {
+        log.debug("getting oscars connection for "+mapping.getOscarsConnectionId());
         Optional<Connection> c = connRepo.findByConnectionId(mapping.getOscarsConnectionId());
         if (!c.isPresent()) {
             throw new NsiException("OSCARS connection not found", NsiErrors.NO_SCH_ERROR);

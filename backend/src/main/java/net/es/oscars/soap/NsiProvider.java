@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.xml.ws.Holder;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -88,9 +89,8 @@ public class NsiProvider implements ConnectionProviderPort {
             throw new ServiceException(ex.getMessage());
         }
         if (reserve.getConnectionId() == null) {
-            String connectionId = connSvc.generateConnectionId();
-            reserve.setConnectionId(connectionId);
-
+            String nsiConnectionId = UUID.randomUUID().toString();
+            reserve.setConnectionId(nsiConnectionId);
         }
         NsiMapping mapping = stateEngine.newMapping(
                 reserve.getConnectionId(),

@@ -26,7 +26,7 @@ public class NsiStateEngine {
 
     public NsiMapping newMapping(String nsiConnectionId, String nsiGri, String nsaId) throws ServiceException {
         if (nsiConnectionId == null || nsiConnectionId.equals("")) {
-            nsiConnectionId = UUID.randomUUID().toString();
+            throw new ServiceException("null nsi connection id");
         }
         if (nsiGri == null) {
             nsiGri = "";
@@ -34,11 +34,12 @@ public class NsiStateEngine {
         if (!nsiRepo.findByNsiConnectionId(nsiConnectionId).isEmpty()) {
             throw new ServiceException("previously used nsi connection id! " + nsiConnectionId);
         }
+        String oscarsConnectionId = connSvc.generateConnectionId();
 
         NsiMapping mapping = NsiMapping.builder()
                 .nsiConnectionId(nsiConnectionId)
                 .nsiGri(nsiGri)
-                .oscarsConnectionId(connSvc.generateConnectionId())
+                .oscarsConnectionId(oscarsConnectionId)
                 .dataplaneVersion(0)
                 .nsaId(nsaId)
                 .lifecycleState(LifecycleStateEnumType.CREATED)
