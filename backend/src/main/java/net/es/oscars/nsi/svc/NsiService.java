@@ -493,11 +493,11 @@ public class NsiService {
             log.debug("added all mappings: "+mappings.size());
         } else {
             for (String connId : query.getConnectionId()) {
-                log.debug("added mapping for nsi connId: "+connId);
+                // log.debug("added mapping for nsi connId: "+connId);
                 mappings.addAll(nsiRepo.findByNsiConnectionId(connId));
             }
             for (String gri : query.getGlobalReservationId()) {
-                log.debug("added mapping for gri : "+gri);
+                // log.debug("added mapping for gri : "+gri);
                 mappings.addAll(nsiRepo.findByNsiGri(gri));
             }
             log.debug("added by connection & gri: "+mappings.size());
@@ -505,7 +505,7 @@ public class NsiService {
 
         Long resultId = 0L;
         for (NsiMapping mapping : mappings) {
-            log.debug("query result entry "+mapping.getNsiConnectionId()+" --- "+mapping.getOscarsConnectionId());
+            // log.debug("query result entry "+mapping.getNsiConnectionId()+" --- "+mapping.getOscarsConnectionId());
             QuerySummaryResultType qsrt = this.toQSRT(mapping);
             qsrt.setResultId(resultId);
             qsct.getReservation().add(qsrt);
@@ -1348,7 +1348,7 @@ public class NsiService {
 
     @Transactional
     public Connection getOscarsConnection(NsiMapping mapping) throws NsiException {
-        log.debug("getting oscars connection for "+mapping.getOscarsConnectionId());
+        // log.debug("getting oscars connection for "+mapping.getOscarsConnectionId());
         Optional<Connection> c = connRepo.findByConnectionId(mapping.getOscarsConnectionId());
         if (!c.isPresent()) {
             throw new NsiException("OSCARS connection not found", NsiErrors.NO_SCH_ERROR);
