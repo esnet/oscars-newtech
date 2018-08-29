@@ -145,6 +145,8 @@ public class NsiService {
                     }
 
                 } else {
+                    // delete the mapping as this failed
+                    nsiRepo.delete(mapping);
                     log.error("error reserving");
                     nsiStateEngine.reserve(NsiEvent.RESV_FL, mapping);
                     try {
@@ -1251,15 +1253,24 @@ public class NsiService {
 
     }
 
-    private String internalUrnFromNsi(String nsiUrn) {
+    private String internalUrnFromNsi(String nsiUrn) throws NsiException {
         String prefix = topoId + ":";
-        return nsiUrn.replace(prefix, "")
+
+        String stripped = nsiUrn.replace(prefix, "")
                 .replace("_", "/")
                 .replace(":+", "");
 
+        String[] parts = stripped.split("\\:");
+        if (parts.length == 2 || parts.length == 3) {
+            return parts[0]+":"+parts[1];
+
+        } else {
+            throw new NsiException("Error retrieving internal URN from STP "+nsiUrn, NsiErrors.NRM_ERROR);
+        }
+
     }
 
-    private String internalUrnFromStp(String stp) {
+    private String internalUrnFromStp(String stp) throws NsiException  {
         String[] stpParts = StringUtils.split(stp, "\\?");
         return internalUrnFromNsi(stpParts[0]);
     }
