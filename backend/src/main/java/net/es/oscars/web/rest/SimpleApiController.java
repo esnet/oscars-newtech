@@ -190,10 +190,9 @@ public class SimpleApiController {
                     if (cp.getParamType().equals(CommandParamType.ALU_SVC_ID)) {
                         if (svcId == null) {
                             svcId = cp.getResource();
-                        } else if (svcId < cp.getResource()) {
+                        } else if (svcId > cp.getResource()) {
                             svcId = cp.getResource();
                         }
-
                     }
                 }
                 simpleF.setSvcId(svcId);

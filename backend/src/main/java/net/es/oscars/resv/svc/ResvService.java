@@ -313,22 +313,25 @@ public class ResvService {
     public Map<String, Set<CommandParam>> reservedCommandParams(List<Schedule> scheds) {
         Map<String, Set<CommandParam>> result = new HashMap<>();
         for (Schedule sched: scheds) {
-            for (VlanFixture f: fixtureRepo.findBySchedule(sched)) {
-                for (CommandParam cp : f.getCommandParams()) {
-                    if (!result.containsKey(cp.getUrn())) {
-                        result.put(cp.getUrn(), new HashSet<>());
+            if (sched.getPhase().equals(Phase.RESERVED)) {
+                for (VlanFixture f: fixtureRepo.findBySchedule(sched)) {
+                    for (CommandParam cp : f.getCommandParams()) {
+                        if (!result.containsKey(cp.getUrn())) {
+                            result.put(cp.getUrn(), new HashSet<>());
+                        }
+                        result.get(cp.getUrn()).add(cp);
                     }
-                    result.get(cp.getUrn()).add(cp);
+                }
+                for (VlanJunction j: jnctRepo.findBySchedule(sched)) {
+                    for (CommandParam cp : j.getCommandParams()) {
+                        if (!result.containsKey(cp.getUrn())) {
+                            result.put(cp.getUrn(), new HashSet<>());
+                        }
+                        result.get(cp.getUrn()).add(cp);
+                    }
                 }
             }
-            for (VlanJunction j: jnctRepo.findBySchedule(sched)) {
-                for (CommandParam cp : j.getCommandParams()) {
-                    if (!result.containsKey(cp.getUrn())) {
-                        result.put(cp.getUrn(), new HashSet<>());
-                    }
-                    result.get(cp.getUrn()).add(cp);
-                }
-            }
+
         }
         return result;
     }

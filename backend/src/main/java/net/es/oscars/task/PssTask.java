@@ -61,7 +61,7 @@ public class PssTask {
             List<Connection> needConfigs = new ArrayList<>();
             for (Connection c : conns) {
                 if (rcRepo.findByConnectionId(c.getConnectionId()).isEmpty()) {
-                    log.info("connection +"+c.getConnectionId()+" needs router configs to be generated");
+                    log.info("connection "+c.getConnectionId()+" needs router configs to be generated");
                     needConfigs.add(c);
                 }
             }

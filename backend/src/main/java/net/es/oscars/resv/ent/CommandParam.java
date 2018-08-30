@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import net.es.oscars.resv.enums.CommandParamIntent;
 import net.es.oscars.topo.enums.CommandParamType;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Data
 @Builder
@@ -39,7 +37,8 @@ public class CommandParam {
 
     private String refId;
 
-    private String intent;
+    private CommandParamIntent intent;
+    private String target;
 
     @NonNull
     private Integer resource;

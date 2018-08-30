@@ -10,6 +10,7 @@ import net.es.oscars.dto.pss.params.MplsPath;
 import net.es.oscars.dto.pss.params.Policing;
 import net.es.oscars.dto.pss.params.alu.*;
 import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.CommandParamIntent;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.UrnType;
@@ -52,8 +53,12 @@ public class AluParamsAdapter {
             if (rpr.getParamType().equals(CommandParamType.ALU_SVC_ID)) {
                 aluSvcId = rpr.getResource();
             }
-            if (rpr.getParamType().equals(CommandParamType.PROTECT_VC_ID)) {
-                protectVcId = rpr.getResource();
+            if (rpr.getParamType().equals(CommandParamType.VC_ID)) {
+                if (rpr.getIntent() == null) {
+                    throw new PSSException("null intent for svc id!");
+                } else if (rpr.getIntent().equals(CommandParamIntent.PROTECT)) {
+                    protectVcId = rpr.getResource();
+                }
             }
             if (rpr.getParamType().equals(CommandParamType.VPLS_LOOPBACK)) {
                 loopback = rpr.getResource();
@@ -128,21 +133,19 @@ public class AluParamsAdapter {
                         .ingressQosId(inQosId)
                         .egressQosId(egQosId)
                         .port(port)
-                        .description("OSCARS-"+c.getConnectionId() + ":0:oscars-l2circuit:show:circuit-intercloud")
+                        .description("OSCARS-" + c.getConnectionId() + ":0:oscars-l2circuit:show:circuit-intercloud")
                         .build();
                 saps.add(sap);
             }
         }
 
 
-
-
         AluVpls vpls = AluVpls.builder()
                 .protectVcId(protectVcId)
                 .protectEnabled(protectEnabled)
-                .description("OSCARS-"+c.getConnectionId() + "-VPLS")
+                .description("OSCARS-" + c.getConnectionId() + "-VPLS")
                 .saps(saps)
-                .serviceName("OSCARS-" + c.getConnectionId()+"-SVC")
+                .serviceName("OSCARS-" + c.getConnectionId() + "-SVC")
                 .sdpToVcIds(new ArrayList<>())
                 .svcId(aluSvcId)
                 .build();
@@ -215,12 +218,12 @@ public class AluParamsAdapter {
         String pathName = c.getConnectionId() + "-WRK-" + p.getZ().getDeviceUrn();
         if (pathName.length() > 32) {
             pathName = pathName.substring(0, 31);
-            log.warn("path name trimmed to: "+pathName);
+            log.warn("path name trimmed to: " + pathName);
         }
         String lspName = c.getConnectionId() + "-WRK-" + p.getZ().getDeviceUrn();
         if (lspName.length() > 32) {
             lspName = lspName.substring(0, 31);
-            log.warn("LSP name trimmed to: "+lspName);
+            log.warn("LSP name trimmed to: " + lspName);
         }
 
         MplsPath path = MplsPath.builder()
@@ -257,13 +260,19 @@ public class AluParamsAdapter {
         Integer protectSdpId = null;
         for (CommandParam cp : j.getCommandParams()) {
             if (cp.getParamType().equals(CommandParamType.ALU_SDP_ID)) {
-                if (cp.getIntent().equals(otherJunction.getDeviceUrn())) {
-                    sdpId = cp.getResource();
-                }
-            }
-            if (cp.getParamType().equals(CommandParamType.ALU_PROTECT_SDP_ID)) {
-                if (cp.getIntent().equals(otherJunction.getDeviceUrn())) {
-                    protectSdpId = cp.getResource();
+                if (cp.getIntent() == null) {
+                    throw new PSSException("null ALU_SDP intent!");
+
+                } else if (cp.getIntent().equals(CommandParamIntent.PRIMARY)) {
+                    if (cp.getTarget().equals(otherJunction.getDeviceUrn())) {
+                        sdpId = cp.getResource();
+                    }
+
+                } else if (cp.getIntent().equals(CommandParamIntent.PROTECT)) {
+                    if (cp.getTarget().equals(otherJunction.getDeviceUrn())) {
+                        protectSdpId = cp.getResource();
+                    }
+
                 }
             }
         }
@@ -300,13 +309,13 @@ public class AluParamsAdapter {
             String prtPathName = c.getConnectionId() + "-PRT-" + p.getZ().getDeviceUrn();
             if (prtPathName.length() > 32) {
                 prtPathName = prtPathName.substring(0, 31);
-                log.warn("path name trimmed to: "+prtPathName);
+                log.warn("path name trimmed to: " + prtPathName);
 
             }
             String prtLspName = c.getConnectionId() + "-PRT-" + p.getZ().getDeviceUrn();
             if (prtLspName.length() > 32) {
                 prtLspName = prtLspName.substring(0, 31);
-                log.warn("LSP name trimmed to: "+prtLspName);
+                log.warn("LSP name trimmed to: " + prtLspName);
             }
             String prtSdpDescription = c.getConnectionId() + "-PRT-" + otherJunction.getDeviceUrn();
 

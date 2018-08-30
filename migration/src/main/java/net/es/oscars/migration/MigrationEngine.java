@@ -10,6 +10,7 @@ import net.es.oscars.pss.ent.RouterCommands;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.resv.enums.BuildMode;
+import net.es.oscars.resv.enums.CommandParamIntent;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.resv.svc.ConnService;
@@ -147,13 +148,15 @@ public class MigrationEngine {
 
             Collections.sort(inResv.getPss().getRes().getVplsId());
             for (Integer vplsId : inResv.getPss().getRes().getVplsId()) {
-                jcps.add(CommandParam.builder()
+                CommandParam cp = CommandParam.builder()
                         .connectionId(inResv.getGri())
                         .schedule(s)
                         .resource(vplsId)
                         .paramType(CommandParamType.VC_ID)
                         .urn(inJunction)
-                        .build());
+                        .build();
+                jcps.add(cp);
+
                 if (deviceUrn.getDevice().getModel().equals(DeviceModel.ALCATEL_SR7750)) {
                     jcps.add(CommandParam.builder()
                             .connectionId(inResv.getGri())
@@ -165,6 +168,7 @@ public class MigrationEngine {
                 }
             }
             for (InPssResResource ipr : inResv.getPss().getRes().getResources()) {
+                Integer previousSdpId = Integer.MAX_VALUE;
                 if (ipr.getDevice().equals(inJunction)) {
                     if (ipr.getWhat().equals("loopback")) {
                         jcps.add(CommandParam.builder()
@@ -173,7 +177,7 @@ public class MigrationEngine {
                                 .resource(ipr.getResource())
                                 .paramType(CommandParamType.VPLS_LOOPBACK)
                                 .urn(inJunction)
-                                .intent(inJunction)
+                                .target(inJunction)
                                 .build());
                     }
                     if (ipr.getWhat().equals("sdp")) {
@@ -183,14 +187,15 @@ public class MigrationEngine {
                                 otherJunction = j;
                             }
                         }
-                        jcps.add(CommandParam.builder()
+                        CommandParam cp = CommandParam.builder()
                                 .connectionId(inResv.getGri())
                                 .schedule(s)
                                 .resource(ipr.getResource())
                                 .paramType(CommandParamType.ALU_SDP_ID)
                                 .urn(inJunction)
-                                .intent(otherJunction)
-                                .build());
+                                .target(otherJunction)
+                                .build();
+                        jcps.add(cp);
                     }
 
                 }

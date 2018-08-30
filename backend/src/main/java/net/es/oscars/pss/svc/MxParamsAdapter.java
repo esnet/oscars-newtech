@@ -10,6 +10,7 @@ import net.es.oscars.dto.pss.params.MplsPath;
 import net.es.oscars.dto.pss.params.Policing;
 import net.es.oscars.dto.pss.params.mx.*;
 import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.CommandParamIntent;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.UrnType;
@@ -52,13 +53,18 @@ public class MxParamsAdapter {
 
         for (CommandParam rpr : rvj.getCommandParams()) {
             if (rpr.getParamType().equals(CommandParamType.VC_ID)) {
-                vcId = rpr.getResource();
+                if (rpr.getIntent() == null) {
+                    throw new PSSException("null intent for VC_ID");
+                } else if (rpr.getIntent().equals(CommandParamIntent.PRIMARY)) {
+                    vcId = rpr.getResource();
+
+                } else if (rpr.getIntent().equals(CommandParamIntent.PROTECT)) {
+                    protectVcId = rpr.getResource();
+
+                }
             }
             if (rpr.getParamType().equals(CommandParamType.VPLS_LOOPBACK)) {
                 loopbackInt = rpr.getResource();
-            }
-            if (rpr.getParamType().equals(CommandParamType.PROTECT_VC_ID)) {
-                protectVcId = rpr.getResource();
             }
 
         }

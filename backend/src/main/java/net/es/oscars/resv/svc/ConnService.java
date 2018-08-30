@@ -116,7 +116,7 @@ public class ConnService {
         return b.toString();
 
     }
-    public ConnectionList filter(ConnectionFilter filter) {
+    public ConnectionList   filter(ConnectionFilter filter) {
 
         List<Connection> reservedAndArchived = new ArrayList<>();
         // first we don't take into account anything that doesn't have any archived
@@ -543,6 +543,8 @@ public class ConnService {
                     .paramType(cp.getParamType())
                     .schedule(sch)
                     .resource(cp.getResource())
+                    .intent(cp.getIntent())
+                    .target(cp.getTarget())
                     .refId(cp.getRefId())
                     .urn(cp.getUrn())
                     .build());

@@ -9,6 +9,7 @@ import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.resv.db.FixtureRepository;
 import net.es.oscars.resv.db.JunctionRepository;
 import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.CommandParamIntent;
 import net.es.oscars.resv.svc.ResvService;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.ReservableCommandParam;
@@ -178,7 +179,7 @@ public class PssResourceService {
 
 
                     Integer loopback = Integer.MAX_VALUE;
-                    Boolean found = false;
+                    boolean found = false;
                     for (Integer i : availLoopbacks) {
                         if (i < loopback) {
                             loopback = i;
@@ -195,7 +196,7 @@ public class PssResourceService {
                             .connectionId(conn.getConnectionId())
                             .paramType(CommandParamType.VPLS_LOOPBACK)
                             .resource(loopback)
-                            .intent(j.getDeviceUrn())
+                            .target(j.getDeviceUrn())
                             .schedule(sched)
                             .urn(j.getDeviceUrn())
                             .build();
@@ -208,6 +209,7 @@ public class PssResourceService {
             CommandParam vcCp = CommandParam.builder()
                     .connectionId(conn.getConnectionId())
                     .paramType(CommandParamType.VC_ID)
+                    .intent(CommandParamIntent.PRIMARY)
                     .resource(vcid)
                     .schedule(sched)
                     .urn(j.getDeviceUrn())
@@ -218,7 +220,8 @@ public class PssResourceService {
 
                 CommandParam protectVcCp = CommandParam.builder()
                         .connectionId(conn.getConnectionId())
-                        .paramType(CommandParamType.PROTECT_VC_ID)
+                        .paramType(CommandParamType.VC_ID)
+                        .intent(CommandParamIntent.PROTECT)
                         .resource(protectVcId)
                         .schedule(sched)
                         .urn(j.getDeviceUrn())
@@ -305,15 +308,15 @@ public class PssResourceService {
 
             for (VlanPipe p : cmp.getPipes()) {
                 boolean junctionInPipe = false;
-                String intent = null;
+                String target = null;
 
                 // when looking at all pipes, if this junction is either an A or a Z, handle it
                 if (p.getA().getDeviceUrn().equals(j.getDeviceUrn())) {
                     junctionInPipe = true;
-                    intent = p.getZ().getDeviceUrn();
+                    target = p.getZ().getDeviceUrn();
                 } else if (p.getZ().getDeviceUrn().equals(j.getDeviceUrn())) {
                     junctionInPipe = true;
-                    intent = p.getA().getDeviceUrn();
+                    target = p.getA().getDeviceUrn();
                 }
 
                 if (junctionInPipe) {
@@ -323,7 +326,8 @@ public class PssResourceService {
                     CommandParam sdpIdCp = CommandParam.builder()
                             .connectionId(conn.getConnectionId())
                             .paramType(CommandParamType.ALU_SDP_ID)
-                            .intent(intent)
+                            .intent(CommandParamIntent.PRIMARY)
+                            .target(target)
                             .resource(sdpId)
                             .schedule(sched)
                             .urn(d.getUrn())
@@ -340,8 +344,9 @@ public class PssResourceService {
 
                         CommandParam protectSdpIdCp = CommandParam.builder()
                                 .connectionId(conn.getConnectionId())
-                                .paramType(CommandParamType.ALU_PROTECT_SDP_ID)
-                                .intent(intent)
+                                .paramType(CommandParamType.ALU_SDP_ID)
+                                .target(target)
+                                .intent(CommandParamIntent.PROTECT)
                                 .resource(protectSdpId)
                                 .schedule(sched)
                                 .urn(d.getUrn())

@@ -674,9 +674,10 @@ public class NsiService {
             Pair<List<Fixture>, List<Junction>> fixturesAndJunctions = this.fixturesAndJunctionsFor(p2p, interval);
             log.info("making pipes");
             List<Pipe> pipes = this.pipesFor(interval, mbps, fixturesAndJunctions.getRight(), include);
+            String connectionId = connSvc.generateConnectionId();
 
             SimpleConnection simpleConnection = SimpleConnection.builder()
-                    .connectionId(rt.getConnectionId())
+                    .connectionId(connectionId)
                     .description(rt.getDescription())
                     .heldUntil(expSecs.intValue())
                     .phase(Phase.HELD)
