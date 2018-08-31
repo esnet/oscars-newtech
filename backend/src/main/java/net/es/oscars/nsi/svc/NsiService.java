@@ -9,6 +9,7 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.*;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.headers.CommonHeaderType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.ServiceExceptionType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.TypeValuePairType;
+import net.es.nsi.lib.soap.gen.nsi_2_0.services.definitions.NsiErrorType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.P2PServiceBaseType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.types.DirectionalityType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.types.OrderedStpType;
@@ -165,6 +166,19 @@ public class NsiService {
             } catch (NsiException ex) {
                 log.error("internal error", ex);
 
+            } finally {
+
+                try {
+                    nsiRepo.delete(mapping);
+                    nsiStateEngine.reserve(NsiEvent.RESV_FL, mapping);
+                    this.errCallback(NsiEvent.RESV_FL, mapping,
+                            "Internal error",
+                            NsiErrors.NRM_ERROR.toString(),
+                            new ArrayList<>(),
+                            header.getCorrelationId());
+                } catch (Exception cex) {
+                    log.error("reserve failed: then recovery failed", cex);
+                }
             }
             log.info("ending reserve");
         });
