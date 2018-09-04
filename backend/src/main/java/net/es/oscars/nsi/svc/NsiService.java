@@ -161,14 +161,8 @@ public class NsiService {
                         log.error("reserve failed: then callback failed", cex);
                     }
                 }
-            } catch (RuntimeException ex) {
-                log.error("serious error", ex);
-
-            } catch (NsiException ex) {
-                log.error("internal error", ex);
-
-            } finally {
-
+            } catch (Exception ex) {
+                log.error("Internal error: "+ex.getMessage(), ex);
                 try {
                     nsiRepo.delete(mapping);
                     nsiStateEngine.reserve(NsiEvent.RESV_FL, mapping);
@@ -178,7 +172,7 @@ public class NsiService {
                             new ArrayList<>(),
                             header.getCorrelationId());
                 } catch (Exception cex) {
-                    log.error("reserve failed: then recovery failed", cex);
+                    log.error("reserve failed: then callback failed", cex);
                 }
             }
             log.info("ending reserve");
@@ -768,7 +762,7 @@ public class NsiService {
                     .success(false)
                     .errorMessage(ex.getMessage())
                     .build();
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
             return NsiHoldResult.builder()
                     .errorCode(NsiErrors.RESV_ERROR)
