@@ -9,6 +9,7 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.*;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.headers.CommonHeaderType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.ServiceExceptionType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.TypeValuePairType;
+import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.VariablesType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.definitions.NsiErrorType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.P2PServiceBaseType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.types.DirectionalityType;
@@ -1252,7 +1253,9 @@ public class NsiService {
         exceptionType.setServiceType(SERVICE_TYPE);
         exceptionType.setText(error);
         exceptionType.setErrorId(errNum);
-        exceptionType.getVariables().getVariable().addAll(tvps);
+        VariablesType vt = new VariablesType();
+        vt.getVariable().addAll(tvps);
+        exceptionType.setVariables(vt);
 
         return exceptionType;
     }
