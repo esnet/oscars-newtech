@@ -548,7 +548,7 @@ public class NsiService {
         qrrct.setVersion(0);
         Components cmp = NsiService.getComponents(c);
 
-        P2PServiceBaseType p2p = makeP2P(cmp);
+        P2PServiceBaseType p2p = makeP2P(cmp, mapping);
 
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
                 = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
@@ -582,7 +582,7 @@ public class NsiService {
         qsrct.setVersion(0);
 
         Components cmp = NsiService.getComponents(c);
-        P2PServiceBaseType p2p = makeP2P(cmp);
+        P2PServiceBaseType p2p = makeP2P(cmp, mapping);
 
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
                 = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
@@ -655,6 +655,11 @@ public class NsiService {
 
         P2PServiceBaseType p2p = this.getP2PService(rt);
         log.info("got p2p");
+        String src = p2p.getSourceSTP();
+        String dst = p2p.getDestSTP();
+        mapping.setSrc(src);
+        mapping.setDst(dst);
+        nsiRepo.save(mapping);
 
         ReservationRequestCriteriaType crit = rt.getCriteria();
 
@@ -746,6 +751,7 @@ public class NsiService {
             log.info("saving new connection");
             connRepo.save(c);
             mapping.setOscarsConnectionId(c.getConnectionId());
+            nsiRepo.save(mapping);
             return NsiHoldResult.builder()
                     .errorCode(NsiErrors.OK)
                     .success(true)
@@ -1046,7 +1052,7 @@ public class NsiService {
         rcct.setServiceType(SERVICE_TYPE);
         rcct.setVersion(0);
 
-        P2PServiceBaseType p2p = makeP2P(c.getHeld().getCmp());
+        P2PServiceBaseType p2p = makeP2P(c.getHeld().getCmp(), mapping);
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
                 = new net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory();
         rcct.getAny().add(p2pof.createP2Ps(p2p));
@@ -1137,14 +1143,24 @@ public class NsiService {
     }
 
 
-    public P2PServiceBaseType makeP2P(Components cmp) {
+    public P2PServiceBaseType makeP2P(Components cmp, NsiMapping mapping) {
 
         P2PServiceBaseType p2p = new P2PServiceBaseType();
 
         VlanFixture a = cmp.getFixtures().get(0);
-        VlanFixture z = cmp.getFixtures().get(1);
         String srcStp = this.nsiUrnFromInternal(a.getPortUrn()) + "?vlan=" + a.getVlan().getVlanId();
+        if (mapping.getSrc() != null)  {
+            String[] stpParts = StringUtils.split(mapping.getSrc(), "\\?");
+            srcStp = stpParts[0] + "?vlan=" + a.getVlan().getVlanId();
+        }
+
+        VlanFixture z = cmp.getFixtures().get(1);
         String dstStp = this.nsiUrnFromInternal(z.getPortUrn()) + "?vlan=" + z.getVlan().getVlanId();
+        if (mapping.getDst() != null)  {
+            String[] stpParts = StringUtils.split(mapping.getDst(), "\\?");
+            dstStp = stpParts[0] + "?vlan=" + z.getVlan().getVlanId();
+        }
+
         List<String> strEro = new ArrayList<>();
         if (cmp.getPipes() == null || cmp.getPipes().isEmpty()) {
             strEro.add(srcStp);

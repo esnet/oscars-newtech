@@ -31,6 +31,10 @@ public class NsiMapping {
     @NonNull
     private String nsaId;
 
+    private String src;
+
+    private String dst;
+
     @NonNull
     private Integer dataplaneVersion;
     @NonNull
