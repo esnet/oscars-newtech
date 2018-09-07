@@ -602,9 +602,9 @@ public class ConnService {
         } else {
             begin = Instant.ofEpochSecond(in.getBegin());
             if (!begin.isAfter(Instant.now())) {
-                error += "begin date not past now()\n";
-                valid = false;
-                validInterval = false;
+                begin = Instant.now().plus(30, ChronoUnit.SECONDS);
+                Long sec = begin.getEpochSecond();
+                in.setBegin(sec.intValue());
             }
         }
 
