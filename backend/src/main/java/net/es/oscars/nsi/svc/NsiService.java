@@ -162,7 +162,7 @@ public class NsiService {
                     }
                 }
             } catch (Exception ex) {
-                log.error("Internal error: "+ex.getMessage(), ex);
+                log.error("Internal error: " + ex.getMessage(), ex);
                 try {
                     nsiRepo.delete(mapping);
                     nsiStateEngine.reserve(NsiEvent.RESV_FL, mapping);
@@ -469,12 +469,19 @@ public class NsiService {
         }
 
         Long resultId = 0L;
+        List<NsiMapping> invalidMappings = new ArrayList<>();
         for (NsiMapping mapping : mappings) {
             QueryRecursiveResultType qrrt = this.toQRRT(mapping);
-            qrrt.setResultId(resultId);
-            qrct.getReservation().add(qrrt);
-            resultId++;
+            if (qrrt != null) {
+                qrrt.setResultId(resultId);
+                qrct.getReservation().add(qrrt);
+                resultId++;
+            } else {
+                log.info("will delete an invalid nsi mapping for "+mapping.getNsiConnectionId()+" - "+mapping.getOscarsConnectionId());
+                invalidMappings.add(mapping);
+            }
         }
+        nsiRepo.delete(invalidMappings);
         return qrct;
     }
 
@@ -501,7 +508,7 @@ public class NsiService {
         if (query.getConnectionId().isEmpty() && query.getGlobalReservationId().isEmpty()) {
             // empty query = find all
             mappings.addAll(nsiRepo.findAll());
-            log.debug("added all mappings: "+mappings.size());
+            log.debug("added all mappings: " + mappings.size());
         } else {
             for (String connId : query.getConnectionId()) {
                 // log.debug("added mapping for nsi connId: "+connId);
@@ -511,23 +518,34 @@ public class NsiService {
                 // log.debug("added mapping for gri : "+gri);
                 mappings.addAll(nsiRepo.findByNsiGri(gri));
             }
-            log.debug("added by connection & gri: "+mappings.size());
+            log.debug("added by connection & gri: " + mappings.size());
         }
 
         Long resultId = 0L;
+        List<NsiMapping> invalidMappings = new ArrayList<>();
         for (NsiMapping mapping : mappings) {
             // log.debug("query result entry "+mapping.getNsiConnectionId()+" --- "+mapping.getOscarsConnectionId());
             QuerySummaryResultType qsrt = this.toQSRT(mapping);
-            qsrt.setResultId(resultId);
-            qsct.getReservation().add(qsrt);
-            resultId++;
+            if (qsrt != null) {
+                qsrt.setResultId(resultId);
+                qsct.getReservation().add(qsrt);
+                resultId++;
+            } else {
+                log.info("will delete an invalid nsi mapping for "+mapping.getNsiConnectionId()+" - "+mapping.getOscarsConnectionId());
+                invalidMappings.add(mapping);
+            }
         }
-        log.debug("returning results, total: "+resultId);
+        nsiRepo.delete(invalidMappings);
+        log.debug("returning results, total: " + resultId);
         return qsct;
     }
 
     public QueryRecursiveResultType toQRRT(NsiMapping mapping) throws NsiException {
         Connection c = this.getOscarsConnection(mapping);
+        if (c == null) {
+            log.error("nsi mapping for nonexistent OSCARS connection " + mapping.getOscarsConnectionId());
+            return null;
+        }
         QueryRecursiveResultType qrrt = new QueryRecursiveResultType();
         qrrt.setConnectionId(mapping.getNsiConnectionId());
 
@@ -562,6 +580,11 @@ public class NsiService {
 
     public QuerySummaryResultType toQSRT(NsiMapping mapping) throws NsiException {
         Connection c = this.getOscarsConnection(mapping);
+        if (c == null) {
+            log.error("nsi mapping for nonexistent OSCARS connection " + mapping.getOscarsConnectionId());
+            return null;
+        }
+
         QuerySummaryResultType qsrt = new QuerySummaryResultType();
         qsrt.setConnectionId(mapping.getNsiConnectionId());
 
@@ -1146,14 +1169,14 @@ public class NsiService {
 
         VlanFixture a = cmp.getFixtures().get(0);
         String srcStp = this.nsiUrnFromInternal(a.getPortUrn()) + "?vlan=" + a.getVlan().getVlanId();
-        if (mapping.getSrc() != null)  {
+        if (mapping.getSrc() != null) {
             String[] stpParts = StringUtils.split(mapping.getSrc(), "\\?");
             srcStp = stpParts[0] + "?vlan=" + a.getVlan().getVlanId();
         }
 
         VlanFixture z = cmp.getFixtures().get(1);
         String dstStp = this.nsiUrnFromInternal(z.getPortUrn()) + "?vlan=" + z.getVlan().getVlanId();
-        if (mapping.getDst() != null)  {
+        if (mapping.getDst() != null) {
             String[] stpParts = StringUtils.split(mapping.getDst(), "\\?");
             dstStp = stpParts[0] + "?vlan=" + z.getVlan().getVlanId();
         }
@@ -1294,15 +1317,15 @@ public class NsiService {
 
         String[] parts = stripped.split("\\:");
         if (parts.length == 2 || parts.length == 3) {
-            return parts[0]+":"+parts[1];
+            return parts[0] + ":" + parts[1];
 
         } else {
-            throw new NsiException("Error retrieving internal URN from STP "+nsiUrn, NsiErrors.NRM_ERROR);
+            throw new NsiException("Error retrieving internal URN from STP " + nsiUrn, NsiErrors.NRM_ERROR);
         }
 
     }
 
-    private String internalUrnFromStp(String stp) throws NsiException  {
+    private String internalUrnFromStp(String stp) throws NsiException {
         String[] stpParts = StringUtils.split(stp, "\\?");
         return internalUrnFromNsi(stpParts[0]);
     }
