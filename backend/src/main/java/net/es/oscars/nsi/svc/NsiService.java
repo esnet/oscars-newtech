@@ -760,6 +760,7 @@ public class NsiService {
             return NsiHoldResult.builder()
                     .errorCode(ex.getError())
                     .success(false)
+                    .tvps(tvps)
                     .errorMessage(ex.getMessage())
                     .build();
         } catch (Exception ex) {
@@ -767,6 +768,7 @@ public class NsiService {
             return NsiHoldResult.builder()
                     .errorCode(NsiErrors.RESV_ERROR)
                     .success(false)
+                    .tvps(tvps)
                     .errorMessage(ex.getMessage())
                     .build();
         }
@@ -1248,7 +1250,9 @@ public class NsiService {
         exceptionType.setText(error);
         exceptionType.setErrorId(errNum);
         VariablesType vt = new VariablesType();
-        vt.getVariable().addAll(tvps);
+        if (tvps != null) {
+            vt.getVariable().addAll(tvps);
+        }
         exceptionType.setVariables(vt);
 
         return exceptionType;

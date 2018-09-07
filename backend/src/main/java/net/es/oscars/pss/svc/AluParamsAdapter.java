@@ -298,7 +298,12 @@ public class AluParamsAdapter {
         aluPipes.add(pr);
 
         // bleh, side effect! but can't help it
-        AluSdpToVcId sdpToVcId = AluSdpToVcId.builder().sdpId(sdpId).vcId(vpls.getSvcId()).build();
+        AluSdpToVcId sdpToVcId = AluSdpToVcId.builder()
+                .sdpId(sdpId)
+                .primary(true)
+                .besteffort(false)
+                .vcId(vpls.getSvcId())
+                .build();
         vpls.getSdpToVcIds().add(sdpToVcId);
 
 
@@ -345,6 +350,8 @@ public class AluParamsAdapter {
 
             AluSdpToVcId protectSdpToVcId = AluSdpToVcId.builder()
                     .sdpId(protectSdpId)
+                    .primary(false)
+                    .besteffort(true)
                     .vcId(vpls.getProtectVcId()).build();
             vpls.getSdpToVcIds().add(protectSdpToVcId);
 
