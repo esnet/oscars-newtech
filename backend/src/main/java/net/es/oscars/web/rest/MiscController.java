@@ -36,6 +36,16 @@ public class MiscController {
     }
 
 
+    @RequestMapping(value = "/api/ping", method = RequestMethod.GET)
+    public String ping() {
+        return "pong";
+    }
+
+    @RequestMapping(value = "/protected/ping", method = RequestMethod.GET)
+    public String loggedInPing() {
+        return "pong";
+    }
+
     @RequestMapping(value = "/api/log", method = RequestMethod.GET)
     public String getLog() {
 
