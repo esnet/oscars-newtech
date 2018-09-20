@@ -18,10 +18,7 @@ import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
-import net.es.oscars.web.beans.ConnectionFilter;
-import net.es.oscars.web.beans.ConnectionList;
-import net.es.oscars.web.beans.HoldException;
-import net.es.oscars.web.beans.Interval;
+import net.es.oscars.web.beans.*;
 import net.es.oscars.web.simple.Fixture;
 import net.es.oscars.web.simple.Pipe;
 import net.es.oscars.web.simple.SimpleConnection;
@@ -236,7 +233,7 @@ public class ConnService {
     }
 
 
-    public Phase commit(Connection c) throws PSSException, PCEException {
+    public ConnChangeResult commit(Connection c) throws PSSException, PCEException {
 
         Held h = c.getHeld();
 
@@ -323,39 +320,56 @@ public class ConnService {
                 .username("")
                 .build();
         logService.logEvent(c.getConnectionId(), ev);
-        return Phase.RESERVED;
+        return ConnChangeResult.builder()
+                .what(ConnChange.RESERVED)
+                .phase(Phase.RESERVED)
+                .when(Instant.now())
+                .build();
     }
 
 
 
 
 
-    public Phase uncommit(Connection c) {
+    public ConnChangeResult uncommit(Connection c) {
 
         Held h = this.heldFromReserved(c);
         c.setReserved(null);
         c.setHeld(h);
         connRepo.saveAndFlush(c);
-        return Phase.HELD;
+        return ConnChangeResult.builder()
+                .what(ConnChange.UNCOMMITTED)
+                .phase(Phase.HELD)
+                .when(Instant.now())
+                .build();
 
     }
 
-    public Phase cancel(Connection c) {
+    public ConnChangeResult release(Connection c) {
         // if it is HELD or DESIGN, delete it
         if (c.getPhase().equals(Phase.HELD) ||  c.getPhase().equals(Phase.DESIGN)) {
             connRepo.delete(c);
             connRepo.flush();
-            return Phase.HELD;
+            return ConnChangeResult.builder()
+                    .what(ConnChange.DELETED)
+                    .when(Instant.now())
+                    .build();
         }
         // if it is ARCHIVED , nothing to do
         if (c.getPhase().equals(Phase.ARCHIVED)) {
-            return c.getPhase();
+            return ConnChangeResult.builder()
+                    .what(ConnChange.ARCHIVED)
+                    .when(Instant.now())
+                    .build();
         }
         if (c.getPhase().equals(Phase.RESERVED)) {
             if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
                 // we haven't started yet; can delete without consequence
                 connRepo.delete(c);
-                return Phase.HELD;
+                return ConnChangeResult.builder()
+                        .what(ConnChange.DELETED)
+                        .when(Instant.now())
+                        .build();
             }
             if (c.getState().equals(State.ACTIVE)) {
                 slack.sendMessage("Cancelling active reservation: " + c.getConnectionId());
@@ -406,7 +420,10 @@ public class ConnService {
         }
 
 
-        return Phase.ARCHIVED;
+        return ConnChangeResult.builder()
+                .what(ConnChange.ARCHIVED)
+                .when(Instant.now())
+                .build();
     }
 
     public void reservedFromHeld(Connection c) {

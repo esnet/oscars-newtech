@@ -232,7 +232,7 @@ public class NsiService {
                 if (!c.getPhase().equals(Phase.HELD)) {
                     throw new NsiException("invalid reservation phase, cannot abort", NsiErrors.TRANS_ERROR);
                 }
-                connSvc.cancel(c);
+                connSvc.release(c);
                 log.info("completed abort");
                 nsiStateEngine.abort(NsiEvent.ABORT_CF, mapping);
                 try {
@@ -343,7 +343,7 @@ public class NsiService {
                 Connection c = this.getOscarsConnection(mapping);
                 // the cancel only needs to happen if we are not in FORCED_END or PASSED_END_TIME
                 if (mapping.getLifecycleState().equals(LifecycleStateEnumType.CREATED)) {
-                    connSvc.cancel(c);
+                    connSvc.release(c);
                 }
                 nsiStateEngine.termStart(mapping);
                 log.info("completed terminate");

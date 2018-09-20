@@ -13,6 +13,7 @@ import net.es.oscars.resv.enums.BuildMode;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.resv.svc.ConnService;
+import net.es.oscars.web.beans.ConnChangeResult;
 import net.es.oscars.web.beans.ConnException;
 import net.es.oscars.web.beans.ConnectionFilter;
 import net.es.oscars.web.beans.ConnectionList;
@@ -45,6 +46,17 @@ public class ConnController {
         log.warn("Still in startup");
     }
 
+    @ExceptionHandler(ConnException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public void handleMiscException(ConnException ex) {
+        log.warn("conn request error", ex);
+    }
+    @ExceptionHandler(NoSuchElementException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public void handleResourceNotFoundException(NoSuchElementException ex) {
+        log.warn("requested an item which did not exist");
+    }
+
 
 
     @RequestMapping(value = "/protected/conn/generateId", method = RequestMethod.GET)
@@ -65,7 +77,7 @@ public class ConnController {
 
     @RequestMapping(value = "/protected/conn/commit", method = RequestMethod.POST)
     @ResponseBody
-    public Phase commit(Authentication authentication, @RequestBody String connectionId)
+    public ConnChangeResult commit(Authentication authentication, @RequestBody String connectionId)
             throws StartupException, PSSException, PCEException, ConnException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
@@ -97,7 +109,7 @@ public class ConnController {
 
     @RequestMapping(value = "/protected/conn/uncommit", method = RequestMethod.POST)
     @ResponseBody
-    public Phase uncommit(@RequestBody String connectionId) throws StartupException, ConnException {
+    public ConnChangeResult uncommit(@RequestBody String connectionId) throws StartupException, ConnException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
@@ -117,9 +129,9 @@ public class ConnController {
     }
 
 
-    @RequestMapping(value = "/protected/conn/cancel", method = RequestMethod.POST)
+    @RequestMapping(value = "/protected/conn/release", method = RequestMethod.POST)
     @ResponseBody
-    public Phase cancel(@RequestBody String connectionId) throws StartupException, ConnException {
+    public ConnChangeResult release(@RequestBody String connectionId) throws StartupException, ConnException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
@@ -136,7 +148,7 @@ public class ConnController {
         } else if (c.get().getPhase().equals(Phase.ARCHIVED)) {
             throw new ConnException("Cannot cancel ARCHIVED connection");
         } else {
-            return connSvc.cancel(c.get());
+            return connSvc.release(c.get());
         }
     }
 
@@ -190,7 +202,7 @@ public class ConnController {
 
     @RequestMapping(value = "/api/conn/info/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
-    public Connection info(@PathVariable String connectionId) throws StartupException {
+    public Connection info(@PathVariable String connectionId) throws StartupException, NoSuchElementException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
@@ -202,7 +214,13 @@ public class ConnController {
             return null;
         }
 //        log.info("looking for connectionId "+ connectionId);
-        return connRepo.findByConnectionId(connectionId).orElse(null);
+        Optional<Connection> cOpt = connRepo.findByConnectionId(connectionId);
+        if (cOpt.isPresent()) {
+            return cOpt.get();
+        } else {
+            throw new NoSuchElementException("connection not found for id " + connectionId);
+
+        }
     }
 
     @RequestMapping(value = "/api/conn/history/{connectionId:.+}", method = RequestMethod.GET)

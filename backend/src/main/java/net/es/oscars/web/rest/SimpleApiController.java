@@ -13,6 +13,7 @@ import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
+import net.es.oscars.web.beans.ConnException;
 import net.es.oscars.web.beans.ConnectionFilter;
 import net.es.oscars.web.simple.*;
 import net.es.oscars.web.beans.PceRequest;
@@ -104,7 +105,7 @@ public class SimpleApiController {
 
     @RequestMapping(value = "/api/simple/info", method = RequestMethod.POST)
     @ResponseBody
-    public SimpleConnection info(@RequestBody String connectionId) throws StartupException {
+    public SimpleConnection info(@RequestBody String connectionId) throws StartupException, NoSuchElementException {
         Connection c = connController.info(connectionId);
         if (c == null) {
             return  null;
