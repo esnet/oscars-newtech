@@ -36,6 +36,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 @Service
@@ -125,10 +127,13 @@ public class ConnService {
         });
 
         List<Connection> connIdFiltered = reservedAndArchived;
+
         if (filter.getConnectionId() != null) {
+            Pattern pattern = Pattern.compile(filter.getConnectionId(), Pattern.CASE_INSENSITIVE);
             connIdFiltered = new ArrayList<>();
             for (Connection c: reservedAndArchived) {
-                if (c.getConnectionId().contains(filter.getConnectionId())) {
+                Matcher matcher = pattern.matcher(c.getConnectionId());
+                if (matcher.find()) {
                     connIdFiltered.add(c);
                 }
             }
@@ -136,9 +141,26 @@ public class ConnService {
 
         List<Connection> descFiltered = connIdFiltered;
         if (filter.getDescription() != null) {
+            Pattern pattern = Pattern.compile(filter.getDescription(), Pattern.CASE_INSENSITIVE);
+
             descFiltered = new ArrayList<>();
             for (Connection c: connIdFiltered) {
-                if (c.getDescription().contains(filter.getDescription())) {
+                boolean found = false;
+                Matcher descMatcher = pattern.matcher(c.getDescription());
+                if (descMatcher.find()) {
+                    found = true;
+                }
+                for (Tag tag : c.getTags()) {
+                    Matcher matcher = pattern.matcher(tag.getContents());
+                    if (matcher.find()) {
+                        found = true;
+                    }
+                    matcher = pattern.matcher(tag.getCategory());
+                    if (matcher.find()) {
+                        found = true;
+                    }
+                }
+                if (found) {
                     descFiltered.add(c);
                 }
             }
@@ -156,9 +178,11 @@ public class ConnService {
 
         List<Connection> userFiltered = phaseFiltered;
         if (filter.getUsername() != null) {
+            Pattern pattern = Pattern.compile(filter.getUsername(), Pattern.CASE_INSENSITIVE);
             userFiltered = new ArrayList<>();
             for (Connection c: phaseFiltered) {
-                if (c.getUsername().contains(filter.getUsername())) {
+                Matcher matcher = pattern.matcher(c.getUsername());
+                if (matcher.find()) {
                     userFiltered.add(c);
                 }
             }
@@ -166,15 +190,21 @@ public class ConnService {
 
         List<Connection> portFiltered = userFiltered;
         if (filter.getPorts() != null && !filter.getPorts().isEmpty()) {
+            List<Pattern> patterns = new ArrayList<>();
+            for (String portFilter : filter.getPorts()) {
+                Pattern pattern = Pattern.compile(portFilter, Pattern.CASE_INSENSITIVE);
+                patterns.add(pattern);
+            }
+
             portFiltered = new ArrayList<>();
             for (Connection c: userFiltered) {
                 boolean add = false;
                 for (VlanFixture f: c.getArchived().getCmp().getFixtures() ) {
-                    for (String portFilter : filter.getPorts()) {
-                        if (f.getPortUrn().contains(portFilter)) {
+                    for (Pattern pattern : patterns) {
+                        Matcher matcher = pattern.matcher(f.getPortUrn());
+                        if (matcher.find()) {
                             add = true;
                         }
-
                     }
                 }
                 if (add) {
