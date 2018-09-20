@@ -58,7 +58,6 @@ public class HoldController {
     }
 
     @RequestMapping(value = "/protected/extend_hold/{connectionId:.+}", method = RequestMethod.GET)
-    @ResponseBody
     @Transactional
     public Instant extendHold(@PathVariable String connectionId)
             throws StartupException {

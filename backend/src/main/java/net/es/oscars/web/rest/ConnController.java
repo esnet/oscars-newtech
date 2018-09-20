@@ -60,7 +60,6 @@ public class ConnController {
 
 
     @RequestMapping(value = "/protected/conn/generateId", method = RequestMethod.GET)
-    @ResponseBody
     public String generateConnectionId() throws StartupException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
