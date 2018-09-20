@@ -351,7 +351,7 @@ public class ConnService {
                 .build();
         logService.logEvent(c.getConnectionId(), ev);
         return ConnChangeResult.builder()
-                .what(ConnChange.RESERVED)
+                .what(ConnChange.COMMITTED)
                 .phase(Phase.RESERVED)
                 .when(Instant.now())
                 .build();

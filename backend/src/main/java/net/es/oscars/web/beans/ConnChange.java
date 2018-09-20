@@ -4,8 +4,7 @@ public enum ConnChange {
     COMMITTED ("COMMITTED"),
     UNCOMMITTED ("UNCOMMITTED"),
     DELETED ("DELETED"),
-    ARCHIVED ("ARCHIVED"),
-    RESERVED ("RESERVED");
+    ARCHIVED ("ARCHIVED");
 
 
     private String code;
