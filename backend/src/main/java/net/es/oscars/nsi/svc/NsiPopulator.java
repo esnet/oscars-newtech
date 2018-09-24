@@ -32,6 +32,8 @@ public class NsiPopulator {
         filter = Arrays.asList(mapper.readValue(filterFile, String[].class));
 
         log.info("filter imported for nsi: " + filter.size());
+        this.plusPorts = new HashMap<>();
+        this.notPlusPorts = new ArrayList<>();
 
         for (NsiPeering p : peerings) {
             String[] parts = p.getIn().getLocal().split(":");

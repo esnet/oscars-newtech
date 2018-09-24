@@ -18,10 +18,7 @@ import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
-import net.es.oscars.web.beans.ConnectionFilter;
-import net.es.oscars.web.beans.ConnectionList;
-import net.es.oscars.web.beans.HoldException;
-import net.es.oscars.web.beans.Interval;
+import net.es.oscars.web.beans.*;
 import net.es.oscars.web.simple.Fixture;
 import net.es.oscars.web.simple.Pipe;
 import net.es.oscars.web.simple.SimpleConnection;
@@ -39,6 +36,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 @Service
@@ -128,10 +127,13 @@ public class ConnService {
         });
 
         List<Connection> connIdFiltered = reservedAndArchived;
+
         if (filter.getConnectionId() != null) {
+            Pattern pattern = Pattern.compile(filter.getConnectionId(), Pattern.CASE_INSENSITIVE);
             connIdFiltered = new ArrayList<>();
             for (Connection c: reservedAndArchived) {
-                if (c.getConnectionId().contains(filter.getConnectionId())) {
+                Matcher matcher = pattern.matcher(c.getConnectionId());
+                if (matcher.find()) {
                     connIdFiltered.add(c);
                 }
             }
@@ -139,9 +141,26 @@ public class ConnService {
 
         List<Connection> descFiltered = connIdFiltered;
         if (filter.getDescription() != null) {
+            Pattern pattern = Pattern.compile(filter.getDescription(), Pattern.CASE_INSENSITIVE);
+
             descFiltered = new ArrayList<>();
             for (Connection c: connIdFiltered) {
-                if (c.getDescription().contains(filter.getDescription())) {
+                boolean found = false;
+                Matcher descMatcher = pattern.matcher(c.getDescription());
+                if (descMatcher.find()) {
+                    found = true;
+                }
+                for (Tag tag : c.getTags()) {
+                    Matcher matcher = pattern.matcher(tag.getContents());
+                    if (matcher.find()) {
+                        found = true;
+                    }
+                    matcher = pattern.matcher(tag.getCategory());
+                    if (matcher.find()) {
+                        found = true;
+                    }
+                }
+                if (found) {
                     descFiltered.add(c);
                 }
             }
@@ -159,9 +178,11 @@ public class ConnService {
 
         List<Connection> userFiltered = phaseFiltered;
         if (filter.getUsername() != null) {
+            Pattern pattern = Pattern.compile(filter.getUsername(), Pattern.CASE_INSENSITIVE);
             userFiltered = new ArrayList<>();
             for (Connection c: phaseFiltered) {
-                if (c.getUsername().contains(filter.getUsername())) {
+                Matcher matcher = pattern.matcher(c.getUsername());
+                if (matcher.find()) {
                     userFiltered.add(c);
                 }
             }
@@ -169,15 +190,21 @@ public class ConnService {
 
         List<Connection> portFiltered = userFiltered;
         if (filter.getPorts() != null && !filter.getPorts().isEmpty()) {
+            List<Pattern> patterns = new ArrayList<>();
+            for (String portFilter : filter.getPorts()) {
+                Pattern pattern = Pattern.compile(portFilter, Pattern.CASE_INSENSITIVE);
+                patterns.add(pattern);
+            }
+
             portFiltered = new ArrayList<>();
             for (Connection c: userFiltered) {
                 boolean add = false;
                 for (VlanFixture f: c.getArchived().getCmp().getFixtures() ) {
-                    for (String portFilter : filter.getPorts()) {
-                        if (f.getPortUrn().contains(portFilter)) {
+                    for (Pattern pattern : patterns) {
+                        Matcher matcher = pattern.matcher(f.getPortUrn());
+                        if (matcher.find()) {
                             add = true;
                         }
-
                     }
                 }
                 if (add) {
@@ -236,7 +263,7 @@ public class ConnService {
     }
 
 
-    public Phase commit(Connection c) throws PSSException, PCEException {
+    public ConnChangeResult commit(Connection c) throws PSSException, PCEException {
 
         Held h = c.getHeld();
 
@@ -323,39 +350,56 @@ public class ConnService {
                 .username("")
                 .build();
         logService.logEvent(c.getConnectionId(), ev);
-        return Phase.RESERVED;
+        return ConnChangeResult.builder()
+                .what(ConnChange.COMMITTED)
+                .phase(Phase.RESERVED)
+                .when(Instant.now())
+                .build();
     }
 
 
 
 
 
-    public Phase uncommit(Connection c) {
+    public ConnChangeResult uncommit(Connection c) {
 
         Held h = this.heldFromReserved(c);
         c.setReserved(null);
         c.setHeld(h);
         connRepo.saveAndFlush(c);
-        return Phase.HELD;
+        return ConnChangeResult.builder()
+                .what(ConnChange.UNCOMMITTED)
+                .phase(Phase.HELD)
+                .when(Instant.now())
+                .build();
 
     }
 
-    public Phase cancel(Connection c) {
+    public ConnChangeResult release(Connection c) {
         // if it is HELD or DESIGN, delete it
         if (c.getPhase().equals(Phase.HELD) ||  c.getPhase().equals(Phase.DESIGN)) {
             connRepo.delete(c);
             connRepo.flush();
-            return Phase.HELD;
+            return ConnChangeResult.builder()
+                    .what(ConnChange.DELETED)
+                    .when(Instant.now())
+                    .build();
         }
         // if it is ARCHIVED , nothing to do
         if (c.getPhase().equals(Phase.ARCHIVED)) {
-            return c.getPhase();
+            return ConnChangeResult.builder()
+                    .what(ConnChange.ARCHIVED)
+                    .when(Instant.now())
+                    .build();
         }
         if (c.getPhase().equals(Phase.RESERVED)) {
             if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
                 // we haven't started yet; can delete without consequence
                 connRepo.delete(c);
-                return Phase.HELD;
+                return ConnChangeResult.builder()
+                        .what(ConnChange.DELETED)
+                        .when(Instant.now())
+                        .build();
             }
             if (c.getState().equals(State.ACTIVE)) {
                 slack.sendMessage("Cancelling active reservation: " + c.getConnectionId());
@@ -406,7 +450,10 @@ public class ConnService {
         }
 
 
-        return Phase.ARCHIVED;
+        return ConnChangeResult.builder()
+                .what(ConnChange.ARCHIVED)
+                .when(Instant.now())
+                .build();
     }
 
     public void reservedFromHeld(Connection c) {

@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -50,7 +51,9 @@ public class AdminController {
     @ResponseBody
     public List<User> admin_users_all() {
 
-        return userRepo.findAll();
+        List<User> users = userRepo.findAll();
+        users.sort(Comparator.comparing(User::getUsername));
+        return users;
     }
 
     @RequestMapping(value = "/admin/users/{username}", method = RequestMethod.GET)
