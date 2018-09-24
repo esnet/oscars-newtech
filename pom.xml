@@ -87,7 +87,7 @@
             <dependency>
                 <groupId>net.es.oscars</groupId>
                 <artifactId>frontend</artifactId>
-                <version>1.0.18</version>
+                <version>1.0.19</version>
             </dependency>
 
             <dependency>
