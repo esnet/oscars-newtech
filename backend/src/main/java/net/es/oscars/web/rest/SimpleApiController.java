@@ -15,6 +15,7 @@ import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.ConnException;
 import net.es.oscars.web.beans.ConnectionFilter;
+import net.es.oscars.web.beans.Interval;
 import net.es.oscars.web.simple.*;
 import net.es.oscars.web.beans.PceRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.*;
 
 
@@ -130,9 +132,14 @@ public class SimpleApiController {
                 return_svc_ids = true;
             }
         }
+        Interval interval = Interval.builder()
+                .beginning(Instant.now())
+                .ending(Instant.now())
+                .build();
         ConnectionFilter f = ConnectionFilter.builder()
                 .phase(Phase.RESERVED)
                 .sizePerPage(Integer.MAX_VALUE)
+                .interval(interval)
                 .page(1)
                 .build();
         List<Connection> connections = connController.list(f).getConnections();

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.management.relation.Relation;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -89,6 +90,7 @@ public class NmlController {
     private static String nsBase = "http://schemas.ogf.org/nml/2013/05/base#";
     private static String nsDefs = "http://schemas.ogf.org/nsi/2013/12/services/definition";
     private static String nsEth = "http://schemas.ogf.org/nml/2012/10/ethernet";
+    private static String isAliasType = "http://schemas.ogf.org/nml/2013/05/base#isAlias";
 
     private static String nsDiscovery = "http://schemas.ogf.org/nsi/2014/02/discovery/nsa";
     private static String nsVcard = "urn:ietf:params:xml:ns:vcard-4.0";
@@ -301,11 +303,13 @@ public class NmlController {
             //log.info("checking peering urn "+peeringUrn);
             NsiPeering peering = nsiPopulator.getPlusPorts().get(peeringUrn);
             if (peering != null) {
-                Element isAlias = doc.createElementNS(nsBase, "nml-base:isAlias");
+
+                Element isAliasRelation = doc.createElementNS(nsBase, "nml-base:Relation");
+                isAliasRelation.setAttribute("type", isAliasType);
                 Element remote = doc.createElementNS(nsBase, "nml-base:PortGroup");
                 remote.setAttribute("id", peering.getIn().getRemote());
-                isAlias.appendChild(remote);
-                pgi.appendChild(isAlias);
+                isAliasRelation.appendChild(remote);
+                pgi.appendChild(isAliasRelation);
             }
 
             Element imxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");
@@ -333,11 +337,12 @@ public class NmlController {
             olg.setTextContent(vlans);
             pgo.appendChild(olg);
             if (peering != null) {
-                Element isAlias = doc.createElementNS(nsBase, "nml-base:isAlias");
+                Element isAliasRelation = doc.createElementNS(nsBase, "nml-base:Relation");
+                isAliasRelation.setAttribute("type", isAliasType);
                 Element remote = doc.createElementNS(nsBase, "nml-base:PortGroup");
                 remote.setAttribute("id", peering.getOut().getRemote());
-                isAlias.appendChild(remote);
-                pgo.appendChild(isAlias);
+                isAliasRelation.appendChild(remote);
+                pgo.appendChild(isAliasRelation );
             }
 
             Element omxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");

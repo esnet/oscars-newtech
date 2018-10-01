@@ -44,8 +44,9 @@ public class NsiPopulator {
             if (parts[2].equals("+")) {
                 String portUrn = parts[0]+":"+parts[1];
                 plusPorts.put(portUrn, p);
-                log.info("adding a plus peering for "+portUrn);
+                log.info("adding a 'plus' peering for "+portUrn);
             } else {
+                log.info("adding a not-plus peering - in :"+p.getIn().getLocal());
                 notPlusPorts.add(p);
             }
         }
