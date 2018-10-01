@@ -22,6 +22,7 @@ public class ConnectionFilter {
     private String description;
     private Phase phase;
     private State state;
+    private Interval interval;
     private int page;
     private int sizePerPage;
 
