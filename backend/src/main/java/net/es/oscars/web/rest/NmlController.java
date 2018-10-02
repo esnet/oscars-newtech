@@ -374,11 +374,13 @@ public class NmlController {
             ilg.setAttribute("labeltype", "http://schemas.ogf.org/nml/2012/10/ethernet#vlan");
             ilg.setTextContent(peering.getVlan());
             pgi.appendChild(ilg);
-            Element inIsAlias = doc.createElementNS(nsBase, "nml-base:isAlias");
+            Element inIsAliasRelation = doc.createElementNS(nsBase, "nml-base:Relation");
+            inIsAliasRelation.setAttribute("type", isAliasType);
+
             Element inRemote = doc.createElementNS(nsBase, "nml-base:PortGroup");
             inRemote.setAttribute("id", peering.getIn().getRemote());
-            inIsAlias.appendChild(inRemote);
-            pgi.appendChild(inIsAlias);
+            inIsAliasRelation.appendChild(inRemote);
+            pgi.appendChild(inIsAliasRelation);
 
             Element imxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");
             String ibps = peering.getCapacity().replaceAll("[gG]", "000000000");
@@ -403,11 +405,13 @@ public class NmlController {
             olg.setAttribute("labeltype", "http://schemas.ogf.org/nml/2012/10/ethernet#vlan");
             olg.setTextContent(peering.getVlan());
             pgo.appendChild(olg);
-            Element outIsAlias = doc.createElementNS(nsBase, "nml-base:isAlias");
+            Element outIsAliasRelation = doc.createElementNS(nsBase, "nml-base:Relation");
+            outIsAliasRelation.setAttribute("type", isAliasType);
+
             Element outRemote = doc.createElementNS(nsBase, "nml-base:PortGroup");
             outRemote.setAttribute("id", peering.getOut().getRemote());
-            outIsAlias.appendChild(outRemote);
-            pgo.appendChild(outIsAlias);
+            outIsAliasRelation.appendChild(outRemote);
+            pgo.appendChild(outIsAliasRelation);
             hop.appendChild(pgo);
 
             if (!addedToIn.contains(inUrn)) {
