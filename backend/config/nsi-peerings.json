@@ -34,7 +34,7 @@
       "remote": "urn:ogf:network:snvaca.pacificwave.net:2016:topology:esnet-sunnyvale-in"
     },
     "capacity": "50G",
-    "vlan": "1070-1079,1779-1799"
+    "vlan": "1070-1079,1779-1799,3010-3019"
   },
   {
     "in": {
