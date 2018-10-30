@@ -34,7 +34,7 @@
       "remote": "urn:ogf:network:snvaca.pacificwave.net:2016:topology:esnet-sunnyvale-in"
     },
     "capacity": "50G",
-    "vlan": "1070-1079,1779-1799,3010-3019"
+    "vlan": "1070-1079,1779-1799,3010-3019,3600-3619"
   },
   {
     "in": {
@@ -132,18 +132,6 @@
     },
     "capacity": "10G",
     "vlan": "1779-1799"
-  },
-  {
-    "in": {
-      "local": "sunn-cr5:8_1_1:caltech:in",
-      "remote": "urn:ogf:network:caltech.edu:2013::CER2024:eth2_1:esnet:out"
-    },
-    "out": {
-      "local": "sunn-cr5:8_1_1:caltech:out",
-      "remote": "urn:ogf:network:caltech.edu:2013::CER2024:eth2_1:esnet:in"
-    },
-    "capacity": "50G",
-    "vlan": "3600-3619"
   }
 
 ]
