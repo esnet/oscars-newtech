@@ -134,7 +134,7 @@ public class MxParamsAdapter {
                 lsps.add(primary.getMxLsp());
                 qos.add(primary.getQos());
                 if (protectEnabled) {
-                    MxPipeResult protect = this.makePipe(other_j, hops, false, p, mbps, c);
+                    MxPipeResult protect = this.makePipe(other_j, hops, true, p, mbps, c);
                     paths.add(protect.getPath());
                     lsps.add(protect.getMxLsp());
                     qos.add(protect.getQos());
@@ -188,11 +188,11 @@ public class MxParamsAdapter {
         String lspName = c.getConnectionId();
 
         if (protect) {
-            pathName += "-PRT-" + p.getZ().getDeviceUrn();
-            lspName += "-PRT-" + p.getZ().getDeviceUrn();
+            pathName += "-PRT-" + otherJ.getDeviceUrn();
+            lspName += "-PRT-" + otherJ.getDeviceUrn();
         } else {
-            pathName += "-WRK-" + p.getZ().getDeviceUrn();
-            lspName += "-WRK-" + p.getZ().getDeviceUrn();
+            pathName += "-WRK-" + otherJ.getDeviceUrn();
+            lspName += "-WRK-" + otherJ.getDeviceUrn();
         }
         MplsPath path = MplsPath.builder()
                 .hops(mplsHops)

@@ -17,7 +17,7 @@ import org.apache.commons.io.input.ReversedLinesFileReader;
 @RestController
 @Slf4j
 public class MiscController {
-    public static String version = "1.0.23";
+    public static String version = "1.0.24";
 
     @Value("${logging.file}")
     private String logfile;
