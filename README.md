@@ -43,9 +43,9 @@ cd oscars-newtech/backend
 You may start the OSCARS services (backend and pss) with the following command:
 
 ```bash
-cd oscars-newtech/backend
-./bin/start.sh
-cd ../pss
+cd oscars-newtech/pss
+./bin/start.sh &
+cd ../backend
 ./bin/start.sh
 
 ```
