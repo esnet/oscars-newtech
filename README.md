@@ -21,14 +21,6 @@ Make sure the following are installed on your system:
 
 ## Running OSCARS
 
-### Preparation
-You will need to be running the PostgreSQL server.
-
-Before running OSCARS for the first time, set up the database tables by 
-executing the following script from the core directory; 
-```bash
-./bin/install_db.sh
-```
 ### Building
 Run the following commands from the main project directory (oscars-newtech):
 
@@ -36,18 +28,28 @@ Run the following commands from the main project directory (oscars-newtech):
  mvn -DskipTests package 
 ```
 
+### Preparation
+You will need to be running the PostgreSQL server.
+
+Before running OSCARS for the first time, set up the database tables by 
+executing the following script: 
+```bash
+cd oscars-newtech/backend
+./bin/install_db.sh
+```
+
 ### Starting OSCARS
 
 You may start the OSCARS services (backend and pss) with the following command:
 
 ```bash
+cd oscars-newtech/backend
 ./bin/start.sh
+cd ../pss
+./bin/start.sh
+
 ```
 
-If on windows, an alternative [Python (2.7 / 3.6+)](https://www.python.org/)script can be used.
-```bash
- python ./bin/win_start.py
-```
 ### Accessing the Web User Interface 
 
 OSCARS should now be running on your local machine.
