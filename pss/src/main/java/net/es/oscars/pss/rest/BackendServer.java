@@ -2,6 +2,8 @@ package net.es.oscars.pss.rest;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.*;
+import net.es.oscars.pss.beans.PssProfile;
+import net.es.oscars.pss.prop.PssProps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,21 +14,22 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class BackendServer implements BackendProxy {
 
-    private String backendUrl;
+    private PssProps pssProps;
 
     private RestTemplate restTemplate;
 
     @Autowired
-    public BackendServer(RestTemplate restTemplate, @Value("${backend.url}") String backendUrl) {
+    public BackendServer(RestTemplate restTemplate, PssProps pssProps) {
+        this.pssProps = pssProps;
 
         this.restTemplate = restTemplate;
-        this.backendUrl = backendUrl;
-        log.info("backend server URL: " + this.backendUrl);
     }
 
-    public GeneratedCommands commands(String connectionId, String device) {
+    public GeneratedCommands commands(String connectionId, String device, String profileName) {
         String submitUrl = "/api/pss/generated/" + connectionId + "/" + device;
-        String restPath = backendUrl + submitUrl;
+        PssProfile profile = PssProfile.find(pssProps, profileName);
+
+        String restPath = profile.getBackendUrl()  + submitUrl;
         log.info("calling " + restPath);
         return restTemplate.getForObject(restPath, GeneratedCommands.class);
 

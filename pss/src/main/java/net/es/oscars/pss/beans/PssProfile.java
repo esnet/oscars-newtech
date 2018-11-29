@@ -24,6 +24,7 @@ public class PssProfile {
     private RancidProps rancid;
     private GetConfigProps getConfig;
     private UrnMappingProps urnMapping;
+    private String backendUrl;
 
     public static PssProfile find(PssProps props, String profile) throws NoSuchElementException {
         for (PssProfile pssProfile : props.getProfiles()) {
