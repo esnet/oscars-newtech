@@ -1,7 +1,8 @@
-package net.es.oscars.pss.ent;
+package net.es.oscars.snp.ent;
 
 import lombok.Builder;
 import lombok.Data;
+import net.es.oscars.snp.beans.SnippetStatus;
 
 import java.util.Set;
 

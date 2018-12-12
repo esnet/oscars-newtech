@@ -1,4 +1,4 @@
-package net.es.oscars.pss.ent;
+package net.es.oscars.snp.beans;
 
 public enum SnippetStatus {
     GENERATED,

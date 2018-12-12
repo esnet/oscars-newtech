@@ -1,0 +1,25 @@
+{
+  "connectionId": "xyzzy",
+  "cmp": {
+    "junctions": [
+      {
+        "refId": "/xyzzy/j/A",
+        "deviceUrn": "A",
+        "connectionId": "xyzzy"
+      }
+    ],
+    "fixtures": [
+      {
+        "portUrn": "A:1",
+        "junction": "/xyzzy/j/A",
+        "ingressBandwidth": 100,
+        "egressBandwidth": 100,
+        "strict": false,
+        "vlan": {
+          "vlanExpression": ""
+        }
+      }
+    ],
+    "pipes": []
+  }
+}
