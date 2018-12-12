@@ -1,9 +1,11 @@
 package net.es.oscars.resv.ent;
 
 import com.fasterxml.jackson.annotation.*;
+import inet.ipaddr.ipv4.IPv4Address;
 import lombok.*;
 
 import javax.persistence.*;
+import java.net.Inet4Address;
 import java.util.Set;
 
 @Data
@@ -41,6 +43,12 @@ public class VlanJunction {
     // mandatory; a junction is always associated with a specific device
     @NonNull
     private String deviceUrn;
+
+    @ElementCollection
+    private Set<String> ipv4Addresses;
+
+    @ElementCollection
+    private Set<String> ipv6Addresses;
 
     // these will be populated by the system after designing is complete
     @ManyToOne(cascade = CascadeType.ALL)

@@ -1,15 +1,12 @@
 package net.es.oscars.topo.svc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.topo.beans.Delta;
+import net.es.oscars.app.beans.Delta;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
-import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.Layer;
 
 import java.util.*;

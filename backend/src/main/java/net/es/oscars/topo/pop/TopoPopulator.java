@@ -3,18 +3,9 @@ package net.es.oscars.topo.pop;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.app.StartupComponent;
-import net.es.oscars.app.exc.StartupException;
-import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.app.props.TopoProperties;
-import net.es.oscars.topo.beans.Delta;
-import net.es.oscars.topo.beans.TopoException;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
-import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
-import net.es.oscars.topo.db.PortRepository;
-import net.es.oscars.topo.db.VersionRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
@@ -25,11 +16,9 @@ import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.topo.svc.UpdateSvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.*;
 
 

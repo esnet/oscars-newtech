@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.topo.beans.Delta;
+import net.es.oscars.app.beans.Delta;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;
@@ -637,55 +637,55 @@ public class UpdateSvc {
 
         // first check if any keys are overlapping
         Set<String> overlapping;
-        overlapping = Sets.intersection(dd.addedUrns(), dd.modifiedUrns());
+        overlapping = Sets.intersection(dd.added(), dd.modified());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping device added / modified sets");
         }
-        overlapping = Sets.intersection(dd.addedUrns(), dd.removedUrns());
+        overlapping = Sets.intersection(dd.added(), dd.removed());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping device added / removed sets");
         }
-        overlapping = Sets.intersection(dd.addedUrns(), dd.unchangedUrns());
+        overlapping = Sets.intersection(dd.added(), dd.unchanged());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping device added / unchanged sets");
         }
-        overlapping = Sets.intersection(dd.removedUrns(), dd.modifiedUrns());
+        overlapping = Sets.intersection(dd.removed(), dd.modified());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping device removed / modified sets");
         }
-        overlapping = Sets.intersection(dd.removedUrns(), dd.unchangedUrns());
+        overlapping = Sets.intersection(dd.removed(), dd.unchanged());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping device removed / unchanged sets");
         }
-        overlapping = Sets.intersection(dd.modifiedUrns(), dd.unchangedUrns());
+        overlapping = Sets.intersection(dd.modified(), dd.unchanged());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping device modified / unchanged sets");
         }
-        for (String urn : dd.addedUrns()) {
+        for (String urn : dd.added()) {
             Device d = dd.getAdded().get(urn);
             if (!d.getUrn().equals(urn)) {
                 throw new ConsistencyException("key / urn mismatch");
             }
         }
-        for (String urn : dd.modifiedUrns()) {
+        for (String urn : dd.modified()) {
             Device d = dd.getModified().get(urn);
             if (!d.getUrn().equals(urn)) {
                 throw new ConsistencyException("key / urn mismatch");
             }
         }
-        for (String urn : dd.removedUrns()) {
+        for (String urn : dd.removed()) {
             Device d = dd.getRemoved().get(urn);
             if (!d.getUrn().equals(urn)) {
                 throw new ConsistencyException("key / urn mismatch");
             }
         }
-        for (String urn : dd.unchangedUrns()) {
+        for (String urn : dd.unchanged()) {
             Device d = dd.getUnchanged().get(urn);
             if (!d.getUrn().equals(urn)) {
                 throw new ConsistencyException("key / urn mismatch");
@@ -697,32 +697,32 @@ public class UpdateSvc {
     public void verifyAdjcyDelta(Delta<PortAdjcy> pad) throws ConsistencyException {
 
         Set<String> overlapping;
-        overlapping = Sets.intersection(pad.addedUrns(), pad.modifiedUrns());
+        overlapping = Sets.intersection(pad.added(), pad.modified());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping adjcy added / modified sets");
         }
-        overlapping = Sets.intersection(pad.addedUrns(), pad.removedUrns());
+        overlapping = Sets.intersection(pad.added(), pad.removed());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping adjcy added / removed sets");
         }
-        overlapping = Sets.intersection(pad.addedUrns(), pad.unchangedUrns());
+        overlapping = Sets.intersection(pad.added(), pad.unchanged());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping adjcy added / unchanged sets");
         }
-        overlapping = Sets.intersection(pad.removedUrns(), pad.modifiedUrns());
+        overlapping = Sets.intersection(pad.removed(), pad.modified());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping adjcy removed / modified sets");
         }
-        overlapping = Sets.intersection(pad.removedUrns(), pad.unchangedUrns());
+        overlapping = Sets.intersection(pad.removed(), pad.unchanged());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping adjcy removed / unchanged sets");
         }
-        overlapping = Sets.intersection(pad.modifiedUrns(), pad.unchangedUrns());
+        overlapping = Sets.intersection(pad.modified(), pad.unchanged());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping adjcy modified / unchanged sets");
@@ -733,55 +733,55 @@ public class UpdateSvc {
     public void verifyPortDelta(Delta<Port> pd) throws ConsistencyException {
 
         Set<String> overlapping;
-        overlapping = Sets.intersection(pd.addedUrns(), pd.modifiedUrns());
+        overlapping = Sets.intersection(pd.added(), pd.modified());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping port added / modified sets");
         }
-        overlapping = Sets.intersection(pd.addedUrns(), pd.removedUrns());
+        overlapping = Sets.intersection(pd.added(), pd.removed());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping port added / removed sets");
         }
-        overlapping = Sets.intersection(pd.addedUrns(), pd.unchangedUrns());
+        overlapping = Sets.intersection(pd.added(), pd.unchanged());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping port added / unchanged sets");
         }
-        overlapping = Sets.intersection(pd.removedUrns(), pd.modifiedUrns());
+        overlapping = Sets.intersection(pd.removed(), pd.modified());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping port removed / modified sets");
         }
-        overlapping = Sets.intersection(pd.removedUrns(), pd.unchangedUrns());
+        overlapping = Sets.intersection(pd.removed(), pd.unchanged());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping port removed / unchanged sets");
         }
-        overlapping = Sets.intersection(pd.modifiedUrns(), pd.unchangedUrns());
+        overlapping = Sets.intersection(pd.modified(), pd.unchanged());
         if (!overlapping.isEmpty()) {
             log.error(overlapping.toString());
             throw new ConsistencyException("Overlapping port modified / unchanged sets");
         }
-        for (String urn : pd.addedUrns()) {
+        for (String urn : pd.added()) {
             Port p = pd.getAdded().get(urn);
             if (!p.getUrn().equals(urn)) {
                 throw new ConsistencyException("key / urn mismatch");
             }
         }
-        for (String urn : pd.modifiedUrns()) {
+        for (String urn : pd.modified()) {
             Port p = pd.getModified().get(urn);
             if (!p.getUrn().equals(urn)) {
                 throw new ConsistencyException("key / urn mismatch");
             }
         }
-        for (String urn : pd.removedUrns()) {
+        for (String urn : pd.removed()) {
             Port p = pd.getRemoved().get(urn);
             if (!p.getUrn().equals(urn)) {
                 throw new ConsistencyException("key / urn mismatch");
             }
         }
-        for (String urn : pd.unchangedUrns()) {
+        for (String urn : pd.unchanged()) {
             Port p = pd.getUnchanged().get(urn);
             if (!p.getUrn().equals(urn)) {
                 throw new ConsistencyException("key / urn mismatch");

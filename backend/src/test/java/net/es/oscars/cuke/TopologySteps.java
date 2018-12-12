@@ -4,7 +4,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.topo.beans.Delta;
+import net.es.oscars.app.beans.Delta;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.db.DeviceRepository;
