@@ -52,57 +52,48 @@ public class PssTask {
 
         ReentrantLock connLock = dbAccess.getConnLock();
 
-        connLock.lock();
-        try {
-            // log.debug("locking connections");
-
-            List<Connection> conns = connRepo.findByPhase(Phase.RESERVED);
-
-            List<Connection> needConfigs = new ArrayList<>();
-            for (Connection c : conns) {
-                if (rcRepo.findByConnectionId(c.getConnectionId()).isEmpty()) {
-                    log.info("connection "+c.getConnectionId()+" needs router configs to be generated");
-                    needConfigs.add(c);
-                }
-            }
-
-            for (Connection c: needConfigs) {
-                Integer tried = 0;
-                Integer maxTries = 3;
-                if (attempts.containsKey(c.getConnectionId())) {
-                    tried = attempts.get(c.getConnectionId());
-                }
-                if (tried < maxTries) {
-                    tried = tried + 1;
-                    try {
-                        pssAdapter.generateConfig(c);
-                    } catch (PSSException e) {
-                        attempts.put(c.getConnectionId(), tried);
-                        e.printStackTrace();
-                    }
-
-                } else if (tried.equals(maxTries)){
-                    log.error(" stopping trying to generate config for "+c.getConnectionId());
-                    attempts.put(c.getConnectionId(), maxTries + 1);
-                }
-
-            }
-
-        } finally {
-            // log.debug("unlocking connections");
-            connLock.unlock();
-        }
-
-
-        Set<Connection> shouldBeBuilt = new HashSet<>();
-        Set<Connection> shouldBeDismantled = new HashSet<>();
-
         boolean gotLock = connLock.tryLock();
         if (gotLock) {
             try {
-                // log.debug("got connection lock");
+                // log.debug("locking connections");
 
                 List<Connection> conns = connRepo.findByPhase(Phase.RESERVED);
+
+                List<Connection> needConfigs = new ArrayList<>();
+                for (Connection c : conns) {
+                    if (rcRepo.findByConnectionId(c.getConnectionId()).isEmpty()) {
+                        log.info("connection " + c.getConnectionId() + " needs router configs to be generated");
+                        needConfigs.add(c);
+                    }
+                }
+
+                for (Connection c : needConfigs) {
+                    Integer tried = 0;
+                    Integer maxTries = 3;
+                    if (attempts.containsKey(c.getConnectionId())) {
+                        tried = attempts.get(c.getConnectionId());
+                    }
+                    if (tried < maxTries) {
+                        tried = tried + 1;
+                        try {
+                            pssAdapter.generateConfig(c);
+                        } catch (PSSException e) {
+                            attempts.put(c.getConnectionId(), tried);
+                            e.printStackTrace();
+                        }
+
+                    } else if (tried.equals(maxTries)) {
+                        log.error(" stopping trying to generate config for " + c.getConnectionId());
+                        attempts.put(c.getConnectionId(), maxTries + 1);
+                    }
+
+                }
+
+
+                Set<Connection> shouldBeBuilt = new HashSet<>();
+                Set<Connection> shouldBeDismantled = new HashSet<>();
+                // log.debug("got connection lock");
+
                 for (Connection c : conns) {
                     Schedule s = c.getReserved().getSchedule();
                     // this has already ended, so if active it needs to be added to the dismantle list
@@ -122,42 +113,33 @@ public class PssTask {
                         }
                     }
                 }
-            } finally {
-                // release lock now that we read everything we needed
 
-                // log.debug("unlocking connections");
-                connLock.unlock();
-            }
+                // do the PSS work
 
-            // do the PSS work
-
-            if (shouldBeBuilt.size() == 0 && shouldBeDismantled.size() == 0) {
-                return;
-            }
-            Map<String, State> newStates = new HashMap<>();
-
-            for (Connection c : shouldBeBuilt) {
-                try {
-                    State s = this.pssAdapter.build(c);
-                    newStates.put(c.getConnectionId(), s);
-                } catch (PSSException ex) {
-                    newStates.put(c.getConnectionId(), State.FAILED);
-                    log.error(ex.getMessage(), ex);
+                if (shouldBeBuilt.size() == 0 && shouldBeDismantled.size() == 0) {
+                    return;
                 }
-            }
-            for (Connection c : shouldBeDismantled) {
-                try {
-                    State s = this.pssAdapter.dismantle(c);
-                    newStates.put(c.getConnectionId(), s);
-                } catch (PSSException ex) {
-                    newStates.put(c.getConnectionId(), State.FAILED);
-                    log.error(ex.getMessage(), ex);
-                }
-            }
 
-            // lock for the updates
-            connLock.lock();
-            try {
+                Map<String, State> newStates = new HashMap<>();
+
+                for (Connection c : shouldBeBuilt) {
+                    try {
+                        State s = this.pssAdapter.build(c);
+                        newStates.put(c.getConnectionId(), s);
+                    } catch (PSSException ex) {
+                        newStates.put(c.getConnectionId(), State.FAILED);
+                        log.error(ex.getMessage(), ex);
+                    }
+                }
+                for (Connection c : shouldBeDismantled) {
+                    try {
+                        State s = this.pssAdapter.dismantle(c);
+                        newStates.put(c.getConnectionId(), s);
+                    } catch (PSSException ex) {
+                        newStates.put(c.getConnectionId(), State.FAILED);
+                        log.error(ex.getMessage(), ex);
+                    }
+                }
                 List<Connection> saveThese = new ArrayList<>();
                 for (String connId : newStates.keySet()) {
                     Optional<Connection> maybeConn = connRepo.findByConnectionId(connId);
@@ -166,16 +148,19 @@ public class PssTask {
                         c.setState(newStates.get(connId));
                         saveThese.add(c);
                     } else {
-                        log.error("Could not find connection! "+connId);
+                        log.error("Could not find connection! " + connId);
                     }
                 }
 
                 connRepo.save(saveThese);
                 connRepo.flush();
             } finally {
+                // release lock now that we read everything we needed
+
                 // log.debug("unlocking connections");
                 connLock.unlock();
             }
+
         } else {
             log.debug("unable to lock; waiting for next run ");
         }
