@@ -30,6 +30,7 @@ public class CmpDelta {
                 .modified(new HashMap<>())
                 .unchanged(new HashMap<>())
                 .build();
+
         Delta<VlanPipe> pipeDelta = Delta.<VlanPipe>builder()
                 .added(new HashMap<>())
                 .removed(new HashMap<>())
@@ -42,7 +43,7 @@ public class CmpDelta {
                 .pipeDelta(pipeDelta)
                 .junctionDelta(junctionDelta)
                 .build();
-        return result;
 
+        return result;
     }
 }

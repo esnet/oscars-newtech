@@ -10,6 +10,4 @@ public interface SnippetAPI {
     Set<ConfigSnippet> generateNeededSnippets(String deviceUrn, CmpDelta delta) throws SnippetException;
     boolean validateDeltas(CmpDelta delta) throws SnippetException;
 
-    void hello();
-
 }

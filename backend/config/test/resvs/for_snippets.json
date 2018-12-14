@@ -1,5 +1,5 @@
 {
-  "connectionId": "xyzzy",
+  "designId": "xyzzy",
   "cmp": {
     "junctions": [
       {
@@ -10,13 +10,25 @@
     ],
     "fixtures": [
       {
-        "portUrn": "A:1",
         "junction": "/xyzzy/j/A",
+        "portUrn": "A:1",
         "ingressBandwidth": 100,
         "egressBandwidth": 100,
         "strict": false,
         "vlan": {
-          "vlanExpression": ""
+          "vlanId": 150,
+          "urn": "A:1"
+        }
+      },
+      {
+        "junction": "/xyzzy/j/A",
+        "portUrn": "A:2",
+        "ingressBandwidth": 10,
+        "egressBandwidth": 10,
+        "strict": false,
+        "vlan": {
+          "vlanId": 150,
+          "urn": "A:2"
         }
       }
     ],
