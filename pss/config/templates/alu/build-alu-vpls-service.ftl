@@ -42,13 +42,23 @@ exit
 /configure service vpls ${svcId} sap ${sapId} no shutdown
 </#list>
 
+/configure service vpls ${svcId} split-horizon-group "shg-pri" create
+/configure service vpls ${svcId} split-horizon-group "shg-pri" auto-learn-mac-protect
+/configure service vpls ${svcId} split-horizon-group "shg-sec" create
+/configure service vpls ${svcId} split-horizon-group "shg-sec" auto-learn-mac-protect
+
+
 <#if vpls.sdpToVcIds??>
 <#list vpls.sdpToVcIds as sdpToVcId>
 
 <#assign sdpId = sdpToVcId.sdpId>
 <#assign vcId = sdpToVcId.vcId>
+<#if sdpToVcId.primary>
+/configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} vc-type vlan split-horizon-group "shg-pri" ${endpointSnippet} create
+<#else>
+/configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} vc-type vlan split-horizon-group "shg-sec" ${endpointSnippet} create
+</#if>
 
-/configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} vc-type vlan ${endpointSnippet} create
 exit all
 /configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} stp shutdown
 /configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} auto-learn-mac-protect

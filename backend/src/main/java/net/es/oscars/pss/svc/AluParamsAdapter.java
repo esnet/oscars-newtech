@@ -215,12 +215,12 @@ public class AluParamsAdapter {
         List<AluPipeResult> aluPipes = new ArrayList<>();
 
         List<MplsHop> mplsHops = MiscHelper.mplsHops(hops, topoService);
-        String pathName = c.getConnectionId() + "-WRK-" + p.getZ().getDeviceUrn();
+        String pathName = c.getConnectionId() + "-WRK-" + otherJunction.getDeviceUrn();
         if (pathName.length() > 32) {
             pathName = pathName.substring(0, 31);
             log.warn("path name trimmed to: " + pathName);
         }
-        String lspName = c.getConnectionId() + "-WRK-" + p.getZ().getDeviceUrn();
+        String lspName = c.getConnectionId() + "-WRK-" + otherJunction.getDeviceUrn();
         if (lspName.length() > 32) {
             lspName = lspName.substring(0, 31);
             log.warn("LSP name trimmed to: " + lspName);

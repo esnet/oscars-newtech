@@ -131,7 +131,7 @@ public class RouterConfigBuilder {
     public RancidArguments build(Command command)
             throws ConfigException, UrnMappingException  {
 
-        GeneratedCommands cmds = bes.commands(command.getConnectionId(), command.getDevice());
+        GeneratedCommands cmds = bes.commands(command.getConnectionId(), command.getDevice(), command.getProfile());
         String routerConfig = cmds.getGenerated().get(CommandType.BUILD);
         if (routerConfig == null) {
             throw new ConfigException("Null generated commands for BUILD");
@@ -140,7 +140,7 @@ public class RouterConfigBuilder {
     }
 
     public RancidArguments dismantle(Command command) throws ConfigException, UrnMappingException  {
-        GeneratedCommands cmds = bes.commands(command.getConnectionId(), command.getDevice());
+        GeneratedCommands cmds = bes.commands(command.getConnectionId(), command.getDevice(), command.getProfile());
         String routerConfig = cmds.getGenerated().get(CommandType.DISMANTLE);
         if (routerConfig == null) {
             throw new ConfigException("Null generated commands for BUILD");

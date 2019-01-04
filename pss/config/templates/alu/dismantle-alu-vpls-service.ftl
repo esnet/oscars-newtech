@@ -15,6 +15,10 @@
 </#list>
 </#if>
 
+/configure service vpls ${svcId} no split-horizon-group "shg-pri"
+
+/configure service vpls ${svcId} no split-horizon-group "shg-sec"
+
 
 <#list vpls.saps as sap>
 <#assign sapId = sap.port+":"+sap.vlan>
