@@ -41,8 +41,15 @@ def main():
             for tag in c['tags']:
                 out += pre+'tags-+-%s-+-%s\n' % (tag['category'], tag['contents'])
 
+        firstJunction = c['fixtures'][0]['junction']
         src = c['fixtures'][0]['port']+'.'+str(c['fixtures'][0]['vlan'])
         dst = c['fixtures'][1]['port']+'.'+str(c['fixtures'][1]['vlan'])
+
+        if 'pipes' in c and len(c['pipes']) > 0:
+            firsthop = c['pipes'][0]['ero'][0]
+            if firsthop == firstJunction:
+                dst = c['fixtures'][0]['port']+'.'+str(c['fixtures'][0]['vlan'])
+                src = c['fixtures'][1]['port']+'.'+str(c['fixtures'][1]['vlan'])
 
         out += pre+'description-+-%s\n' % c['description']
         out += pre+'startTime-+-%i\n' % c['begin']
