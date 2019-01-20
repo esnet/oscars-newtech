@@ -3,12 +3,10 @@ package net.es.oscars.snp.svc;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.beans.Delta;
 import net.es.oscars.app.exc.PSSException;
-import net.es.oscars.resv.ent.Components;
-import net.es.oscars.resv.ent.VlanFixture;
-import net.es.oscars.resv.ent.VlanJunction;
-import net.es.oscars.resv.ent.VlanPipe;
+import net.es.oscars.resv.ent.*;
 import net.es.oscars.snp.beans.CmpDelta;
 import net.es.oscars.snp.ent.ConfigSnippet;
+import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -68,11 +66,88 @@ public class CmpDeltaSvc implements CmpDeltaAPI {
         result.setFixtureDelta(fixtureDelta);
         result.setPipeDelta(pipeDelta);
 
+//        log.info(String.valueOf(result));
+
+        return result;
+    }
+
+    public CmpDelta addJunction(String refId, String connectionId, Components cmp) throws PSSException {
+        CmpDelta result = CmpDelta.newEmptyDelta();
+        Delta<VlanJunction> junctionDelta = result.getJunctionDelta();
+
+        VlanJunction addedJunction = VlanJunction.builder()
+                .refId(refId)
+                .connectionId(connectionId)
+                .deviceUrn("A")
+                .build();
+
+        junctionDelta.getAdded().put(addedJunction.getConnectionId(), addedJunction);
+        result.setJunctionDelta(junctionDelta);
+
         log.info(String.valueOf(result));
 
         return result;
     }
 
+    public CmpDelta addFixture(String junctionId, String connectionId, Components cmp) throws PSSException {
+        CmpDelta result = CmpDelta.newEmptyDelta();
+        Delta<VlanFixture> fixtureDelta = result.getFixtureDelta();
+
+        VlanJunction requiredJunction = null;
+        for (VlanJunction j : cmp.getJunctions()) {
+            if (j.getRefId().equals(junctionId)) {
+                requiredJunction = j;
+            }
+        }
+
+        Vlan vlan = Vlan.builder()
+                .connectionId(connectionId)
+                .urn("A:1")
+                .vlanId(150)
+                .build();
+
+        VlanFixture addedFixture = VlanFixture.builder()
+                .junction(requiredJunction)
+                .connectionId(connectionId)
+                .portUrn("A:1")
+                .ingressBandwidth(100)
+                .egressBandwidth(100)
+                .strict(false)
+                .vlan(vlan)
+                .build();
+
+        fixtureDelta.getAdded().put(addedFixture.getConnectionId(), addedFixture);
+
+        result.setFixtureDelta(fixtureDelta);
+
+//        log.info(String.valueOf(result));
+        return result;
+    }
+
+    // TODO
+    public CmpDelta addPipe(String a, Components cmp) throws PSSException {
+        CmpDelta result = CmpDelta.newEmptyDelta();
+        Delta<VlanPipe> pipeDelta = result.getPipeDelta();
+
+//        VlanPipe addedPipe = VlanPipe.builder()
+//                .a(jmap.get(p.getA().getDeviceUrn()))
+//                .z(jmap.get(p.getZ().getDeviceUrn()))
+//                .azBandwidth(p.getAzBandwidth())
+//                .zaBandwidth(p.getZaBandwidth())
+//                .connectionId(p.getConnectionId())
+//                .schedule(sch)
+//                .protect(p.getProtect())
+//                .azERO(copyEro(p.getAzERO()))
+//                .zaERO(copyEro(p.getZaERO()))
+//                .build();
+//
+//        pipeDelta.getAdded().put(addedPipe.getConnectionId(), addedPipe);
+//        result.setPipeDelta(pipeDelta);
+
+//        log.info(String.valueOf(result));
+        return result;
+
+    }
 
     public CmpDelta setIpv6Addresses(String deviceUrn, Components cmp, Set<String> ipAddresses) throws PSSException {
         // TODO: check for ip address validity etc
@@ -110,6 +185,8 @@ public class CmpDeltaSvc implements CmpDeltaAPI {
     public CmpDelta setIpv4Addresses(String deviceUrn, Components cmp, Set<String> ipAddresses) throws PSSException {
         // TODO: check for ip address validity etc
         // ipAddresses.forEach(this::validIP);
+
+        // InetAddressValidator validator ...
 
         CmpDelta result = CmpDelta.newEmptyDelta();
         Delta<VlanJunction> junctionDelta = result.getJunctionDelta();

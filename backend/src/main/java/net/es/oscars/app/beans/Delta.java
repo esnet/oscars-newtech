@@ -16,9 +16,7 @@ public class Delta<T> {
     Map<String, T> modified;
     Map<String, T> unchanged;
 
-    public Set<String> added() {
-        return this.added.keySet();
-    }
+    public Set<String> added() { return this.added.keySet(); }
     public Set<String> removed() {
         return this.removed.keySet();
     }

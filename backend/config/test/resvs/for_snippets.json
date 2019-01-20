@@ -1,37 +1,36 @@
 {
-  "designId": "xyzzy",
-  "cmp": {
-    "junctions": [
-      {
-        "refId": "/xyzzy/j/A",
-        "deviceUrn": "A",
-        "connectionId": "xyzzy"
+  "junctions": [
+    {
+      "refId": "/xyzzy/j/A",
+      "deviceUrn": "A",
+      "connectionId": "xyzzy"
+    }
+  ],
+  "fixtures": [
+    {
+      "junction": "/xyzzy/j/A",
+      "portUrn": "A:1",
+      "connectionId": "xyzzy",
+      "ingressBandwidth": 100,
+      "egressBandwidth": 100,
+      "strict": false,
+      "vlan": {
+        "vlanId": 150,
+        "urn": "A:1"
       }
-    ],
-    "fixtures": [
-      {
-        "junction": "/xyzzy/j/A",
-        "portUrn": "A:1",
-        "ingressBandwidth": 100,
-        "egressBandwidth": 100,
-        "strict": false,
-        "vlan": {
-          "vlanId": 150,
-          "urn": "A:1"
-        }
-      },
-      {
-        "junction": "/xyzzy/j/A",
-        "portUrn": "A:2",
-        "ingressBandwidth": 10,
-        "egressBandwidth": 10,
-        "strict": false,
-        "vlan": {
-          "vlanId": 150,
-          "urn": "A:2"
-        }
+    },
+    {
+      "junction": "/xyzzy/j/A",
+      "portUrn": "A:2",
+      "connectionId": "xyzzy",
+      "ingressBandwidth": 10,
+      "egressBandwidth": 10,
+      "strict": false,
+      "vlan": {
+        "vlanId": 150,
+        "urn": "A:2"
       }
-    ],
-    "pipes": []
-  }
+    }
+  ],
+  "pipes": []
 }

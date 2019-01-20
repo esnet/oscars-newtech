@@ -14,6 +14,4 @@ public class ConfigSnippet {
     private String buildConfigText;
     private Set<ConfigSnippet> dependsOn;
     private Set<ConfigSnippet> dependOnThis;
-
-
 }

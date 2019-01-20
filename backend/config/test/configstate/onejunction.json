@@ -1,0 +1,21 @@
+{
+  "urn": "abc",
+  "model": "ALCATEL_SR7750",
+  "connectionConfigNodes": {
+    "root": {
+      "nodeId": "root",
+      "type": "ROOT",
+      "upstream": [],
+      "downstream": [
+        {
+          "nodeId": "",
+          "type": "ALU_VPLS_SVC",
+          "upstream": [
+            "root"
+          ],
+          "downstream": []
+        }
+      ]
+    }
+  }
+}

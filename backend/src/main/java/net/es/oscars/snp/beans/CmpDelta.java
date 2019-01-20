@@ -17,21 +17,24 @@ public class CmpDelta {
     private Delta<VlanPipe> pipeDelta;
 
     public static CmpDelta newEmptyDelta() {
-        Delta<VlanJunction> junctionDelta = Delta.<VlanJunction>builder()
+        Delta<VlanJunction> junctionDelta;
+        junctionDelta = Delta.<VlanJunction>builder()
                 .added(new HashMap<>())
                 .removed(new HashMap<>())
                 .modified(new HashMap<>())
                 .unchanged(new HashMap<>())
                 .build();
 
-        Delta<VlanFixture> fixtureDelta = Delta.<VlanFixture>builder()
+        Delta<VlanFixture> fixtureDelta;
+        fixtureDelta = Delta.<VlanFixture>builder()
                 .added(new HashMap<>())
                 .removed(new HashMap<>())
                 .modified(new HashMap<>())
                 .unchanged(new HashMap<>())
                 .build();
 
-        Delta<VlanPipe> pipeDelta = Delta.<VlanPipe>builder()
+        Delta<VlanPipe> pipeDelta;
+        pipeDelta = Delta.<VlanPipe>builder()
                 .added(new HashMap<>())
                 .removed(new HashMap<>())
                 .modified(new HashMap<>())

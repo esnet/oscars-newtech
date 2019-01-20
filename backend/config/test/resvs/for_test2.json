@@ -1,0 +1,11 @@
+{
+  "junctions": [
+    {
+      "refId": "/xyzzy/j/A",
+      "deviceUrn": "A",
+      "connectionId": "xyzzy"
+    }
+  ],
+  "fixtures": [],
+  "pipes": []
+}

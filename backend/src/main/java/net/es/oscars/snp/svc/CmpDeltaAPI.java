@@ -16,8 +16,11 @@ public interface CmpDeltaAPI {
     // unsupported at the moment
     // CmpDelta changePath(String pathId, Path newPath, Components cmp) throws SnippetException;
 
-    // unsupported at the moment
-    // Delta<VlanJunction> addFixture(String junctionId, Components cmp) throws SnippetException
+    CmpDelta addJunction(String refId, String connectionId, Components cmp) throws PSSException;
+
+    CmpDelta addFixture(String junctionId, String connectionId, Components cmp) throws PSSException;
+
+    CmpDelta addPipe(String a, Components cmp) throws PSSException;
 
     // unsupported at the moment
     // Delta<VlanJunction> removeFixture(String junctionId, Components cmp) throws SnippetException;
