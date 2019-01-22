@@ -8,10 +8,9 @@
       "upstream": [],
       "downstream": [
         {
-          "nodeId": "",
+          "nodeId": "vpls",
           "type": "ALU_VPLS_SVC",
           "upstream": [
-            "root"
           ],
           "downstream": []
         }

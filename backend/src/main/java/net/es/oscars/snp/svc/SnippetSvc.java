@@ -1,6 +1,5 @@
 package net.es.oscars.snp.svc;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.SnippetException;
@@ -16,7 +15,6 @@ import net.es.oscars.snp.ent.ConfigSnippet;
 import net.es.oscars.snp.ent.DeviceConfigNode;
 import net.es.oscars.snp.ent.DeviceConfigState;
 import net.es.oscars.snp.ent.Modify;
-import net.es.oscars.topo.ent.Device;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -39,33 +37,11 @@ public class SnippetSvc implements SnippetAPI {
 
         // ACTION 1: adding junctions
         Map<String, VlanJunction> addedJunctions = delta.getJunctionDelta().getAdded();
-        DeviceConfigNode connConfigRootNode = null;
 
         for (String deviceUrn : addedJunctions.keySet()) {
             VlanJunction vj = addedJunctions.get(deviceUrn);
             String connId = vj.getConnectionId();
-
-            DeviceConfigState cs = this.configStateStore.get(deviceUrn);
-
-            if (cs != null && cs.getConnectionConfigNodes().containsKey(connId)) {
-                connConfigRootNode = cs.getConnectionConfigNodes().get(connId);
-            } else {
-                if (cs == null) {
-                    cs = DeviceConfigState.builder()
-                            .urn(deviceUrn)
-                            .model(DeviceModel.ALCATEL_SR7750)
-                            .connectionConfigNodes(new HashMap<>())
-                            .build();
-                }
-
-                connConfigRootNode = DeviceConfigNode.builder()
-                        .nodeId(UUID.randomUUID().toString())
-                        .type(ConfigNodeType.ROOT)
-                        .downstream(new HashSet<>())
-                        .upstream(new HashSet<>())
-                        .build();
-                cs.getConnectionConfigNodes().put(connId, connConfigRootNode);
-            }
+            DeviceConfigNode connConfigRootNode = this.getRootConfigNode(connId, deviceUrn);
 
             rootNodes.add(connConfigRootNode);
 
@@ -119,31 +95,17 @@ public class SnippetSvc implements SnippetAPI {
 
         // ACTION 1: adding fixtures
         Map<String, VlanFixture> addedFixtures = delta.getFixtureDelta().getAdded();
-        connConfigRootNode = null;
 
         for (String deviceUrn : addedFixtures.keySet()) {
+            // TODO: decide the model from the topology
+            DeviceModel m = DeviceModel.ALCATEL_SR7750;
             VlanFixture vj = addedFixtures.get(deviceUrn);
             String connId = vj.getConnectionId();
 
             DeviceConfigState cs = this.configStateStore.get(deviceUrn);
-
-            // If cs already exists with root node
-            if (cs != null && cs.getConnectionConfigNodes().containsKey(connId)) {
-                connConfigRootNode = cs.getConnectionConfigNodes().get(connId);
-            } else {
-                connConfigRootNode = DeviceConfigNode.builder()
-                        .nodeId(UUID.randomUUID().toString())
-                        .type(ConfigNodeType.ROOT)
-                        .downstream(new HashSet<>())
-                        .upstream(new HashSet<>())
-                        .build();
-                cs.getConnectionConfigNodes().put(connId, connConfigRootNode);
-            }
+            DeviceConfigNode connConfigRootNode = this.getRootConfigNode(connId, deviceUrn);
 
             rootNodes.add(connConfigRootNode);
-
-            // TODO: decide the model from the topology
-            DeviceModel m = DeviceModel.ALCATEL_SR7750;
 
             if (m.equals(DeviceModel.ALCATEL_SR7750)) {
                 // ALU case
@@ -196,6 +158,35 @@ public class SnippetSvc implements SnippetAPI {
         // TODO: add / delete IP addresses
 
         return new Pair<>(modifyList, rootNodes);
+    }
+
+
+    private DeviceConfigNode getRootConfigNode(String connId, String deviceUrn) {
+
+        DeviceConfigState cs = this.configStateStore.get(deviceUrn);
+        if (cs == null) {
+            cs = DeviceConfigState.builder()
+                    .urn(deviceUrn)
+                    .model(DeviceModel.ALCATEL_SR7750)
+                    .connectionConfigNodes(new HashMap<>())
+                    .build();
+            this.configStateStore.put(deviceUrn, cs);
+        }
+
+        if (cs.getConnectionConfigNodes().containsKey(connId)) {
+            return cs.getConnectionConfigNodes().get(connId);
+        } else {
+
+            DeviceConfigNode connConfigRootNode = DeviceConfigNode.builder()
+                    .nodeId(UUID.randomUUID().toString())
+                    .type(ConfigNodeType.ROOT)
+                    .downstream(new HashSet<>())
+                    .upstream(new HashSet<>())
+                    .build();
+            cs.getConnectionConfigNodes().put(connId, connConfigRootNode);
+            return connConfigRootNode;
+        }
+
     }
 
     public void commitModifications(List<DeviceConfigNode> rootNodes, List<Modify> modifyList) {
