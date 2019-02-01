@@ -82,8 +82,8 @@ You should be familiar with the Maven build environment. This project follows it
 
 ### Versioning
 When creating a new version, make sure to update it in:
-- the top-level pom.xml as well as all the Java module pom.xml files (backend, nsi, pss, shared, migration)
-- the static string version in net.es.oscars.web.rest.MiscController
+- the top-level `pom.xml` as well as all the Java module pom.xml files (backend, nsi, pss, shared, migration)
+- the static string version in `net.es.oscars.web.rest.MiscController`
 
 
 ### Testing 
