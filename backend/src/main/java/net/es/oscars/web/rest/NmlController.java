@@ -192,28 +192,7 @@ public class NmlController {
             bdp.setAttribute("id", nsiUrn);
             rootElement.appendChild(bdp);
 
-            // TODO : Check if this is how we want to store the locationId
-            String locationId = this.topoId + ":locations:" + p.getDevice().getLocationId();
-            String locationName = p.getDevice().getLocation();
-            Double latitude = p.getDevice().getLatitude();
-            Double longitude = p.getDevice().getLongitude();
-
-            Element location = doc.createElementNS(nsBase, "nml-base:Location");
-            location.setAttribute("id", locationId);
-
-            Element name = doc.createElementNS(nsBase, "nml-base:name");
-            name.setTextContent(locationName);
-            location.appendChild(name);
-
-            Element lat = doc.createElementNS(nsBase, "nml-base:lat");
-            lat.setTextContent(String.valueOf(latitude));
-            location.appendChild(lat);
-
-            Element longd = doc.createElementNS(nsBase, "nml-base:long");
-            longd.setTextContent(String.valueOf(longitude));
-            location.appendChild(longd);
-
-            bdp.appendChild(location);
+            this.addLocation(doc, bdp, p.getDevice());
 
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdp.appendChild(pgi);
@@ -239,7 +218,16 @@ public class NmlController {
             bdp.setAttribute("id", portNsiUrn);
             rootElement.appendChild(bdp);
 
-            // TODO sartaj: location stuff
+            String[] localParts = StringUtils.split(peering.getIn().getLocal(), ":");
+            String localDevice = localParts[0];
+
+            Optional<Device> maybeDevice = topoService.getDeviceRepo().findByUrn(localDevice);
+            if (maybeDevice.isPresent()) {
+                this.addLocation(doc, bdp, maybeDevice.get());
+            } else {
+                log.error("device not found for peering: "+peering.getIn());
+            }
+
 
             Element bdpgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdp.appendChild(bdpgi);
@@ -687,5 +675,29 @@ public class NmlController {
 
     }
 
+    private void addLocation(Document doc, Element bdp, Device device) {
+
+        String locationId = this.topoId + ":locations:" + device.getLocationId();
+        String locationName = device.getLocation();
+        Double latitude = device.getLatitude();
+        Double longitude = device.getLongitude();
+
+        Element location = doc.createElementNS(nsBase, "nml-base:Location");
+        location.setAttribute("id", locationId);
+
+        Element name = doc.createElementNS(nsBase, "nml-base:name");
+        name.setTextContent(locationName);
+        location.appendChild(name);
+
+        Element lat = doc.createElementNS(nsBase, "nml-base:lat");
+        lat.setTextContent(String.valueOf(latitude));
+        location.appendChild(lat);
+
+        Element longd = doc.createElementNS(nsBase, "nml-base:long");
+        longd.setTextContent(String.valueOf(longitude));
+        location.appendChild(longd);
+
+        bdp.appendChild(location);
+    }
 
 }

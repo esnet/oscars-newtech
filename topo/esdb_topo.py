@@ -193,6 +193,7 @@ def get_data(token):
 
     return equipment, locations
 
+
 def merge_addrs(oscars_devices=None, addrs=None, isis_adjcies=None):
     urn_addrs_dict = {}
     for addr in addrs:
@@ -201,8 +202,8 @@ def merge_addrs(oscars_devices=None, addrs=None, isis_adjcies=None):
         router = addr["router"]
 
         if int_name == "lo0.0" or int_name == "system":
-            urn = router
-            urn_addrs_dict[urn] = address
+            if address != "127.0.0.1":
+                urn_addrs_dict[router] = address
 
     for isis_adjcy in isis_adjcies:
         address = isis_adjcy["a_addr"]
@@ -404,7 +405,7 @@ def transform_devices(in_devices=None, equipment=None, locations=None):
                 "ports": [],
                 "reservableVlans": [],
                 "location": location["short_name"],
-                "location_id": location["id"],
+                "locationId": location["id"],
                 "latitude": location["latitude"],
                 "longitude": location["longitude"]
             }
