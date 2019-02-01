@@ -78,7 +78,13 @@ Authentication: eyJhbGciOiJIUzUxMiJ9.....ziNCEPd753usnwlPwBeA
 To receive a token, use the login endpoint at ``api/account/login`` .
 
 ## Development notes
-You should be familiar with the Maven build environment. Thsi project follows its conventions closely.
+You should be familiar with the Maven build environment. This project follows its conventions closely.
+
+### Versioning
+When creating a new version, make sure to update it in:
+- the top-level pom.xml as well as all the Java module pom.xml files (backend, nsi, pss, shared, migration)
+- the static string version in net.es.oscars.web.rest.MiscController
+
 
 ### Testing 
 You can run the unit tests with the command:

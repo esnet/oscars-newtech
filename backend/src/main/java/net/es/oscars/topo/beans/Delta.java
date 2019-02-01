@@ -11,10 +11,10 @@ import java.util.Set;
 @Data
 @Builder
 public class Delta<T> {
-    Map<String, T> added;
-    Map<String, T> removed;
-    Map<String, T> modified;
-    Map<String, T> unchanged;
+    private Map<String, T> added;
+    private Map<String, T> removed;
+    private Map<String, T> modified;
+    private Map<String, T> unchanged;
 
     public Set<String> addedUrns() {
         return this.added.keySet();

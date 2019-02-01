@@ -185,20 +185,24 @@ public class NmlController {
 
         rootElement.appendChild(lifetime);
 
-
         for (Port p : edgePorts) {
             String nsiUrn = nsiService.nsiUrnFromInternal(p.getUrn());
 
             Element bdp = doc.createElementNS(nsBase, "nml-base:BidirectionalPort");
             bdp.setAttribute("id", nsiUrn);
             rootElement.appendChild(bdp);
+
+            this.addLocation(doc, bdp, p.getDevice());
+
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdp.appendChild(pgi);
             pgi.setAttribute("id", nsiUrn + ":in");
+
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
             pgo.setAttribute("id", nsiUrn + ":out");
             bdp.appendChild(pgo);
         }
+
         for (NsiPeering peering : nsiPopulator.getNotPlusPorts()) {
             String inUrn = topoId + ":" + peering.getIn().getLocal();
             String outUrn = topoId + ":" + peering.getOut().getLocal();
@@ -210,13 +214,25 @@ public class NmlController {
             }
             String portNsiUrn = inUrn.substring(0, inUrn.length() - 3);
 
-
             Element bdp = doc.createElementNS(nsBase, "nml-base:BidirectionalPort");
             bdp.setAttribute("id", portNsiUrn);
             rootElement.appendChild(bdp);
+
+            String[] localParts = StringUtils.split(peering.getIn().getLocal(), ":");
+            String localDevice = localParts[0];
+
+            Optional<Device> maybeDevice = topoService.getDeviceRepo().findByUrn(localDevice);
+            if (maybeDevice.isPresent()) {
+                this.addLocation(doc, bdp, maybeDevice.get());
+            } else {
+                log.error("device not found for peering: "+peering.getIn());
+            }
+
+
             Element bdpgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdp.appendChild(bdpgi);
             bdpgi.setAttribute("id", inUrn);
+
             Element bdpgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdpgo.setAttribute("id", outUrn);
             bdp.appendChild(bdpgo);
@@ -659,5 +675,29 @@ public class NmlController {
 
     }
 
+    private void addLocation(Document doc, Element bdp, Device device) {
+
+        String locationId = this.topoId + ":locations:" + device.getLocationId();
+        String locationName = device.getLocation();
+        Double latitude = device.getLatitude();
+        Double longitude = device.getLongitude();
+
+        Element location = doc.createElementNS(nsBase, "nml-base:Location");
+        location.setAttribute("id", locationId);
+
+        Element name = doc.createElementNS(nsBase, "nml-base:name");
+        name.setTextContent(locationName);
+        location.appendChild(name);
+
+        Element lat = doc.createElementNS(nsBase, "nml-base:lat");
+        lat.setTextContent(String.valueOf(latitude));
+        location.appendChild(lat);
+
+        Element longd = doc.createElementNS(nsBase, "nml-base:long");
+        longd.setTextContent(String.valueOf(longitude));
+        location.appendChild(longd);
+
+        bdp.appendChild(location);
+    }
 
 }
