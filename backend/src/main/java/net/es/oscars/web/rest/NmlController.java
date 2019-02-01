@@ -185,20 +185,45 @@ public class NmlController {
 
         rootElement.appendChild(lifetime);
 
-
         for (Port p : edgePorts) {
             String nsiUrn = nsiService.nsiUrnFromInternal(p.getUrn());
 
             Element bdp = doc.createElementNS(nsBase, "nml-base:BidirectionalPort");
             bdp.setAttribute("id", nsiUrn);
             rootElement.appendChild(bdp);
+
+            // TODO : Check if this is how we want to store the locationId
+            String locationId = this.topoId + ":locations:" + p.getDevice().getLocationId();
+            String locationName = p.getDevice().getLocation();
+            Double latitude = p.getDevice().getLatitude();
+            Double longitude = p.getDevice().getLongitude();
+
+            Element location = doc.createElementNS(nsBase, "nml-base:Location");
+            location.setAttribute("id", locationId);
+
+            Element name = doc.createElementNS(nsBase, "nml-base:name");
+            name.setTextContent(locationName);
+            location.appendChild(name);
+
+            Element lat = doc.createElementNS(nsBase, "nml-base:lat");
+            lat.setTextContent(String.valueOf(latitude));
+            location.appendChild(lat);
+
+            Element longd = doc.createElementNS(nsBase, "nml-base:long");
+            longd.setTextContent(String.valueOf(longitude));
+            location.appendChild(longd);
+
+            bdp.appendChild(location);
+
             Element pgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdp.appendChild(pgi);
             pgi.setAttribute("id", nsiUrn + ":in");
+
             Element pgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
             pgo.setAttribute("id", nsiUrn + ":out");
             bdp.appendChild(pgo);
         }
+
         for (NsiPeering peering : nsiPopulator.getNotPlusPorts()) {
             String inUrn = topoId + ":" + peering.getIn().getLocal();
             String outUrn = topoId + ":" + peering.getOut().getLocal();
@@ -210,13 +235,16 @@ public class NmlController {
             }
             String portNsiUrn = inUrn.substring(0, inUrn.length() - 3);
 
-
             Element bdp = doc.createElementNS(nsBase, "nml-base:BidirectionalPort");
             bdp.setAttribute("id", portNsiUrn);
             rootElement.appendChild(bdp);
+
+            // TODO sartaj: location stuff
+
             Element bdpgi = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdp.appendChild(bdpgi);
             bdpgi.setAttribute("id", inUrn);
+
             Element bdpgo = doc.createElementNS(nsBase, "nml-base:PortGroup");
             bdpgo.setAttribute("id", outUrn);
             bdp.appendChild(bdpgo);

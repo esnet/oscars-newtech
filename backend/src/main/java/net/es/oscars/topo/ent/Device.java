@@ -27,10 +27,8 @@ public class Device {
     @GeneratedValue
     private Long id;
 
-
     @ManyToOne
     private Version version;
-
 
     @NonNull
     @Column(unique = true)
@@ -40,6 +38,22 @@ public class Device {
     @NonNull
     @Column
     private DeviceModel model;
+
+    @NonNull
+    @Column
+    private Integer locationId;
+
+    @NonNull
+    @Column
+    private Double latitude;
+
+    @NonNull
+    @Column
+    private Double longitude;
+
+    @NonNull
+    @Column
+    private String location;
 
     @NonNull
     @Column

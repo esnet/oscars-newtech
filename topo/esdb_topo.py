@@ -65,7 +65,7 @@ def get_token(opts):
 
     try:
         token = open(token_path, "r").read().strip()
-    except IOError, e:
+    except IOError as e:
         raise Exception("{}: unable to get token: {}".format(sys.argv[0], e))
 
     return token
@@ -111,15 +111,6 @@ def main():
 
     today_save_path = opts.save_dir + '/' + opts.today
 
-    # future: add lat /long
-    # eq = requests.get(ESDB_URL + '/equipment/?limit=0&detail=list',
-    #                 headers=dict(Authorization='Token {0}'.format(token)))
-    # equipment = eq.json()
-
-    # loc = requests.get(ESDB_URL + '/location/?limit=0',
-    #                   headers=dict(Authorization='Token {0}'.format(token)))
-    # locations = loc.json()
-
     if not opts.fast:
         if opts.verbose:
             print "retrieving today.json from ESDB"
@@ -159,7 +150,9 @@ def main():
     addrs = get_ip_addrs(today['ipv4net'])
     vlans = get_vlans(today['VLAN'])
 
-    oscars_devices = transform_devices(in_devices=in_devices)
+    equip, locs = get_data(token)
+
+    oscars_devices = transform_devices(in_devices=in_devices, equipment=equip, locations=locs)
 
     (oscars_adjcies, igp_portmap) = transform_isis(isis_adjcies=isis_adjcies)
 
@@ -168,15 +161,16 @@ def main():
     merge_isis_ports(oscars_devices=oscars_devices, igp_portmap=igp_portmap)
 
     merge_phy_ports(oscars_devices=oscars_devices, ports=in_ports, igp_portmap=igp_portmap, vlans=vlans)
-    #    pp.pprint(oscars_devices)
-    merge_addrs(oscars_devices=oscars_devices, addrs=addrs, isis_adjcies=isis_adjcies)
 
-    # FUTURE: add lat / long
-    # add_locations(oscars_devices=oscars_devices, equip=equipment, locations=locations)
+    merge_addrs(oscars_devices=oscars_devices, addrs=addrs, isis_adjcies=isis_adjcies)
 
     dev_save_path = opts.output_dir + '/' + opts.devices
     adj_save_path = opts.output_dir + '/' + opts.adjacencies
+
     # Dump output files
+    if not os.path.exists(opts.output_dir):
+        os.makedirs(opts.output_dir)
+    
     if opts.verbose:
         print "saving devices to " + dev_save_path
     with open(dev_save_path, 'w') as outfile:
@@ -187,6 +181,17 @@ def main():
     with open(adj_save_path, 'w') as outfile:
         json.dump(oscars_adjcies, outfile, indent=2)
 
+
+def get_data(token):
+    eq = requests.get(ESDB_URL + '/equipment/?limit=0&detail=list',
+                      headers=dict(Authorization='Token {0}'.format(token)))
+    equipment = eq.json()
+
+    loc = requests.get(ESDB_URL + '/location/?limit=0',
+                       headers=dict(Authorization='Token {0}'.format(token)))
+    locations = loc.json()
+
+    return equipment, locations
 
 def merge_addrs(oscars_devices=None, addrs=None, isis_adjcies=None):
     urn_addrs_dict = {}
@@ -231,13 +236,13 @@ def find_vlan_of(ifce_data=None, vlans=None, device=None):
     for entry in vlans:
         if entry["router"] == device["urn"]:
             if entry["int_name"] == ifce_data["int_name"]:
-                #                print "found vlan for "+device["urn"]+":"+entry["int_name"]+" - it is %d " % entry["vlan_id"]
+                # print "found vlan for "+device["urn"]+":"+entry["int_name"]+" - it is %d " % entry["vlan_id"]
                 return entry["vlan_id"]
 
     int_name = ifce_data["int_name"]
     parts = int_name.split(".")
     if len(parts) == 2:
-        #        print "found vlan for "+device["urn"]+":"+int_name+" - it is "+parts[1]
+        # print "found vlan for "+device["urn"]+":"+int_name+" - it is "+parts[1]
         return parts[1]
     return None
 
@@ -299,7 +304,7 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=Non
                         vlan = find_vlan_of(ifce_data, vlans, device)
                         if vlan is None:
                             all_vlans_known = False
-                        #                            print "could not find vlan id for "+device["urn"]+":"+names["name"]
+                        # print "could not find vlan id for "+device["urn"]+":"+names["name"]
                         elif int(vlan) == 0:
                             untagged = True
                         else:
@@ -346,24 +351,6 @@ def merge_phy_ports(ports=None, oscars_devices=None, igp_portmap=None, vlans=Non
                         device["ports"].append(ifce_data)
 
 
-def add_locations(oscars_devices=None, equip=None, locations=None):
-    locs_by_id = {}
-    equip_by_name = {}
-    for entry in equip['results']:
-        equip_by_name[entry['name']] = entry
-    for entry in locations['results']:
-        locs_by_id[entry['id']] = entry
-    for device in oscars_devices:
-        if device['urn'] in equip_by_name:
-            equip_entry = equip_by_name[device['urn']]
-            loc_entry = locs_by_id[equip_entry['location']['id']]
-            device['latitude'] = loc_entry['latitude']
-            device['longitude'] = loc_entry['longitude']
-        else:
-            print >> sys.stderr, "device not found in ESDB equipment: "+device['urn']
-            exit(1)
-
-
 def merge_isis_ports(oscars_devices=None, igp_portmap=None):
     for device_name in igp_portmap.keys():
         found_device = False
@@ -395,19 +382,36 @@ def merge_isis_ports(oscars_devices=None, igp_portmap=None):
             raise ValueError("can't find device %s" % device_name)
 
 
-def transform_devices(in_devices=None):
+def transform_devices(in_devices=None, equipment=None, locations=None):
+    locs_by_id = {}
+    equip_by_name = {}
+    for entry in equipment['results']:
+        equip_by_name[entry['name']] = entry
+    for entry in locations['results']:
+        locs_by_id[entry['id']] = entry
+
     out_routers = []
     for rs in in_devices:
-        model = model_map(os=rs["os"], description=rs["description"])
-        out_router = {
-            "urn": rs["name"],
-            "model": model,
-            "type": "ROUTER",
-            "capabilities": ["ETHERNET", "MPLS"],
-            "ports": [],
-            "reservableVlans": []
-        }
-        out_routers.append(out_router)
+        if rs["name"] in equip_by_name:
+            equip_entry = equip_by_name[rs["name"]]
+            location = locs_by_id[equip_entry['location']['id']]
+            model = model_map(os=rs["os"], description=rs["description"])
+            out_router = {
+                "urn": rs["name"],
+                "model": model,
+                "type": "ROUTER",
+                "capabilities": ["ETHERNET", "MPLS"],
+                "ports": [],
+                "reservableVlans": [],
+                "location": location["short_name"],
+                "location_id": location["id"],
+                "latitude": location["latitude"],
+                "longitude": location["longitude"]
+            }
+            out_routers.append(out_router)
+        else:
+            print >> sys.stderr, "device not found in ESDB equipment: " + rs["name"]
+            exit(1)
 
     return out_routers
 
@@ -418,7 +422,7 @@ def model_map(os=None, description=None):
     elif description == "Juniper":
         parts = str(os).split(" ")
         model = "JUNIPER_MX"
-        #        model = "JUNIPER_" + str(parts[0]).upper()
+        # model = "JUNIPER_" + str(parts[0]).upper()
         return model
     else:
         raise ValueError("could not decide router model for [%s] [%s]" % (os, description))
