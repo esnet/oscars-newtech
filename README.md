@@ -56,15 +56,6 @@ To access the local postgres table:
 psql -d oscars_backend
 ```
 
-### Navigating through some common errors
-
-- Caused due to multiple JAR files. Can be fixed by deleting them from the target folder either in backend or pss
-
-```bash
-./bin/start.sh: line 11: [: too many arguments
-  Unable to locate OSCARS pss.jar file
-```
-
 ### Accessing the Web User Interface 
 
 OSCARS should now be running on your local machine.
@@ -114,9 +105,17 @@ You may also install only if the tests pass by running:
 mvn install
 ```
 
+### Navigating through some common errors
+
+```bash
+./bin/start.sh: line 11: [: too many arguments
+  Unable to locate OSCARS pss.jar file
+```
+
+- Caused due to multiple JAR files. Can be fixed by deleting them from the target folder either in backend / pss
 
 
-### Project Structure
+## Project Structure
 The new OSCARS is a [Spring Boot](http://projects.spring.io/spring-boot/) application, made up of three major components: 
  * The main application (the "backend" module), 
  * the path setup subsystem ("pss"),
@@ -124,6 +123,7 @@ The new OSCARS is a [Spring Boot](http://projects.spring.io/spring-boot/) applic
    * note: this is a node.js application and exists in a separate Github repo: [oscars-frontend](https://github.com/esnet/oscars-frontend). The backend module pulls this in as a dependency and serves out the packaged web UI javascript application.
 
 The main project directory is structured as follows:
+
 #### bin
 Contains script(s) for running and maintaining OSCARS.
 
