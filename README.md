@@ -50,6 +50,15 @@ cd ../backend
 
 ```
 
+### Navigating through some common errors
+
+- Caused due to multiple JAR files. Can be fixed by deleting them from the target folder either in backend or pss
+
+```
+./bin/start.sh: line 11: [: too many arguments
+  Unable to locate OSCARS pss.jar file
+```
+
 ### Accessing the Web User Interface 
 
 OSCARS should now be running on your local machine.
