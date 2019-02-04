@@ -40,21 +40,27 @@ cd oscars-newtech/backend
 
 ### Starting OSCARS
 
-You may start the OSCARS services (backend and pss) with the following command:
+You may start the OSCARS services (backend and pss) with the following command from the main project directory (oscars-newtech):
 
 ```bash
-cd oscars-newtech/pss
-./bin/start.sh &
-cd ../backend
+cd pss
 ./bin/start.sh
 
+cd ../backend
+./bin/start.sh
+```
+
+To access the local postgres table:
+
+```bash
+psql -d oscars_backend
 ```
 
 ### Navigating through some common errors
 
 - Caused due to multiple JAR files. Can be fixed by deleting them from the target folder either in backend or pss
 
-```
+```bash
 ./bin/start.sh: line 11: [: too many arguments
   Unable to locate OSCARS pss.jar file
 ```
