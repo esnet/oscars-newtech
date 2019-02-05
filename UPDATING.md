@@ -1,13 +1,14 @@
-# About
+# Updating OSCARS
 This file contains instructions for updating an existing installation of OSCARS from a previous version to a newer version. 
 
-Instructions will include config file changes, database schema changes, etc.
+Instructions include config file changes, database schema changes, etc.
 
+## 1.0.24 to 1.0.25:
 
+### Config file changes
 
-# 1.0.24 to 1.0.25:
-## Config file changes
 - Topology devices.json file now supports these fields per device entry:
+
 ```
   "location": "a string",
   "location_id": integer,
@@ -15,9 +16,11 @@ Instructions will include config file changes, database schema changes, etc.
   "latitude": double
 ```
 
-## Database schema changes:
-In `oscars_backend` database:
-```
+### Database schema changes:
+
+In the `oscars_backend` database:
+
+```sql
 alter table device insert column location varchar(255);
 alter table device insert column location_id int;
 alter table device insert column latitude double;
