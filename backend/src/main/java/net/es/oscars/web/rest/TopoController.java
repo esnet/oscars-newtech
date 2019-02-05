@@ -43,6 +43,7 @@ public class TopoController {
     // cache these in memory
     private Map<String, List<Port>> eppd = new HashMap<>();
     private Map<String, PortBwVlan> baseline = new HashMap<>();
+    private Version cachedVersion = null;
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -61,15 +62,28 @@ public class TopoController {
     @Transactional
     public Map<String, List<Port>> ethernetPortsByDevice()
             throws ConsistencyException, StartupException {
+        this.startupCheck();
 
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
+        boolean cacheShouldBeRefreshed = false;
+
+        Topology topology = topoService.currentTopology();
+        if (topology.getVersion() == null) {
+            throw new ConsistencyException("null current topology");
+        } else {
+            log.info("topo id: "+topology.getVersion().getId());
         }
 
-        if (eppd.size() == 0) {
-            Topology topology = topoService.currentTopology();
+        if (eppd.size() == 0 || cachedVersion == null) {
+            cacheShouldBeRefreshed = true;
+            log.info("updating cache before first time use");
+        } else if (cachedVersion.getUpdated().isBefore(topology.getVersion().getUpdated())) {
+            cacheShouldBeRefreshed = true;
+            log.info("updating cache because newer topology version available");
+        }
+
+        if (cacheShouldBeRefreshed) {
+            cachedVersion = topology.getVersion();
+
 
             for (Device d : topology.getDevices().values()) {
                 List<Port> ports = new ArrayList<>();
@@ -91,12 +105,7 @@ public class TopoController {
     @ResponseBody
     public Set<SimpleAdjcy> adjacencies()
             throws StartupException {
-
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
+        this.startupCheck();
 
         List<TopoAdjcy> topoAdjcies = topoService.getTopoAdjcies();
 
@@ -122,12 +131,7 @@ public class TopoController {
     @RequestMapping(value = "/api/topo/baseline", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, PortBwVlan> baseline() throws StartupException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
-
+        this.startupCheck();
         return topoService.baseline();
 
     }
@@ -136,13 +140,7 @@ public class TopoController {
     @RequestMapping(value = "/api/topo/available", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, PortBwVlan> available(@RequestBody Interval interval) throws StartupException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
-
-
+        this.startupCheck();
         return resvService.available(interval, null);
 
     }
@@ -150,26 +148,25 @@ public class TopoController {
     @RequestMapping(value = "/api/topo/version", method = RequestMethod.GET)
     @ResponseBody
     public Version version() throws StartupException, ConsistencyException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
+        this.startupCheck();
         return topoService.currentVersion().orElseThrow(NoSuchElementException::new);
-
-
     }
 
     @RequestMapping(value = "/api/topo/report", method = RequestMethod.GET)
     @ResponseBody
     public ConsistencyReport report() throws StartupException  {
+        this.startupCheck();
+        return consistencySvc.getLatestReport();
+
+
+    }
+
+    private void startupCheck() throws StartupException {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
             throw new StartupException("OSCARS shutting down");
         }
-        return consistencySvc.getLatestReport();
-
 
     }
 

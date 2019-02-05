@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.ent.Version;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
 @Data
 @Builder
 public class Topology {
+    private Version version;
     private Map<String, Device> devices;
     private Map<String, Port> ports;
     private List<PortAdjcy> adjcies;

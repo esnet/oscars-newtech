@@ -92,11 +92,13 @@ public class TopoService {
                 .devices(deviceMap)
                 .ports(portMap)
                 .build();
-
+        Version v = null;
         if (versionRepo.findAll().size() != 0) {
             List<Version> versions = versionRepo.findByValid(true);
             if (versions.size() != 1) {
                 throw new ConsistencyException("exactly one valid version can exist");
+            } else {
+                v = versions.get(0);
             }
             List<Device> devices = deviceRepo.findByVersion(versions.get(0));
             devices.forEach(d -> {
@@ -120,6 +122,7 @@ public class TopoService {
                 }
             });
         }
+        t.setVersion(v);
 
 
         return t;
