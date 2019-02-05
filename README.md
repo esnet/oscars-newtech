@@ -29,7 +29,10 @@ Run the following commands from the main project directory (oscars-newtech):
 ```
 
 ### Preparation
-You will need to be running the PostgreSQL server.
+You will need to be running the PostgreSQL server. One way to do that is as follows:
+```bash
+pg_ctl -D /usr/local/var/postgres start
+```
 
 Before running OSCARS for the first time, set up the database tables by 
 executing the following script: 
