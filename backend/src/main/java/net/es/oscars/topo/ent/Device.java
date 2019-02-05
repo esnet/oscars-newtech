@@ -41,19 +41,19 @@ public class Device {
 
     @NonNull
     @Column
-    private Integer locationId;
+    private Integer locationId = 0;
 
     @NonNull
     @Column
-    private Double latitude;
+    private Double latitude = 0D;
 
     @NonNull
     @Column
-    private Double longitude;
+    private Double longitude = 0D;
 
     @NonNull
     @Column
-    private String location;
+    private String location = "";
 
     @NonNull
     @Column
