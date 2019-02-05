@@ -107,13 +107,12 @@ mvn install
 
 ### Navigating through some common errors
 
+- Caused due to multiple JAR files. Can be fixed by deleting them from the target folder either in backend / pss
+
 ```bash
 ./bin/start.sh: line 11: [: too many arguments
   Unable to locate OSCARS pss.jar file
 ```
-
-- Caused due to multiple JAR files. Can be fixed by deleting them from the target folder either in backend / pss
-
 
 ## Project Structure
 The new OSCARS is a [Spring Boot](http://projects.spring.io/spring-boot/) application, made up of three major components: 
