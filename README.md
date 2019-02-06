@@ -29,7 +29,10 @@ Run the following commands from the main project directory (oscars-newtech):
 ```
 
 ### Preparation
-You will need to be running the PostgreSQL server.
+You will need to be running the PostgreSQL server. One way to do that is as follows:
+```bash
+pg_ctl -D /usr/local/var/postgres start
+```
 
 Before running OSCARS for the first time, set up the database tables by 
 executing the following script: 
@@ -40,14 +43,20 @@ cd oscars-newtech/backend
 
 ### Starting OSCARS
 
-You may start the OSCARS services (backend and pss) with the following command:
+You may start the OSCARS services (backend and pss) with the following command from the main project directory (oscars-newtech):
 
 ```bash
-cd oscars-newtech/pss
-./bin/start.sh &
-cd ../backend
+cd pss
 ./bin/start.sh
 
+cd ../backend
+./bin/start.sh
+```
+
+To access the local postgres table:
+
+```bash
+psql -d oscars_backend
 ```
 
 ### Accessing the Web User Interface 
@@ -82,8 +91,8 @@ You should be familiar with the Maven build environment. This project follows it
 
 ### Versioning
 When creating a new version, make sure to update it in:
-- the top-level pom.xml as well as all the Java module pom.xml files (backend, nsi, pss, shared, migration)
-- the static string version in net.es.oscars.web.rest.MiscController
+- the top-level `pom.xml` as well as all the Java module pom.xml files (backend, nsi, pss, shared, migration)
+- the static string version in `net.es.oscars.web.rest.MiscController`
 
 
 ### Testing 
@@ -99,9 +108,16 @@ You may also install only if the tests pass by running:
 mvn install
 ```
 
+### Navigating through some common errors
 
+- Caused due to multiple JAR files. Can be fixed by deleting them from the target folder either in backend / pss
 
-### Project Structure
+```bash
+./bin/start.sh: line 11: [: too many arguments
+  Unable to locate OSCARS pss.jar file
+```
+
+## Project Structure
 The new OSCARS is a [Spring Boot](http://projects.spring.io/spring-boot/) application, made up of three major components: 
  * The main application (the "backend" module), 
  * the path setup subsystem ("pss"),
@@ -109,6 +125,7 @@ The new OSCARS is a [Spring Boot](http://projects.spring.io/spring-boot/) applic
    * note: this is a node.js application and exists in a separate Github repo: [oscars-frontend](https://github.com/esnet/oscars-frontend). The backend module pulls this in as a dependency and serves out the packaged web UI javascript application.
 
 The main project directory is structured as follows:
+
 #### bin
 Contains script(s) for running and maintaining OSCARS.
 

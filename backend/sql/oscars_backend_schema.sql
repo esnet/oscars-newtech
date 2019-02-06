@@ -154,7 +154,11 @@ CREATE TABLE device (
     ipv6address character varying(255),
     model integer,
     type integer,
-    urn character varying(255)
+    urn character varying(255),
+    latitude double,
+    longitude double,
+    location character varying(255),
+    location_id integer
 );
 
 

@@ -443,6 +443,10 @@ public class UpdateSvc {
             prev.setIpv4Address(next.getIpv4Address());
             prev.setIpv6Address(next.getIpv6Address());
             prev.setModel(next.getModel());
+            prev.setLatitude(next.getLatitude());
+            prev.setLongitude(next.getLongitude());
+            prev.setLocationId(next.getLocationId());
+            prev.setLocation(next.getLocation());
             prev.setReservableVlans(next.getReservableVlans());
             prev.setType(next.getType());
             deviceRepo.save(prev);

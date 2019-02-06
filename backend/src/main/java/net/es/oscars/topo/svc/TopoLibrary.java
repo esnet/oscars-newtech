@@ -110,6 +110,18 @@ public class TopoLibrary {
             if (!aDevice.getType().equals(bDevice.getType())) {
                 changed = true;
             }
+            if (!aDevice.getLocation().equals(bDevice.getLocation())) {
+                changed = true;
+            }
+            if (!aDevice.getLocationId().equals(bDevice.getLocationId())) {
+                changed = true;
+            }
+            if (!aDevice.getLatitude().equals(bDevice.getLatitude())) {
+                changed = true;
+            }
+            if (!aDevice.getLongitude().equals(bDevice.getLongitude())) {
+                changed = true;
+            }
             if (!aDevice.getCapabilities().equals(bDevice.getCapabilities())) {
                 changed = true;
             }
