@@ -26,5 +26,4 @@ public class ConnectionFilter {
     private int page;
     private int sizePerPage;
 
-
 }

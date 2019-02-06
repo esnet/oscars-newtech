@@ -115,9 +115,12 @@ public class ConnService {
         return b.toString();
 
     }
-    public ConnectionList   filter(ConnectionFilter filter) {
+
+
+    public ConnectionList filter(ConnectionFilter filter) {
 
         List<Connection> reservedAndArchived = new ArrayList<>();
+
         // first we don't take into account anything that doesn't have any archived
         // i.e. we discount any temporarily held
         connRepo.findAll().forEach(c -> {
@@ -169,9 +172,16 @@ public class ConnService {
         List<Connection> phaseFiltered = descFiltered;
         if (filter.getPhase() != null) {
             phaseFiltered = new ArrayList<>();
-            for (Connection c: descFiltered) {
-                if (c.getPhase().equals(filter.getPhase())) {
+            if (filter.getPhase() == Phase.ANY) {
+                // combine everything
+                for (Connection c: descFiltered) {
                     phaseFiltered.add(c);
+                }
+            } else {
+                for (Connection c: descFiltered) {
+                    if (c.getPhase().equals(filter.getPhase())) {
+                        phaseFiltered.add(c);
+                    }
                 }
             }
         }
@@ -238,7 +248,7 @@ public class ConnService {
 
         // pages start at 1
         int firstIdx = (filter.getPage() -1) * filter.getSizePerPage();
-//        log.info("first idx: "+firstIdx);
+        // log.info("first idx: "+firstIdx);
         int totalSize = finalFiltered.size();
         // if past the end, would return empty list
         if (firstIdx < totalSize) {
