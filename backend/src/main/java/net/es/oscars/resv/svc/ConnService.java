@@ -170,18 +170,11 @@ public class ConnService {
         }
 
         List<Connection> phaseFiltered = descFiltered;
-        if (filter.getPhase() != null) {
+        if (filter.getPhase() != null && !filter.getPhase().equals("ANY")) {
             phaseFiltered = new ArrayList<>();
-            if (filter.getPhase() == Phase.ANY) {
-                // combine everything
-                for (Connection c: descFiltered) {
+            for (Connection c: descFiltered) {
+                if (c.getPhase().toString().equals(filter.getPhase())) {
                     phaseFiltered.add(c);
-                }
-            } else {
-                for (Connection c: descFiltered) {
-                    if (c.getPhase().equals(filter.getPhase())) {
-                        phaseFiltered.add(c);
-                    }
                 }
             }
         }
@@ -258,7 +251,7 @@ public class ConnService {
                 lastIdx = totalSize;
             }
             for (int idx = firstIdx; idx < lastIdx; idx++) {
-                //                log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
+                // log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
                 paged.add(finalFiltered.get(idx));
             }
         }

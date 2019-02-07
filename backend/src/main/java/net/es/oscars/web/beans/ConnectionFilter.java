@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public class ConnectionFilter {
     private List<Integer> vlans;
     private List<String> ports;
     private String description;
-    private Phase phase;
+    private String phase;
     private State state;
     private Interval interval;
     private int page;
