@@ -115,9 +115,12 @@ public class ConnService {
         return b.toString();
 
     }
-    public ConnectionList   filter(ConnectionFilter filter) {
+
+
+    public ConnectionList filter(ConnectionFilter filter) {
 
         List<Connection> reservedAndArchived = new ArrayList<>();
+
         // first we don't take into account anything that doesn't have any archived
         // i.e. we discount any temporarily held
         connRepo.findAll().forEach(c -> {
@@ -167,10 +170,10 @@ public class ConnService {
         }
 
         List<Connection> phaseFiltered = descFiltered;
-        if (filter.getPhase() != null) {
+        if (filter.getPhase() != null && !filter.getPhase().equals("ANY")) {
             phaseFiltered = new ArrayList<>();
             for (Connection c: descFiltered) {
-                if (c.getPhase().equals(filter.getPhase())) {
+                if (c.getPhase().toString().equals(filter.getPhase())) {
                     phaseFiltered.add(c);
                 }
             }
@@ -238,7 +241,7 @@ public class ConnService {
 
         // pages start at 1
         int firstIdx = (filter.getPage() -1) * filter.getSizePerPage();
-//        log.info("first idx: "+firstIdx);
+        // log.info("first idx: "+firstIdx);
         int totalSize = finalFiltered.size();
         // if past the end, would return empty list
         if (firstIdx < totalSize) {
@@ -248,7 +251,7 @@ public class ConnService {
                 lastIdx = totalSize;
             }
             for (int idx = firstIdx; idx < lastIdx; idx++) {
-                //                log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
+                // log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
                 paged.add(finalFiltered.get(idx));
             }
         }

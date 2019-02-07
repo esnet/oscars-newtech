@@ -248,6 +248,7 @@ public class ConnController {
             throw new StartupException("OSCARS shutting down");
         }
 
+
         return connSvc.filter(filter);
     }
 
