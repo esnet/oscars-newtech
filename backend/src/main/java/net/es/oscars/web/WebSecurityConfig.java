@@ -54,8 +54,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
 
-        // don't apply the JWT filter or any kind of security for swagger
-        // or statics
+        // don't apply the JWT filter or any kind of security for swagger,
+        // statics, SOAP calls (/services/**) or public API calls (/api/**)
         web.ignoring().antMatchers(
                 HttpMethod.GET,
                 "/",
@@ -65,6 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/**/*.html",
                 "/**/*.css",
                 "/**/*.js",
+                "/api/**",
                 "/services/**",
                 "/documentation/**",
                 "/swagger-ui.html/**",
