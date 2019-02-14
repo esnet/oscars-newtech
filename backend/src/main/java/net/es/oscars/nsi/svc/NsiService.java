@@ -477,7 +477,7 @@ public class NsiService {
                 qrct.getReservation().add(qrrt);
                 resultId++;
             } else {
-                log.info("will delete an invalid nsi mapping for "+mapping.getNsiConnectionId()+" - "+mapping.getOscarsConnectionId());
+                log.info("will delete an invalid nsi mapping for " + mapping.getNsiConnectionId() + " - " + mapping.getOscarsConnectionId());
                 invalidMappings.add(mapping);
             }
         }
@@ -531,7 +531,7 @@ public class NsiService {
                 qsct.getReservation().add(qsrt);
                 resultId++;
             } else {
-                log.info("will delete an invalid nsi mapping for "+mapping.getNsiConnectionId()+" - "+mapping.getOscarsConnectionId());
+                log.info("will delete an invalid nsi mapping for " + mapping.getNsiConnectionId() + " - " + mapping.getOscarsConnectionId());
                 invalidMappings.add(mapping);
             }
         }
@@ -636,35 +636,28 @@ public class NsiService {
     /* triggered events from TransitionStates periodic tasks */
 
     public void resvTimedOut(NsiMapping mapping) {
-        Executors.newCachedThreadPool().submit(() -> {
-            log.info("starting timeout task");
-            try {
-                nsiStateEngine.resvTimedOut(mapping);
-                this.errCallback(NsiEvent.RESV_TIMEOUT, mapping,
-                        "reservation timeout", "", new ArrayList<>(),
-                        this.newCorrelationId());
-            } catch (ServiceException ex) {
-                log.error("timeout callback failed", ex);
-            } catch (NsiException ex) {
-                log.error("internal error", ex);
-            }
+        log.info("resv timeout for "+mapping.getNsiConnectionId()+" "+mapping.getOscarsConnectionId());
+        try {
+            nsiStateEngine.resvTimedOut(mapping);
+            this.errCallback(NsiEvent.RESV_TIMEOUT, mapping,
+                    "reservation timeout", "", new ArrayList<>(),
+                    this.newCorrelationId());
+        } catch (ServiceException ex) {
+            log.error("timeout callback failed", ex);
+        } catch (NsiException ex) {
+            log.error("internal error", ex);
+        }
 
-            return null;
-        });
     }
 
 
     public void pastEndTime(NsiMapping mapping) {
-        Executors.newCachedThreadPool().submit(() -> {
-            log.info("starting past end time task");
-            try {
-                nsiStateEngine.pastEndTime(mapping);
-            } catch (NsiException ex) {
-                log.error("internal error", ex);
-            }
-            log.info("finished past end time task");
-            return null;
-        });
+        log.info("past end time for "+mapping.getNsiConnectionId()+" "+mapping.getOscarsConnectionId());
+        try {
+            nsiStateEngine.pastEndTime(mapping);
+        } catch (NsiException ex) {
+            log.error("internal error", ex);
+        }
     }
 
     /* submit hold */
