@@ -20,11 +20,11 @@ Instructions include config file changes, database schema changes, etc.
 
 In the `oscars_backend` database:
 
-```sql
-alter table device insert column location varchar(255);
-alter table device insert column location_id int;
-alter table device insert column latitude double;
-alter table device insert column longitude double;
+```
+alter table device add column location varchar(255);
+alter table device add column location_id int;
+alter table device add column latitude double precision;
+alter table device add column longitude double precision;
 
 update device set location = '', location_id = 0, latitude = 0, longitude = 0;
 ```
