@@ -151,6 +151,9 @@ public class MxParamsAdapter {
             loopback = address.toString();
         }
 
+        log.info("MTU is ");
+        log.info(String.valueOf(c.getConnection_mtu()));
+
         MxVpls mxVpls = MxVpls.builder()
                 .vcId(vcId)
                 .protectVcId(protectVcId)
@@ -160,6 +163,7 @@ public class MxParamsAdapter {
                 .policyName(policyName)
                 .statsFilter(statsFilter)
                 .loopback(loopback)
+                .mtu(c.getConnection_mtu() + 100)
                 .build();
 
         return MxParams.builder()

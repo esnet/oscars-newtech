@@ -15,7 +15,7 @@ exit
 /configure service vpls ${svcId} shutdown
 /configure service vpls ${svcId} description "${vpls.description}"
 /configure service vpls ${svcId} service-name "${vpls.serviceName}"
-/configure service vpls ${svcId} service-mtu 9114
+/configure service vpls ${svcId} service-mtu ${vpls.mtu}
 /configure service vpls ${svcId} fdb-table-size 4096
 /configure service vpls ${svcId} stp shutdown
 

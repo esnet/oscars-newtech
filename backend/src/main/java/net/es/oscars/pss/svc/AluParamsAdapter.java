@@ -139,6 +139,8 @@ public class AluParamsAdapter {
             }
         }
 
+        log.info("ALU MTU is ");
+        log.info(String.valueOf(c.getConnection_mtu()));
 
         AluVpls vpls = AluVpls.builder()
                 .protectVcId(protectVcId)
@@ -148,6 +150,7 @@ public class AluParamsAdapter {
                 .serviceName("OSCARS-" + c.getConnectionId() + "-SVC")
                 .sdpToVcIds(new ArrayList<>())
                 .svcId(aluSvcId)
+                .mtu(c.getConnection_mtu() + 114)
                 .build();
 
         List<Lsp> lsps = new ArrayList<>();

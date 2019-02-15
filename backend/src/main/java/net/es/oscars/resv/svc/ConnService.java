@@ -1010,6 +1010,7 @@ public class ConnService {
                 .username("")
                 .connectionId(in.getConnectionId())
                 .state(State.WAITING)
+                .connection_mtu(in.getConnection_mtu())
                 .build();
         this.updateConnection(in, c);
 

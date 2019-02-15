@@ -3,6 +3,17 @@ This file contains instructions for updating an existing installation of OSCARS 
 
 Instructions include config file changes, database schema changes, etc.
 
+## 1.0.25 to 1.0.26:
+
+### Database schema changes:
+
+- In the `oscars_backend` database:
+
+```
+alter table connection add column connection_mtu int;
+```
+
+
 ## 1.0.24 to 1.0.25:
 
 ### Config file changes
@@ -18,7 +29,7 @@ Instructions include config file changes, database schema changes, etc.
 
 ### Database schema changes:
 
-In the `oscars_backend` database:
+- In the `oscars_backend` database:
 
 ```
 alter table device add column location varchar(255);
