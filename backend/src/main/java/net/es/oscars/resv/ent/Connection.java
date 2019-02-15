@@ -29,7 +29,7 @@ public class Connection {
                       @JsonProperty("tags") List<Tag> tags,
                       @JsonProperty("held") Held held,
                       @JsonProperty("archived") Archived archived,
-                      @JsonProperty("connection_mtu") @NonNull Integer connection_mtu) {
+                      @JsonProperty("connection_mtu") Integer connection_mtu) {
         this.connectionId = connectionId;
         this.phase = phase;
         this.mode = mode;
@@ -84,6 +84,5 @@ public class Connection {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Archived archived;
 
-    @NonNull
     private Integer connection_mtu;
 }
