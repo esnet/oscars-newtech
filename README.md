@@ -56,7 +56,7 @@ cd ../backend
 To access the local postgres table:
 
 ```bash
-psql -d oscars_backend
+psql -U oscars -d oscars_backend
 ```
 
 ### Accessing the Web User Interface 

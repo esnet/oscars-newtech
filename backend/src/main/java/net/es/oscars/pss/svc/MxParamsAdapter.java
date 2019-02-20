@@ -160,6 +160,7 @@ public class MxParamsAdapter {
                 .policyName(policyName)
                 .statsFilter(statsFilter)
                 .loopback(loopback)
+                .mtu(c.getConnection_mtu() + 100)
                 .build();
 
         return MxParams.builder()

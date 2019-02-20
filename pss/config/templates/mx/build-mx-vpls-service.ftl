@@ -8,7 +8,7 @@ set interface ${ifce.port}.${ifce.vlan}
 set instance-type vpls
 edit protocols vpls
 set no-tunnel-services
-set mtu 9100
+set mtu ${vpls.mtu}
 edit site CE
 <#list ifces as ifce>
 set interface ${ifce.port}.${ifce.vlan}
