@@ -8,6 +8,7 @@
 - Deparallelize NSI callbacks [#272](https://github.com/esnet/oscars-newtech/issues/272)
 - Handle if-modified-since header in requests [#238](https://github.com/esnet/oscars-newtech/issues/238)
 - Add feature to allow service MTU override [#258](https://github.com/esnet/oscars-newtech/issues/258)
+- Fix NSI version handling [#266](https://github.com/esnet/oscars-newtech/issues/66)
 
 ## v1.0.25
 
