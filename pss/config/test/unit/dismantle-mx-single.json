@@ -46,6 +46,7 @@
       }
     ],
     "mxVpls": {
+      "mtu": 9000,
       "protectEnabled": false,
       "vcId": 9112,
       "serviceName": "NKJSBD-12",
