@@ -84,5 +84,6 @@ public class Connection {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Archived archived;
 
+    @NonNull
     private Integer connection_mtu;
 }
