@@ -27,4 +27,5 @@ public class MxVpls {
 
     private String statsFilter;
 
+    private Integer mtu;
 }

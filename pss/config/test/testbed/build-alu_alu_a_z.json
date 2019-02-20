@@ -5,6 +5,7 @@
 
   "aluParams": {
     "aluVpls": {
+      "mtu": 9000,
       "svcId": 6912,
       "serviceName": "OKI9R5",
       "saps": [

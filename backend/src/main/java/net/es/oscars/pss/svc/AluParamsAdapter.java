@@ -139,7 +139,6 @@ public class AluParamsAdapter {
             }
         }
 
-
         AluVpls vpls = AluVpls.builder()
                 .protectVcId(protectVcId)
                 .protectEnabled(protectEnabled)
@@ -148,6 +147,7 @@ public class AluParamsAdapter {
                 .serviceName("OSCARS-" + c.getConnectionId() + "-SVC")
                 .sdpToVcIds(new ArrayList<>())
                 .svcId(aluSvcId)
+                .mtu(c.getConnection_mtu() + 114)
                 .build();
 
         List<Lsp> lsps = new ArrayList<>();

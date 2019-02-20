@@ -1,10 +1,13 @@
 .idea
+.DS_Store
 *.iml
 */target/*
 */node_modules
 core/src/main/resources/static/built/*
 !core/src/main/resources/static/built/index.html
 /backend/src/main/resources/git.properties
+/backend/*.log
+/pss/logs/*.log
 /topo/src
 /topo/temp-python
 /topo/output

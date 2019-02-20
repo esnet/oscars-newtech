@@ -20,6 +20,7 @@ public class SimpleConnection {
     protected String connectionId;
     protected Integer begin;
     protected Integer end;
+    protected Integer connection_mtu;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected Integer heldUntil;
     protected String username;
