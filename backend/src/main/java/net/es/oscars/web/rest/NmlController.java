@@ -526,8 +526,8 @@ public class NmlController {
 
 
         String[] locParts = nsaLocation.split(",");
-        String longitude = locParts[0];
-        String latitude = locParts[1];
+        String latitude = locParts[0];
+        String longitude = locParts[1];
 
         String[] contactParts = nsaContact.split(",");
         String contactName = contactParts[0];
