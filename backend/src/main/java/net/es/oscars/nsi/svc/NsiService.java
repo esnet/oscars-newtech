@@ -558,7 +558,7 @@ public class NsiService {
         }
         qrrct.setSchedule(this.oscarsToNsiSchedule(sch));
         qrrct.setServiceType(SERVICE_TYPE);
-        qrrct.setVersion(0);
+        qrrct.setVersion(mapping.getDataplaneVersion());
         Components cmp = NsiService.getComponents(c);
 
         P2PServiceBaseType p2p = makeP2P(cmp, mapping);
@@ -597,7 +597,7 @@ public class NsiService {
         }
         qsrct.setSchedule(this.oscarsToNsiSchedule(sch));
         qsrct.setServiceType(SERVICE_TYPE);
-        qsrct.setVersion(0);
+        qsrct.setVersion(mapping.getDataplaneVersion());
 
         Components cmp = NsiService.getComponents(c);
         P2PServiceBaseType p2p = makeP2P(cmp, mapping);
@@ -1063,7 +1063,7 @@ public class NsiService {
         rcct.setSchedule(st);
         rct.setCriteria(rcct);
         rcct.setServiceType(SERVICE_TYPE);
-        rcct.setVersion(0);
+        rcct.setVersion(mapping.getDataplaneVersion());
 
         P2PServiceBaseType p2p = makeP2P(c.getHeld().getCmp(), mapping);
         net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.ObjectFactory p2pof
