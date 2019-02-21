@@ -11,6 +11,7 @@ Instructions include config file changes, database schema changes, etc.
 
 ```
 alter table connection add column connection_mtu int;
+update connection set connection_mtu = 9000;
 ```
 
 
