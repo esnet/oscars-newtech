@@ -163,6 +163,7 @@ public class TopoController {
     @ResponseBody
     public Map<String, Location> locations() throws ConsistencyException, StartupException  {
         this.startupCheck();
+
         Topology topology = topoService.currentTopology();
         Map<String, Location> loc = new HashMap<>();
 
@@ -176,6 +177,7 @@ public class TopoController {
 
             loc.put(d.getUrn(), l);
         }
+
         return loc;
     }
 
