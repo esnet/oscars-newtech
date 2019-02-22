@@ -157,8 +157,26 @@ public class TopoController {
     public ConsistencyReport report() throws StartupException  {
         this.startupCheck();
         return consistencySvc.getLatestReport();
+    }
 
+    @RequestMapping(value = "/api/topo/locations", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Location> locations() throws ConsistencyException, StartupException  {
+        this.startupCheck();
+        Topology topology = topoService.currentTopology();
+        Map<String, Location> loc = new HashMap<>();
 
+        for (Device d : topology.getDevices().values()) {
+            Location l = Location.builder()
+                    .latitude(d.getLatitude())
+                    .longitude(d.getLongitude())
+                    .location(d.getLocation())
+                    .locationId(d.getLocationId())
+                    .build();
+
+            loc.put(d.getUrn(), l);
+        }
+        return loc;
     }
 
     private void startupCheck() throws StartupException {
