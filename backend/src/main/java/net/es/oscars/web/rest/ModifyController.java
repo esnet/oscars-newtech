@@ -77,7 +77,7 @@ public class ModifyController {
 
 
         // we will only be looking & validating end time
-        Integer reqEnd = request.getEnd();
+        Integer reqEnd = request.getTimestamp();
         if (reqEnd == null) {
             throw new ModifyException("new end time not defined");
         }

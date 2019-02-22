@@ -12,6 +12,5 @@ public class ScheduleModifyRequest {
     @NonNull
     protected ScheduleModifyType type;
 
-    protected Integer begin;
-    protected Integer end;
+    protected Integer timestamp;
 }
