@@ -108,6 +108,10 @@ You may also install only if the tests pass by running:
 mvn install
 ```
 
+### Creating a release on GitHub
+* Make sure the tag associated with the release has a description that contains the version number. 
+
+
 ### Navigating through some common errors
 
 - Caused due to multiple JAR files. Can be fixed by deleting them from the target folder either in backend / pss
