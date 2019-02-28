@@ -9,6 +9,7 @@
 - Handle if-modified-since header in requests [#238](https://github.com/esnet/oscars-newtech/issues/238)
 - Add feature to allow service MTU override [#258](https://github.com/esnet/oscars-newtech/issues/258)
 - Fix NSI version handling [#266](https://github.com/esnet/oscars-newtech/issues/266)
+- Make port/device geo locations available thru API (/api/topo/locations) [#275](https://github.com/esnet/oscars-newtech/issues/275)
 - Update frontend to 1.0.21
 
 ## v1.0.25

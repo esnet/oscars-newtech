@@ -28,13 +28,10 @@ public class MiscController {
         log.warn("Still in startup");
     }
 
-
-
     @RequestMapping(value = "/api/version", method = RequestMethod.GET)
     public String getVersion() {
         return version;
     }
-
 
     @RequestMapping(value = "/api/ping", method = RequestMethod.GET)
     public String ping() {
