@@ -123,7 +123,7 @@ public class ModifyController {
 
     }
 
-    @RequestMapping(value = "/api/valid/schedule", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/valid/schedule", method = RequestMethod.POST)
     @ResponseBody
     @Transactional
     public IntRange validSchedule(@RequestBody ScheduleRangeRequest request)
