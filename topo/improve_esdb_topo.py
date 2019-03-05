@@ -221,8 +221,9 @@ def main():
                         lag_port_urn = device + ':' + port_name
                         if port_entry['urn'] == lag_port_urn:
                             ports_to_del.append(port_entry)
-                            for tag in port_entry['tags']:
-                                lag_tags.append(tag)
+                            if 'tags' in port_entry:
+                                for tag in port_entry['tags']:
+                                    lag_tags.append(tag)
                         elif port_entry['urn'] == device + ':BLANK':
                             if port_entry not in ports_to_del:
                                 ports_to_del.append(port_entry)
