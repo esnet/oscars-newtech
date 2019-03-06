@@ -49,6 +49,8 @@
       "mtu": 9000,
       "protectEnabled": false,
       "vcId": 9112,
+      "communityId": 9112,
+      "communityName": "OSCARS-9112",
       "serviceName": "NKJSBD-12",
       "description": "my description",
       "policyName": "asddfasd",
