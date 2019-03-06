@@ -248,8 +248,40 @@ public class ConnService {
                 }
             }
         }
+        List<Connection> intervalFiltered = vlanFiltered;
+        if (filter.getInterval() != null) {
+            Instant fBeginning = filter.getInterval().getBeginning();
+            Instant fEnding = filter.getInterval().getEnding();
+            intervalFiltered = new ArrayList<>();
+            for (Connection c : vlanFiltered) {
+                boolean add = true;
+                Schedule s = null;
+                if (c.getPhase().equals(Phase.ARCHIVED)) {
+                    s = c.getArchived().getSchedule();
+                } else if (c.getPhase().equals(Phase.HELD)) {
+                    s = c.getReserved().getSchedule();
+                } else {
+                    // shouldn't happen!
+                    log.error("invalid phase for " + c.getConnectionId());
+                    continue;
+                }
 
-        List<Connection> finalFiltered = vlanFiltered;
+                if (s.getBeginning().isBefore(fBeginning) &&
+                    s.getEnding().isBefore(fEnding)) {
+                    add = false;
+                }
+                if (s.getBeginning().isAfter(fBeginning) &&
+                        s.getEnding().isAfter(fEnding)) {
+                    add = false;
+                }
+                if (add) {
+                    intervalFiltered.add(c);
+                }
+            }
+        }
+
+
+        List<Connection> finalFiltered = intervalFiltered;
         List<Connection> paged = new ArrayList<>();
 
         // pages start at 1
@@ -411,6 +443,15 @@ public class ConnService {
                 // we haven't started yet; can delete without consequence
                 log.debug("deleting unstarted connection during release"+c.getConnectionId());
                 connRepo.delete(c);
+                Event ev = Event.builder()
+                        .connectionId(c.getConnectionId())
+                        .description("released (unstarted)")
+                        .type(EventType.RELEASED)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(c.getConnectionId(), ev);
+
                 return ConnChangeResult.builder()
                         .what(ConnChange.DELETED)
                         .when(Instant.now())
@@ -430,9 +471,28 @@ public class ConnService {
                     c.setState(State.FAILED);
                     log.error(ex.getMessage(), ex);
                 }
+                Event ev = Event.builder()
+                        .connectionId(c.getConnectionId())
+                        .description("released (active)")
+                        .type(EventType.RELEASED)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(c.getConnectionId(), ev);
+
 
             } else {
-                slack.sendMessage("Cancelling non-active connection: " + c.getConnectionId());
+                slack.sendMessage("Releasing non-active connection: " + c.getConnectionId());
+                log.debug("Releasing non-active connection: "+c.getConnectionId());
+                Event ev = Event.builder()
+                        .connectionId(c.getConnectionId())
+                        .description("released (inactive)")
+                        .type(EventType.RELEASED)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(c.getConnectionId(), ev);
+
             }
         }
 
