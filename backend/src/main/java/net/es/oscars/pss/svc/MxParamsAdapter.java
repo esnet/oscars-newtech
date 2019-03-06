@@ -160,6 +160,9 @@ public class MxParamsAdapter {
             IPv4Address address = new IPv4Address(loopbackInt);
             loopback = address.toString();
         }
+        Integer communityId = vcId;
+        String communityName = "OSCARS-"+c.getConnectionId()+"-"+communityId;
+
 
         MxVpls mxVpls = MxVpls.builder()
                 .vcId(vcId)
@@ -168,6 +171,8 @@ public class MxParamsAdapter {
                 .description(description)
                 .serviceName(serviceName)
                 .policyName(policyName)
+                .communityId(communityId)
+                .communityName(communityName)
                 .statsFilter(statsFilter)
                 .loopback(loopback)
                 .mtu(c.getConnection_mtu() + 100)
