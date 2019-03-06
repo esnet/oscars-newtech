@@ -89,6 +89,9 @@ public class ConnService {
     @Value("${pss.max-mtu:9000}")
     private Integer maxMtu;
 
+    @Value("${resv.minimum-duration:15}")
+    private Integer minDuration;
+
     public String generateConnectionId() {
         boolean found = false;
         String result = "";
@@ -695,9 +698,9 @@ public class ConnService {
         if (validInterval) {
             begin = Instant.ofEpochSecond(in.getBegin());
             end = Instant.ofEpochSecond(in.getEnd());
-            if (begin.plus(Duration.ofMinutes(15)).isAfter(end)) {
+            if (begin.plus(Duration.ofMinutes(this.minDuration)).isAfter(end)) {
                 valid = false;
-                error += "interval is too short (less than 15 min)";
+                error += "interval is too short (less than "+minDuration+" min)";
             }
 
         }
