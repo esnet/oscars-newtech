@@ -88,7 +88,7 @@ public class TransitionStates {
                         }
 
                         if (c.getState().equals(State.ACTIVE)) {
-                            log.info(c.getConnectionId() + " : state is active, will not archive until dismantled");
+                            log.info(c.getConnectionId() + " : active; waiting for dismantle before archiving");
                         } else {
                             archiveThese.add(c);
                         }
@@ -106,9 +106,13 @@ public class TransitionStates {
                     return;
                 }
 
+                deleteThese.forEach(c -> {
+                    log.debug("Deleting "+c.getConnectionId());
+                });
                 connRepo.delete(deleteThese);
 
                 archiveThese.forEach(c -> {
+                    log.debug("Archiving "+c.getConnectionId());
                     c.setPhase(Phase.ARCHIVED);
                     c.setReserved(null);
                     connRepo.saveAndFlush(c);

@@ -48,6 +48,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -121,6 +122,9 @@ public class NsiService {
     @Autowired
     private PSSAdapter pssAdapter;
 
+    @Autowired
+    private TaskExecutor taskExecutor;
+
     private static String nsBase = "http://schemas.ogf.org/nml/2013/05/base#";
     private static String nsDefs = "http://schemas.ogf.org/nsi/2013/12/services/definition";
     private static String nsEth = "http://schemas.ogf.org/nml/2012/10/ethernet";
@@ -129,7 +133,6 @@ public class NsiService {
 
     /* async operations */
     public void reserve(CommonHeaderType header, ReserveType rt, NsiMapping mapping) {
-
         Executors.newCachedThreadPool().submit(() -> {
             log.info("starting reserve task");
             try {
@@ -223,9 +226,9 @@ public class NsiService {
     }
 
     public void abort(CommonHeaderType header, NsiMapping mapping) {
+        log.info("starting abort task for "+mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
-            log.info("starting abort task");
             try {
                 Connection c = this.getOscarsConnection(mapping);
                 nsiStateEngine.abort(NsiEvent.ABORT_START, mapping);
@@ -251,9 +254,9 @@ public class NsiService {
     }
 
     public void provision(CommonHeaderType header, NsiMapping mapping) {
+        log.info("starting provision task for "+mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
-            log.info("starting provision task");
             try {
                 Connection c = this.getOscarsConnection(mapping);
                 if (!c.getPhase().equals(Phase.RESERVED)) {
@@ -288,13 +291,13 @@ public class NsiService {
     }
 
     public void release(CommonHeaderType header, NsiMapping mapping) {
+        log.info("starting release task for "+mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
-            log.info("starting release task");
             try {
                 Connection c = this.getOscarsConnection(mapping);
                 if (!c.getPhase().equals(Phase.RESERVED)) {
-                    log.error("cannot provision unless RESERVED");
+                    log.error("cannot release unless RESERVED");
                     return null;
                 }
 
@@ -336,9 +339,9 @@ public class NsiService {
     }
 
     public void terminate(CommonHeaderType header, NsiMapping mapping) {
+        log.info("starting terminate task for "+mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
-            log.info("starting terminate task");
             try {
                 Connection c = this.getOscarsConnection(mapping);
                 // the cancel only needs to happen if we are not in FORCED_END or PASSED_END_TIME
@@ -371,17 +374,16 @@ public class NsiService {
     // currently unused
     // TODO: trigger this when REST API terminates connection
     // (& possibly other errors)
-    public void forcedEnd(CommonHeaderType header, NsiMapping mapping)
+    public void forcedEnd(NsiMapping mapping)
             throws InterruptedException {
+        log.info("starting forcedEnd task for "+mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
-            log.info("starting forcedEnd task");
             try {
-                Connection c = this.getOscarsConnection(mapping);
                 nsiStateEngine.forcedEnd(mapping);
-                this.errorNotify(NsiEvent.FORCED_END, mapping, header);
+                this.errorNotify(NsiEvent.FORCED_END, mapping);
             } catch (NsiException ex) {
-                log.error("failed terminate, internal error");
+                log.error("failed forcedEnd, internal error");
                 log.error(ex.getMessage(), ex);
             } catch (RuntimeException ex) {
                 log.error("serious error", ex);
@@ -1025,10 +1027,25 @@ public class NsiService {
     /* SOAP calls to the client */
 
 
-    public void errorNotify(NsiEvent event, NsiMapping mapping, CommonHeaderType inHeader) throws ServiceException {
-        log.info("error notify (only used by forcedEnd)");
-        // TODO
-        throw new ServiceException("not implemented");
+    public void errorNotify(NsiEvent event, NsiMapping mapping) throws NsiException, ServiceException, DatatypeConfigurationException {
+        String nsaId = mapping.getNsaId();
+        if (!this.getRequesterNsa(nsaId).isPresent()) {
+            throw new NsiException("Unknown requester nsa id " + nsaId, NsiErrors.SEC_ERROR);
+        }
+        NsiRequesterNSA requesterNSA = this.getRequesterNsa(nsaId).get();
+        ConnectionRequesterPort port = clientUtil.createRequesterClient(requesterNSA);
+        String corrId = this.newCorrelationId();
+        Holder<CommonHeaderType> outHeader = this.makeClientHeader(nsaId, corrId);
+        ErrorEventType eet = new ErrorEventType();
+        eet.setOriginatingConnectionId(mapping.getNsiConnectionId());
+        eet.setOriginatingNSA(this.providerNsa);
+        ZonedDateTime zd = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
+        GregorianCalendar c = GregorianCalendar.from(zd);
+        XMLGregorianCalendar xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+
+        eet.setTimeStamp(xgc);
+        eet.setEvent(EventEnumType.FORCED_END);
+        port.errorEvent(eet, outHeader);
 
     }
 

@@ -84,7 +84,7 @@ public class PSSAdapter {
     }
 
     public State build(Connection conn) throws PSSException {
-        log.info("setting up " + conn.getConnectionId());
+        log.info("building " + conn.getConnectionId());
         List<Command> commands = this.buildCommands(conn);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
@@ -111,7 +111,7 @@ public class PSSAdapter {
     }
 
     public State dismantle(Connection conn) throws PSSException {
-        log.info("tearing down " + conn.getConnectionId());
+        log.info("dismantling " + conn.getConnectionId());
         List<Command> commands = this.dismantleCommands(conn);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();

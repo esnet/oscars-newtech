@@ -2,9 +2,12 @@ package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
+import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.nsi.ent.NsiMapping;
+import net.es.oscars.nsi.svc.NsiService;
 import net.es.oscars.pss.ent.RouterCommandHistory;
 import net.es.oscars.resv.db.CommandHistoryRepository;
 import net.es.oscars.resv.db.ConnectionRepository;
@@ -39,6 +42,8 @@ public class ConnController {
 
     @Autowired
     private ConnService connSvc;
+    @Autowired
+    private NsiService nsiSvc;
 
     @ExceptionHandler(StartupException.class)
     @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
@@ -51,12 +56,12 @@ public class ConnController {
     public void handleMiscException(ConnException ex) {
         log.warn("conn request error", ex);
     }
+
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public void handleResourceNotFoundException(NoSuchElementException ex) {
         log.warn("requested an item which did not exist");
     }
-
 
 
     @RequestMapping(value = "/protected/conn/generateId", method = RequestMethod.GET)
@@ -147,6 +152,16 @@ public class ConnController {
         } else if (c.get().getPhase().equals(Phase.ARCHIVED)) {
             throw new ConnException("Cannot cancel ARCHIVED connection");
         } else {
+            try {
+                Optional<NsiMapping> om = nsiSvc.getMappingForOscarsId(c.get().getConnectionId());
+                if (om.isPresent()) {
+                    nsiSvc.forcedEnd(om.get());
+
+                }
+
+            } catch (NsiException | InterruptedException ex) {
+                log.error(ex.getMessage(),ex);
+            }
             return connSvc.release(c.get());
         }
     }

@@ -391,6 +391,7 @@ public class ConnService {
     public ConnChangeResult release(Connection c) {
         // if it is HELD or DESIGN, delete it
         if (c.getPhase().equals(Phase.HELD) || c.getPhase().equals(Phase.DESIGN)) {
+            log.debug("deleting HELD / DESIGN connection during release"+c.getConnectionId());
             connRepo.delete(c);
             connRepo.flush();
             return ConnChangeResult.builder()
@@ -408,6 +409,7 @@ public class ConnService {
         if (c.getPhase().equals(Phase.RESERVED)) {
             if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
                 // we haven't started yet; can delete without consequence
+                log.debug("deleting unstarted connection during release"+c.getConnectionId());
                 connRepo.delete(c);
                 return ConnChangeResult.builder()
                         .what(ConnChange.DELETED)
@@ -415,7 +417,8 @@ public class ConnService {
                         .build();
             }
             if (c.getState().equals(State.ACTIVE)) {
-                slack.sendMessage("Cancelling active reservation: " + c.getConnectionId());
+                slack.sendMessage("Cancelling active connection: " + c.getConnectionId());
+                log.debug("Releasing active connection: "+c.getConnectionId());
 
                 // need to dismantle first, that part relies on Reserved components
                 try {
@@ -429,7 +432,7 @@ public class ConnService {
                 }
 
             } else {
-                slack.sendMessage("Cancelling non-active reservation: " + c.getConnectionId());
+                slack.sendMessage("Cancelling non-active connection: " + c.getConnectionId());
             }
         }
 
