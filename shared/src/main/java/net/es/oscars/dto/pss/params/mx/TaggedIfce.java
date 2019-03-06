@@ -14,5 +14,6 @@ public class TaggedIfce {
 
     private String description;
 
+    private boolean vlanSwap;
 
 }

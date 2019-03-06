@@ -8,7 +8,9 @@ edit unit ${ifce.vlan}
 set description "${ifce.description}"
 set encapsulation vlan-vpls
 set vlan-id ${ifce.vlan}
+<#if ifce.vlanSwap??>
 set output-vlan-map swap
+</#if>
 set family vpls filter input "${vpls.statsFilter}"
 set family vpls filter output "${vpls.statsFilter}"
 top
