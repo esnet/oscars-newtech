@@ -1,5 +1,15 @@
 # OSCARS Release Notes
 
+## v1.0.27
+
+> Mar 6, 2019
+- Fixes in MX LSPs templates (priority and metrics)
+- Topology python script fixes for incorrect loopbacks
+- Add API for historical data [#285](https://github.com/esnet/oscars-newtech/issues/285)
+- Parameterize minimum connection duration [#283](https://github.com/esnet/oscars-newtech/issues/283)
+- Conditionally set output-vlan-map swap  [#282](https://github.com/esnet/oscars-newtech/issues/282)
+- Adds NSI forced-end message 
+
 ## v1.0.26
 
 > Feb 21, 2019
