@@ -33,12 +33,12 @@ public class ListController {
     public void handleResourceNotFoundException(NoSuchElementException ex) {
         log.warn("requested an item which did not exist", ex);
     }
+
     @ExceptionHandler(StartupException.class)
     @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
     public void handleStartup(StartupException ex) {
         log.warn("Still in startup");
     }
-
 
 
     @RequestMapping(value = "/api/list/overlapping", method = RequestMethod.POST)
@@ -51,6 +51,30 @@ public class ListController {
             throw new StartupException("OSCARS shutting down");
         }
         Map<String, MinimalConnEntry> result = new HashMap<>();
+        String errMsg = "";
+        boolean hasError = false;
+
+        if (range.getFloor() == null) {
+            range.setFloor(0);
+        } else if (range.getFloor() < 0) {
+            hasError = true;
+            errMsg += "floor must be >= 0\n";
+        }
+
+        if (range.getCeiling() == null) {
+            range.setCeiling(0);
+        } else if (range.getCeiling() < 0) {
+            hasError = true;
+            errMsg += "ceiling must be >= 0\n";
+        }
+        if (range.getCeiling() < range.getFloor()) {
+            hasError = true;
+            errMsg += "ceiling must be >= 0\n";
+        }
+        if (hasError) {
+            throw new IllegalArgumentException(errMsg);
+        }
+
         Instant beginning = Instant.ofEpochSecond(range.getFloor());
         Instant ending = Instant.ofEpochSecond(range.getCeiling());
         Interval interval = Interval.builder()
@@ -76,7 +100,7 @@ public class ListController {
                 s = c.getArchived().getSchedule();
                 cmp = c.getArchived().getCmp();
             } else {
-                log.error("invalid phase for "+c.getConnectionId());
+                log.error("invalid phase for " + c.getConnectionId());
                 continue;
             }
             for (VlanFixture f : cmp.getFixtures()) {
@@ -103,10 +127,6 @@ public class ListController {
 
         return result;
     }
-
-
-
-
 
 
 }
