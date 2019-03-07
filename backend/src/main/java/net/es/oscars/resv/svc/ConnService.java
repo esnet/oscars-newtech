@@ -258,7 +258,7 @@ public class ConnService {
                 Schedule s = null;
                 if (c.getPhase().equals(Phase.ARCHIVED)) {
                     s = c.getArchived().getSchedule();
-                } else if (c.getPhase().equals(Phase.HELD)) {
+                } else if (c.getPhase().equals(Phase.RESERVED)) {
                     s = c.getReserved().getSchedule();
                 } else {
                     // shouldn't happen!
@@ -266,13 +266,13 @@ public class ConnService {
                     continue;
                 }
 
-                if (s.getBeginning().isBefore(fBeginning) &&
-                    s.getEnding().isBefore(fEnding)) {
+                if (s.getEnding().isBefore(fBeginning)) {
                     add = false;
+                    // log.info("not adding, schedule is before interval "+c.getConnectionId());
                 }
-                if (s.getBeginning().isAfter(fBeginning) &&
-                        s.getEnding().isAfter(fEnding)) {
+                if (s.getBeginning().isAfter(fEnding)) {
                     add = false;
+                    // log.info("not adding, schedule is after interval "+c.getConnectionId());
                 }
                 if (add) {
                     intervalFiltered.add(c);
@@ -283,23 +283,30 @@ public class ConnService {
 
         List<Connection> finalFiltered = intervalFiltered;
         List<Connection> paged = new ArrayList<>();
-
-        // pages start at 1
-        int firstIdx = (filter.getPage() - 1) * filter.getSizePerPage();
-        // log.info("first idx: "+firstIdx);
         int totalSize = finalFiltered.size();
-        // if past the end, would return empty list
-        if (firstIdx < totalSize) {
 
-            int lastIdx = firstIdx + filter.getSizePerPage();
-            if (lastIdx > totalSize) {
-                lastIdx = totalSize;
+        if (filter.getSizePerPage() < 0) {
+            //
+            paged = finalFiltered;
+        } else {
+            // pages start at 1
+            int firstIdx = (filter.getPage() - 1) * filter.getSizePerPage();
+            // log.info("first idx: "+firstIdx);
+            // if past the end, would return empty list
+            if (firstIdx < totalSize) {
+
+                int lastIdx = firstIdx + filter.getSizePerPage();
+                if (lastIdx > totalSize) {
+                    lastIdx = totalSize;
+                }
+                for (int idx = firstIdx; idx < lastIdx; idx++) {
+                    // log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
+                    paged.add(finalFiltered.get(idx));
+                }
             }
-            for (int idx = firstIdx; idx < lastIdx; idx++) {
-                // log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
-                paged.add(finalFiltered.get(idx));
-            }
+
         }
+
         return ConnectionList.builder()
                 .page(filter.getPage())
                 .sizePerPage(filter.getSizePerPage())

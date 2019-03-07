@@ -60,11 +60,11 @@ public class ListController {
 
         ConnectionFilter filter = ConnectionFilter.builder()
                 .interval(interval)
+                .sizePerPage(-1)
                 .build();
 
         ConnectionList list = connService.filter(filter);
         for (Connection c : list.getConnections()) {
-
 
             List<MinimalConnEndpoint> endpoints = new ArrayList<>();
             Schedule s;
@@ -83,7 +83,7 @@ public class ListController {
                 MinimalConnEndpoint ep = MinimalConnEndpoint.builder()
                         .vlan(f.getVlan().getVlanId())
                         .router(f.getJunction().getDeviceUrn())
-                        .port(f.getPortUrn().split(":")[0])
+                        .port(f.getPortUrn().split(":")[1])
                         .build();
                 endpoints.add(ep);
             }
