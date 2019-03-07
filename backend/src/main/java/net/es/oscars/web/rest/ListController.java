@@ -4,8 +4,12 @@ package net.es.oscars.web.rest;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.dto.pss.cmd.CommandType;
+import net.es.oscars.pss.ent.RouterCommandHistory;
+import net.es.oscars.resv.db.CommandHistoryRepository;
 import net.es.oscars.resv.db.LogRepository;
 import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.topo.beans.IntRange;
@@ -25,6 +29,11 @@ public class ListController {
     @Autowired
     private Startup startup;
 
+    @Autowired
+    private LogRepository logRepo;
+
+    @Autowired
+    private CommandHistoryRepository historyRepo;
 
     @Autowired
     private ConnService connService;
@@ -90,6 +99,8 @@ public class ListController {
 
         ConnectionList list = connService.filter(filter);
         for (Connection c : list.getConnections()) {
+            List<RouterCommandHistory> rchList = historyRepo.findByConnectionId(c.getConnectionId());
+            Optional<EventLog> maybeLog = logRepo.findByConnectionId(c.getConnectionId());
 
             List<MinimalConnEndpoint> endpoints = new ArrayList<>();
             Map<String, List<Integer>> sdps = new HashMap<>();
@@ -128,10 +139,59 @@ public class ListController {
 
                     .endpoints(endpoints)
                     .build();
-            Long start = s.getBeginning().getEpochSecond();
-            Long end = s.getEnding().getEpochSecond();
-            e.setStart(start.intValue());
-            e.setEnd(end.intValue());
+
+            Instant firstBuilt = Instant.MAX;
+            Instant lastDismantled = Instant.MIN;
+            for (RouterCommandHistory rch : rchList) {
+                if (rch.getType().equals(CommandType.BUILD)) {
+                    if (rch.getDate().isBefore(firstBuilt)) {
+                        firstBuilt = rch.getDate();
+                    }
+                }
+                if (rch.getType().equals(CommandType.DISMANTLE)) {
+                    if (rch.getDate().isAfter(lastDismantled)) {
+                        lastDismantled = rch.getDate();
+                    }
+                }
+            }
+            if (firstBuilt.equals(Instant.MAX)) {
+                // either it was never built, or, it is migrated
+                // in that case use the schedule as a best guess
+                Long start = s.getBeginning().getEpochSecond();
+                Long end = s.getEnding().getEpochSecond();
+
+                e.setStart(start.intValue());
+                e.setEnd(end.intValue());
+            } else {
+                Long start = firstBuilt.getEpochSecond();
+                e.setStart(start.intValue());
+                Long end;
+                if (lastDismantled.equals(Instant.MIN)) {
+                    // maybe it was never dismantled?
+                    if (s.getEnding().isBefore(Instant.now())) {
+                        // set our end to the schedule end...
+
+                        end = s.getEnding().getEpochSecond();
+                        // but see if we have an event about an early cancel
+                        if (maybeLog.isPresent()) {
+                            EventLog log = maybeLog.get();
+                            for (Event ev: log.getEvents()) {
+                                if (ev.getType().equals(EventType.CANCELLED)) {
+                                    end = ev.getAt().getEpochSecond();
+                                }
+                            }
+                        }
+                    } else {
+                        end = Instant.now().getEpochSecond();
+                    }
+                } else {
+                    end = lastDismantled.getEpochSecond();
+                }
+                e.setEnd(end.intValue());
+
+            }
+
+
 
 
             result.put(c.getConnectionId(), e);
