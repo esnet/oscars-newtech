@@ -9,6 +9,7 @@ import net.es.oscars.resv.ent.*;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.topo.beans.IntRange;
+import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.web.beans.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,6 +92,7 @@ public class ListController {
         for (Connection c : list.getConnections()) {
 
             List<MinimalConnEndpoint> endpoints = new ArrayList<>();
+            Map<String, List<Integer>> sdps = new HashMap<>();
             Schedule s;
             Components cmp;
             if (c.getPhase().equals(Phase.RESERVED)) {
@@ -103,6 +105,15 @@ public class ListController {
                 log.error("invalid phase for " + c.getConnectionId());
                 continue;
             }
+            for (VlanJunction j: cmp.getJunctions()) {
+                List<Integer> sdpIds = new ArrayList<>();
+                for (CommandParam p : j.getCommandParams()) {
+                    if (p.getParamType().equals(CommandParamType.ALU_SDP_ID)) {
+                        sdpIds.add(p.getResource());
+                    }
+                }
+                sdps.put(j.getDeviceUrn(), sdpIds);
+            }
             for (VlanFixture f : cmp.getFixtures()) {
                 MinimalConnEndpoint ep = MinimalConnEndpoint.builder()
                         .vlan(f.getVlan().getVlanId())
@@ -113,6 +124,7 @@ public class ListController {
             }
             MinimalConnEntry e = MinimalConnEntry.builder()
                     .description(c.getDescription())
+                    .sdps(sdps)
 
                     .endpoints(endpoints)
                     .build();
