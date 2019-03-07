@@ -123,7 +123,9 @@ public class ListController {
                         sdpIds.add(p.getResource());
                     }
                 }
-                sdps.put(j.getDeviceUrn(), sdpIds);
+                if (!sdpIds.isEmpty()) {
+                    sdps.put(j.getDeviceUrn(), sdpIds);
+                }
             }
             for (VlanFixture f : cmp.getFixtures()) {
                 MinimalConnEndpoint ep = MinimalConnEndpoint.builder()
