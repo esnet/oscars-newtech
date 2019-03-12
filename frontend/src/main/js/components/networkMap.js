@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { DataSet, Network } from "vis/dist/vis-network.min.js";
+import { DataSet, Network } from "visjs-network/dist/vis-network.min.js";
 import { inject, observer } from "mobx-react";
 import { autorun, toJS, action } from "mobx";
 
@@ -10,8 +10,8 @@ import myClient from "../agents/client";
 import HelpPopover from "./helpPopover";
 import Moment from "moment/moment";
 
-require("vis/dist/vis-network.min.css");
-require("vis/dist/vis.min.css");
+require("visjs-network/dist/vis-network.min.css");
+require("visjs-network/dist/vis.min.css");
 
 @inject("mapStore", "topologyStore")
 @observer

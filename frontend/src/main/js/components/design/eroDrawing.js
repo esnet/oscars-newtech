@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { inject, observer } from "mobx-react";
 import { autorun, toJS, action } from "mobx";
 import { Card, CardBody, CardHeader } from "reactstrap";
-import { DataSet, Network } from "vis/dist/vis-network.min.js";
+import { DataSet, Network } from "visjs-network/dist/vis-network.min.js";
 
 import validator from "../../lib/validation";
 import VisUtils from "../../lib/vis";
@@ -11,8 +11,8 @@ import HelpPopover from "../helpPopover";
 import Octicon from "react-octicon";
 import PropTypes from "prop-types";
 
-require("vis/dist/vis-network.min.css");
-require("vis/dist/vis.min.css");
+require("visjs-network/dist/vis-network.min.css");
+require("visjs-network/dist/vis.min.css");
 
 @inject("controlsStore", "designStore", "modalStore")
 @observer

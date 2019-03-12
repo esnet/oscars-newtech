@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { inject, observer } from "mobx-react";
 import { autorun, toJS } from "mobx";
 import { Card, CardBody, CardHeader } from "reactstrap";
-import { DataSet, Network } from "vis/dist/vis-network.min.js";
+import { DataSet, Network } from "visjs-network/dist/vis-network.min.js";
 import VisUtils from "../../lib/vis";
 import HelpPopover from "../helpPopover";
 import { size } from "lodash-es";
