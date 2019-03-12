@@ -1,5 +1,11 @@
 # OSCARS Release Notes
 
+## v1.0.30
+> Mar 12, 2019
+- Moved repository to `esnet/oscars`
+- Merged frontend code
+
+
 ## v1.0.27
 
 > Mar 6, 2019
