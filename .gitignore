@@ -1,7 +1,10 @@
 .idea
-.DS_Store
+.idea/**
 *.iml
+.DS_Store
+.vscode/
 **/target
 **/node_modules
-/backend/src/main/resources/git.properties
+**/logs/*.log
 **/*.log
+backend/src/main/resources
