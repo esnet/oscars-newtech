@@ -55,7 +55,7 @@ public class MiscHelper {
     }
 
 
-    public static List<MplsHop>  mplsHops(List<EroHop> hops, TopoService topoService) {
+    public static List<MplsHop>  mplsHops(List<EroHop> hops, TopoService topoService) throws PSSException {
 
         // eroHops look like this:
         // 0: A
@@ -73,10 +73,18 @@ public class MiscHelper {
         List<MplsHop> mplsHops = new ArrayList<>();
 
         // output hop order field starts at 1 (not 0)
-        Integer order = 1;
+        int order = 1;
         for (int i = 0; i < hops.size(); i++) {
             if (i % 3 == 2) {
                 EroHop hop = hops.get(i);
+                if (!topoService.getTopoUrnMap().containsKey(hop.getUrn())) {
+                    throw new PSSException("Could not locate topo entity for hop "+hop.getUrn());
+
+                }
+                TopoUrn topoUrn = topoService.getTopoUrnMap().get(hop.getUrn());
+                if (!topoUrn.getUrnType().equals(UrnType.PORT)) {
+                    throw new PSSException("Topo entity is not port for hop "+hop.getUrn());
+                }
                 Port port = topoService.getTopoUrnMap().get(hop.getUrn()).getPort();
                 MplsHop mplsHop = MplsHop.builder()
                         .address(port.getIpv4Address())
