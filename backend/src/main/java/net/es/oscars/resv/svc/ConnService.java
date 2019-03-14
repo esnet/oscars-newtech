@@ -1120,8 +1120,7 @@ public class ConnService {
 
     public Connection findConnection(String connectionId) {
         if (connectionId == null || connectionId.equals("")) {
-            log.info("no connectionId!");
-            return null;
+            throw new IllegalArgumentException("Null or empty connectionId");
         }
 //        log.info("looking for connectionId "+ connectionId);
         Optional<Connection> cOpt = connRepo.findByConnectionId(connectionId);
