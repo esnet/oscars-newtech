@@ -30,7 +30,8 @@ class ConnectionsStore {
             buttonText: "Edit",
             edit: true,
             save: true,
-            input: true
+            input: true,
+            collapseText: true
         },
         ending: {
             buttonText: "Edit",
