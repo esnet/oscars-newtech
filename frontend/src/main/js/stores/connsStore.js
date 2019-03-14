@@ -49,7 +49,8 @@ class ConnectionsStore {
             updatedDescription: "",
             acceptable: false,
             validationText: "",
-            validationState: "success"
+            validationState: "success",
+            saved: false
         },
         ending: {
             originalTime: "",
@@ -61,7 +62,8 @@ class ConnectionsStore {
                 beginning: null,
                 ending: null
             },
-            parsedValue: null
+            parsedValue: null,
+            saved: false
         }
     };
 

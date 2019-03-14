@@ -4,6 +4,8 @@ class ModalStore {
     @observable
     modals = observable.map(
         {
+            editEnding: false,
+            editDescription: false,
             editFixture: false,
             editJunction: false,
             editPipe: false,

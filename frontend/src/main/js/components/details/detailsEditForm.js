@@ -5,6 +5,7 @@ import { action } from "mobx";
 import { observer, inject } from "mobx-react";
 import Moment from "moment";
 import {
+    Alert,
     Button,
     Collapse,
     Col,
@@ -13,13 +14,18 @@ import {
     FormGroup,
     FormText,
     Input,
-    Label
+    Label,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader
 } from "reactstrap";
 import ToggleDisplay from "react-toggle-display";
 
 import myClient from "../../agents/client";
+import DetailsModal from "./detailsModal";
 
-@inject("connsStore")
+@inject("connsStore", "modalStore")
 @observer
 class DetailsEditForm extends Component {
     constructor(props) {
@@ -117,8 +123,6 @@ class DetailsEditForm extends Component {
             description: desc.updatedDescription
         };
 
-        console.log("modification is ", modification);
-
         myClient.submitWithToken("POST", "/protected/modify/description", modification).then(
             action(response => {
                 this.description.value = desc.updatedDescription;
@@ -135,7 +139,8 @@ class DetailsEditForm extends Component {
 
                 this.props.connsStore.setParamsForEditSchedule({
                     description: {
-                        originalDescription: desc.updatedDescription
+                        originalDescription: desc.updatedDescription,
+                        saved: true
                     }
                 });
             })
@@ -257,7 +262,7 @@ class DetailsEditForm extends Component {
             action(response => {
                 let status = JSON.parse(response);
                 if (status.success === true) {
-                    const newTime = this.formatSchedule(ending.newEndTime).formattedTime;
+                    const newTime = this.formatSchedule(status.end).formattedTime;
                     this.endingDate.value = newTime;
 
                     this.props.connsStore.setParamsForEditButtons({
@@ -272,7 +277,8 @@ class DetailsEditForm extends Component {
 
                     this.props.connsStore.setParamsForEditSchedule({
                         ending: {
-                            originalTime: newTime
+                            originalTime: newTime,
+                            saved: true
                         }
                     });
                 }
@@ -308,6 +314,11 @@ class DetailsEditForm extends Component {
                             onChange={this.handleDescriptionChange}
                         />
                         <FormFeedback>{es.description.validationText}</FormFeedback>
+                        {es.description.saved === true ? (
+                            <DetailsModal name="editDescription" />
+                        ) : (
+                            ""
+                        )}
                         <Collapse isOpen={!eb.description.collapseText}>
                             <FormGroup>
                                 <FormText>
@@ -373,6 +384,7 @@ class DetailsEditForm extends Component {
                             onChange={this.handleEndingChange}
                         />
                         <FormFeedback>{es.ending.validationText}</FormFeedback>
+                        {es.ending.saved ? <DetailsModal name="editEnding" /> : ""}
                         <Collapse isOpen={!eb.ending.collapseText}>
                             <FormGroup>
                                 <FormText>Original Ending Time: {es.ending.originalTime}</FormText>
