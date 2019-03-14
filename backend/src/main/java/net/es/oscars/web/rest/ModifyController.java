@@ -47,6 +47,22 @@ public class ModifyController {
         log.warn("Still in startup");
     }
 
+    @RequestMapping(value = "/protected/modify/description", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public void modifyDescription(@RequestBody DescriptionModifyRequest request)
+            throws StartupException, ModifyException {
+        this.checkStartup();
+
+        Connection c = connSvc.findConnection(request.getConnectionId());
+        if (request.getDescription() == null || request.getDescription().equals("")) {
+            throw new ModifyException("Description null or empty");
+        }
+        c.setDescription(request.getDescription());
+        connRepo.save(c);
+
+    }
+
 
     @RequestMapping(value = "/protected/modify/schedule", method = RequestMethod.POST)
     @ResponseBody
