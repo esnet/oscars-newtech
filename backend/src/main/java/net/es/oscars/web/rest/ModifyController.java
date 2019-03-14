@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.resv.db.ConnectionRepository;
+import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.resv.svc.LogService;
 import net.es.oscars.topo.beans.IntRange;
@@ -56,18 +57,20 @@ public class ModifyController {
 
         boolean success;
         List<String> overlapping = new ArrayList<>();
-        overlapping.add("EFGH");
         String reason;
 
         Date date = new Date();
-        Long nowSeconds = date.getTime() / 1000;
-        Integer nowSecs = nowSeconds.intValue();
+        Long nowSecsL = date.getTime() / 1000;
+        Integer nowSecs = nowSecsL.intValue();
 
-        Integer prevBegin = nowSecs - 1800;
-        Integer newBegin = prevBegin;
+        Connection c = connSvc.findConnection(request.getConnectionId());
+        Long prevEndL = c.getReserved().getSchedule().getEnding().getEpochSecond();
+        Integer prevEnd = prevEndL.intValue();
 
-        Integer prevEnd = nowSecs + 1800;
-        Integer newEnd;
+        Long prevBeginL = c.getReserved().getSchedule().getBeginning().getEpochSecond();
+        Integer prevBegin = prevBeginL.intValue();
+
+        Integer newEnd = prevEnd;
 
         if (request.getType() == null) {
             throw new ModifyException("undefined schedule request type");
@@ -79,34 +82,31 @@ public class ModifyController {
         // we will only be looking & validating end time
         Integer reqEnd = request.getTimestamp();
         if (reqEnd == null) {
-            throw new ModifyException("new end time not defined");
-        }
-
-        // if too far in the past, complain
-        if (reqEnd < nowSeconds - 60) {
             success = false;
-            newEnd = prevEnd;
+            reason = "Null requested end time";
+        } else if (reqEnd < nowSecs - 60) {
+            success = false;
             reason = "End time too far in the past";
 
-        // if not too far in the past, end ASAP
-        } else if (reqEnd < nowSeconds) {
-            success = true;
-            reason = "Ending as soon as possible";
-            newEnd = nowSecs;
-
-        // don't allow too far ahead
-        } else if (reqEnd > nowSeconds + 7200) {
+            // don't allow extending
+        } else if (reqEnd > prevEnd) {
             success = false;
             reason = "end time too far in the future";
-            newEnd = prevEnd;
 
-        // pretend there's a resv between 3600 and 7200 preventing us
-        } else if (reqEnd > nowSeconds + 3600) {
-            success = false;
-            reason = "Overlapping reservation(s) prevent change";
-            overlapping.add("ABCD");
-            newEnd = prevEnd;
+        // if reasonably close to now(), end ASAP
+        } else if (reqEnd < nowSecs) {
+
+            request.setTimestamp(nowSecs);
+            connSvc.modifySchedule(c, request);
+
+            newEnd = nowSecs;
+            success = true;
+            reason = "New end time before now(), ending immediately";
+
+
         } else {
+            connSvc.modifySchedule(c, request);
+
             success = true;
             reason = "Modification successful";
             newEnd = reqEnd;
@@ -117,7 +117,7 @@ public class ModifyController {
                 .overlapping(overlapping)
                 .reason(reason)
                 .success(success)
-                .begin(newBegin)
+                .begin(prevBegin)
                 .end(newEnd)
                 .build();
 
@@ -136,16 +136,19 @@ public class ModifyController {
         Date date = new Date();
         Long nowSeconds = date.getTime() / 1000;
 
+        Connection c = connSvc.findConnection(request.getConnectionId());
+        Long endSeconds = c.getReserved().getSchedule().getEnding().getEpochSecond();
+
 
         switch (request.getType()) {
             case END:
                 return IntRange.builder()
                         .floor(nowSeconds.intValue())
-                        .ceiling(nowSeconds.intValue() + 3600)
+                        .ceiling(endSeconds.intValue())
                         .build();
             case BEGIN:
             default:
-                throw new ModifyException("changing start time not supported right now");
+                throw new ModifyException("changing start time currently unsupported");
 
         }
 
