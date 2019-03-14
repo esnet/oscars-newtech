@@ -317,6 +317,27 @@ public class ConnService {
 
     }
 
+    public void modifySchedule (Connection c, ScheduleModifyRequest request) throws ModifyException {
+        if (!c.getPhase().equals(Phase.RESERVED)) {
+            throw new ModifyException("May only change schedule when RESERVED");
+        }
+        if (request.getType().equals(ScheduleModifyType.BEGIN)) {
+            Instant newBeginning = Instant.ofEpochSecond(request.getTimestamp());
+            c.getReserved().getSchedule().setBeginning(newBeginning);
+            c.getArchived().getSchedule().setBeginning(newBeginning);
+            connRepo.save(c);
+        } else if (request.getType().equals(ScheduleModifyType.END)) {
+            Instant newEnding = Instant.ofEpochSecond(request.getTimestamp());
+            c.getReserved().getSchedule().setEnding(newEnding);
+            c.getArchived().getSchedule().setEnding(newEnding);
+            connRepo.save(c);
+
+        } else {
+            throw new ModifyException("Invalid schedule modification request");
+        }
+
+    }
+
 
     public ConnChangeResult commit(Connection c) throws PSSException, PCEException {
 
@@ -1097,6 +1118,20 @@ public class ConnService {
         }
     }
 
+    public Connection findConnection(String connectionId) {
+        if (connectionId == null || connectionId.equals("")) {
+            log.info("no connectionId!");
+            return null;
+        }
+//        log.info("looking for connectionId "+ connectionId);
+        Optional<Connection> cOpt = connRepo.findByConnectionId(connectionId);
+        if (cOpt.isPresent()) {
+            return cOpt.get();
+        } else {
+            throw new NoSuchElementException("connection not found for id " + connectionId);
+
+        }
+    }
     public Connection toNewConnection(SimpleConnection in) {
         Connection c = Connection.builder()
                 .mode(BuildMode.AUTOMATIC)
