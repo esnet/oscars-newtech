@@ -60,7 +60,6 @@ public class ModifyController {
         }
         c.setDescription(request.getDescription());
         connRepo.save(c);
-
     }
 
 

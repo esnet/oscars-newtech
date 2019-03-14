@@ -121,26 +121,23 @@ class DetailsEditForm extends Component {
 
         myClient.submitWithToken("POST", "/protected/modify/description", modification).then(
             action(response => {
-                let status = JSON.parse(response);
-                if (status.success === true) {
-                    this.description.value = desc.updatedDescription;
+                this.description.value = desc.updatedDescription;
 
-                    this.props.connsStore.setParamsForEditButtons({
-                        description: {
-                            edit: false,
-                            save: true,
-                            buttonText: "Edit",
-                            collapseText: true,
-                            input: true
-                        }
-                    });
+                this.props.connsStore.setParamsForEditButtons({
+                    description: {
+                        edit: false,
+                        save: true,
+                        buttonText: "Edit",
+                        collapseText: true,
+                        input: true
+                    }
+                });
 
-                    this.props.connsStore.setParamsForEditSchedule({
-                        description: {
-                            originalDescription: desc.updatedDescription
-                        }
-                    });
-                }
+                this.props.connsStore.setParamsForEditSchedule({
+                    description: {
+                        originalDescription: desc.updatedDescription
+                    }
+                });
             })
         );
     };
