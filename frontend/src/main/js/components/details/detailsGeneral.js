@@ -384,7 +384,7 @@ class DetailsGeneral extends Component {
                                                 <Label for="description" sm={2}>
                                                     Description
                                                 </Label>
-                                                <Col sm={8}>
+                                                <Col sm={7}>
                                                     <Input
                                                         type="text"
                                                         defaultValue={conn.description}
@@ -467,7 +467,7 @@ class DetailsGeneral extends Component {
                                                 <Label for="ending" sm={2}>
                                                     Ending
                                                 </Label>
-                                                <Col sm={8}>
+                                                <Col sm={7}>
                                                     <Input
                                                         type="text"
                                                         defaultValue={es.ending.originalTime}
