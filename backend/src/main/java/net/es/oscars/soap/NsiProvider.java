@@ -95,7 +95,9 @@ public class NsiProvider implements ConnectionProviderPort {
         NsiMapping mapping = stateEngine.newMapping(
                 reserve.getConnectionId(),
                 reserve.getGlobalReservationId(),
-                header.value.getRequesterNSA());
+                header.value.getRequesterNSA(),
+                reserve.getCriteria().getVersion()
+        );
 
         log.info("triggering async reserve");
         nsiService.reserve(header.value, reserve, mapping);

@@ -137,7 +137,7 @@ public class SimpleApiController {
                 .ending(Instant.now())
                 .build();
         ConnectionFilter f = ConnectionFilter.builder()
-                .phase(Phase.RESERVED)
+                .phase(Phase.RESERVED.toString())
                 .sizePerPage(Integer.MAX_VALUE)
                 .interval(interval)
                 .page(1)
@@ -154,7 +154,7 @@ public class SimpleApiController {
     @ResponseBody
     public List<SimpleConnection> pmcList() throws StartupException {
         ConnectionFilter f = ConnectionFilter.builder()
-                .phase(Phase.RESERVED)
+                .phase(Phase.RESERVED.toString())
                 .sizePerPage(Integer.MAX_VALUE)
                 .page(1)
                 .build();

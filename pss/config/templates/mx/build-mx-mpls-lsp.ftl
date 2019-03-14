@@ -3,9 +3,9 @@
 top
 edit protocols mpls label-switched-path "${mxlsp.lsp.name}"
 set to ${mxlsp.lsp.to}
-set metric 65000
+set metric ${mxlsp.lsp.metric}
 set no-cspf
-set priority 4 4
+set priority ${mxlsp.lsp.setupPriority} ${mxlsp.lsp.holdPriority}
 set primary "${mxlsp.lsp.pathName}"
 <#if mxlsp.policeFilter??>
 set policing filter "${mxlsp.policeFilter}"

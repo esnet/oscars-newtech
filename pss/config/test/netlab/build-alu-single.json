@@ -4,6 +4,7 @@
   "shouldFail": false,
   "aluParams": {
     "aluVpls": {
+      "mtu": 9000,
       "svcId": 6011,
       "saps": [
         {

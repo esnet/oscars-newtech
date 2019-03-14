@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.es.oscars</groupId>
-    <artifactId>newtech</artifactId>
+    <artifactId>oscars</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.25</version>
+    <version>1.0.30</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,10 +17,9 @@
         <integration-tests.skip>true</integration-tests.skip>
         <jackson.version>2.9.5</jackson.version>
 
-        <rpm.home>/usr/local/esnet/oscars-backend</rpm.home>
         <rpm.prefix/>
         <rpm.organization.name>ESnet</rpm.organization.name>
-        <rpm.organization.url>https://www.github.com/esnet/oscars-newtech</rpm.organization.url>
+        <rpm.organization.url>https://www.github.com/esnet/oscars</rpm.organization.url>
         <rpm.license>BSD</rpm.license>
     </properties>
 
@@ -37,6 +36,7 @@
         <module>backend</module>
         <module>nsi</module>
         <module>migration</module>
+        <module>frontend</module>
     </modules>
     <profiles>
         <profile>
@@ -84,11 +84,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>net.es.oscars</groupId>
-                <artifactId>frontend</artifactId>
-                <version>1.0.19</version>
-            </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>

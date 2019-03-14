@@ -4,5 +4,5 @@ public enum Phase {
     DESIGN,
     RESERVED,
     ARCHIVED,
-    HELD,
+    HELD
 }

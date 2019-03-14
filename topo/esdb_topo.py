@@ -35,6 +35,8 @@ DEVICES = "devices.json"
 ADJCIES = "adjacencies.json"
 TODAY = "output/today.json"
 
+LOOPBACKS_NETS = [ "134.55.200.", "198.129.245." ]
+
 pp = pprint.PrettyPrinter(indent=4)
 
 UNKNOWN_VLAN_RANGE = "2-4094"
@@ -202,8 +204,9 @@ def merge_addrs(oscars_devices=None, addrs=None, isis_adjcies=None):
         router = addr["router"]
 
         if int_name == "lo0.0" or int_name == "system":
-            if address != "127.0.0.1":
-                urn_addrs_dict[router] = address
+            for net in LOOPBACKS_NETS:
+                if address.startswith(net):
+                    urn_addrs_dict[router] = address
 
     for isis_adjcy in isis_adjcies:
         address = isis_adjcy["a_addr"]

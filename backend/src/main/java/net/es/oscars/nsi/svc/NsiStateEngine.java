@@ -24,7 +24,7 @@ public class NsiStateEngine {
     private ConnService connSvc;
 
 
-    public NsiMapping newMapping(String nsiConnectionId, String nsiGri, String nsaId) throws ServiceException {
+    public NsiMapping newMapping(String nsiConnectionId, String nsiGri, String nsaId, Integer version) throws ServiceException {
         if (nsiConnectionId == null || nsiConnectionId.equals("")) {
             throw new ServiceException("null nsi connection id");
         }
@@ -40,7 +40,7 @@ public class NsiStateEngine {
                 .nsiConnectionId(nsiConnectionId)
                 .nsiGri(nsiGri)
                 .oscarsConnectionId(oscarsConnectionId)
-                .dataplaneVersion(0)
+                .dataplaneVersion(version)
                 .nsaId(nsaId)
                 .lifecycleState(LifecycleStateEnumType.CREATED)
                 .provisionState(ProvisionStateEnumType.RELEASED)

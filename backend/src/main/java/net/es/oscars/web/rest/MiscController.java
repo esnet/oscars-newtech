@@ -17,7 +17,7 @@ import org.apache.commons.io.input.ReversedLinesFileReader;
 @RestController
 @Slf4j
 public class MiscController {
-    public static String version = "1.0.25";
+    public static String version = "1.0.30";
 
     @Value("${logging.file}")
     private String logfile;
@@ -28,13 +28,10 @@ public class MiscController {
         log.warn("Still in startup");
     }
 
-
-
     @RequestMapping(value = "/api/version", method = RequestMethod.GET)
     public String getVersion() {
         return version;
     }
-
 
     @RequestMapping(value = "/api/ping", method = RequestMethod.GET)
     public String ping() {

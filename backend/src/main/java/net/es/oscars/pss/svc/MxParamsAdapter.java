@@ -19,7 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Slf4j
@@ -78,6 +80,13 @@ public class MxParamsAdapter {
 
         List<TaggedIfce> ifces = new ArrayList<>();
 
+        // check if we need to set the vlan-swap; only if there are multiple different VLANs
+        Set<Integer> allVlans = new HashSet<>();
+        for (VlanFixture rvf : cmp.getFixtures()) {
+            allVlans.add(rvf.getVlan().getVlanId());
+        }
+        boolean vlanSwapNeeded = allVlans.size() > 1;
+
         for (VlanFixture rvf : cmp.getFixtures()) {
             if (rvf.getJunction().equals(rvj)) {
                 Integer vlan = rvf.getVlan().getVlanId();
@@ -95,6 +104,7 @@ public class MxParamsAdapter {
                 TaggedIfce ti = TaggedIfce.builder()
                         .port(port)
                         .vlan(vlan)
+                        .vlanSwap(vlanSwapNeeded)
                         .description("OSCARS-" + c.getConnectionId() + ":0:oscars-l2circuit:show:circuit-intercloud")
                         .build();
                 ifces.add(ti);
@@ -150,6 +160,9 @@ public class MxParamsAdapter {
             IPv4Address address = new IPv4Address(loopbackInt);
             loopback = address.toString();
         }
+        Integer communityId = vcId;
+        String communityName = "OSCARS-"+c.getConnectionId()+"-"+communityId;
+
 
         MxVpls mxVpls = MxVpls.builder()
                 .vcId(vcId)
@@ -158,8 +171,11 @@ public class MxParamsAdapter {
                 .description(description)
                 .serviceName(serviceName)
                 .policyName(policyName)
+                .communityId(communityId)
+                .communityName(communityName)
                 .statsFilter(statsFilter)
                 .loopback(loopback)
+                .mtu(c.getConnection_mtu() + 100)
                 .build();
 
         return MxParams.builder()

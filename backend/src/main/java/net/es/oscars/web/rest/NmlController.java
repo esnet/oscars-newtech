@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.management.relation.Relation;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -66,7 +66,6 @@ public class NmlController {
     @Value("${nsi.nsa-location}")
     private String nsaLocation;
 
-
     @Value("${resv.timeout}")
     private Integer resvTimeout;
 
@@ -82,10 +81,10 @@ public class NmlController {
     @Autowired
     private Startup startup;
 
-    public static String NSA_PROVIDER_TYPE = "application/vnd.ogf.nsi.cs.v2.provider+soap";
-    public static String NSA_TOPO_TYPE = "application/vnd.ogf.nsi.topology.v2+xml";
-    public static String NSA_FEATURE_UPA = "vnd.ogf.nsi.cs.v2.role.uPA";
-    public static String NSA_FEATURE_TIMEOUT = "org.ogf.nsi.cs.v2.commitTimeout";
+    private static String NSA_PROVIDER_TYPE = "application/vnd.ogf.nsi.cs.v2.provider+soap";
+    private static String NSA_TOPO_TYPE = "application/vnd.ogf.nsi.topology.v2+xml";
+    private static String NSA_FEATURE_UPA = "vnd.ogf.nsi.cs.v2.role.uPA";
+    private static String NSA_FEATURE_TIMEOUT = "org.ogf.nsi.cs.v2.commitTimeout";
 
     private static String nsBase = "http://schemas.ogf.org/nml/2013/05/base#";
     private static String nsDefs = "http://schemas.ogf.org/nsi/2013/12/services/definition";
@@ -103,7 +102,8 @@ public class NmlController {
 
 
     @GetMapping(value = "/api/topo/nml")
-    public void getTopologyXml(HttpServletResponse res) throws Exception {
+    public void getTopologyXml(HttpServletRequest request, HttpServletResponse res) throws Exception {
+
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
@@ -119,6 +119,22 @@ public class NmlController {
             throw new InternalError("no valid topology version");
         }
         Version v = maybeVersion.get();
+
+        long ifModifiedSince = request.getDateHeader("If-Modified-Since");
+        // log.info("ims from browser: "+ifModifiedSince);
+        res.setHeader("Cache-Control", "max-age=3600");
+
+        long lastModified = v.getUpdated().getEpochSecond() * 1000; // I-M-S in milliseconds
+
+        // if request did not set the header, we get a -1 in iMS
+        if (ifModifiedSince != -1 && lastModified <= ifModifiedSince) {
+            // log.debug("returning not-modified to browser,  ims: "+ifModifiedSince+ " lm: "+lastModified);
+            res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+        }
+        res.setDateHeader("Last-Modified", lastModified);
+
+
         Topology topology = topoService.currentTopology();
         List<Port> edgePorts = new ArrayList<>();
         for (Device d : topology.getDevices().values()) {
@@ -225,7 +241,7 @@ public class NmlController {
             if (maybeDevice.isPresent()) {
                 this.addLocation(doc, bdp, maybeDevice.get());
             } else {
-                log.error("device not found for peering: "+peering.getIn());
+                log.error("device not found for peering: " + peering.getIn());
             }
 
 
@@ -358,7 +374,7 @@ public class NmlController {
                 Element remote = doc.createElementNS(nsBase, "nml-base:PortGroup");
                 remote.setAttribute("id", peering.getOut().getRemote());
                 isAliasRelation.appendChild(remote);
-                pgo.appendChild(isAliasRelation );
+                pgo.appendChild(isAliasRelation);
             }
 
             Element omxrc = doc.createElementNS(nsEth, "nml-eth:maximumReservableCapacity");
@@ -475,7 +491,7 @@ public class NmlController {
     }
 
     @GetMapping(value = "/api/nsa/discovery")
-    public void getNsaDiscovery(HttpServletResponse res) throws Exception {
+    public void getNsaDiscovery(HttpServletRequest req, HttpServletResponse res) throws Exception {
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
@@ -494,10 +510,24 @@ public class NmlController {
         if (!maybeVersion.isPresent()) {
             throw new InternalError("no valid topology version");
         }
+        Version v = maybeVersion.get();
+
+        long lastModified = v.getUpdated().getEpochSecond() * 1000; // I-M-S in milliseconds
+        long ifModifiedSince = req.getDateHeader("If-Modified-Since");
+        // log.info("ims from browser: "+ifModifiedSince);
+        res.setHeader("Cache-Control", "max-age=3600");
+        res.setDateHeader("Last-Modified", lastModified);
+
+        // if request did not set the header, we get a -1 in iMS
+        if (lastModified <= ifModifiedSince && ifModifiedSince != -1) {
+            res.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+        }
+
 
         String[] locParts = nsaLocation.split(",");
-        String longitude = locParts[0];
-        String latitude = locParts[1];
+        String latitude = locParts[0];
+        String longitude = locParts[1];
 
         String[] contactParts = nsaContact.split(",");
         String contactName = contactParts[0];
@@ -506,9 +536,7 @@ public class NmlController {
         String cnGiven = cnParts[0];
         String cnSurname = cnParts[1];
 
-        Version v = maybeVersion.get();
         Topology topology = topoService.currentTopology();
-
 
         String xmlVersion = dateFormatter.format(v.getUpdated());
         String vCardTimestamp = formatForVcard.format(v.getUpdated());

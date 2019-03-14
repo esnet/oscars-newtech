@@ -17,8 +17,11 @@ import net.es.oscars.pss.ent.RouterCommandHistory;
 import net.es.oscars.pss.ent.RouterCommands;
 import net.es.oscars.resv.db.CommandHistoryRepository;
 import net.es.oscars.resv.ent.Connection;
+import net.es.oscars.resv.ent.Event;
 import net.es.oscars.resv.ent.VlanJunction;
+import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.State;
+import net.es.oscars.resv.svc.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,16 +43,18 @@ public class PSSAdapter {
     private PSSParamsAdapter paramsAdapter;
     private CommandHistoryRepository historyRepo;
     private NsiService nsiService;
+    private LogService logService;
 
     @Autowired
     public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr,
                       CommandHistoryRepository historyRepo, NsiService nsiService,
-                      PSSParamsAdapter paramsAdapter, PssProperties properties) {
+                      PSSParamsAdapter paramsAdapter, LogService logService, PssProperties properties) {
         this.pssProxy = pssProxy;
         this.rcr = rcr;
         this.historyRepo = historyRepo;
         this.paramsAdapter = paramsAdapter;
         this.nsiService = nsiService;
+        this.logService = logService;
         this.properties = properties;
     }
 
@@ -63,7 +68,7 @@ public class PSSAdapter {
         commands.addAll(this.dismantleCommands(conn));
         commands.addAll(this.opCheckCommands(conn));
         for (Command cmd : commands) {
-            log.info("asking PSS to gen config for device " + cmd.getDevice()+" connId: "+conn.getConnectionId());
+            log.info("asking PSS to gen config for device " + cmd.getDevice() + " connId: " + conn.getConnectionId());
             try {
                 GenerateResponse resp = pssProxy.generate(cmd);
                 log.info(resp.getGenerated());
@@ -84,7 +89,7 @@ public class PSSAdapter {
     }
 
     public State build(Connection conn) throws PSSException {
-        log.info("setting up " + conn.getConnectionId());
+        log.info("building " + conn.getConnectionId());
         List<Command> commands = this.buildCommands(conn);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
@@ -104,14 +109,33 @@ public class PSSAdapter {
 
             if (st.getConfigStatus().equals(ConfigStatus.ERROR)) {
                 result = State.FAILED;
+                Event ev = Event.builder()
+                        .connectionId(conn.getConnectionId())
+                        .description("PSS build failed")
+                        .type(EventType.ERROR)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(conn.getConnectionId(), ev);
+            } else {
+                Event ev = Event.builder()
+                        .connectionId(conn.getConnectionId())
+                        .description("built successfully")
+                        .type(EventType.BUILT)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(conn.getConnectionId(), ev);
             }
+
+
         }
         this.triggerNsi(conn, result);
         return result;
     }
 
     public State dismantle(Connection conn) throws PSSException {
-        log.info("tearing down " + conn.getConnectionId());
+        log.info("dismantling " + conn.getConnectionId());
         List<Command> commands = this.dismantleCommands(conn);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
@@ -129,6 +153,23 @@ public class PSSAdapter {
             historyRepo.save(rch);
             if (st.getConfigStatus().equals(ConfigStatus.ERROR)) {
                 result = State.FAILED;
+                Event ev = Event.builder()
+                        .connectionId(conn.getConnectionId())
+                        .description("PSS dismantle failed")
+                        .type(EventType.ERROR)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(conn.getConnectionId(), ev);
+            } else {
+                Event ev = Event.builder()
+                        .connectionId(conn.getConnectionId())
+                        .description("dismantled successfully")
+                        .type(EventType.DISMANTLED)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(conn.getConnectionId(), ev);
             }
         }
         this.triggerNsi(conn, result);
@@ -236,7 +277,7 @@ public class PSSAdapter {
             throws InterruptedException, ExecutionException {
         List<CommandStatus> statuses = new ArrayList<>();
         int threadNum = commandIds.size();
-        if (threadNum == 0 ) {
+        if (threadNum == 0) {
             return statuses;
         }
         ExecutorService executor = Executors.newFixedThreadPool(threadNum);
@@ -261,15 +302,15 @@ public class PSSAdapter {
         log.info("gathering build commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
 
-        for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
+        for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
             RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.BUILD);
             if (existing != null) {
-                log.info("dismantle commands already exist for "+conn.getConnectionId());
+                log.info("dismantle commands already exist for " + conn.getConnectionId());
             }
             commands.add(paramsAdapter.command(CommandType.BUILD, conn, j, existing));
         }
 
-        log.info("gathered "+commands.size()+" commands");
+        log.info("gathered " + commands.size() + " commands");
 
         return commands;
     }
@@ -291,25 +332,25 @@ public class PSSAdapter {
 
         List<Command> commands = new ArrayList<>();
 
-        for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
+        for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
             RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.DISMANTLE);
             if (existing != null) {
-                log.info("dismantle commands already exist for "+conn.getConnectionId());
+                log.info("dismantle commands already exist for " + conn.getConnectionId());
             }
             commands.add(paramsAdapter.command(CommandType.DISMANTLE, conn, j, existing));
         }
 
-        log.info("gathered "+commands.size()+" commands");
+        log.info("gathered " + commands.size() + " commands");
 
 
         return commands;
     }
 
-    public RouterCommands existing(String connId, String  deviceUrn, CommandType commandType) {
+    public RouterCommands existing(String connId, String deviceUrn, CommandType commandType) {
         List<RouterCommands> existing = rcr.findByConnectionIdAndDeviceUrn(connId, deviceUrn);
-        for (RouterCommands rc: existing) {
+        for (RouterCommands rc : existing) {
             if (rc.getType().equals(commandType)) {
-                return  rc;
+                return rc;
             }
         }
         return null;
@@ -319,11 +360,11 @@ public class PSSAdapter {
         log.info("gathering op check commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
 
-        for (VlanJunction j: conn.getReserved().getCmp().getJunctions()) {
+        for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
             commands.add(paramsAdapter.command(CommandType.OPERATIONAL_STATUS, conn, j, null));
         }
 
-        log.info("gathered "+commands.size()+" commands");
+        log.info("gathered " + commands.size() + " commands");
 
 
         return commands;

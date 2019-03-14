@@ -28,6 +28,7 @@ import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.Multigraph;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,9 +76,21 @@ public class ConnService {
 
     @Autowired
     private PSSAdapter pssAdapter;
+
     @Autowired
     private DbAccess dbAccess;
 
+    @Value("${pss.default-mtu:9000}")
+    private Integer defaultMtu;
+
+    @Value("${pss.min-mtu:1500}")
+    private Integer minMtu;
+
+    @Value("${pss.max-mtu:9000}")
+    private Integer maxMtu;
+
+    @Value("${resv.minimum-duration:15}")
+    private Integer minDuration;
 
     public String generateConnectionId() {
         boolean found = false;
@@ -115,9 +128,12 @@ public class ConnService {
         return b.toString();
 
     }
-    public ConnectionList   filter(ConnectionFilter filter) {
+
+
+    public ConnectionList filter(ConnectionFilter filter) {
 
         List<Connection> reservedAndArchived = new ArrayList<>();
+
         // first we don't take into account anything that doesn't have any archived
         // i.e. we discount any temporarily held
         connRepo.findAll().forEach(c -> {
@@ -131,7 +147,7 @@ public class ConnService {
         if (filter.getConnectionId() != null) {
             Pattern pattern = Pattern.compile(filter.getConnectionId(), Pattern.CASE_INSENSITIVE);
             connIdFiltered = new ArrayList<>();
-            for (Connection c: reservedAndArchived) {
+            for (Connection c : reservedAndArchived) {
                 Matcher matcher = pattern.matcher(c.getConnectionId());
                 if (matcher.find()) {
                     connIdFiltered.add(c);
@@ -144,7 +160,7 @@ public class ConnService {
             Pattern pattern = Pattern.compile(filter.getDescription(), Pattern.CASE_INSENSITIVE);
 
             descFiltered = new ArrayList<>();
-            for (Connection c: connIdFiltered) {
+            for (Connection c : connIdFiltered) {
                 boolean found = false;
                 Matcher descMatcher = pattern.matcher(c.getDescription());
                 if (descMatcher.find()) {
@@ -167,10 +183,10 @@ public class ConnService {
         }
 
         List<Connection> phaseFiltered = descFiltered;
-        if (filter.getPhase() != null) {
+        if (filter.getPhase() != null && !filter.getPhase().equals("ANY")) {
             phaseFiltered = new ArrayList<>();
-            for (Connection c: descFiltered) {
-                if (c.getPhase().equals(filter.getPhase())) {
+            for (Connection c : descFiltered) {
+                if (c.getPhase().toString().equals(filter.getPhase())) {
                     phaseFiltered.add(c);
                 }
             }
@@ -180,7 +196,7 @@ public class ConnService {
         if (filter.getUsername() != null) {
             Pattern pattern = Pattern.compile(filter.getUsername(), Pattern.CASE_INSENSITIVE);
             userFiltered = new ArrayList<>();
-            for (Connection c: phaseFiltered) {
+            for (Connection c : phaseFiltered) {
                 Matcher matcher = pattern.matcher(c.getUsername());
                 if (matcher.find()) {
                     userFiltered.add(c);
@@ -197,9 +213,9 @@ public class ConnService {
             }
 
             portFiltered = new ArrayList<>();
-            for (Connection c: userFiltered) {
+            for (Connection c : userFiltered) {
                 boolean add = false;
-                for (VlanFixture f: c.getArchived().getCmp().getFixtures() ) {
+                for (VlanFixture f : c.getArchived().getCmp().getFixtures()) {
                     for (Pattern pattern : patterns) {
                         Matcher matcher = pattern.matcher(f.getPortUrn());
                         if (matcher.find()) {
@@ -216,12 +232,12 @@ public class ConnService {
         List<Connection> vlanFiltered = portFiltered;
         if (filter.getVlans() != null && !filter.getVlans().isEmpty()) {
             vlanFiltered = new ArrayList<>();
-            for (Connection c: portFiltered) {
+            for (Connection c : portFiltered) {
                 boolean add = false;
-                for (VlanFixture f: c.getArchived().getCmp().getFixtures() ) {
-                    String fixtureVlanStr = f.getVlan().getVlanId()+"";
+                for (VlanFixture f : c.getArchived().getCmp().getFixtures()) {
+                    String fixtureVlanStr = f.getVlan().getVlanId() + "";
                     for (Integer vlan : filter.getVlans()) {
-                        String vlanStr = ""+vlan;
+                        String vlanStr = "" + vlan;
                         if (fixtureVlanStr.contains(vlanStr)) {
                             add = true;
                         }
@@ -232,26 +248,65 @@ public class ConnService {
                 }
             }
         }
+        List<Connection> intervalFiltered = vlanFiltered;
+        if (filter.getInterval() != null) {
+            Instant fBeginning = filter.getInterval().getBeginning();
+            Instant fEnding = filter.getInterval().getEnding();
+            intervalFiltered = new ArrayList<>();
+            for (Connection c : vlanFiltered) {
+                boolean add = true;
+                Schedule s = null;
+                if (c.getPhase().equals(Phase.ARCHIVED)) {
+                    s = c.getArchived().getSchedule();
+                } else if (c.getPhase().equals(Phase.RESERVED)) {
+                    s = c.getReserved().getSchedule();
+                } else {
+                    // shouldn't happen!
+                    log.error("invalid phase for " + c.getConnectionId());
+                    continue;
+                }
 
-        List<Connection> finalFiltered = vlanFiltered;
-        List<Connection> paged = new ArrayList<>();
-
-        // pages start at 1
-        int firstIdx = (filter.getPage() -1) * filter.getSizePerPage();
-//        log.info("first idx: "+firstIdx);
-        int totalSize = finalFiltered.size();
-        // if past the end, would return empty list
-        if (firstIdx < totalSize) {
-
-            int lastIdx = firstIdx + filter.getSizePerPage();
-            if (lastIdx > totalSize) {
-                lastIdx = totalSize;
-            }
-            for (int idx = firstIdx; idx < lastIdx; idx++) {
-                //                log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
-                paged.add(finalFiltered.get(idx));
+                if (s.getEnding().isBefore(fBeginning)) {
+                    add = false;
+                    // log.info("not adding, schedule is before interval "+c.getConnectionId());
+                }
+                if (s.getBeginning().isAfter(fEnding)) {
+                    add = false;
+                    // log.info("not adding, schedule is after interval "+c.getConnectionId());
+                }
+                if (add) {
+                    intervalFiltered.add(c);
+                }
             }
         }
+
+
+        List<Connection> finalFiltered = intervalFiltered;
+        List<Connection> paged = new ArrayList<>();
+        int totalSize = finalFiltered.size();
+
+        if (filter.getSizePerPage() < 0) {
+            //
+            paged = finalFiltered;
+        } else {
+            // pages start at 1
+            int firstIdx = (filter.getPage() - 1) * filter.getSizePerPage();
+            // log.info("first idx: "+firstIdx);
+            // if past the end, would return empty list
+            if (firstIdx < totalSize) {
+
+                int lastIdx = firstIdx + filter.getSizePerPage();
+                if (lastIdx > totalSize) {
+                    lastIdx = totalSize;
+                }
+                for (int idx = firstIdx; idx < lastIdx; idx++) {
+                    // log.info(idx+" - adding to list: "+finalFiltered.get(idx).getConnectionId());
+                    paged.add(finalFiltered.get(idx));
+                }
+            }
+
+        }
+
         return ConnectionList.builder()
                 .page(filter.getPage())
                 .sizePerPage(filter.getSizePerPage())
@@ -289,41 +344,41 @@ public class ConnService {
         Held h = c.getHeld();
 
         if (!c.getPhase().equals(Phase.HELD)) {
-            throw new PCEException("Connection not in HELD phase "+c.getConnectionId());
+            throw new PCEException("Connection not in HELD phase " + c.getConnectionId());
 
         }
         if (h == null) {
-            throw new PCEException("Null held "+c.getConnectionId());
+            throw new PCEException("Null held " + c.getConnectionId());
         }
         boolean valid = true;
 
-        slack.sendMessage("User "+c.getUsername()+" committed reservation "+c.getConnectionId());
+        slack.sendMessage("User " + c.getUsername() + " committed reservation " + c.getConnectionId());
 
         String error = "";
         Multigraph<String, DefaultEdge> graph = new Multigraph<>(DefaultEdge.class);
-        for (VlanJunction j: h.getCmp().getJunctions()) {
+        for (VlanJunction j : h.getCmp().getJunctions()) {
             graph.addVertex(j.getDeviceUrn());
         }
-        for (VlanPipe pipe: h.getCmp().getPipes()) {
+        for (VlanPipe pipe : h.getCmp().getPipes()) {
             boolean pipeValid = true;
             if (!graph.containsVertex(pipe.getA().getDeviceUrn())) {
                 pipeValid = false;
-                error += "invalid pipe A entry: "+pipe.getA().getDeviceUrn()+"\n";
+                error += "invalid pipe A entry: " + pipe.getA().getDeviceUrn() + "\n";
             }
             if (!graph.containsVertex(pipe.getZ().getDeviceUrn())) {
                 pipeValid = false;
                 valid = false;
-                error += "invalid pipe Z entry: "+pipe.getZ().getDeviceUrn()+"\n";
+                error += "invalid pipe Z entry: " + pipe.getZ().getDeviceUrn() + "\n";
             }
             if (pipeValid) {
                 graph.addEdge(pipe.getA().getDeviceUrn(), pipe.getZ().getDeviceUrn());
             }
         }
 
-        for (VlanFixture f: h.getCmp().getFixtures()) {
+        for (VlanFixture f : h.getCmp().getFixtures()) {
             if (!graph.containsVertex(f.getJunction().getDeviceUrn())) {
                 valid = false;
-                error += "invalid fixture junction entry: "+f.getJunction().getDeviceUrn()+"\n";
+                error += "invalid fixture junction entry: " + f.getJunction().getDeviceUrn() + "\n";
             } else {
                 graph.addVertex(f.getPortUrn());
                 graph.addEdge(f.getJunction().getDeviceUrn(), f.getPortUrn());
@@ -379,9 +434,6 @@ public class ConnService {
     }
 
 
-
-
-
     public ConnChangeResult uncommit(Connection c) {
 
         Held h = this.heldFromReserved(c);
@@ -398,7 +450,8 @@ public class ConnService {
 
     public ConnChangeResult release(Connection c) {
         // if it is HELD or DESIGN, delete it
-        if (c.getPhase().equals(Phase.HELD) ||  c.getPhase().equals(Phase.DESIGN)) {
+        if (c.getPhase().equals(Phase.HELD) || c.getPhase().equals(Phase.DESIGN)) {
+            log.debug("deleting HELD / DESIGN connection during release"+c.getConnectionId());
             connRepo.delete(c);
             connRepo.flush();
             return ConnChangeResult.builder()
@@ -416,14 +469,25 @@ public class ConnService {
         if (c.getPhase().equals(Phase.RESERVED)) {
             if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
                 // we haven't started yet; can delete without consequence
+                log.debug("deleting unstarted connection during release"+c.getConnectionId());
                 connRepo.delete(c);
+                Event ev = Event.builder()
+                        .connectionId(c.getConnectionId())
+                        .description("released (unstarted)")
+                        .type(EventType.RELEASED)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(c.getConnectionId(), ev);
+
                 return ConnChangeResult.builder()
                         .what(ConnChange.DELETED)
                         .when(Instant.now())
                         .build();
             }
             if (c.getState().equals(State.ACTIVE)) {
-                slack.sendMessage("Cancelling active reservation: " + c.getConnectionId());
+                slack.sendMessage("Cancelling active connection: " + c.getConnectionId());
+                log.debug("Releasing active connection: "+c.getConnectionId());
 
                 // need to dismantle first, that part relies on Reserved components
                 try {
@@ -435,9 +499,28 @@ public class ConnService {
                     c.setState(State.FAILED);
                     log.error(ex.getMessage(), ex);
                 }
+                Event ev = Event.builder()
+                        .connectionId(c.getConnectionId())
+                        .description("released (active)")
+                        .type(EventType.RELEASED)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(c.getConnectionId(), ev);
+
 
             } else {
-                slack.sendMessage("Cancelling non-active reservation: " + c.getConnectionId());
+                slack.sendMessage("Releasing non-active connection: " + c.getConnectionId());
+                log.debug("Releasing non-active connection: "+c.getConnectionId());
+                Event ev = Event.builder()
+                        .connectionId(c.getConnectionId())
+                        .description("released (inactive)")
+                        .type(EventType.RELEASED)
+                        .at(Instant.now())
+                        .username("system")
+                        .build();
+                logService.logEvent(c.getConnectionId(), ev);
+
             }
         }
 
@@ -525,7 +608,6 @@ public class ConnService {
     }
 
 
-
     private Schedule copySchedule(Schedule sch) {
         return Schedule.builder()
                 .beginning(sch.getBeginning())
@@ -554,7 +636,7 @@ public class ConnService {
         }
 
         List<VlanFixture> fixtures = new ArrayList<>();
-        for (VlanFixture f: cmp.getFixtures()) {
+        for (VlanFixture f : cmp.getFixtures()) {
             VlanFixture fc = VlanFixture.builder()
                     .connectionId(f.getConnectionId())
                     .ingressBandwidth(f.getIngressBandwidth())
@@ -591,6 +673,7 @@ public class ConnService {
                 .pipes(pipes)
                 .build();
     }
+
     private List<EroHop> copyEro(List<EroHop> ero) {
         List<EroHop> res = new ArrayList<>();
         for (EroHop h : ero) {
@@ -605,7 +688,7 @@ public class ConnService {
 
     private Set<CommandParam> copyCommandParams(Set<CommandParam> cps, Schedule sch) {
         Set<CommandParam> res = new HashSet<>();
-        for (CommandParam cp: cps) {
+        for (CommandParam cp : cps) {
             res.add(CommandParam.builder()
                     .connectionId(cp.getConnectionId())
                     .paramType(cp.getParamType())
@@ -663,6 +746,16 @@ public class ConnService {
 
             }
         }
+
+        if (in.getConnection_mtu() != null) {
+            if (in.getConnection_mtu() < minMtu || in.getConnection_mtu() > maxMtu) {
+                error += "MTU must be between " + minMtu + " and " + maxMtu + " (inclusive)";
+                valid = false;
+            }
+        } else {
+            in.setConnection_mtu(defaultMtu);
+        }
+
         if (in.getBegin() == null) {
             error += "null begin field\n";
             valid = false;
@@ -696,9 +789,9 @@ public class ConnService {
         if (validInterval) {
             begin = Instant.ofEpochSecond(in.getBegin());
             end = Instant.ofEpochSecond(in.getEnd());
-            if (begin.plus(Duration.ofMinutes(15)).isAfter(end)) {
+            if (begin.plus(Duration.ofMinutes(this.minDuration)).isAfter(end)) {
                 valid = false;
-                error += "interval is too short (less than 15 min)";
+                error += "interval is too short (less than "+minDuration+" min)";
             }
 
         }
@@ -714,10 +807,10 @@ public class ConnService {
                     .ending(Instant.ofEpochSecond(in.getEnd()))
                     .build();
 
-            if (in.getFixtures() == null)  {
+            if (in.getFixtures() == null) {
                 in.setFixtures(new ArrayList<>());
             }
-            if (in.getPipes() == null)  {
+            if (in.getPipes() == null) {
                 in.setPipes(new ArrayList<>());
             }
             if (in.getJunctions() == null) {
@@ -750,7 +843,7 @@ public class ConnService {
                     vlans = inVlanMap.get(f.getPort());
                 }
                 if (vlans.contains(f.getVlan())) {
-                    error += "duplicate VLAN for "+f.getPort();
+                    error += "duplicate VLAN for " + f.getPort();
                     valid = false;
                 } else {
                     vlans.add(f.getVlan());
@@ -868,13 +961,19 @@ public class ConnService {
     }
 
     public void updateConnection(SimpleConnection in, Connection c) throws IllegalArgumentException {
-        log.debug("updating connection "+c.getConnectionId());
+        log.debug("updating connection " + c.getConnectionId());
         if (!c.getPhase().equals(Phase.HELD)) {
             throw new IllegalArgumentException(c.getConnectionId() + " not in HELD phase");
         }
         c.setDescription(in.getDescription());
         c.setUsername(in.getUsername());
         c.setMode(in.getMode());
+
+        if (in.getConnection_mtu() != null) {
+            c.setConnection_mtu(in.getConnection_mtu());
+        } else {
+            c.setConnection_mtu(9000);
+        }
         c.setState(State.WAITING);
         if (in.getTags() != null && !in.getTags().isEmpty()) {
             if (c.getTags() == null) {
@@ -884,7 +983,7 @@ public class ConnService {
             in.getTags().forEach(t -> {
                 c.getTags().add(Tag.builder()
                         .category(t.getCategory())
-                        .contents(  t.getContents())
+                        .contents(t.getContents())
                         .build());
             });
         }
@@ -957,7 +1056,7 @@ public class ConnService {
                     VlanJunction zj = junctionMap.get(pipe.getZ());
                     List<EroHop> azEro = new ArrayList<>();
                     List<EroHop> zaEro = new ArrayList<>();
-                    for (String hop: pipe.getEro()) {
+                    for (String hop : pipe.getEro()) {
                         azEro.add(EroHop.builder()
                                 .urn(hop)
                                 .build());
@@ -1007,7 +1106,6 @@ public class ConnService {
             oldHeld.setCmp(cmp);
 
 
-
             Schedule oldSchedule = oldHeld.getSchedule();
 
             oldHeld.setSchedule(s);
@@ -1042,6 +1140,7 @@ public class ConnService {
                 .username("")
                 .connectionId(in.getConnectionId())
                 .state(State.WAITING)
+                .connection_mtu(in.getConnection_mtu())
                 .build();
         this.updateConnection(in, c);
 

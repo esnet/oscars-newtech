@@ -124,6 +124,7 @@ public class PssTask {
 
                 for (Connection c : shouldBeBuilt) {
                     try {
+                        log.info("building connection " + c.getConnectionId());
                         State s = this.pssAdapter.build(c);
                         newStates.put(c.getConnectionId(), s);
                     } catch (PSSException ex) {
@@ -133,6 +134,7 @@ public class PssTask {
                 }
                 for (Connection c : shouldBeDismantled) {
                     try {
+                        log.info("dismantling expired connection " + c.getConnectionId());
                         State s = this.pssAdapter.dismantle(c);
                         newStates.put(c.getConnectionId(), s);
                     } catch (PSSException ex) {
