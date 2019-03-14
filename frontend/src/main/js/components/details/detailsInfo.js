@@ -85,7 +85,6 @@ class DetailsInfo extends Component {
         if (typeof selected.type === "undefined") {
             return <DetailsGeneral />;
         }
-
         if (selected.type === "fixture") {
             return this.fixtureInfo();
         } else if (selected.type === "junction") {
