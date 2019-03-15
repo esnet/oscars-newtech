@@ -24,7 +24,8 @@ mvn install
 
 ## Creating a release on GitHub
 
-* Make sure the tag associated with the release has a description that contains the version number. 
+* Make sure the tag associated with the release has a description that contains the version number
+* Before releasing a new version, make sure to check the [UPDATING document](../UPDATING.md)
 
 ## Pull Requests
 

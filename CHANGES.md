@@ -1,38 +1,46 @@
 # OSCARS Release Notes
 
 ## v1.0.30
+
 > Mar 12, 2019
+
 - Moved repository to `esnet/oscars`
 - Merged frontend code
-
+- Allow users to modify end time and description of a connection [#304](https://github.com/esnet/oscars/issues/304) , [#300](https://github.com/esnet/oscars/issues/300) , [#287](https://github.com/esnet/oscars/issues/287)
+- Hotfix for new API endpoint issues
+- Add SDP Information
 
 ## v1.0.27
 
 > Mar 6, 2019
+
 - Fixes in MX LSPs templates (priority and metrics)
 - Topology python script fixes for incorrect loopbacks
-- Add API for historical data [#285](https://github.com/esnet/oscars-newtech/issues/285)
-- Parameterize minimum connection duration [#283](https://github.com/esnet/oscars-newtech/issues/283)
-- Conditionally set output-vlan-map swap  [#282](https://github.com/esnet/oscars-newtech/issues/282)
+- Add API for historical data [#285](https://github.com/esnet/oscars/issues/285)
+- Give a better name to the juniper OSCARS community [#283](https://github.com/esnet/oscars/issues/283)
+- Parameterize minimum connection duration [#271](https://github.com/esnet/oscars/issues/271)
+- Conditionally set output-vlan-map swap  [#282](https://github.com/esnet/oscars/issues/282)
 - Adds NSI forced-end message 
+- Fix for bad loopbacks [#284](https://github.com/esnet/oscars/issues/284)
+- Fix [#281](https://github.com/esnet/oscars/issues/281)
 
 ## v1.0.26
 
 > Feb 21, 2019
 
-- Fix latitude / longitude inversion in config file nsi.nsa-location [#273](https://github.com/esnet/oscars-newtech/issues/273)
-- Deparallelize NSI callbacks [#272](https://github.com/esnet/oscars-newtech/issues/272)
-- Handle if-modified-since header in requests [#238](https://github.com/esnet/oscars-newtech/issues/238)
-- Add feature to allow service MTU override [#258](https://github.com/esnet/oscars-newtech/issues/258)
-- Fix NSI version handling [#266](https://github.com/esnet/oscars-newtech/issues/266)
-- Make port/device geo locations available thru API (/api/topo/locations) [#275](https://github.com/esnet/oscars-newtech/issues/275)
+- Fix latitude / longitude inversion in config file nsi.nsa-location [#273](https://github.com/esnet/oscars/issues/273)
+- Deparallelize NSI callbacks [#272](https://github.com/esnet/oscars/issues/272)
+- Handle if-modified-since header in requests [#238](https://github.com/esnet/oscars/issues/238)
+- Add feature to allow service MTU override [#258](https://github.com/esnet/oscars/issues/258)
+- Fix NSI version handling [#266](https://github.com/esnet/oscars/issues/266)
+- Make port/device geo locations available thru API (/api/topo/locations) [#275](https://github.com/esnet/oscars/issues/275)
 - Update frontend to 1.0.21
 
 ## v1.0.25
 
 > Feb 7, 2019
 
-- Add physical port locations to NML topology [#264](https://github.com/esnet/oscars-newtech/issues/264)
+- Add physical port locations to NML topology [#264](https://github.com/esnet/oscars/issues/264)
 - Fix a topology loopback address bug
 - Fix for source / destination flip
 - Correct filter behavior for empty phase
