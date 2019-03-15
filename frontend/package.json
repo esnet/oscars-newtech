@@ -4,7 +4,7 @@
   "description": "OSCARS frontend",
   "repository": {
     "type": "git",
-    "url": "git://github.com/esnet/oscars-newtech.git"
+    "url": "git://github.com/esnet/oscars.git"
   },
   "dependencies": {
     "bootstrap": "4.1.3",

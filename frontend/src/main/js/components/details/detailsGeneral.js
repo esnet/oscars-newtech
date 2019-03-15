@@ -1,9 +1,5 @@
 import React, { Component } from "react";
-
 import { observer, inject } from "mobx-react";
-import Moment from "moment";
-import BootstrapTable from "react-bootstrap-table-next";
-
 import {
     Card,
     CardBody,
@@ -20,6 +16,7 @@ import classnames from "classnames";
 
 import DetailsButtons from "./detailsButtons";
 import DetailsDrawing from "./detailsDrawing";
+import DetailsEditForm from "./detailsEditForm";
 import DetailsTags from "./detailsTags";
 import HelpPopover from "../helpPopover";
 
@@ -28,6 +25,9 @@ import HelpPopover from "../helpPopover";
 class DetailsGeneral extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            tab: ""
+        };
     }
 
     componentWillMount() {
@@ -53,134 +53,109 @@ class DetailsGeneral extends Component {
 
     render() {
         const conn = this.props.connsStore.store.current;
-        //console.log(toJS(conn));
-        const format = "Y/MM/DD HH:mm";
-        const beg = Moment(conn.archived.schedule.beginning * 1000);
-        const end = Moment(conn.archived.schedule.ending * 1000);
-        const beginning = beg.format(format) + " (" + beg.fromNow() + ")";
-        const ending = end.format(format) + " (" + end.fromNow() + ")";
-        const info = [
-            {
-                k: "Description",
-                v: conn.description
-            },
-            {
-                k: "Username",
-                v: conn.username
-            },
-            {
-                k: "Begins",
-                v: beginning
-            },
-            {
-                k: "Ending",
-                v: ending
-            }
-        ];
 
-        const columns = [
-            {
-                dataField: "k",
-                text: "Field",
-                headerTitle: true
-            },
-            {
-                dataField: "v",
-                text: "Value",
-                headerTitle: true
-            }
-        ];
-        const phaseTexts = {
-            RESERVED: "Reserved",
-            ARCHIVED: "Archived",
-            HELD: "Held"
-        };
-        const modeTexts = {
-            MANUAL: "Manual",
-            AUTOMATIC: "Scheduled"
-        };
-        const stateTexts = {
-            ACTIVE: "Active",
-            WAITING: "Waiting",
-            FAILED: "Failed",
-            FINISHED: "Finished"
-        };
+        if (conn.archived.schedule.beginning != null && conn.archived.schedule.ending != null) {
+            const phaseTexts = {
+                RESERVED: "Reserved",
+                ARCHIVED: "Archived",
+                HELD: "Held"
+            };
 
-        let states = (
-            <ListGroup>
-                <ListGroupItem>
-                    Phase: {phaseTexts[conn.phase]} {this.phaseHelp(conn.phase)}
-                </ListGroupItem>
-                <ListGroupItem>
-                    State: {stateTexts[conn.state]} {this.stateHelp(conn.state)}
-                </ListGroupItem>
-                <ListGroupItem>
-                    Build mode: {modeTexts[conn.mode]} {this.modeHelp(conn.mode)}
-                </ListGroupItem>
-            </ListGroup>
-        );
+            const modeTexts = {
+                MANUAL: "Manual",
+                AUTOMATIC: "Scheduled"
+            };
 
-        return (
-            <Card>
-                <CardHeader className="p-1">Info</CardHeader>
-                <CardBody>
-                    <Nav tabs>
-                        <NavItem>
-                            <NavLink
-                                href="#"
-                                className={classnames({ active: this.state.tab === "info" })}
-                                onClick={() => {
-                                    this.setTab("info");
-                                }}
-                            >
-                                Info
-                            </NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink
-                                href="#"
-                                className={classnames({ active: this.state.tab === "tags" })}
-                                onClick={() => {
-                                    this.setTab("tags");
-                                }}
-                            >
-                                Tags
-                            </NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink
-                                href="#"
-                                className={classnames({ active: this.state.tab === "drawing" })}
-                                onClick={() => {
-                                    this.setTab("drawing");
-                                }}
-                            >
-                                Drawing
-                            </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <TabContent activeTab={this.state.tab}>
-                        <TabPane tabId="info" title="Info">
-                            <BootstrapTable
-                                tableHeaderClass={"hidden"}
-                                keyField="k"
-                                columns={columns}
-                                data={info}
-                                bordered={false}
-                            />
-                            {states}
-                            <DetailsButtons />
-                        </TabPane>
-                        <TabPane tabId="drawing" title="Drawing">
-                            <DetailsDrawing />
-                        </TabPane>
-                        <TabPane tabId="tags" title="Tags">
-                            <DetailsTags />
-                        </TabPane>
-                    </TabContent>
-                </CardBody>
-            </Card>
-        );
+            const stateTexts = {
+                ACTIVE: "Active",
+                WAITING: "Waiting",
+                FAILED: "Failed",
+                FINISHED: "Finished"
+            };
+
+            let editDetails = (
+                <ListGroup>
+                    <ListGroupItem>
+                        <DetailsEditForm />
+                    </ListGroupItem>
+                </ListGroup>
+            );
+
+            let states = (
+                <ListGroup>
+                    <ListGroupItem>
+                        Phase: {phaseTexts[conn.phase]} {this.phaseHelp(conn.phase)}
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        State: {stateTexts[conn.state]} {this.stateHelp(conn.state)}
+                    </ListGroupItem>
+                    <ListGroupItem>
+                        Build mode: {modeTexts[conn.mode]} {this.modeHelp(conn.mode)}
+                    </ListGroupItem>
+                </ListGroup>
+            );
+
+            return (
+                <Card>
+                    <CardHeader className="p-1">Info</CardHeader>
+                    <CardBody>
+                        <Nav tabs>
+                            <NavItem>
+                                <NavLink
+                                    href="#"
+                                    className={classnames({ active: this.state.tab === "info" })}
+                                    onClick={() => {
+                                        this.setTab("info");
+                                    }}
+                                >
+                                    Info
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    href="#"
+                                    className={classnames({ active: this.state.tab === "tags" })}
+                                    onClick={() => {
+                                        this.setTab("tags");
+                                    }}
+                                >
+                                    Tags
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    href="#"
+                                    className={classnames({ active: this.state.tab === "drawing" })}
+                                    onClick={() => {
+                                        this.setTab("drawing");
+                                    }}
+                                >
+                                    Drawing
+                                </NavLink>
+                            </NavItem>
+                        </Nav>
+                        <TabContent activeTab={this.state.tab}>
+                            <TabPane tabId="info" title="Info">
+                                <br />
+                                {editDetails}
+                                <br />
+                                {states}
+                                <br />
+                                <DetailsButtons />
+                            </TabPane>
+                            <TabPane tabId="drawing" title="Drawing">
+                                <DetailsDrawing />
+                            </TabPane>
+                            <TabPane tabId="tags" title="Tags">
+                                <DetailsTags />
+                            </TabPane>
+                        </TabContent>
+                    </CardBody>
+                </Card>
+            );
+        } else {
+            return <div>Loading...</div>;
+        }
     }
 
     phaseHelp(phase) {

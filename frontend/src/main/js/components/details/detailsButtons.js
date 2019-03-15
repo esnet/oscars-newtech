@@ -483,9 +483,10 @@ class DetailsButtons extends Component {
                 {build}
                 {dismantle}
                 {release}
+                <br />
                 {specialHeader}
                 {regenerate}
-
+                <br />
                 {recoverSelect}
             </ListGroup>
         );
