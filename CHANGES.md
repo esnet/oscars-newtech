@@ -6,7 +6,7 @@
 
 - Moved repository to `esnet/oscars`
 - Merged frontend code
-- Allow users to modify end time and description of a connection [#304](https://github.com/esnet/oscars/issues/304) , [#300](https://github.com/esnet/oscars/issues/300) , [#287](https://github.com/esnet/oscars/issues/287)
+- Allow users to modify end time and description of a connection [#304](https://github.com/esnet/oscars/issues/304),[#300](https://github.com/esnet/oscars/issues/300),[#287](https://github.com/esnet/oscars/issues/287)
 - Hotfix for new API endpoint issues
 - Add SDP Information
 
