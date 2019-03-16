@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-
 import chrono from "chrono-node";
 import { action } from "mobx";
 import { observer, inject } from "mobx-react";
@@ -62,19 +61,16 @@ class DetailsEditForm extends Component {
         const description = this.props.connsStore.editSchedule.description;
         this.description.value = description.originalDescription;
 
-        this.props.connsStore.setParamsForEditButtons({
-            description: {
-                input: true,
-                buttonText: "Edit",
-                collapseText: true,
-                save: true
-            }
-        });
-
         this.props.connsStore.setParamsForEditSchedule({
             description: {
                 acceptable: true,
-                validationState: "success"
+                validationState: "success",
+                buttons: {
+                    input: true,
+                    buttonText: "Edit",
+                    collapseText: true,
+                    save: true
+                }
             }
         });
     };
@@ -87,30 +83,34 @@ class DetailsEditForm extends Component {
                 description: {
                     acceptable: true,
                     validationState: "success",
-                    updatedDescription: value
+                    updatedDescription: value,
+                    buttons: {
+                        save: false
+                    }
                 }
             });
-
-            this.props.connsStore.setParamsForEditButtons({ description: { save: false } });
         } else {
             this.props.connsStore.setParamsForEditSchedule({
                 description: {
                     acceptable: false,
                     validationState: "error",
-                    validationText: "Can't be empty"
+                    validationText: "Can't be empty",
+                    buttons: {
+                        save: true
+                    }
                 }
             });
-
-            this.props.connsStore.setParamsForEditButtons({ description: { save: true } });
         }
     };
 
     handleDescriptionEdit = () => {
-        this.props.connsStore.setParamsForEditButtons({
+        this.props.connsStore.setParamsForEditSchedule({
             description: {
-                input: false,
-                buttonText: "Cancel",
-                collapseText: false
+                buttons: {
+                    input: false,
+                    buttonText: "Cancel",
+                    collapseText: false
+                }
             }
         });
     };
@@ -127,20 +127,17 @@ class DetailsEditForm extends Component {
             action(response => {
                 this.description.value = desc.updatedDescription;
 
-                this.props.connsStore.setParamsForEditButtons({
-                    description: {
-                        edit: false,
-                        save: true,
-                        buttonText: "Edit",
-                        collapseText: true,
-                        input: true
-                    }
-                });
-
                 this.props.connsStore.setParamsForEditSchedule({
                     description: {
                         originalDescription: desc.updatedDescription,
-                        saved: true
+                        saved: true,
+                        buttons: {
+                            edit: false,
+                            save: true,
+                            buttonText: "Edit",
+                            collapseText: true,
+                            input: true
+                        }
                     }
                 });
             })
@@ -151,19 +148,16 @@ class DetailsEditForm extends Component {
         const ending = this.props.connsStore.editSchedule.ending;
         this.endingDate.value = ending.originalTime;
 
-        this.props.connsStore.setParamsForEditButtons({
-            ending: {
-                input: true,
-                buttonText: "Edit",
-                collapseText: true,
-                save: true
-            }
-        });
-
         this.props.connsStore.setParamsForEditSchedule({
             ending: {
                 acceptable: true,
-                validationState: "success"
+                validationState: "success",
+                buttons: {
+                    input: true,
+                    buttonText: "Edit",
+                    collapseText: true,
+                    save: true
+                }
             }
         });
     };
@@ -183,21 +177,24 @@ class DetailsEditForm extends Component {
                         acceptable: true,
                         validationState: "success",
                         newEndTime: parsed.getTime() / 1000,
-                        parsedValue: parsed
+                        parsedValue: parsed,
+                        buttons: {
+                            save: false
+                        }
                     }
                 });
-                this.props.connsStore.setParamsForEditButtons({ ending: { save: false } });
             } else {
                 this.props.connsStore.setParamsForEditSchedule({
                     ending: {
                         acceptable: false,
                         validationState: "error",
                         validationText: "Ending Time is not within the valid time range",
-                        parsedValue: parsed
+                        parsedValue: parsed,
+                        buttons: {
+                            save: true
+                        }
                     }
                 });
-
-                this.props.connsStore.setParamsForEditButtons({ ending: { save: true } });
             }
         } else {
             this.props.connsStore.setParamsForEditSchedule({
@@ -205,11 +202,12 @@ class DetailsEditForm extends Component {
                     acceptable: false,
                     validationState: "error",
                     validationText: "Ending Time is not a valid date",
-                    parsedValue: parsed
+                    parsedValue: parsed,
+                    buttons: {
+                        save: true
+                    }
                 }
             });
-
-            this.props.connsStore.setParamsForEditButtons({ ending: { save: true } });
         }
     };
 
@@ -224,19 +222,16 @@ class DetailsEditForm extends Component {
             action(response => {
                 let status = JSON.parse(response);
 
-                this.props.connsStore.setParamsForEditButtons({
-                    ending: {
-                        input: false,
-                        buttonText: "Cancel",
-                        collapseText: false
-                    }
-                });
-
                 this.props.connsStore.setParamsForEditSchedule({
                     ending: {
                         validSchedule: {
                             beginning: status.floor,
                             ending: status.ceiling
+                        },
+                        buttons: {
+                            input: false,
+                            buttonText: "Cancel",
+                            collapseText: false
                         }
                     }
                 });
@@ -265,20 +260,17 @@ class DetailsEditForm extends Component {
                     const newTime = this.formatSchedule(status.end).formattedTime;
                     this.endingDate.value = newTime;
 
-                    this.props.connsStore.setParamsForEditButtons({
-                        ending: {
-                            edit: false,
-                            save: true,
-                            buttonText: "Edit",
-                            collapseText: true,
-                            input: true
-                        }
-                    });
-
                     this.props.connsStore.setParamsForEditSchedule({
                         ending: {
                             originalTime: newTime,
-                            saved: true
+                            saved: true,
+                            buttons: {
+                                edit: false,
+                                save: true,
+                                buttonText: "Edit",
+                                collapseText: true,
+                                input: true
+                            }
                         }
                     });
                 }
@@ -288,9 +280,7 @@ class DetailsEditForm extends Component {
 
     render() {
         const conn = this.props.connsStore.store.current;
-
         const es = this.props.connsStore.editSchedule;
-        const eb = this.props.connsStore.editButtons;
 
         const beginning = this.formatSchedule(conn.archived.schedule.beginning).formattedTime;
         const validStartingTime = this.formatSchedule(es.ending.validSchedule.beginning).time;
@@ -309,7 +299,7 @@ class DetailsEditForm extends Component {
                             innerRef={ref => {
                                 this.description = ref;
                             }}
-                            disabled={eb.description.input}
+                            disabled={es.description.buttons.input}
                             invalid={es.description.validationState === "error"}
                             onChange={this.handleDescriptionChange}
                         />
@@ -319,7 +309,7 @@ class DetailsEditForm extends Component {
                         ) : (
                             ""
                         )}
-                        <Collapse isOpen={!eb.description.collapseText}>
+                        <Collapse isOpen={!es.description.buttons.collapseText}>
                             <FormGroup>
                                 <FormText>
                                     Original Description: {es.description.originalDescription}
@@ -328,12 +318,12 @@ class DetailsEditForm extends Component {
                         </Collapse>
                     </Col>
                     <Col sm={1.5}>
-                        <ToggleDisplay show={eb.description.buttonText === "Edit"}>
+                        <ToggleDisplay show={es.description.buttons.buttonText === "Edit"}>
                             <Button color="primary" onClick={this.handleDescriptionEdit}>
                                 Edit
                             </Button>
                         </ToggleDisplay>
-                        <ToggleDisplay show={eb.description.buttonText === "Cancel"}>
+                        <ToggleDisplay show={es.description.buttons.buttonText === "Cancel"}>
                             <Button color="primary" onClick={this.handleDescriptionCancel}>
                                 Cancel
                             </Button>
@@ -342,7 +332,7 @@ class DetailsEditForm extends Component {
                     <Col sm={1}>
                         <Button
                             color="success"
-                            disabled={eb.description.save}
+                            disabled={es.description.buttons.save}
                             onClick={this.handleDescriptionSave}
                         >
                             Save
@@ -379,13 +369,13 @@ class DetailsEditForm extends Component {
                             innerRef={ref => {
                                 this.endingDate = ref;
                             }}
-                            disabled={eb.ending.input}
+                            disabled={es.ending.buttons.input}
                             invalid={es.ending.validationState === "error"}
                             onChange={this.handleEndingChange}
                         />
                         <FormFeedback>{es.ending.validationText}</FormFeedback>
                         {es.ending.saved ? <DetailsModal name="editEnding" /> : ""}
-                        <Collapse isOpen={!eb.ending.collapseText}>
+                        <Collapse isOpen={!es.ending.buttons.collapseText}>
                             <FormGroup>
                                 <FormText>Original Ending Time: {es.ending.originalTime}</FormText>
                                 <FormText>
@@ -396,12 +386,12 @@ class DetailsEditForm extends Component {
                         </Collapse>
                     </Col>
                     <Col sm={1.5}>
-                        <ToggleDisplay show={eb.ending.buttonText === "Edit"}>
+                        <ToggleDisplay show={es.ending.buttons.buttonText === "Edit"}>
                             <Button color="primary" onClick={this.handleEndingEdit}>
                                 Edit
                             </Button>
                         </ToggleDisplay>
-                        <ToggleDisplay show={eb.ending.buttonText === "Cancel"}>
+                        <ToggleDisplay show={es.ending.buttons.buttonText === "Cancel"}>
                             <Button color="primary" onClick={this.handleEndingCancel}>
                                 Cancel
                             </Button>
@@ -410,7 +400,7 @@ class DetailsEditForm extends Component {
                     <Col sm={1}>
                         <Button
                             color="success"
-                            disabled={eb.ending.save}
+                            disabled={es.ending.buttons.save}
                             onClick={this.handleEndingSave}
                         >
                             Save
