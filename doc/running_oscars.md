@@ -10,7 +10,7 @@ Make sure the following are installed on your system:
 
 ## Building
 
-Run the following commands from the main project directory (oscars-newtech):
+Run the following commands from the main project directory (oscars):
 
 ```
  mvn -DskipTests package 
@@ -27,13 +27,13 @@ pg_ctl -D /usr/local/var/postgres start
 Before running OSCARS for the first time, set up the database tables by executing the following script:
 
 ```bash
-cd oscars-newtech/backend
+cd oscars/backend
 ./bin/install_db.sh
 ```
 
 ## Starting OSCARS
 
-You may start the OSCARS services (backend and pss) with the following command from the main project directory (oscars-newtech):
+You may start the OSCARS services (backend and pss) with the following command from the main project directory (oscars):
 
 ```bash
 cd pss
