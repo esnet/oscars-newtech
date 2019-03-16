@@ -25,23 +25,6 @@ class ConnectionsStore {
         history: new Map()
     };
 
-    @observable editButtons = {
-        description: {
-            buttonText: "Edit",
-            edit: true,
-            save: true,
-            input: true,
-            collapseText: true
-        },
-        ending: {
-            buttonText: "Edit",
-            edit: true,
-            save: true,
-            input: true,
-            collapseText: true
-        }
-    };
-
     @observable editSchedule = {
         connectionId: "",
         description: {
@@ -50,7 +33,14 @@ class ConnectionsStore {
             acceptable: false,
             validationText: "",
             validationState: "success",
-            saved: false
+            saved: false,
+            buttons: {
+                buttonText: "Edit",
+                edit: true,
+                save: true,
+                input: true,
+                collapseText: true
+            }
         },
         ending: {
             originalTime: "",
@@ -63,19 +53,16 @@ class ConnectionsStore {
                 ending: null
             },
             parsedValue: null,
-            saved: false
+            saved: false,
+            buttons: {
+                buttonText: "Edit",
+                edit: true,
+                save: true,
+                input: true,
+                collapseText: true
+            }
         }
     };
-
-    @action
-    setParamsForEditSchedule(params) {
-        mergeWith(this.editSchedule, params);
-    }
-
-    @action
-    setParamsForEditButtons(params) {
-        mergeWith(this.editButtons, params);
-    }
 
     @observable drawing = {
         redraw: true
@@ -144,6 +131,10 @@ class ConnectionsStore {
         page: 1,
         totalSize: 0
     };
+
+    @action setParamsForEditSchedule(params) {
+        mergeWith(this.editSchedule, params);
+    }
 
     @action setRedraw(value) {
         this.drawing.redraw = value;
