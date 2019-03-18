@@ -89,6 +89,7 @@ class SelectPortTypeahead extends Component {
                     <FormGroup>
                         <InputGroup>
                             <Typeahead
+                                id="portUrn"
                                 placeholder="Type port urn to add"
                                 minLength={2}
                                 options={options}
