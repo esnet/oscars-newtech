@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # This script auto-generates all documentation contained within OSCARS 1.0.
-# Code source files are added to doc/source.
-# Deployable and exportable Sphinx output documentation is auto-built and added to doc/build.
+# Code source files are added to docs/source.
+# Deployable and exportable Sphinx output documentation is auto-built and added to docs/build.
 
 # Documentation includes:
-    # Manually created user-documentation: located in doc/source/userdoc.
-    # Auto-generated code-documentation from Javadoc: located in doc/source/codedoc.
+    # Manually created user-documentation: located in docs/source/userdoc.
+    # Auto-generated code-documentation from Javadoc: located in docs/source/codedoc.
 
 # Required Dependencies:
     # Sphinx
@@ -19,9 +19,9 @@ if [ ! -f ./bin/generatedocs.sh ]; then
 fi
 
 # Step 1. Compile all the Javadoc into codedoc directory.
-javasphinx-apidoc -o ./doc/source/codedoc . -u
+javasphinx-apidoc -o ./docs/source/codedoc . -u
 
 #format: -o (output directory) <output directory> <input directory> -u (update outdated only)
 
 # Step 2. Build all HTML files from Sphinx source files (reStructuredText files).
-make html --directory ./doc/
+make html --directory ./docs/

@@ -16,4 +16,4 @@
 
 ### Notes
 - Once approved, use the **squash and merge** option.
-- Refer to the [development notes](https://github.com/esnet/oscars/blob/master/doc/development_notes.md#pull-requests) for more details.
+- Refer to the [development notes](https://github.com/esnet/oscars/blob/master/docs/development_notes.md#pull-requests) for more details.
