@@ -64,12 +64,12 @@ public class PSSAdapter {
 
         // TODO: possibly a map device urn <-> pss device ?
         List<Command> commands = new ArrayList<>();
-        commands.addAll(this.buildCommands(conn));
-        commands.addAll(this.dismantleCommands(conn));
-        commands.addAll(this.opCheckCommands(conn));
-        for (Command cmd : commands) {
-            log.info("asking PSS to gen config for device " + cmd.getDevice() + " connId: " + conn.getConnectionId());
-            try {
+        try {
+            commands.addAll(this.buildCommands(conn));
+            commands.addAll(this.dismantleCommands(conn));
+            commands.addAll(this.opCheckCommands(conn));
+            for (Command cmd : commands) {
+                log.info("asking PSS to gen config for device " + cmd.getDevice() + " connId: " + conn.getConnectionId());
                 GenerateResponse resp = pssProxy.generate(cmd);
                 log.info(resp.getGenerated());
                 RouterCommands rce = RouterCommands.builder()
@@ -79,13 +79,14 @@ public class PSSAdapter {
                         .type(resp.getCommandType())
                         .build();
                 rcr.save(rce);
-            } catch (Exception ex) {
-                log.error("Config generation failed");
-                log.error(ex.getMessage(), ex);
-                throw new PSSException(ex.getMessage());
-            }
 
+            }
+        } catch (Exception ex) {
+            log.error("Config generation failed");
+            log.error(ex.getMessage(), ex);
+            throw new PSSException(ex.getMessage());
         }
+
     }
 
     public State build(Connection conn) throws PSSException {
