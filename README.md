@@ -53,9 +53,9 @@ Scripts and code for migrating OSCARS 0.6 reservations to 1.0
 
 ## Development
 
-* [Running OSCARS](./doc/running_oscars.md)
-* [Development Notes](./doc/development_notes.md)
-* [API Docs](./doc/API.md)
+* [Running OSCARS](./docs/running_oscars.md)
+* [Development Notes](./docs/development_notes.md)
+* [API Docs](./docs/API.md)
 
 ## Release Notes
 
