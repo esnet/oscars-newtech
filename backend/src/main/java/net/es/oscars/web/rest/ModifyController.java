@@ -145,20 +145,27 @@ public class ModifyController {
             throws StartupException, ModifyException {
         this.checkStartup();
 
-        // placeholder functionality
-        // asking for a begin time range will throw an exception
-        // asking for end time will give a fixed range of (now ... 1 hour later)
         Date date = new Date();
-        Long nowSeconds = date.getTime() / 1000;
 
         Connection c = connSvc.findConnection(request.getConnectionId());
+        Long beginSeconds = c.getReserved().getSchedule().getBeginning().getEpochSecond();
         Long endSeconds = c.getReserved().getSchedule().getEnding().getEpochSecond();
+
 
 
         switch (request.getType()) {
             case END:
+                Long startOfRange = beginSeconds;
+                Long nowSeconds = date.getTime() / 1000;
+                // start of valid range is the latest of now() and actual start time
+                if (nowSeconds > beginSeconds) {
+                    startOfRange = nowSeconds;
+                }
+                if (nowSeconds > endSeconds) {
+                    throw new ModifyException("current time past end time; cannot modify");
+                }
                 return IntRange.builder()
-                        .floor(nowSeconds.intValue())
+                        .floor(startOfRange.intValue())
                         .ceiling(endSeconds.intValue())
                         .build();
             case BEGIN:
