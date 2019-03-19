@@ -1,8 +1,4 @@
 {
-  "presets": [
-    "env",
-    "react",
-    "stage-1"
-  ],
-  "plugins": ["transform-decorators-legacy", "lodash"]
+  "presets": ["@babel/env", "@babel/react"],
+  "plugins": [["@babel/plugin-proposal-decorators", { "legacy": true }], ["@babel/plugin-proposal-class-properties", { "loose": true }], "lodash"]
 }

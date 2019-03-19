@@ -1,7 +1,7 @@
 let packageJSON = require("./package.json");
 let path = require("path");
 let HtmlWebpackPlugin = require("html-webpack-plugin");
-let BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+// let BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 let webpack = require("webpack");
 
@@ -30,7 +30,7 @@ let plugins = [
 let devtool = "eval";
 
 module.exports = {
-    entry: ["babel-polyfill", "./src/main/js/index.js"],
+    entry: ["@babel/polyfill", "./src/main/js/index.js"],
     devtool: devtool,
     cache: true,
     mode: "development",
@@ -56,7 +56,7 @@ module.exports = {
                     cacheDirectory: true,
                     presets: [
                         [
-                            "env",
+                            "@babel/preset-env",
                             {
                                 targets: {
                                     browsers: ["last 2 versions", "safari >= 7"]
@@ -71,7 +71,6 @@ module.exports = {
                     ]
                 }
             },
-
             {
                 test: /\.js|\.jsx/,
                 exclude: /node_modules/,
@@ -80,17 +79,15 @@ module.exports = {
                     cacheDirectory: true,
                     presets: [
                         [
-                            "env",
+                            "@babel/preset-env",
                             {
                                 targets: {
                                     browsers: ["last 2 versions", "safari >= 7"]
                                 }
                             }
-                        ],
-                        "react",
-                        "stage-1"
+                        ]
                     ],
-                    plugins: ["transform-decorators-legacy"]
+                    plugins: [["@babel/plugin-proposal-decorators", { legacy: true }], "lodash"]
                 }
             },
             {
