@@ -14,7 +14,7 @@ public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
     List<Schedule> findAll();
     List<Schedule> findByConnectionId(String connectionId);
 
-    @Query(value = "SELECT sch FROM Schedule sch WHERE (sch.ending >= ?1 AND sch.beginning <= ?2)")
+    @Query(value = "SELECT sch FROM Schedule sch WHERE (sch.releasing >= ?1 AND sch.beginning <= ?2)")
     List<Schedule> findOverlapping(Instant period_start, Instant period_end);
 
 

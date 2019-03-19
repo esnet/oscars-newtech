@@ -61,11 +61,11 @@ public class ResvLibrary {
         return available;
     }
 
-    public static List<Schedule> schedulesOverlapping(List<Schedule> all, Instant b, Instant e) {
+    public static List<Schedule> schedulesOverlapping(List<Schedule> all, Instant b, Instant r) {
         List<Schedule> overlapping = new ArrayList<>();
         for (Schedule s : all) {
             if (s.getPhase().equals(Phase.HELD) || s.getPhase().equals(Phase.RESERVED)) {
-                if (s.overlaps(b, e)) {
+                if (s.overlaps(b, r)) {
                     overlapping.add(s);
                 }
 

@@ -50,7 +50,7 @@ public class PssResourceService {
         Schedule sched = conn.getReserved().getSchedule();
         Interval interval = Interval.builder()
                 .beginning(sched.getBeginning())
-                .ending(sched.getEnding())
+                .ending(sched.getReleasing())
                 .build();
 
         try {
@@ -81,7 +81,7 @@ public class PssResourceService {
         log.info("reserving globals & per-device. deciding VC id:");
         Interval interval = Interval.builder()
                 .beginning(sched.getBeginning())
-                .ending(sched.getEnding())
+                .ending(sched.getReleasing())
                 .build();
 
 

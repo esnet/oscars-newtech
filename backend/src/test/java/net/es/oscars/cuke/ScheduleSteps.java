@@ -31,10 +31,13 @@ public class ScheduleSteps extends CucumberSteps {
             String cId = row.get(0);
             Integer b = Integer.parseInt(row.get(1));
             Integer e = Integer.parseInt(row.get(2));
-            Phase p = Phase.valueOf(row.get(3));
+            Integer r = Integer.parseInt(row.get(3));
+            Phase p = Phase.valueOf(row.get(4));
+
             Schedule s = Schedule.builder()
                     .beginning(Instant.ofEpochSecond(b))
                     .ending(Instant.ofEpochSecond(e))
+                    .releasing(Instant.ofEpochSecond(r))
                     .connectionId(cId)
                     .phase(p)
                     .build();
@@ -44,9 +47,10 @@ public class ScheduleSteps extends CucumberSteps {
 
 
     @Then("^a schedule between (\\d+) and (\\d+) does overlap$")
-    public void a_schedule_between_and_overlap(int b, int e, List<String> connectionIds) throws Throwable {
+    public void a_schedule_between_and_overlap(int b, int r, List<String> connectionIds) throws Throwable {
+        assert connectionIds != null;
         List<Schedule> overlapping =
-                ResvLibrary.schedulesOverlapping(this.schedules, Instant.ofEpochSecond(b), Instant.ofEpochSecond(e));
+                ResvLibrary.schedulesOverlapping(this.schedules, Instant.ofEpochSecond(b), Instant.ofEpochSecond(r));
 
         List<String> overlappingConnectionIds = overlapping.stream()
                 .map(Schedule::getConnectionId).collect(Collectors.toList());

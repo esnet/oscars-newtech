@@ -92,6 +92,9 @@ public class ConnService {
     @Value("${resv.minimum-duration:15}")
     private Integer minDuration;
 
+    @Value("${resv.reserve-past-ending:90}")
+    private Integer reservePastEnding;
+
     public String generateConnectionId() {
         boolean found = false;
         String result = "";
@@ -328,8 +331,14 @@ public class ConnService {
             connRepo.save(c);
         } else if (request.getType().equals(ScheduleModifyType.END)) {
             Instant newEnding = Instant.ofEpochSecond(request.getTimestamp());
+
+            Instant newReleasing = Instant.ofEpochSecond(request.getTimestamp()+this.reservePastEnding);
+
+
             c.getReserved().getSchedule().setEnding(newEnding);
             c.getArchived().getSchedule().setEnding(newEnding);
+            c.getReserved().getSchedule().setReleasing(newReleasing);
+            c.getArchived().getSchedule().setReleasing(newReleasing);
             connRepo.save(c);
 
         } else {
@@ -612,6 +621,7 @@ public class ConnService {
         return Schedule.builder()
                 .beginning(sch.getBeginning())
                 .ending(sch.getEnding())
+                .releasing(sch.getReleasing())
                 .connectionId(sch.getConnectionId())
                 .refId(sch.getRefId())
                 .phase(sch.getPhase())
@@ -993,6 +1003,7 @@ public class ConnService {
                 .phase(Phase.HELD)
                 .beginning(Instant.ofEpochSecond(in.getBegin()))
                 .ending(Instant.ofEpochSecond(in.getEnd()))
+                .releasing(Instant.ofEpochSecond(in.getEnd()+this.reservePastEnding))
                 .build();
         Components cmp = Components.builder()
                 .fixtures(new ArrayList<>())

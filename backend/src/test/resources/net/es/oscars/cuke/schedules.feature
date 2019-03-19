@@ -8,24 +8,31 @@ Feature: schedules logic
 
     Given I clear all schedules
     Given I add these schedules
-      | A | 10 | 40 | HELD |
-      | B | 50 | 90 | HELD |
-      | C | 30 | 60 | RESERVED |
+      | A | 10 | 40 | 45 | HELD |
+      | B | 50 | 90 | 95 | HELD |
+      | C | 30 | 60 | 65 | RESERVED |
+      | D | 40 | 80 | 85 | HELD |
     Then a schedule between 0 and 5 does not overlap
-    Then a schedule between 95 and 100 does not overlap
-    Then a schedule between 5 and 40 does overlap
+    Then a schedule between 100 and 200 does not overlap
+    Then a schedule between 90 and 120 does overlap
+      | B |
+    Then a schedule between 0 and 40 does overlap
       | A |
       | C |
-    Then a schedule between 5 and 55 does overlap
+      | D |
+    Then a schedule between 0 and 50 does overlap
       | A |
       | B |
       | C |
-    Then a schedule between 45 and 100 does overlap
+      | D |
+    Then a schedule between 55 and 100 does overlap
       | B |
       | C |
+      | D |
     Then a schedule between 70 and 100 does overlap
       | B |
-    Then a schedule between 15 and 25 does overlap
+      | D |
+    Then a schedule between 0 and 25 does overlap
       | A |
 
     Then I did not receive an exception

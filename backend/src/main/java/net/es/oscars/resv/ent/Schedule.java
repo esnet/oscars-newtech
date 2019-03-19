@@ -21,11 +21,13 @@ public class Schedule {
     public Schedule(@JsonProperty("connectionId") String connectionId,
                     @JsonProperty("beginning") @NonNull Instant beginning,
                     @JsonProperty("ending") @NonNull Instant ending,
+                    @JsonProperty("releasing") @NonNull Instant releasing,
                     @JsonProperty("phase") Phase phase,
                     @JsonProperty("refId") String refId) {
         this.connectionId = connectionId;
         this.beginning = beginning;
         this.ending = ending;
+        this.releasing = releasing;
         this.phase = phase;
         this.refId = refId;
     }
@@ -42,6 +44,9 @@ public class Schedule {
     @NonNull
     private Instant ending;
 
+    @NonNull
+    private Instant releasing;
+
     // these will be populated by the system when designing
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String connectionId;
@@ -55,7 +60,7 @@ public class Schedule {
 
     public Boolean overlaps(Instant b, Instant e) {
         boolean result = true;
-        if (this.getEnding().isBefore(b)) {
+        if (this.getReleasing().isBefore(b)) {
             result = false;
         }
         if (this.getBeginning().isAfter(e)) {

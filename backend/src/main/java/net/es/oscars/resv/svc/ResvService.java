@@ -76,7 +76,7 @@ public class ResvService {
                     PeriodBandwidth iPbw = PeriodBandwidth.builder()
                             .bandwidth(f.getIngressBandwidth())
                             .beginning(sch.getBeginning())
-                            .ending(sch.getEnding())
+                            .ending(sch.getReleasing())
                             .build();
                     addTo(reservedIngBws, urn, iPbw);
                 }
@@ -95,7 +95,7 @@ public class ResvService {
                             PeriodBandwidth pbw = PeriodBandwidth.builder()
                                     .bandwidth(pipe.getAzBandwidth())
                                     .beginning(sch.getBeginning())
-                                    .ending(sch.getEnding())
+                                    .ending(sch.getReleasing())
                                     .build();
 
                             if (i % 3 == 2) {
@@ -113,7 +113,7 @@ public class ResvService {
                             PeriodBandwidth pbw = PeriodBandwidth.builder()
                                     .bandwidth(pipe.getZaBandwidth())
                                     .beginning(sch.getBeginning())
-                                    .ending(sch.getEnding())
+                                    .ending(sch.getReleasing())
                                     .build();
 
                             if (i % 3 == 2) {
@@ -146,7 +146,7 @@ public class ResvService {
                     PeriodBandwidth ePbw = PeriodBandwidth.builder()
                             .bandwidth(f.getEgressBandwidth())
                             .beginning(sch.getBeginning())
-                            .ending(sch.getEnding())
+                            .ending(sch.getReleasing())
                             .build();
 
                     addTo(reservedEgBws, urn, ePbw);
@@ -167,7 +167,7 @@ public class ResvService {
                             PeriodBandwidth pbw = PeriodBandwidth.builder()
                                     .bandwidth(pipe.getAzBandwidth())
                                     .beginning(sch.getBeginning())
-                                    .ending(sch.getEnding())
+                                    .ending(sch.getReleasing())
                                     .build();
 
                             if (i % 3 == 1) {
@@ -183,7 +183,7 @@ public class ResvService {
                             PeriodBandwidth pbw = PeriodBandwidth.builder()
                                     .bandwidth(pipe.getZaBandwidth())
                                     .beginning(sch.getBeginning())
-                                    .ending(sch.getEnding())
+                                    .ending(sch.getReleasing())
                                     .build();
 
                             if (i % 3 == 1) {
