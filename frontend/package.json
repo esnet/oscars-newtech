@@ -7,25 +7,25 @@
     "url": "git://github.com/esnet/oscars.git"
   },
   "dependencies": {
-    "bootstrap": "4.3.1",
+    "bootstrap": "^4.3.1",
     "chrono-node": "^1.3.11",
     "classnames": "^2.2.6",
     "graphlib": "^2.1.7",
     "jquery": "^3.3.1",
     "jstz": "^2.1.1",
-    "lodash": "4.17.11",
-    "lodash-es": "4.17.11",
-    "mobx": "5.9.0",
-    "mobx-react": "5.4.3",
-    "moment": "2.24.0",
+    "lodash": "^4.17.11",
+    "lodash-es": "^4.17.11",
+    "mobx": "^5.9.0",
+    "mobx-react": "^5.4.3",
+    "moment": "^2.24.0",
     "prop-types": "^15.7.2",
-    "react": "16.8.4",
+    "react": "^16.8.4",
     "react-bootstrap-table-next": "^3.0.2",
     "react-bootstrap-table2-filter": "^1.1.7",
     "react-bootstrap-table2-paginator": "^2.0.4",
     "react-bootstrap-typeahead": "^3.4.1",
     "react-bs-notifier": "^5.0.0",
-    "react-dom": "16.8.4",
+    "react-dom": "^16.8.4",
     "react-idle-timer": "^4.2.3",
     "react-lazylog": "^3.2.0",
     "react-nestable": "^1.1.0",
@@ -33,7 +33,7 @@
     "react-router-dom": "^5.0.0",
     "react-select-plus": "^1.2.0",
     "react-toggle-display": "^2.2.0",
-    "reactstrap": "7.1.0",
+    "reactstrap": "^7.1.0",
     "visjs-network": "^4.24.4"
   },
   "license": "MIT",
@@ -86,7 +86,7 @@
     "lint-staged": "^8.1.5",
     "lodash-webpack-plugin": "^0.11.5",
     "mocha": "^6.0.2",
-    "prettier": "1.16.4",
+    "prettier": "^1.16.4",
     "style-loader": "^0.23.1",
     "url-loader": "^1.1.2",
     "webpack": "^4.29.6",
@@ -94,10 +94,6 @@
     "webpack-cli": "^3.3.0",
     "webpack-dev-server": "^3.2.1",
     "webpack-serve": "^2.0.3"
-  },
-  "peerDependencies": {
-    "popper.js": "^1.14.7",
-    "eslint-plugin-flowtype": "^3.x"
   },
   "eslintConfig": {
     "extends": "react-app"
