@@ -104,7 +104,7 @@ const stores = {
     modalStore
 };
 
-configure({ enforceActions: true });
+configure({ enforceActions: "observed" });
 
 ReactDOM.render(
     <Provider {...stores}>

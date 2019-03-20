@@ -91,7 +91,7 @@ class NavBar extends Component {
                 </DropdownToggle>
                 <DropdownMenu>
                     <NavLink
-                        href="//github.com/esnet/oscars-newtech/issues/new"
+                        href="//github.com/esnet/oscars/issues/new"
                         target="_blank"
                         rel="noopener noreferrer"
                     >

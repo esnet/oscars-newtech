@@ -6,7 +6,7 @@ let ExtractTextPlugin = require("extract-text-webpack-plugin");
 let webpack = require("webpack");
 
 let LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
-let BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+// let BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const PATHS = {
     build: path.join(
@@ -49,7 +49,7 @@ let plugins = [
 let publicPath = "/webjars/oscars-frontend/" + packageJSON.version + "/bundle.js";
 
 module.exports = {
-    entry: ["babel-polyfill", "./src/main/js/index.js"],
+    entry: ["@babel/polyfill", "./src/main/js/index.js"],
     devtool: devtool,
     cache: true,
     mode: "production",
@@ -71,7 +71,7 @@ module.exports = {
                     cacheDirectory: true,
                     presets: [
                         [
-                            "env",
+                            "@babel/preset-env",
                             {
                                 targets: {
                                     browsers: ["last 2 versions", "safari >= 7"]
@@ -96,17 +96,15 @@ module.exports = {
                     cacheDirectory: true,
                     presets: [
                         [
-                            "env",
+                            "@babel/preset-env",
                             {
                                 targets: {
                                     browsers: ["last 2 versions", "safari >= 7"]
                                 }
                             }
-                        ],
-                        "react",
-                        "stage-1"
+                        ]
                     ],
-                    plugins: ["transform-decorators-legacy", "lodash"]
+                    plugins: [["@babel/plugin-proposal-decorators", { legacy: true }], "lodash"]
                 }
             },
             {
@@ -127,7 +125,7 @@ module.exports = {
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
                     fallback: "style-loader",
-                    use: { loader: "css-loader", options: { minimize: true } }
+                    use: { loader: "css-loader" }
                 })
             }
         ]
