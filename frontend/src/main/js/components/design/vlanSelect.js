@@ -233,7 +233,7 @@ class VlanSelect extends Component {
         );
 
         return (
-            <Card>
+            <Card style={{ width: "100%", height: "100%" }}>
                 <CardHeader className="p-1">VLAN selection {help}</CardHeader>
                 <CardBody>
                     <ToggleDisplay show={!ef.locked}>

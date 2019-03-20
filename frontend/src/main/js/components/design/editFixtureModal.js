@@ -133,14 +133,15 @@ class EditFixtureModal extends Component {
                     <ToggleDisplay show={conn.schedule.locked}>
                         <Container fluid>
                             <Row>
-                                <Col md={5} sm={5} lg={5}>
+                                <Col xs="5">
                                     <VlanSelect />
                                 </Col>
-                                <Col md={7} sm={7} lg={7}>
+                                <Col>
                                     <BwSelect />
                                 </Col>
                             </Row>
                             <ToggleDisplay show={!ef.locked}>
+                                <br />
                                 <Alert color="info">
                                     Select fixture parameters, then click "Lock".
                                 </Alert>
@@ -176,6 +177,7 @@ class EditFixtureModal extends Component {
                         </Container>
                     </ToggleDisplay>
                     <ToggleDisplay show={!conn.schedule.locked}>
+                        <br />
                         <Alert color="info">
                             Schedule must be locked to edit fixture parameters.
                         </Alert>
