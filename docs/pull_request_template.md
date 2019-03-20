@@ -13,6 +13,7 @@
 - [ ] For breaking changes prefix the title with `"BREAKING CHANGE:"` and include details in the description
 - [ ] This PR includes tests related to these changes, or existing tests provide coverage
 - [ ] This PR has updated documentation as appropriate
+- [ ] `mvn clean package` runs successfully
 
 ### Notes
 - Once approved, use the **squash and merge** option.
