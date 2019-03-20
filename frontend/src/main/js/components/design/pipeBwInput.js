@@ -54,7 +54,6 @@ export default class PipeBwInput extends Component {
             input = (
                 <Input
                     type="text"
-                    bsSize={"sm"}
                     placeholder="0-100000"
                     defaultValue={this.props.defaultValue}
                     innerRef={ref => {
@@ -76,7 +75,6 @@ export default class PipeBwInput extends Component {
             input = (
                 <Input
                     type="text"
-                    bsSize={"sm"}
                     defaultValue={this.props.defaultValue}
                     innerRef={ref => {
                         this.bwControl = ref;
@@ -95,8 +93,8 @@ export default class PipeBwInput extends Component {
         }
 
         return (
-            <div className="mt-1 mb-1 pt-1 pb-1">
-                <FormGroup className="pt-0 pb-0 m-0">
+            <div>
+                <FormGroup>
                     <InputGroup>
                         {prepend}
                         {input}

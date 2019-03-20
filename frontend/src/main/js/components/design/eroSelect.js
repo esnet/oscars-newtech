@@ -1,7 +1,15 @@
 import React, { Component } from "react";
 import { inject, observer } from "mobx-react";
 import ToggleDisplay from "react-toggle-display";
-import { ListGroup, ListGroupItem, Button, Card, CardBody, InputGroup } from "reactstrap";
+import {
+    CardHeader,
+    ListGroup,
+    ListGroupItem,
+    Button,
+    Card,
+    CardBody,
+    InputGroup
+} from "reactstrap";
 import Select from "react-select-plus";
 import Octicon from "react-octicon";
 
@@ -143,7 +151,6 @@ class EroSelect extends Component {
                     <ListGroupItem className="p-1" key={urn}>
                         <small>
                             {urn}
-
                             <ToggleDisplay show={!ep.locked}>
                                 <span className="float-right">
                                     <Octicon
@@ -173,13 +180,11 @@ class EroSelect extends Component {
         });
 
         return (
-            <Card>
+            <Card style={{ width: "100%", height: "100%" }}>
+                <CardHeader className="p-1">ERO Constraints</CardHeader>
                 <CardBody>
-                    <p>
-                        <strong>ERO constraints</strong>
-                    </p>
-
                     <ListGroup>{items}</ListGroup>
+                    <br />
                     <Button onClick={this.resetEro}>Clear</Button>
                 </CardBody>
             </Card>

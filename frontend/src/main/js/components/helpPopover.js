@@ -25,7 +25,7 @@ export default class HelpPopover extends Component {
             <span>
                 <Octicon
                     name="info"
-                    style={{ height: "18px", width: "18px", cursor: "pointer" }}
+                    style={{ height: "18px", width: "18px", cursor: "pointer", margin: "2px" }}
                     onClick={this.toggle}
                     id={this.props.popoverId}
                 />
