@@ -351,14 +351,6 @@ class EroDrawing extends Component {
             <Card>
                 <CardHeader className="p-1">
                     Design drawing
-                    <span className="float-right">
-                        <Octicon
-                            name="search"
-                            onClick={() => {
-                                this.network.fit({ animation: true });
-                            }}
-                        />
-                    </span>{" "}
                     <span className="float-right">{help}</span>
                 </CardHeader>
                 <CardBody>

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { inject, observer } from "mobx-react";
 import {
     Input,
+    Label,
     FormGroup,
     Modal,
     ModalHeader,
@@ -139,9 +140,10 @@ class PathModeSelect extends Component {
         ];
         return (
             <FormGroup className="mt-1 mb-1 pt-1 pb-1">
+                <Label>
+                    <b>PCE Mode:</b>
+                </Label>
                 <InputGroup size={"sm"} className={"p-1 m-1"}>
-                    <InputGroupAddon addonType="prepend">PCE mode</InputGroupAddon>
-
                     <Input
                         id={"pathModeSelect"}
                         type="select"
@@ -155,10 +157,8 @@ class PathModeSelect extends Component {
                             );
                         })}
                     </Input>
-                    <InputGroupAddon addonType="append">
-                        <InputGroupText>{help}</InputGroupText>
-                    </InputGroupAddon>
                 </InputGroup>
+                <Label>{help}</Label>
             </FormGroup>
         );
     }

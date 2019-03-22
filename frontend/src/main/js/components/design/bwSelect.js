@@ -374,12 +374,12 @@ class BwSelect extends Component {
         );
 
         return (
-            <Card>
+            <Card style={{ width: "100%", height: "100%" }}>
                 <CardHeader className="p-1">Bandwidth selection {help}</CardHeader>
                 <CardBody>
                     <ToggleDisplay show={!ef.locked}>
                         <Row>
-                            <Col sm={6} md={6} lg={6}>
+                            <Col>
                                 <FormGroup>
                                     <Label>Ingress (Mbps):</Label>
                                     <Input
@@ -399,7 +399,7 @@ class BwSelect extends Component {
                                     <FormText>Baseline: {ef.bw.baseline.ingress} Mbps</FormText>
                                 </FormGroup>
                             </Col>
-                            <Col sm={6} md={6} lg={6}>
+                            <Col>
                                 <FormGroup>
                                     <Label>Egress (Mbps):</Label>
                                     <Input
