@@ -6,7 +6,7 @@ Topology-related scripts and utilities; currently mostly ESnet-specific Python c
 `pip install -r requirements.txt`
 - Installs the required packages. You will need access to the esnet/neg-tools private repository.
 
-### Running
+### Running 
 `esdb_topo.py`: Contacts ESDB and does a good amount of processing. It creates two output files:
 ```
     output/devices.json
