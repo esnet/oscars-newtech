@@ -491,16 +491,9 @@ public class NsiService {
     @Transactional
     public QuerySummaryConfirmedType querySummary(QueryType query) throws NsiException {
         QuerySummaryConfirmedType qsct = new QuerySummaryConfirmedType();
-        try {
-            ZonedDateTime zd = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
-            GregorianCalendar c = GregorianCalendar.from(zd);
-            XMLGregorianCalendar xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
 
-            qsct.setLastModified(xgc);
-        } catch (DatatypeConfigurationException ex) {
-            log.error(ex.getMessage(), ex);
-            throw new NsiException(ex.getMessage(), NsiErrors.NRM_ERROR);
-        }
+        qsct.setLastModified(this.getCalendar(Instant.now()));
+
         if (query.getIfModifiedSince() != null) {
             throw new NsiException("IMS not supported yet", NsiErrors.UNIMPLEMENTED);
         }
@@ -1039,11 +1032,8 @@ public class NsiService {
         ErrorEventType eet = new ErrorEventType();
         eet.setOriginatingConnectionId(mapping.getNsiConnectionId());
         eet.setOriginatingNSA(this.providerNsa);
-        ZonedDateTime zd = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
-        GregorianCalendar c = GregorianCalendar.from(zd);
-        XMLGregorianCalendar xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
 
-        eet.setTimeStamp(xgc);
+        eet.setTimeStamp(this.getCalendar(Instant.now()));
         eet.setEvent(EventEnumType.FORCED_END);
         port.errorEvent(eet, outHeader);
 
@@ -1112,17 +1102,7 @@ public class NsiService {
         DataPlaneStatusType dst = new DataPlaneStatusType();
         dsrt.setConnectionId(mapping.getNsiConnectionId());
 
-        try {
-            ZonedDateTime zd = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
-            GregorianCalendar c = GregorianCalendar.from(zd);
-            XMLGregorianCalendar xgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-
-            dsrt.setTimeStamp(xgc);
-
-        } catch (DatatypeConfigurationException ex) {
-            log.error(ex.getMessage(), ex);
-            throw new NsiException(ex.getMessage(), NsiErrors.NRM_ERROR);
-        }
+        dsrt.setTimeStamp(this.getCalendar(Instant.now()));
 
         dst.setActive(false);
 
@@ -1265,6 +1245,12 @@ public class NsiService {
 
         } else if (event.equals(NsiEvent.RESV_TIMEOUT)) {
             ReserveTimeoutRequestType rrt = new ReserveTimeoutRequestType();
+            rrt.setConnectionId(mapping.getNsiConnectionId());
+
+            rrt.setTimeStamp(this.getCalendar(Instant.now()));
+            // TODO: implement incrementing notificationIds
+
+            rrt.setNotificationId(0L);
             rrt.setOriginatingConnectionId(mapping.getNsiConnectionId());
             rrt.setOriginatingNSA(providerNsa);
             rrt.setTimeoutValue(resvTimeout);
@@ -1272,6 +1258,17 @@ public class NsiService {
         }
     }
 
+    private XMLGregorianCalendar getCalendar(Instant when) throws NsiException {
+        try {
+
+            ZonedDateTime zd = ZonedDateTime.ofInstant(when, ZoneId.systemDefault());
+            GregorianCalendar c = GregorianCalendar.from(zd);
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+        } catch (DatatypeConfigurationException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new NsiException(ex.getMessage(), NsiErrors.NRM_ERROR);
+        }
+    }
 
     /* utility / shared funcs */
 
@@ -1364,33 +1361,18 @@ public class NsiService {
 
     public ScheduleType oscarsToNsiSchedule(Schedule sch) throws NsiException {
 
-        Instant b = sch.getBeginning();
-
-        ZonedDateTime zdb = ZonedDateTime.ofInstant(b, ZoneId.systemDefault());
-        GregorianCalendar cb = GregorianCalendar.from(zdb);
+        XMLGregorianCalendar xgb = this.getCalendar(sch.getBeginning());
+        XMLGregorianCalendar xge = this.getCalendar(sch.getEnding());
 
 
-        Instant e = sch.getEnding();
-        ZonedDateTime zde = ZonedDateTime.ofInstant(e, ZoneId.systemDefault());
-        GregorianCalendar ce = GregorianCalendar.from(zde);
+        net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.ObjectFactory of =
+                new net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.ObjectFactory();
 
-        try {
-            XMLGregorianCalendar xgb = DatatypeFactory.newInstance().newXMLGregorianCalendar(cb);
+        ScheduleType st = of.createScheduleType();
 
-            XMLGregorianCalendar xge = DatatypeFactory.newInstance().newXMLGregorianCalendar(ce);
-
-            net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.ObjectFactory of =
-                    new net.es.nsi.lib.soap.gen.nsi_2_0.connection.types.ObjectFactory();
-
-            ScheduleType st = of.createScheduleType();
-
-            st.setStartTime(of.createScheduleTypeStartTime(xgb));
-            st.setEndTime(of.createScheduleTypeEndTime(xge));
-            return st;
-        } catch (DatatypeConfigurationException ex) {
-            log.error(ex.getMessage(), ex);
-            throw new NsiException("internal error", NsiErrors.NRM_ERROR);
-        }
+        st.setStartTime(of.createScheduleTypeStartTime(xgb));
+        st.setEndTime(of.createScheduleTypeEndTime(xge));
+        return st;
 
     }
 
