@@ -104,6 +104,7 @@ public class ListController {
 
             List<MinimalConnEndpoint> endpoints = new ArrayList<>();
             Map<String, List<Integer>> sdps = new HashMap<>();
+            Set<List<String>> eros = new HashSet<>();
             Schedule s;
             Components cmp;
             if (c.getPhase().equals(Phase.RESERVED)) {
@@ -135,10 +136,19 @@ public class ListController {
                         .build();
                 endpoints.add(ep);
             }
+            for (VlanPipe p : cmp.getPipes()) {
+                List<String> ero = new ArrayList<>();
+                for (EroHop h : p.getAzERO()) {
+                    ero.add(h.getUrn());
+                }
+                eros.add(ero);
+            }
+
+
             MinimalConnEntry e = MinimalConnEntry.builder()
                     .description(c.getDescription())
                     .sdps(sdps)
-
+                    .eros(eros)
                     .endpoints(endpoints)
                     .build();
 

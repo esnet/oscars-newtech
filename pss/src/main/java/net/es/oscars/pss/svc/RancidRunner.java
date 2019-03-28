@@ -178,7 +178,7 @@ public class RancidRunner {
                         .execute();
 
                 output = res.getOutput().getUTF8();
-                // log.debug("output is: " + output);
+                log.info("rancid output was:\n"+  output);
 
             } catch (InvalidExitValueException ex) {
                 log.error(ex.getMessage(), ex);
