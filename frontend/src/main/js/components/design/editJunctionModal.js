@@ -126,8 +126,11 @@ class EditJunctionModal extends Component {
 
         let noPipesText = (
             <div>
-                No other junctions found that are not already connected. Can not add a new pipe from
-                here.
+                <br />
+                <p>
+                    No other junctions found that are not already connected. Can not add a new pipe
+                    from here.
+                </p>
             </div>
         );
 
@@ -214,6 +217,7 @@ class EditJunctionModal extends Component {
                                 })}
                             </ListGroup>{" "}
                             <ToggleDisplay show={showAddPipeControls}>
+                                <br />
                                 <Form>
                                     <FormGroup>
                                         <Label>New pipe to:</Label>{" "}

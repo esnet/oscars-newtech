@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { ListGroup, ListGroupItem, Card, CardBody, Button } from "reactstrap";
+import { ListGroupItem, Button } from "reactstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, { textFilter } from "react-bootstrap-table2-filter";
 
@@ -20,11 +20,9 @@ export default class DevicePortList extends Component {
         let label = row.label;
 
         return (
-            <ListGroup className="p-0" key={port}>
-                <small>
-                    <ListGroupItem className="p-1"> {label}</ListGroupItem>
-                </small>
-            </ListGroup>
+            <span key={port}>
+                <small>{label}</small>
+            </span>
         );
     };
 
@@ -56,20 +54,21 @@ export default class DevicePortList extends Component {
                 dataField: "portText",
                 filter: textFilter({ delay: 100 }),
                 formatter: this.portFormatter,
-                headerStyle: { width: "100px", textAlign: "left" },
+                headerStyle: { width: "100px", textAlign: "center" },
                 style: { textAlign: "center" }
             },
             {
                 text: "Tags",
                 dataField: "tagText",
                 filter: textFilter({ delay: 100 }),
-                formatter: this.tagFormatter
+                formatter: this.tagFormatter,
+                headerStyle: { width: "300px", textAlign: "center" }
             },
             {
                 dataField: "action",
-                text: "Add",
+                text: "",
                 formatter: this.actionFormatter,
-                headerStyle: { width: "80px", textAlign: "center" },
+                headerStyle: { width: "60px", textAlign: "center" },
                 style: { textAlign: "center" }
             }
         ];
@@ -101,16 +100,12 @@ export default class DevicePortList extends Component {
         });
 
         return (
-            <Card>
-                <CardBody>
-                    <BootstrapTable
-                        keyField="port"
-                        data={rows}
-                        columns={columns}
-                        filter={filterFactory()}
-                    />
-                </CardBody>
-            </Card>
+            <BootstrapTable
+                keyField="port"
+                data={rows}
+                columns={columns}
+                filter={filterFactory()}
+            />
         );
     }
 }

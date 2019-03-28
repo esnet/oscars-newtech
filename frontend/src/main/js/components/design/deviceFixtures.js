@@ -9,10 +9,10 @@ export default class DeviceFixtures extends Component {
 
     render() {
         return (
-            <Card>
+            <Card style={{ width: "100%", height: "100%" }}>
                 <CardHeader className="p-1">{this.props.junction}</CardHeader>
                 <CardBody>
-                    <u>Fixtures:</u>
+                    Fixtures
                     <small>
                         <ListGroup>
                             {this.props.fixtures.map(f => {
@@ -25,10 +25,10 @@ export default class DeviceFixtures extends Component {
                         </ListGroup>
                     </small>
                     <p>
-                        Total ingress: <b>{this.props.ingress} Mbps</b>
+                        Total ingress(i): <b>{this.props.ingress} Mbps</b>
                     </p>
                     <p>
-                        Total egress: <b>{this.props.egress} Mbps</b>
+                        Total egress(e): <b>{this.props.egress} Mbps</b>
                     </p>
                 </CardBody>
             </Card>

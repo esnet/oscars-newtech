@@ -89,9 +89,16 @@ class AddFixtureModal extends Component {
         let showModal = this.props.modalStore.modals.get(modalName);
 
         return (
-            <Modal isOpen={showModal} toggle={this.toggle} fade={false} onExit={this.closeModal}>
+            <Modal
+                size="lg"
+                isOpen={showModal}
+                toggle={this.toggle}
+                fade={false}
+                onExit={this.closeModal}
+            >
                 <ModalHeader toggle={this.toggle}>
-                    {device} {help}{" "}
+                    {device}
+                    {help}
                 </ModalHeader>
                 <ModalBody>
                     <DevicePortList ports={ports} onAddClicked={this.addFixture} />

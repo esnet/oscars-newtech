@@ -499,7 +499,7 @@ class EditPipeModal extends Component {
             zaDefaultBw = ep.Z_TO_A.bw;
         }
 
-        //        console.log(toJS(ep));
+        // console.log(toJS(ep));
         let modePath = ep.paths[ep.ero.mode];
         // console.log(toJS(modePath));
         let azAvailable = modePath.azAvailable;
@@ -548,7 +548,7 @@ class EditPipeModal extends Component {
 
         let alert = null;
         let bwModeBox = (
-            <FormGroup check inline>
+            <FormGroup check>
                 <Label check>
                     <Input
                         type="checkbox"
@@ -559,10 +559,11 @@ class EditPipeModal extends Component {
                 </Label>
             </FormGroup>
         );
+
         let bwControls = (
             <Container fluid={true}>
-                <Row noGutters>
-                    <Col xs={4} sm={4} md={4} lg={4}>
+                <Row>
+                    <Col xs="3">
                         <DeviceFixtures
                             fixtures={aFixtures}
                             junction={pipe.a}
@@ -570,36 +571,21 @@ class EditPipeModal extends Component {
                             egress={ep.A_TO_Z.fixturesEgress}
                         />
                     </Col>
-                    <Col xs={4} sm={4} md={4} lg={4}>
-                        <Card>
+                    <Col>
+                        <Card style={{ width: "100%", height: "100%" }}>
                             <CardHeader className="p-1">Bandwidth {bwHelp}</CardHeader>
-                            <CardBody className="p-1">
-                                <Container fluid className="pt-0 pb-0">
-                                    <Row noGutters>
-                                        <Col sm={7} md={7} lg={7} className="mt-1 mb-1 pt-1 pb-1">
-                                            {azBwInput}
-                                        </Col>
-                                        <Col
-                                            sm={{ size: 4, offset: 1 }}
-                                            md={{ size: 4, offset: 1 }}
-                                            className="mt-1 mb-1 pt-1 pb-1"
-                                        >
-                                            {bwModeBox}
-                                        </Col>
-                                    </Row>
-                                    <Row noGutters>
-                                        <Col
-                                            sm={{ size: 7, offset: 5 }}
-                                            md={{ size: 7, offset: 5 }}
-                                        >
-                                            {zaBwInput}
-                                        </Col>
+                            <CardBody>
+                                <Container fluid={true}>
+                                    <Row>
+                                        <Col>{azBwInput}</Col>
+                                        <Col>{zaBwInput}</Col>
+                                        <Col>{bwModeBox}</Col>
                                     </Row>
                                 </Container>
                             </CardBody>
                         </Card>
                     </Col>
-                    <Col xs={4} sm={4} md={4} lg={4}>
+                    <Col xs="3">
                         <DeviceFixtures
                             fixtures={zFixtures}
                             junction={pipe.z}
@@ -613,14 +599,14 @@ class EditPipeModal extends Component {
 
         let pathControls = (
             <Container fluid={true}>
-                <Row noGutters>
+                <Row>
                     <Form inline>
-                        <Col xs={2} sm={2} md={2} lg={2}>
-                            <strong>Path</strong>
+                        <Col>
+                            <strong>Path:</strong>
                         </Col>
-                        <Col xs={2} sm={2} md={2} lg={2}>
-                            <FormGroup>
-                                <Label>
+                        <Col>
+                            <FormGroup check>
+                                <Label check>
                                     <Input
                                         type="checkbox"
                                         defaultChecked={ep.protect}
@@ -631,7 +617,6 @@ class EditPipeModal extends Component {
                                 </Label>
                             </FormGroup>
                         </Col>
-
                         <ToggleDisplay show={!ep.locked}>
                             <Col>
                                 <PathModeSelect onSelectModeChange={this.onSelectModeChange} />
@@ -644,12 +629,7 @@ class EditPipeModal extends Component {
 
         let eroControls = (
             <Container fluid={true}>
-                <Row noGutters={true}>
-                    <ToggleDisplay show={showEroControls}>
-                        <Col>
-                            <EroSelect />
-                        </Col>
-                    </ToggleDisplay>
+                <Row>
                     <Col>
                         <Nav tabs>
                             <NavItem>
@@ -697,6 +677,11 @@ class EditPipeModal extends Component {
                             </TabPane>
                         </TabContent>
                     </Col>
+                    <ToggleDisplay show={showEroControls}>
+                        <Col>
+                            <EroSelect />
+                        </Col>
+                    </ToggleDisplay>
                 </Row>
             </Container>
         );
@@ -710,7 +695,7 @@ class EditPipeModal extends Component {
 
         return (
             <Modal
-                style={{ maxWidth: "95%" }}
+                style={{ maxWidth: "75%" }}
                 isOpen={showModal}
                 toggle={this.toggleModal}
                 fade={false}
@@ -719,18 +704,13 @@ class EditPipeModal extends Component {
                 <ModalHeader className="p-2" toggle={this.toggleModal}>
                     Pipe controls for {pipeTitle} {help}
                 </ModalHeader>
-
                 <ModalBody>
                     {alert}
                     {bwControls}
-
-                    <hr className="m-1" />
                     {pathControls}
 
-                    <hr className="m-1" />
                     {eroControls}
 
-                    <hr className="m-1" />
                     <ButtonToolbar className="float-right">
                         <ConfirmModal
                             body="Are you ready to delete this pipe?"

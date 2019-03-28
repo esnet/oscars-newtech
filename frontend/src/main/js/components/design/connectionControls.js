@@ -195,7 +195,7 @@ class ConnectionControls extends Component {
                             <Label>Connection MTU:</Label>
                             {mtuHelp}{" "}
                             <Input
-                                type="text"
+                                type="number"
                                 placeholder="Desired data MTU size"
                                 valid={validator.mtuControl(conn.connection_mtu) === "success"}
                                 invalid={validator.mtuControl(conn.connection_mtu) !== "success"}
