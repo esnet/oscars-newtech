@@ -9,11 +9,11 @@ Topology-related scripts and utilities; currently mostly ESnet-specific Python c
 
 ### Running
 
-The `generate_topo.py` script is the main script that calls `esdb_topo.py` and `improve_esdb_topo.py` scripts in sequence ensuring thatthe output of one is passed as input to the other. 
+The `generate_topo.py` script is the main script that calls `esdb_topo.py` and `improve_esdb_topo.py` scripts in sequence ensuring that the output of one is passed as input to the other. 
 
 The `run.sh` shell script in turn passes production-ready parameters to `generate_topo.py` .
 
-`esdb_topo.py`: Contacts ESDB and does a good amount of processing. It creates two output files:
+`esdb_topo.py`: Contacts ESDB and does a good amount of processing. It creates three output files:
 
 ```
     output/devices.json
