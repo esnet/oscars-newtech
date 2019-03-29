@@ -27,7 +27,7 @@ def main():
     parser.add_argument('-f', '--fast', action='count', default=0,
                         help="Fast mode (use saved ports and saps)")
     parser.add_argument('-s', '--save', action='count', default=0,
-                        help="save ports and saps from graphite for fast run")
+                        help="save ports and saps from netbeam for fast run")
 
     parser.add_argument('--tmp-dir', default=defaults['TMP_DIR'],
                         help="Temp dir")
@@ -86,27 +86,27 @@ def main():
         saps = opts.save_dir + "/" + opts.saps
 
     if not opts.fast:
-        graphite_base_url = "https://graphite.es.net/api/west"
-        graphite_ifces_url = graphite_base_url + '/snmp/?interface_descr='
-        graphite_sap_url = graphite_base_url + '/sap/'
+        netbeam_base_url = "https://esnet-netbeam.appspot.com/api/network/esnet/prod"
+        netbeam_ifces_url = netbeam_base_url + '/interfaces'
+        netbeam_sap_url = netbeam_base_url + '/saps'
 
-        graphite_saps = "wget -q -4 " + graphite_sap_url + " -O - | python -m json.tool > " + saps
-        graphite_ifces = "wget -q -4 " + graphite_ifces_url + "  -O - | python -m json.tool > " + ports
+        netbeam_saps = "wget -q -4 " + netbeam_sap_url + " -O - | python -m json.tool > " + saps
+        netbeam_ifces = "wget -q -4 " + netbeam_ifces_url + "  -O - | python -m json.tool > " + ports
 
         if opts.verbose:
-            print "getting SAPs from graphite"
-            print graphite_saps
+            print "getting SAPs from netbeam"
+            print netbeam_saps
 
-        if os.system(graphite_saps) is not 0:
-            print >> sys.stderr, "error running " + graphite_saps
+        if os.system(netbeam_saps) is not 0:
+            print >> sys.stderr, "error running " + netbeam_saps
             exit(1)
 
         if opts.verbose:
-            print "getting all interfaces from graphite"
-            print graphite_ifces
+            print "getting all interfaces from netbeam"
+            print netbeam_ifces
 
-        if os.system(graphite_ifces) is not 0:
-            print >> sys.stderr, "error running " + graphite_ifces
+        if os.system(netbeam_ifces) is not 0:
+            print >> sys.stderr, "error running " + netbeam_ifces
             exit(1)
 
     if opts.save:
@@ -127,6 +127,7 @@ def main():
 
     esdb_topo = "./esdb_topo.py " + esdb_verbose_arg + " " + esdb_op_arg + " --output-dir=" + esdb_output_dir \
                 + " --devices=" + tmp_devs_file + " --adjacencies=" + tmp_adjs_file
+
     if opts.verbose:
         print "processing today.json"
         print esdb_topo
@@ -140,8 +141,9 @@ def main():
     improve_topo = "./improve_esdb_topo.py --lags=" + lags + " --saps=" + saps + " --ports=" + ports \
                    + " --dual_ports=" + dual_ports + " --input-devices=" + initial_devs \
                    + " --output-devices=" + output_devs
+        
     if opts.verbose:
-        print "improving today.json with LAGs and dual ports, as well as graphite SAPs and LAGs"
+        print "improving today.json with LAGs and dual ports, as well as netbeam SAPs and LAGs"
         print improve_topo
 
     if os.system(improve_topo) is not 0:

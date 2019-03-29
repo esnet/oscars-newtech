@@ -12,7 +12,7 @@ VLAN_RANGE = '2-4094'
 
 SAPS = 'input/saps.json'
 LAGS = 'input/lags.json'
-PORTS = 'input/graphite_ports.json'
+PORTS = 'input/netbeam_ports.json'
 DUAL_PORTS = 'input/dual_ports.json'
 OUTPUT_DEVICES = 'output/devices.json'
 INPUT_DEVICES = 'input/devices.json'
@@ -39,13 +39,12 @@ def main():
     with open(opts.lags, 'r') as infile:
         lags = json.load(infile)
 
-    # retrieve from https://graphite.es.net/api/west/sap/
+    # retrieve from https://esnet-netbeam.appspot.com/api/network/esnet/prod/saps
     with open(opts.saps, 'r') as infile:
         saps_in = json.load(infile)
 
-    # from
-    # wget -4 https://graphite.es.net/api/west/snmp/?interface_descr= > input/graphite_ports.json
-    # note: slow operation
+    # retrieve from
+    # wget -4 https://esnet-netbeam.appspot.com/api/network/esnet/prod/interfaces > input/netbeam_ports.json
     with open(opts.ports, 'r') as infile:
         ports = json.load(infile)
 
@@ -68,44 +67,39 @@ def main():
             'service': parts[0],
             'port': port,
             'vlan': parts[2],
-            'desc': sap_in['desc']
+            'desc': sap_in['description']
         }
         saps_by_device[device].append(entry)
 
     by_device = {}
-    now = time.time()
     for port in ports:
         e = {}
-        device = port['device_uri'].split('/')[2]
-        endpoint = port['uri'].split('interface/')[1]
+        device = port['device']
+        endpoint = port['name']
         e['device'] = device
         e['endpoint'] = endpoint
-        e['ifce'] = port['ifDescr'].strip()
-        e['description'] = port['ifAlias'].strip()
-        e['addr'] = port['ipAddr']
-        e['mbps'] = port['ifHighSpeed']
-        e['end_time'] = port['end_time']
-        end_time = port['end_time']
-        if now < end_time:
-            if device not in by_device:
-                by_device[device] = []
-            by_device[device].append(e)
-        else:
-            print 'outdated: ' + device + ':' + endpoint
+        e['ifce'] = port['name'].strip()
+        e['description'] = port['description'].strip()
+        # e['addr'] = port['ipAddr']
+        e['mbps'] = port['speed']
+        if device not in by_device:
+            by_device[device] = []
+        by_device[device].append(e)
 
     devices = json.load(open(opts.input_devices, 'r'))
     untagged = []
     for device_entry in devices:
         device = device_entry['urn']
         if device not in by_device:
-            print "Could not find " + device + " from today.json in graphite\n" \
+            print "Could not find " + device + " from today.json in netbeam\n" \
                   + "  - possibly decom'd but " + device + ".rt not cleaned up in PMC.\n"
         else:
-            for graphite_port in by_device[device]:
-                if graphite_port['mbps'] == 0:
+            for netbeam_port in by_device[device]:
+                if netbeam_port['mbps'] == 0:
                     continue
-                ifce = str(graphite_port['ifce'])
-                description = graphite_port['description']
+
+                ifce = str(netbeam_port['ifce'])
+                description = netbeam_port['description']
 
                 relevant = False
                 juniper = False
@@ -125,7 +119,6 @@ def main():
                 if ifce.startswith('et'):
                     relevant = True
                     juniper = True
-
                 if ifce.startswith('to_'):
                     relevant = False
                     # until i can get vlan info
@@ -137,7 +130,6 @@ def main():
 
                 if relevant:
                     used_vlans = []
-
                     if device in saps_by_device:
                         for sap in saps_by_device[device]:
                             if sap['port'] == ifce:
@@ -148,7 +140,7 @@ def main():
                         for u_entry in untagged:
                             if u_entry['device'] == device and u_entry['port'] == ifce:
                                 delete = ifce
-                                # print 'found base port for untagged: '+device+':'+ifce
+                                # print 'found base port for untagged: '+ device + ':' + ifce
 
                     if juniper and '.' in ifce:
                         parts = ifce.split('.')
@@ -181,17 +173,17 @@ def main():
                             found_port_entry['capabilities'].append('ETHERNET')
 
                     if not found:
-                        description = graphite_port['description']
+                        description = netbeam_port['description']
                         if 'oscars-l2circuit' in description:
                             # Hacky hack hack
                             used_vlans = []
                         reservable_vlans = make_reservable_vlans(used_vlans)
 
                         port = {
-                            'reservableIngressBw': graphite_port['mbps'],
-                            'reservableEgressBw': graphite_port['mbps'],
+                            'reservableIngressBw': netbeam_port['mbps'],
+                            'reservableEgressBw': netbeam_port['mbps'],
                             'tags': [
-                                graphite_port['description']
+                                netbeam_port['description']
                             ],
                             'urn': ifce_urn,
                             'capabilities': [
@@ -209,7 +201,7 @@ def main():
                             delete_entry = port_entry
                     if delete_entry:
                         device_entry['ports'].remove(delete_entry)
-            # end : for graphite_port in by_device[device]:
+            # end : for netbeam_port in by_device[device]:
 
         for lag in lags:
             lag_urn = lag['device'] + ':' + lag['name']
