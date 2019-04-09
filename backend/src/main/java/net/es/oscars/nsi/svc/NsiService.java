@@ -81,7 +81,7 @@ public class NsiService {
     @Value("${nsi.provider-nsa}")
     private String providerNsa;
 
-    @Value("${nsi.strict-policing}")
+    @Value("${nsi.strict-policing:true}")
     private boolean strictPolicing;
 
     @Value("#{'${nsi.allowed-requesters}'.split(',')}")
