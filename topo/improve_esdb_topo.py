@@ -101,6 +101,9 @@ def main():
                 ifce = str(netbeam_port['ifce'])
                 description = netbeam_port['description']
 
+                if "Gig Ethernet" in description:
+                    continue
+
                 relevant = False
                 juniper = False
                 delete = None
