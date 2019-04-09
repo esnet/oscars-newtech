@@ -100,14 +100,7 @@ public class PssTask {
                     // this has already ended, so if active it needs to be added to the dismantle list
                     if (s.getEnding().isBefore(Instant.now())) {
                         if (c.getState().equals(State.ACTIVE)) {
-                            if (!attempts.containsKey(c.getConnectionId()) ) {
-
-                                log.info("not dismantling (failed config gen) "+c.getConnectionId());
-                            } else {
-                                shouldBeDismantled.add(c);
-                            }
-
-
+                            shouldBeDismantled.add(c);
                         }
 
                     } else if (s.getBeginning().isBefore(Instant.now())) {
@@ -116,10 +109,15 @@ public class PssTask {
                         // b. AND it is not already set up or failed
                         if (c.getMode().equals(BuildMode.AUTOMATIC)) {
                             if (c.getState().equals(State.WAITING)) {
-                                if (!attempts.containsKey(c.getConnectionId()) ) {
+                                boolean shouldBuild = true;
+                                if (attempts.containsKey(c.getConnectionId()) ) {
+                                    if (attempts.get(c.getConnectionId()) >= 3)  {
+                                        shouldBuild = false;
+                                    }
 
-                                    log.info("not building (failed config gen) "+c.getConnectionId());
-                                } else {
+
+                                }
+                                if (shouldBuild) {
                                     shouldBeBuilt.add(c);
                                 }
                             }
