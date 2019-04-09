@@ -8,10 +8,13 @@ import net.es.oscars.resv.ent.EroHop;
 import net.es.oscars.resv.ent.VlanPipe;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.UrnType;
+import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.PcePath;
 import net.es.oscars.web.beans.PceResponse;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
@@ -39,8 +42,59 @@ public class AllPathsPCE {
     private Integer shortPathDetour;
 
 
+    private Map<Pair<TopoUrn, TopoUrn>, List<GraphPath<TopoUrn, TopoAdjcy>>> pathsCache = new HashMap<>();
+    private Version cacheTopoVersion = null;
+
     @Autowired
     private DijkstraPCE dijkstraPCE;
+
+
+    private List<GraphPath<TopoUrn, TopoAdjcy>> cachedPaths
+            (TopoUrn src, TopoUrn dst, AllDirectedPaths<TopoUrn, TopoAdjcy> ap, Integer maxLength)
+            throws PCEException {
+        List<GraphPath<TopoUrn, TopoAdjcy>> paths;
+
+        try {
+
+            boolean versionChanged = false;
+            Version current = topoService.currentTopology().getVersion();
+            if (this.cacheTopoVersion == null) {
+                versionChanged = true;
+            } else if (!this.cacheTopoVersion.getId().equals(current.getId())) {
+                versionChanged = true;
+            }
+            Pair<TopoUrn, TopoUrn> srcdst = Pair.of(src, dst);
+            boolean inCache = pathsCache.containsKey(srcdst);
+
+            boolean mustCalculate = false;
+            if (versionChanged) {
+                mustCalculate = true;
+            } else if (!inCache) {
+                mustCalculate = true;
+            }
+            if (mustCalculate) {
+                Instant ps = Instant.now();
+                paths = ap.getAllPaths(src, dst, true, maxLength);
+                Instant pe = Instant.now();
+                log.info(paths.size()+ " distinct paths found between "+src.getUrn() +
+                        " and "+ dst.getUrn()+ " found in time "+ Duration.between(ps, pe));
+                this.cacheTopoVersion = current;
+                pathsCache.put(srcdst, paths);
+
+            } else {
+                paths = pathsCache.get(srcdst);
+            }
+
+        } catch (ConsistencyException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new PCEException("Consistency exception in topology");
+        }
+
+
+
+        return paths;
+
+    }
 
     public PceResponse calculatePaths(VlanPipe requestPipe,
                                       Map<String, Integer> availIngressBw,
@@ -123,11 +177,7 @@ public class AllPathsPCE {
 
         AllDirectedPaths<TopoUrn, TopoAdjcy> ap = new AllDirectedPaths<>(byMetricGraph);
 
-        Instant ps = Instant.now();
-        List<GraphPath<TopoUrn, TopoAdjcy>> paths = ap.getAllPaths(src, dst, true, maxLength);
-        Instant pe = Instant.now();
-        log.info(paths.size()+ " distinct paths found between "+src.getUrn() +
-                " and "+ dst.getUrn()+ " found in time "+ Duration.between(ps, pe));
+        List<GraphPath<TopoUrn, TopoAdjcy>> paths = this.cachedPaths(src, dst, ap, maxLength);
 
 
         PcePath widestAZ = null;

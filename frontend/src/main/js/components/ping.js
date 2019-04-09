@@ -20,7 +20,7 @@ class Ping extends Component {
     ping() {
         this.timeout = setTimeout(() => {
             try {
-                myClient.loadJSON({ method: "GET", url: "/api/ping", timeout: 3000 }).then(
+                myClient.loadJSON({ method: "GET", url: "/api/ping", timeout: 5000 }).then(
                     action(connected => {
                         if (this.props.modalStore.modals.get("disconnected")) {
                             this.props.modalStore.closeModal("disconnected");

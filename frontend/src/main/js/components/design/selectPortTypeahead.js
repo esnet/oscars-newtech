@@ -22,30 +22,24 @@ class SelectPortTypeahead extends Component {
         this.props.topologyStore.loadEthernetPorts();
     }
 
-    onTypeaheadSelection = port => {
-        const { ethPorts } = this.props.topologyStore;
-
-        let isInEthPorts = false;
-        let device = "";
-        ethPorts.map(entry => {
-            if (entry.id === port) {
-                isInEthPorts = true;
-                device = entry.device;
-            }
-        });
-        if (isInEthPorts) {
-            let params = {
-                port: port,
-                device: device
-            };
-
-            let fixture = this.props.designStore.addFixtureDeep(params);
-
-            const editFixtureParams = transformer.newFixtureToEditParams(fixture);
-            this.props.controlsStore.setParamsForEditFixture(editFixtureParams);
-
-            this.props.modalStore.openModal("editFixture");
+    onTypeaheadSelection = selected => {
+        if (size(selected) !== 1) {
+            return;
         }
+        let port = selected[0].id;
+        let device = selected[0].device;
+
+        let params = {
+            port: port,
+            device: device
+        };
+
+        let fixture = this.props.designStore.addFixtureDeep(params);
+
+        const editFixtureParams = transformer.newFixtureToEditParams(fixture);
+        this.props.controlsStore.setParamsForEditFixture(editFixtureParams);
+
+        this.props.modalStore.openModal("editFixture");
     };
 
     render() {
@@ -93,7 +87,7 @@ class SelectPortTypeahead extends Component {
                                 placeholder="Type port urn to add"
                                 minLength={2}
                                 options={options}
-                                onInputChange={this.onTypeaheadSelection}
+                                onChange={this.onTypeaheadSelection}
                             />
                             <InputGroupAddon addonType="append">
                                 <InputGroupText>{help}</InputGroupText>
