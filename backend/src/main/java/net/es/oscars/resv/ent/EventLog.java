@@ -38,7 +38,6 @@ public class EventLog {
     @NonNull
     private Instant created;
 
-    @NonNull
     private Instant archived;
 
     @OneToMany(cascade = CascadeType.ALL)
