@@ -12,7 +12,7 @@ import java.util.Set;
 @Builder
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 public class PceRequest {
     private Interval interval;
     private String a;

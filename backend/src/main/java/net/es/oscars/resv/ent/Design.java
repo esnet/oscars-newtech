@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @Data
 @Builder
-@AllArgsConstructor(suppressConstructorProperties = true)
+@AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
 public class Design {

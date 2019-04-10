@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 public class ConnectionList {
 
     private int page;

@@ -118,7 +118,7 @@ public class ConnController {
 
                 }
 
-            } catch (NsiException | InterruptedException ex) {
+            } catch (NsiException ex) {
                 log.error(ex.getMessage(),ex);
             }
             return connSvc.release(c);

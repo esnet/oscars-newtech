@@ -12,7 +12,7 @@ import java.time.Instant;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties = true)
+@AllArgsConstructor
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "refId")

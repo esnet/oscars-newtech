@@ -10,7 +10,7 @@ import java.time.Instant;
 @Builder
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 public class Interval {
     private Instant beginning;
     private Instant ending;

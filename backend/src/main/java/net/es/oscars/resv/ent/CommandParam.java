@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "refId")
 @Entity

@@ -11,7 +11,7 @@ import java.time.Instant;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 public class PeriodBandwidth {
     private Instant beginning;
     private Instant ending;
