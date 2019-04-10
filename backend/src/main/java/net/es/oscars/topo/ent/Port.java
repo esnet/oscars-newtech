@@ -17,7 +17,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor(suppressConstructorProperties=true)
 @NoArgsConstructor
-@EqualsAndHashCode(exclude={"device", "capabilities", "reservableVlans", "tags", "id"})
+@EqualsAndHashCode(exclude={"device", "capabilities", "ifces", "reservableVlans", "tags", "id"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
                   property = "urn")
 public class Port {
@@ -25,10 +25,8 @@ public class Port {
     @GeneratedValue
     private Long id;
 
-
     @ManyToOne
     private Version version;
-
 
     @NonNull
     @NaturalId
@@ -53,14 +51,10 @@ public class Port {
     @NonNull
     private Integer reservableEgressBw;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private String ifce;
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private String ipv4Address;
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private String ipv6Address;
+    private Set<Layer3Ifce> ifces = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable

@@ -15,17 +15,16 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
-@EqualsAndHashCode(exclude={"a", "z"})
-public class PortAdjcy {
+@EqualsAndHashCode
+public class IfceAdjcy {
     @Id
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
-    private Port a;
+    private String aIfceUrn;
 
     @ManyToOne
-    private Port z;
+    private String zIfceUrn;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable
@@ -35,15 +34,15 @@ public class PortAdjcy {
     private Version version;
 
     public String getUrn() {
-        return a.getUrn()+" - "+z.getUrn();
+        return aIfceUrn+" - "+zIfceUrn;
     }
 
     public Integer minimalReservableBandwidth() {
         Set<Integer> reservableBandwidths = new HashSet<>();
-        reservableBandwidths.add(this.a.getReservableEgressBw());
-        reservableBandwidths.add(this.z.getReservableEgressBw());
-        reservableBandwidths.add(this.a.getReservableIngressBw());
-        reservableBandwidths.add(this.z.getReservableIngressBw());
+        reservableBandwidths.add(this.a.getPort().getReservableEgressBw());
+        reservableBandwidths.add(this.z.getPort().getReservableEgressBw());
+        reservableBandwidths.add(this.a.getPort().getReservableIngressBw());
+        reservableBandwidths.add(this.z.getPort().getReservableIngressBw());
         // we can get() because the stream is not empty
         return reservableBandwidths.stream().min(Integer::compare).get();
     }

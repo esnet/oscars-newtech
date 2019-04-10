@@ -1,15 +1,12 @@
 package net.es.oscars.topo.svc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.topo.beans.Delta;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
-import net.es.oscars.topo.ent.PortAdjcy;
-import net.es.oscars.topo.ent.Version;
+import net.es.oscars.topo.ent.IfceAdjcy;
 import net.es.oscars.topo.enums.Layer;
 
 import java.util.*;
@@ -17,8 +14,8 @@ import java.util.*;
 @Slf4j
 public class TopoLibrary {
 
-    public static List<PortAdjcy> adjciesOriginatingFrom(String urn, List<PortAdjcy> allAdjcies) {
-        List<PortAdjcy> result = new ArrayList<>();
+    public static List<IfceAdjcy> adjciesOriginatingFrom(String urn, List<IfceAdjcy> allAdjcies) {
+        List<IfceAdjcy> result = new ArrayList<>();
         allAdjcies.forEach(adj -> {
             if (adj.getA().getUrn().equals(urn)) {
                 result.add(adj);
@@ -30,7 +27,7 @@ public class TopoLibrary {
 
     public static VersionDelta compare(Topology alpha, Topology beta) {
         // log.info("comparing topologies");
-        Delta<PortAdjcy> adjcyDelta = comparePortAdjcies(alpha.getAdjcies(), beta.getAdjcies());
+        Delta<IfceAdjcy> adjcyDelta = comparePortAdjcies(alpha.getAdjcies(), beta.getAdjcies());
 
         Delta<Device> deviceDelta = compareDevices(alpha, beta);
 
@@ -239,22 +236,22 @@ public class TopoLibrary {
                 .build();
     }
 
-    public static Delta<PortAdjcy> comparePortAdjcies(List<PortAdjcy> alpha, List<PortAdjcy> beta) {
+    public static Delta<IfceAdjcy> comparePortAdjcies(List<IfceAdjcy> alpha, List<IfceAdjcy> beta) {
         // log.info("comparing port adjcies");
-        Map<String, PortAdjcy> added = new HashMap<>();
-        Map<String, PortAdjcy> modified = new HashMap<>();
-        Map<String, PortAdjcy> removed = new HashMap<>();
-        Map<String, PortAdjcy> unchanged = new HashMap<>();
+        Map<String, IfceAdjcy> added = new HashMap<>();
+        Map<String, IfceAdjcy> modified = new HashMap<>();
+        Map<String, IfceAdjcy> removed = new HashMap<>();
+        Map<String, IfceAdjcy> unchanged = new HashMap<>();
 
-        for (PortAdjcy aAdjcy : alpha) {
+        for (IfceAdjcy aAdjcy : alpha) {
             String adjcyStr = aAdjcy.getA().getUrn() + " -- " + aAdjcy.getZ().getUrn();
-            PortAdjcy newAdjcy = null;
+            IfceAdjcy newAdjcy = null;
 
             String a_a_urn = aAdjcy.getA().getUrn();
             String a_z_urn = aAdjcy.getZ().getUrn();
             boolean found = false;
             boolean changed = false;
-            for (PortAdjcy bAdjcy : beta) {
+            for (IfceAdjcy bAdjcy : beta) {
                 String b_a_urn = bAdjcy.getA().getUrn();
                 String b_z_urn = bAdjcy.getZ().getUrn();
                 if (a_a_urn.equals(b_a_urn) && a_z_urn.equals(b_z_urn)) {
@@ -299,12 +296,12 @@ public class TopoLibrary {
                 removed.put(aAdjcy.getUrn(), aAdjcy);
             }
         }
-        for (PortAdjcy bAdjcy : beta) {
+        for (IfceAdjcy bAdjcy : beta) {
             // log.info("checking if exists: "+ bAdjcy.getA().getUrn()+ " -- "+bAdjcy.getZ().getUrn());
             String b_a_urn = bAdjcy.getA().getUrn();
             String b_z_urn = bAdjcy.getZ().getUrn();
             boolean found = false;
-            for (PortAdjcy aAdjcy : alpha) {
+            for (IfceAdjcy aAdjcy : alpha) {
                 String a_a_urn = aAdjcy.getA().getUrn();
                 String a_z_urn = aAdjcy.getZ().getUrn();
                 if (b_a_urn.equals(a_a_urn) && b_z_urn.equals(a_z_urn)) {
@@ -318,7 +315,7 @@ public class TopoLibrary {
         }
 
 
-        return Delta.<PortAdjcy>builder()
+        return Delta.<IfceAdjcy>builder()
                 .added(added)
                 .modified(modified)
                 .removed(removed)

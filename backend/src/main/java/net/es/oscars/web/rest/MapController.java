@@ -7,17 +7,15 @@ import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.db.DeviceRepository;
 import net.es.oscars.topo.db.PortAdjcyRepository;
 import net.es.oscars.topo.ent.Device;
-import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.ent.IfceAdjcy;
 import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.UIPopulator;
 import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -78,7 +76,7 @@ public class MapController {
         }
 
         Set<String> added = new HashSet<>();
-        for (PortAdjcy pa : topology.getAdjcies()) {
+        for (IfceAdjcy pa : topology.getAdjcies()) {
 
             String edgeId = pa.getA().getUrn() + " -- " + pa.getZ().getUrn();
             String reverseEdgeId = pa.getZ().getUrn() + " -- " + pa.getA().getUrn();

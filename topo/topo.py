@@ -30,12 +30,12 @@ from esnet.topology.today_to_vlan import get_vlans
 #      The OSCARS-style topology structure is created and goes through
 #      several processing steps. We need some config-provided topology hints from
 #      lags.json and dual_ports.json
-# 3. Override properties with matches from overrides.json
+# 3. Override properties with matches from overrides.json (TODO)
 #       The file contains override definitions for ports, devices and adjacencies.
 #       An output object that matches will have its properties overridden
 #       with those defined in the file. Definitions may also add objects that are
 #       altogether missing from the network data.
-# 4. Filter topology with matches from filters.json
+# 4. Filter topology with matches from filters.json (TODO)
 #       The file contains filter definitions. These are applied in order on the
 #       topology structure. The intent is to be able to easily filter out
 #       devices / ports. The default is that everything passes the fiter unless

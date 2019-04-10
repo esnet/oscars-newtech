@@ -3,21 +3,12 @@ package net.es.oscars.topo.pop;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.app.StartupComponent;
-import net.es.oscars.app.exc.StartupException;
-import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.app.props.TopoProperties;
-import net.es.oscars.topo.beans.Delta;
-import net.es.oscars.topo.beans.TopoException;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
-import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
-import net.es.oscars.topo.db.PortRepository;
-import net.es.oscars.topo.db.VersionRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
-import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.ent.IfceAdjcy;
 import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.svc.TopoLibrary;
@@ -25,11 +16,9 @@ import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.topo.svc.UpdateSvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.*;
 
 
@@ -93,7 +82,7 @@ public class TopoPopulator {
             });
         });
 
-        List<PortAdjcy> adjcies = loadPortAdjciesFromFile(adjciesFilename, portMap);
+        List<IfceAdjcy> adjcies = loadPortAdjciesFromFile(adjciesFilename, portMap);
 
         return Topology.builder()
                 .adjcies(adjcies)
@@ -116,17 +105,17 @@ public class TopoPopulator {
         return devices;
     }
 
-    private List<PortAdjcy> loadPortAdjciesFromFile(String filename, Map<String, Port> portMap) throws IOException {
+    private List<IfceAdjcy> loadPortAdjciesFromFile(String filename, Map<String, Port> portMap) throws IOException {
         File jsonFile = new File(filename);
         ObjectMapper mapper = new ObjectMapper();
         List<PortAdjcyForImport> fromFile = Arrays.asList(mapper.readValue(jsonFile, PortAdjcyForImport[].class));
-        List<PortAdjcy> result = new ArrayList<>();
+        List<IfceAdjcy> result = new ArrayList<>();
         fromFile.forEach(t -> {
             if (portMap.containsKey(t.getA()) && portMap.containsKey(t.getZ())) {
                 Port a = portMap.get(t.getA());
                 Port z = portMap.get(t.getZ());
                 Map<Layer, Long> metrics = t.getMetrics();
-                PortAdjcy adjcy = PortAdjcy.builder().a(a).z(z).metrics(metrics).build();
+                IfceAdjcy adjcy = IfceAdjcy.builder().a(a).z(z).metrics(metrics).build();
                 result.add(adjcy);
             } else {
                 log.error("Could not load an adjacency: " + t.getA() + " -- " + t.getZ());

@@ -12,7 +12,7 @@ import net.es.oscars.topo.db.PortRepository;
 import net.es.oscars.topo.db.VersionRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
-import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.ent.IfceAdjcy;
 import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.Layer;
@@ -54,7 +54,7 @@ public class TopoService {
             Version current = maybeCurrent.get();
             log.info("updating pathfinding topo to version: " + current.getId());
             List<Device> devices = deviceRepo.findByVersion(current);
-            List<PortAdjcy> adjcies = adjcyRepo.findByVersion(current);
+            List<IfceAdjcy> adjcies = adjcyRepo.findByVersion(current);
 
             // first add all devices (and ports) to the urn map
             this.topoUrnMap = this.urnsFromDevices(devices);
@@ -86,7 +86,7 @@ public class TopoService {
     public Topology currentTopology() throws ConsistencyException {
         Map<String, Device> deviceMap = new HashMap<>();
         Map<String, Port> portMap = new HashMap<>();
-        List<PortAdjcy> adjcies = new ArrayList<>();
+        List<IfceAdjcy> adjcies = new ArrayList<>();
         Topology t = Topology.builder()
                 .adjcies(adjcies)
                 .devices(deviceMap)
@@ -231,10 +231,10 @@ public class TopoService {
 
     }
 
-    private List<TopoAdjcy> topoAdjciesFromPortAdjcies(List<PortAdjcy> portAdjcies) throws TopoException {
+    private List<TopoAdjcy> topoAdjciesFromPortAdjcies(List<IfceAdjcy> portAdjcies) throws TopoException {
         List<TopoAdjcy> adjcies = new ArrayList<>();
 
-        for (PortAdjcy pa : portAdjcies) {
+        for (IfceAdjcy pa : portAdjcies) {
             if (pa.getVersion() == null) {
                 log.info("null port adjcy: " + pa.getUrn());
                 continue;

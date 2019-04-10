@@ -12,7 +12,7 @@ import net.es.oscars.topo.db.PortRepository;
 import net.es.oscars.topo.db.VersionRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
-import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.ent.IfceAdjcy;
 import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.pop.ConsistencyException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -479,25 +479,25 @@ public class UpdateSvc {
 
     @Transactional
     public void mergeAdjacencies(VersionDelta vd, Version newVersion) throws ConsistencyException {
-        Delta<PortAdjcy> ad = vd.getAdjcyDelta();
+        Delta<IfceAdjcy> ad = vd.getAdjcyDelta();
         this.verifyAdjcyDelta(ad);
 
 
-        Map<String, PortAdjcy> adjciesToMakeInvalid = new HashMap<>();
-        Map<String, PortAdjcy> adjciesToUpdateVersion = new HashMap<>();
-        Map<String, PortAdjcy> adjciesToInsert = new HashMap<>();
-        Map<String, PortAdjcy> adjciesToUpdate = new HashMap<>();
-        Map<String, PortAdjcy> adjciesUpdateTarget = new HashMap<>();
+        Map<String, IfceAdjcy> adjciesToMakeInvalid = new HashMap<>();
+        Map<String, IfceAdjcy> adjciesToUpdateVersion = new HashMap<>();
+        Map<String, IfceAdjcy> adjciesToInsert = new HashMap<>();
+        Map<String, IfceAdjcy> adjciesToUpdate = new HashMap<>();
+        Map<String, IfceAdjcy> adjciesUpdateTarget = new HashMap<>();
 
 
-        for (PortAdjcy pa : ad.getAdded().values()) {
+        for (IfceAdjcy pa : ad.getAdded().values()) {
             String aUrn = pa.getA().getUrn();
             String zUrn = pa.getZ().getUrn();
-            Optional<PortAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
+            Optional<IfceAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
             if (!maybeExists.isPresent()) {
                 adjciesToInsert.put(pa.getUrn(), pa);
             } else {
-                PortAdjcy prev = maybeExists.get();
+                IfceAdjcy prev = maybeExists.get();
                 if (prev.getVersion().getValid()) {
                     throw new ConsistencyException("re-inserting already valid adjcy " + pa.getUrn());
                 } else {
@@ -510,41 +510,41 @@ public class UpdateSvc {
         }
 
 
-        for (PortAdjcy pa : ad.getRemoved().values()) {
+        for (IfceAdjcy pa : ad.getRemoved().values()) {
             String aUrn = pa.getA().getUrn();
             String zUrn = pa.getZ().getUrn();
-            Optional<PortAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
+            Optional<IfceAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
             if (!maybeExists.isPresent()) {
                 throw new ConsistencyException("invalidating a missing adjcy " + pa.getUrn());
             } else {
-                PortAdjcy prev = maybeExists.get();
+                IfceAdjcy prev = maybeExists.get();
                 adjciesToMakeInvalid.put(pa.getUrn(), prev);
             }
         }
 
-        for (PortAdjcy pa : ad.getModified().values()) {
+        for (IfceAdjcy pa : ad.getModified().values()) {
             String aUrn = pa.getA().getUrn();
             String zUrn = pa.getZ().getUrn();
-            Optional<PortAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
+            Optional<IfceAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
             if (!maybeExists.isPresent()) {
                 throw new ConsistencyException("updating a missing adjcy " + pa.getUrn());
             } else {
-                PortAdjcy prev = maybeExists.get();
+                IfceAdjcy prev = maybeExists.get();
                 adjciesToUpdateVersion.put(pa.getUrn(), prev);
                 adjciesToUpdate.put(pa.getUrn(), prev);
                 adjciesUpdateTarget.put(pa.getUrn(), pa);
             }
         }
 
-        for (PortAdjcy pa : ad.getUnchanged().values()) {
+        for (IfceAdjcy pa : ad.getUnchanged().values()) {
             String aUrn = pa.getA().getUrn();
             String zUrn = pa.getZ().getUrn();
-            Optional<PortAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
+            Optional<IfceAdjcy> maybeExists = adjcyRepo.findByA_UrnAndZ_Urn(aUrn, zUrn);
 
             if (!maybeExists.isPresent()) {
                 throw new ConsistencyException("bumping version for missing adjcy " + pa.getUrn());
             } else {
-                PortAdjcy prev = maybeExists.get();
+                IfceAdjcy prev = maybeExists.get();
                 adjciesToUpdateVersion.put(pa.getUrn(), prev);
             }
         }
@@ -552,7 +552,7 @@ public class UpdateSvc {
         int insertedAdjcies = 0;
         for (String urn : adjciesToInsert.keySet()) {
             log.info("inserting pa: " + urn);
-            PortAdjcy pa = adjciesToInsert.get(urn);
+            IfceAdjcy pa = adjciesToInsert.get(urn);
             pa.setVersion(newVersion);
             String aUrn = pa.getA().getUrn();
             String zUrn = pa.getZ().getUrn();
@@ -579,7 +579,7 @@ public class UpdateSvc {
 
         int versionUpdatedAdjcies = 0;
         for (String urn : adjciesToUpdateVersion.keySet()) {
-            PortAdjcy pa = adjciesToUpdateVersion.get(urn);
+            IfceAdjcy pa = adjciesToUpdateVersion.get(urn);
             if (!pa.getA().getVersion().getValid()) {
                 throw new ConsistencyException("adjcy version update: invalid a: " + urn);
             }
@@ -596,8 +596,8 @@ public class UpdateSvc {
         int dataUpdatedAdjcies = 0;
         for (String urn : adjciesToUpdate.keySet()) {
             log.debug("updating data pa: " + urn);
-            PortAdjcy prev = adjciesToUpdate.get(urn);
-            PortAdjcy next = adjciesUpdateTarget.get(urn);
+            IfceAdjcy prev = adjciesToUpdate.get(urn);
+            IfceAdjcy next = adjciesUpdateTarget.get(urn);
 
             if (!prev.getA().getUrn().equals(next.getA().getUrn())) {
                 throw new ConsistencyException("port adjcy update : mismatch A: " + urn);
@@ -622,7 +622,7 @@ public class UpdateSvc {
         int invalidatedAdjcies = 0;
         for (String urn : adjciesToMakeInvalid.keySet()) {
             invalidatedAdjcies++;
-            PortAdjcy prev = adjciesToMakeInvalid.get(urn);
+            IfceAdjcy prev = adjciesToMakeInvalid.get(urn);
             if (prev.getVersion().getValid()) {
                 throw new ConsistencyException("could not make invalid: " + urn);
             }
@@ -698,7 +698,7 @@ public class UpdateSvc {
 
     }
 
-    public void verifyAdjcyDelta(Delta<PortAdjcy> pad) throws ConsistencyException {
+    public void verifyAdjcyDelta(Delta<IfceAdjcy> pad) throws ConsistencyException {
 
         Set<String> overlapping;
         overlapping = Sets.intersection(pad.addedUrns(), pad.modifiedUrns());
