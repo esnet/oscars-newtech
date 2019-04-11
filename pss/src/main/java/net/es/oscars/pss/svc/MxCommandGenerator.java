@@ -59,6 +59,22 @@ public class MxCommandGenerator {
         return fill(mtp, params);
     }
 
+    public String show(MxParams params) throws ConfigException {
+        String top = "mx/show.ftl";
+
+        Map<String, Object> root = new HashMap<>();
+        root.put("paths", params.getPaths());
+        root.put("lsps", params.getLsps());
+        root.put("ifces", params.getIfces());
+        root.put("vpls", params.getMxVpls());
+        try {
+            return stringifier.stringify(root, top);
+        } catch (IOException | TemplateException ex) {
+            log.error("templating error", ex);
+            throw new ConfigException("template system error");
+        }
+
+    }
     private String fill(MxTemplatePaths tp, MxParams params) throws ConfigException {
 
         String top = "mx/mx-top.ftl";

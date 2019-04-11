@@ -27,13 +27,40 @@ public class AluCommandGenerator {
         this.validator = validator;
     }
 
-    public String dismantle(AluParams params) throws ConfigException {
+    public void validate(AluParams params) throws ConfigException {
+        if (params == null) {
+            throw new ConfigException("null ALU params!");
+        }
         this.protectVsNulls(params);
         this.verifyKeywords(params);
         this.verifyAluQosParams(params);
         this.verifySdpIds(params);
         this.verifyPaths(params);
 
+    }
+
+    public String show(AluParams params) throws ConfigException {
+        this.validate(params);
+        String top = "alu/show.ftl";
+
+        Map<String, Object> root = new HashMap<>();
+        root.put("paths", params.getPaths());
+        root.put("lsps", params.getLsps());
+        root.put("sdps", params.getSdps());
+        root.put("vpls", params.getAluVpls());
+        try {
+            return stringifier.stringify(root, top);
+        } catch (IOException | TemplateException ex) {
+            log.error("templating error", ex);
+            throw new ConfigException("template system error");
+        }
+
+    }
+
+
+    public String dismantle(AluParams params) throws ConfigException {
+
+        this.validate(params);
         AluTemplatePaths atp = AluTemplatePaths.builder()
                 .lsp("alu/dismantle-alu-mpls-lsp.ftl")
                 .qos("alu/dismantle-alu-qos.ftl")
@@ -45,15 +72,9 @@ public class AluCommandGenerator {
         return fill(atp, params, true);
     }
 
+
     public String build(AluParams params) throws ConfigException {
-        if (params == null) {
-            throw new ConfigException("null ALU params!");
-        }
-        this.protectVsNulls(params);
-        this.verifyKeywords(params);
-        this.verifyAluQosParams(params);
-        this.verifySdpIds(params);
-        this.verifyPaths(params);
+        this.validate(params);
 
         AluTemplatePaths atp = AluTemplatePaths.builder()
                 .lsp("alu/build-alu-mpls-lsp.ftl")

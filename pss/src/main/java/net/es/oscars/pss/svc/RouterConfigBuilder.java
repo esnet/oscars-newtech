@@ -89,17 +89,13 @@ public class RouterConfigBuilder {
 
         switch (model) {
             case ALCATEL_SR7750:
-                Integer svcId = command.getAlu().getAluVpls().getSvcId();
-                routerConfig = "show service id "+svcId+" all\n";
+                routerConfig = acg.show(command.getAlu());
+                break;
+            case JUNIPER_EX:
+                routerConfig = "UNSUPPORTED";
                 break;
             case JUNIPER_MX:
-            case JUNIPER_EX:
-                routerConfig = "show mpls lsp\n";
-                routerConfig += "show mpls path\n";
-                routerConfig += "show vpls connections\n";
-                routerConfig += "show interface xe-1/2/0.113 detail\n";
-                routerConfig += "show firewall counter filter XYZ\n";
-
+                routerConfig = mcg.show(command.getMx());
                 break;
             default:
                 throw new ConfigException("unknown model");

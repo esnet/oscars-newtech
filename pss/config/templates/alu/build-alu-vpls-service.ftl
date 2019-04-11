@@ -61,11 +61,13 @@ exit
 
 exit all
 /configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} stp shutdown
-/configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} auto-learn-mac-protect
+/configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} restrict-protected-src discard-frame
+
 <#if sdpToVcId.primary>
 /configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} precedence primary
 </#if>
-/configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} restrict-protected-src discard-frame
+
+
 <#if sdpToVcId.besteffort>
 /configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} egress qos 3 port-redirect-group "best-effort-vc" instance 1
 </#if>
