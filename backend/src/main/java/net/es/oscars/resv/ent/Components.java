@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @Builder
-@AllArgsConstructor(suppressConstructorProperties = true)
+@AllArgsConstructor
 @NoArgsConstructor
 public class Components {
     @JsonCreator

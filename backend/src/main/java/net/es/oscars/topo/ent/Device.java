@@ -17,7 +17,7 @@ import java.util.Set;
 @Data
 @Entity
 @Builder
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(exclude={"capabilities", "reservableVlans", "ports", "id"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,

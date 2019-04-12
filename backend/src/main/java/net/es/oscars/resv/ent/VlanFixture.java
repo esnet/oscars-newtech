@@ -14,7 +14,7 @@ import java.util.Set;
 @Entity
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties = true)
+@AllArgsConstructor
 public class VlanFixture {
     @JsonCreator
     public VlanFixture(@JsonProperty("connectionId") String connectionId,

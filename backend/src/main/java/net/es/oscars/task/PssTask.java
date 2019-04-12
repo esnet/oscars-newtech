@@ -165,7 +165,7 @@ public class PssTask {
                     }
                 }
 
-                connRepo.save(saveThese);
+                connRepo.saveAll(saveThese);
                 connRepo.flush();
             } finally {
                 // release lock now that we read everything we needed

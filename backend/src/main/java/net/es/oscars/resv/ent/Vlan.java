@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties = true)
+@AllArgsConstructor
 @Entity
 public class Vlan {
 

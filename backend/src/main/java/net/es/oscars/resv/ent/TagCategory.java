@@ -12,7 +12,7 @@ import javax.persistence.Id;
 @Data
 @Entity
 @Builder
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 @NoArgsConstructor
 public class TagCategory {
     @JsonCreator
