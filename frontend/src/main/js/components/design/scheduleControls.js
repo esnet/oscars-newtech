@@ -32,6 +32,9 @@ const format = "Y/MM/DD HH:mm:ss";
 class ScheduleControls extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            parser: null
+        };
     }
 
     componentWillMount() {
@@ -64,6 +67,8 @@ class ScheduleControls extends Component {
                 }
             }
         };
+
+        this.setState({ parser: this.createCustomParser() });
         this.props.controlsStore.setParamsForConnection(params);
         this.periodicCheck();
     }
@@ -109,11 +114,49 @@ class ScheduleControls extends Component {
         this.props.controlsStore.setParamsForConnection({ schedule: { locked: false } });
     }
 
+    createCustomParser = e => {
+        let asapParser = new chrono.Parser();
+
+        // Provide search pattern
+        asapParser.pattern = function() {
+            return /\basap\b/i;
+        };
+
+        // This function will be called when matched pattern is found
+        asapParser.extract = function(text, ref, match, opt) {
+            if (text.toUpperCase() === "ASAP") {
+                console.log("here extract");
+                console.log(ref);
+                console.log(match);
+
+                let date = new Date(2019, 5, 5);
+
+                // Return a parsed result, that is 25 December
+                return new chrono.ParsedResult({
+                    ref: ref,
+                    text: match[0],
+                    index: match.index,
+                    start: {
+                        day: date.getDate(),
+                        month: date.getMonth(),
+                        year: date.getFullYear()
+                    }
+                });
+            }
+        };
+
+        // Create a new custom Chrono
+        let custom = new chrono.Chrono();
+        custom.parsers.push(asapParser);
+
+        return custom;
+    };
+
     onStartDateChange = e => {
         let expr = e.target.value;
         let conn = this.props.controlsStore.connection;
+        let parsed = this.state.parser.parseDate(expr);
 
-        let parsed = chrono.parseDate(expr);
         let params = {
             schedule: {
                 start: {
@@ -133,7 +176,7 @@ class ScheduleControls extends Component {
             params.schedule.start.choice = expr;
             params.schedule.start.parsed = true;
             params.schedule.end.choice = toJS(conn.schedule.end.choice);
-            this.validateStartEnd(params);
+            this.validateStartEnd(params, this.state.parser);
         } else {
             params.schedule.start.validationText = "Invalid date";
             params.schedule.acceptable = false;
@@ -174,7 +217,7 @@ class ScheduleControls extends Component {
     };
 
     validateStartEnd(params) {
-        //        console.log(toJS(params));
+        // console.log(toJS(params));
         if (!params.schedule.start.parsed || !params.schedule.end.parsed) {
             return;
         }
@@ -182,8 +225,8 @@ class ScheduleControls extends Component {
         params.schedule.start.validationState = "success";
         params.schedule.end.validationState = "success";
 
-        let startAt = chrono.parseDate(params.schedule.start.choice);
-        let endAt = chrono.parseDate(params.schedule.end.choice);
+        let startAt = this.state.parser.parseDate(params.schedule.start.choice);
+        let endAt = this.state.parser.parseDate(params.schedule.end.choice);
 
         let startError = false;
         let endError = false;
@@ -219,7 +262,7 @@ class ScheduleControls extends Component {
         }
 
         params.schedule.acceptable = !(startError || endError);
-        //        console.log(toJS(params));
+        // console.log(toJS(params));
     }
 
     lockSchedule = () => {
