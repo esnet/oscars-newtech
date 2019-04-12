@@ -1,5 +1,6 @@
 package net.es.oscars.topo.ent;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,5 +27,6 @@ public class Version {
     private Boolean valid;
 
     @NonNull
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER, timezone = "UTC")
     private Instant updated;
 }

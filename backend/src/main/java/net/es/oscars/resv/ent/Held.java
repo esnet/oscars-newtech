@@ -1,6 +1,7 @@
 package net.es.oscars.resv.ent;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -35,6 +36,7 @@ public class Held {
     private String connectionId;
 
     @NonNull
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER, timezone = "UTC")
     private Instant expiration;
 
     @NonNull
