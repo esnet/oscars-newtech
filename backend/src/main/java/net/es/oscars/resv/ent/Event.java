@@ -12,7 +12,7 @@ import java.time.Instant;
 @Data
 @Entity
 @Builder
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 @NoArgsConstructor
 public class Event {
     @JsonCreator
