@@ -125,13 +125,10 @@ class ScheduleControls extends Component {
         // This function will be called when matched pattern is found
         asapParser.extract = function(text, ref, match, opt) {
             if (text.toUpperCase() === "ASAP") {
-                console.log("here extract");
-                console.log(ref);
-                console.log(match);
-
                 let date = new Date(2019, 5, 5);
 
-                // Return a parsed result, that is 25 December
+                // TODO : Make an API call to fetch the earliest start date if ASAP option is chosen
+                // Currently return a parsed result, that is 5 May 2019
                 return new chrono.ParsedResult({
                     ref: ref,
                     text: match[0],
