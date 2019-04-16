@@ -1,5 +1,11 @@
 # OSCARS Release Notes
 
+## v1.0.32
+> Apr 16, 2019
+- Updated Spring Boot to v2
+- PCE performance improvements
+
+
 ## v1.0.30
 
 > Mar 12, 2019

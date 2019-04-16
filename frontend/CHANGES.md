@@ -1,5 +1,9 @@
 # OSCARS Frontend Release Notes
 
+## v1.0.32
+> Apr 16, 2019
+- Small changes & dependency updates
+
 ## v1.0.21
 
 > Feb 22, 2019

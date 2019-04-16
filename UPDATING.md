@@ -3,11 +3,8 @@ This file contains instructions for updating an existing installation of OSCARS 
 
 Instructions include config file changes, database schema changes, etc.
 
-## 1.0.31 to 1.0.32
 
-
-
-## 1.0.26 to 1.0.31
+## 1.0.26 to 1.0.32
 
 
 ### SQL schema upgrade procedure
