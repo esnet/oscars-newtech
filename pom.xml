@@ -7,11 +7,13 @@
     <groupId>net.es.oscars</groupId>
     <artifactId>oscars</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.32</version>
+    <version>${revision}</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <revision>1.0.32</revision>
+
         <java.version>1.8</java.version>
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
