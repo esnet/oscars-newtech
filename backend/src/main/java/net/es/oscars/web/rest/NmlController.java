@@ -70,6 +70,9 @@ public class NmlController {
     private Integer resvTimeout;
 
     @Autowired
+    private MiscController miscController;
+
+    @Autowired
     private TopoService topoService;
 
     @Autowired
@@ -575,7 +578,7 @@ public class NmlController {
         rootElement.appendChild(dName);
 
         Element dSwVer = doc.createElement("softwareVersion");
-        dSwVer.setTextContent(MiscController.version);
+        dSwVer.setTextContent(miscController.getVersion());
         rootElement.appendChild(dSwVer);
 
         Element dStartTime = doc.createElement("startTime");

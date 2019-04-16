@@ -2,6 +2,9 @@ package net.es.oscars.web.rest;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.app.util.GitRepositoryState;
+import net.es.oscars.app.util.GitRepositoryStatePopulator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
@@ -17,7 +20,8 @@ import org.apache.commons.io.input.ReversedLinesFileReader;
 @RestController
 @Slf4j
 public class MiscController {
-    public static String version = "1.0.30";
+    @Autowired
+    private GitRepositoryStatePopulator gitRepositoryStatePopulator;
 
     @Value("${logging.file}")
     private String logfile;
@@ -30,7 +34,9 @@ public class MiscController {
 
     @RequestMapping(value = "/api/version", method = RequestMethod.GET)
     public String getVersion() {
-        return version;
+        GitRepositoryState gitRepositoryState = this.gitRepositoryStatePopulator.getGitRepositoryState();
+
+        return gitRepositoryState.getBuildVersion();
     }
 
     @RequestMapping(value = "/api/ping", method = RequestMethod.GET)
