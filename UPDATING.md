@@ -10,10 +10,10 @@ Instructions include config file changes, database schema changes, etc.
 This need to be applied wherever oscars-backend is running.
 * Prepare migration app.
 ```
-scp oscars-web.es.net:/usr/local/esnet/migration.tgz ./migration.tgz
+$ scp oscars-web.es.net:/usr/local/esnet/migration.tgz ./migration.tgz
 # it is a build of the `migration` app, v1.0.30-migration
-tar xfz migration.tgz; cd migration
-vi config/application.properties
+$ tar xfz migration.tgz; cd migration
+$ vi config/application.properties
 # update spring.datasource.password=XXX to the correct one
 ```
 * Verify migration app runs:
@@ -29,12 +29,13 @@ $ ls -al timestamps.sql
 ```
 * Shut down service
 ```
-systemctl stop oscars-backend
+$ sudo systemctl stop oscars-backend
 ```
-* Backup current database
+* Backup current database (note the backup file will be in the `postgres` home directory)
 ```
 $ sudo su - postgres
-$ pg_dump -f oscars.sql.bak -C oscars_backend
+$ pg_dump -f oscars-bak.sql -C oscars_backend
+$ exit
 ```
 * Run the migration app with the application stopped
 ```
@@ -45,17 +46,24 @@ $ ls -al timestamps.sql
 ```
 * Apply schema change SQL and import new timestamps 
 ```
-psql -d oscars_backend -U oscars < newschema.sql
-psql -d oscars_backend -U oscars < timestamps.sql
+$ sudo su - postgres
+$ cd migration # this should be the unpacked migration directory
+$ psql -d oscars_backend < newschema.sql
+$ psql -d oscars_backend < timestamps.sql
+$ exit
 ```
 At this point the new DB schema is installed and data has been migrated.
 
 * (If something went wrong, restore the database backup and restart the service)
 ```
-dropdb oscars_backend
-createdb -O oscars oscars_backend
-psql -U oscars -d oscars_backend < oscars-web.sql.bak
-systemctl start oscars-backend
+$ sudo su - postgres
+$ psql -d oscars_backend
+# dropdb oscars_backend
+# createdb -O oscars oscars_backend
+# \q
+$ psql -U oscars -d oscars_backend < oscars-bak.sql
+$ exit
+$ sudo systemctl start oscars-backend
 
 ```
 
@@ -65,9 +73,9 @@ systemctl start oscars-backend
 Perform the config file changes described in the next section.
 
 * Start the oscars-backup service 
-`systemctl start oscars-backend`
-
-
+```
+% sudo systemctl start oscars-backend
+```
 
 ### Config file changes
 - backend:
