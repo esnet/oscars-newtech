@@ -5,7 +5,7 @@
     <parent>
         <artifactId>oscars</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>${revision}</version>
+        <version>1.0.32</version>
     </parent>
 
     <organization>
@@ -328,7 +328,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>rpm-maven-plugin</artifactId>
-                <version>2.1.5</version>
+                <version>2.2.0</version>
                 <configuration>
                     <name>oscars-backend</name>
                     <group>Unspecified</group>
