@@ -54,23 +54,13 @@ $ exit
 ```
 At this point the new DB schema is installed and data has been migrated.
 
-* (If something went wrong, restore the database backup and restart the service)
+* Install the new RPM (v.1.0.31 or other appropriate version) 
 ```
-$ sudo su - postgres
-$ psql -d oscars_backend
-# dropdb oscars_backend
-# createdb -O oscars oscars_backend
-# \q
-$ psql -U oscars -d oscars_backend < oscars-bak.sql
-$ exit
-$ sudo systemctl start oscars-backend
-
+% wget https://downloads.es.net/pub/oscars/oscars-backend-1.0.31-1.noarch.rpm
+% sudo rpm -U oscars-backend-1.0.31-1.noarch.rpm
 ```
 
-
-* Install the new RPM (v.1.0.31) 
-
-Perform the config file changes described in the next section.
+* Perform the config file changes described in the next section.
 
 * Start the oscars-backup service 
 ```
@@ -100,9 +90,20 @@ security.user.password=XXX  => spring.security.user.password=XXX
 
 ```
 
-
-
-
+### Recovery
+ONLY IF SOMETHING WENT WRONG: The following steps will restore the
+database backup and restart the service.  These steps are NOT a part
+of the update procedure.
+```
+$ sudo su - postgres
+$ psql -d oscars_backend
+# dropdb oscars_backend
+# createdb -O oscars oscars_backend
+# \q
+$ psql -U oscars -d oscars_backend < oscars-bak.sql
+$ exit
+$ sudo systemctl start oscars-backend
+```
 
 ## 1.0.25 to 1.0.26:
 
