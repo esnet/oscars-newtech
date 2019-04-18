@@ -3,6 +3,8 @@ package net.es.oscars.web.rest;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
+import net.es.oscars.app.util.GitRepositoryState;
+import net.es.oscars.app.util.GitRepositoryStatePopulator;
 import net.es.oscars.nsi.beans.NsiPeering;
 import net.es.oscars.nsi.svc.NsiPopulator;
 import net.es.oscars.nsi.svc.NsiService;
@@ -70,7 +72,7 @@ public class NmlController {
     private Integer resvTimeout;
 
     @Autowired
-    private MiscController miscController;
+    private GitRepositoryStatePopulator gitRepositoryStatePopulator;
 
     @Autowired
     private TopoService topoService;
@@ -577,8 +579,10 @@ public class NmlController {
         dName.setTextContent(nsaName);
         rootElement.appendChild(dName);
 
+        GitRepositoryState gitRepositoryState = this.gitRepositoryStatePopulator.getGitRepositoryState();
+
         Element dSwVer = doc.createElement("softwareVersion");
-        dSwVer.setTextContent(miscController.getVersion());
+        dSwVer.setTextContent(gitRepositoryState.getBuildVersion());
         rootElement.appendChild(dSwVer);
 
         Element dStartTime = doc.createElement("startTime");

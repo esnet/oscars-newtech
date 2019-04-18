@@ -35,9 +35,6 @@
                     </filesets>
                 </configuration>
             </plugin>
-
-
-
             <plugin>
 
                 <groupId>com.github.eirslett</groupId>
@@ -53,7 +50,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v10.7.0</nodeVersion>
+                            <nodeVersion>v10.15.3</nodeVersion>
                         </configuration>
                     </execution>
 

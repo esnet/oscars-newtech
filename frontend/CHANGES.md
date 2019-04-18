@@ -2,7 +2,7 @@
 
 ## v1.0.32
 > Apr 16, 2019
-- Small changes & dependency updates
+- Misc small changes & dependency updates
 
 ## v1.0.21
 
