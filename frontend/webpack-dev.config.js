@@ -19,7 +19,7 @@ let plugins = [
         __VERSION__: JSON.stringify(packageJSON.version)
     }),
     new HtmlWebpackPlugin({
-        template: PATHS.templates + "/template_index.html",
+        template: PATHS.templates + "/index.html",
         inject: "body",
         favicon: PATHS.templates + "/favicon.ico"
     })
