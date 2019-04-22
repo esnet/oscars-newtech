@@ -61,11 +61,7 @@ public class PssController {
     @RequestMapping(value = "/protected/pss/commands/{connectionId:.+}/{deviceUrn}", method = RequestMethod.GET)
     @ResponseBody
     public List<RouterCommands> commands(@PathVariable String connectionId, @PathVariable String deviceUrn) throws StartupException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
+        this.checkStartup();
         return rcRepo.findByConnectionIdAndDeviceUrn(connectionId, deviceUrn);
     }
 
@@ -73,11 +69,7 @@ public class PssController {
     @ResponseBody
     public GeneratedCommands generated(@PathVariable String connectionId, @PathVariable String deviceUrn)
             throws StartupException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
+        this.checkStartup();
 
         GeneratedCommands gc = GeneratedCommands.builder()
                 .device(deviceUrn)
@@ -94,11 +86,7 @@ public class PssController {
     @RequestMapping(value = "/protected/pss/commands/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     public List<RouterCommands> commands(@PathVariable String connectionId) throws StartupException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
+        this.checkStartup();
         return rcRepo.findByConnectionId(connectionId);
 
     }
@@ -107,11 +95,7 @@ public class PssController {
     @ResponseBody
     @Transactional
     public void regenerate(@PathVariable String connectionId) throws StartupException, PSSException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
+        this.checkStartup();
         Optional<Connection> maybeC = connRepo.findByConnectionId(connectionId);
         if (!maybeC.isPresent()) {
             throw new NoSuchElementException("connection not found");
@@ -129,7 +113,7 @@ public class PssController {
         }
 
         List<RouterCommands> rc = rcRepo.findByConnectionId(connectionId);
-        rcRepo.delete(rc);
+        rcRepo.deleteAll(rc);
 
     }
 
@@ -137,12 +121,7 @@ public class PssController {
     @RequestMapping(value = "/protected/pss/build/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     public void build(@PathVariable String connectionId) throws StartupException, PSSException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
-
+        this.checkStartup();
         Optional<Connection> cOpt = connRepo.findByConnectionId(connectionId);
         if (!cOpt.isPresent()) {
             throw new NoSuchElementException();
@@ -174,11 +153,7 @@ public class PssController {
     @ResponseBody
     @Transactional
     public void dismantle(@PathVariable String connectionId) throws StartupException, PSSException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
+        this.checkStartup();
         Optional<Connection> cOpt = connRepo.findByConnectionId(connectionId);
         if (!cOpt.isPresent()) {
             throw new NoSuchElementException();
@@ -213,11 +188,7 @@ public class PssController {
     @RequestMapping(value = "/protected/pss/checkControlPlane/{deviceUrn}", method = RequestMethod.GET)
     @ResponseBody
     public void checkControlPlane(@PathVariable String deviceUrn) throws StartupException, PSSException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
+        this.checkStartup();
         log.debug("initiating a control plane check for "+deviceUrn);
 
         checker.checkControlPlane(deviceUrn);
@@ -227,11 +198,7 @@ public class PssController {
     @RequestMapping(value = "/protected/pss/controlPlaneStatus/{deviceUrn}", method = RequestMethod.GET)
     @ResponseBody
     public CommandStatus controlPlaneStatus(@PathVariable String deviceUrn) throws StartupException {
-        if (startup.isInStartup()) {
-            throw new StartupException("OSCARS starting up");
-        } else if (startup.isInShutdown()) {
-            throw new StartupException("OSCARS shutting down");
-        }
+        this.checkStartup();
         if (!checker.getStatuses().containsKey(deviceUrn)) {
             return CommandStatus.builder()
                     .type(CommandType.CONTROL_PLANE_STATUS)
@@ -245,6 +212,16 @@ public class PssController {
                     .build();
         }
         return checker.getStatuses().get(deviceUrn);
+
+    }
+    private void checkStartup() throws StartupException {
+
+        if (startup.isInStartup()) {
+            throw new StartupException("OSCARS starting up");
+        } else if (startup.isInShutdown()) {
+            throw new StartupException("OSCARS shutting down");
+        }
+
 
     }
 

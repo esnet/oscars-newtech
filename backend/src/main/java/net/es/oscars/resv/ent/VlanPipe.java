@@ -14,7 +14,7 @@ import java.util.Set;
 @Entity
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties = true)
+@AllArgsConstructor
 public class VlanPipe {
     @JsonCreator
     public VlanPipe(@JsonProperty("connectionId") String connectionId,

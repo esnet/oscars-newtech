@@ -2,6 +2,7 @@ package net.es.oscars;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.migration.MigrationEngine;
+import net.es.oscars.timefix.TimestampExporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,9 +20,13 @@ public class MigrationApp implements CommandLineRunner {
     @Autowired
     private MigrationEngine engine;
 
+    @Autowired
+    private TimestampExporter exporter;
+
     @Override
     public void run(String... strings) throws Exception {
-        this.engine.runEngine();
+//        this.engine.runEngine();
+        exporter.export();
         System.exit(0);
 
     }

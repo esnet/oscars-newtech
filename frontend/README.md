@@ -13,7 +13,7 @@ A frontend for OSCARS 1.0
 
 ### Installing prerequisites
 
-`npm install` (`mvn package` will also do that)
+`npm install` (or, `mvn package`)
 
 ### Bring up a dev server 
 
@@ -23,23 +23,18 @@ A frontend for OSCARS 1.0
 
 `mvn clean package`
 
-### Deploying artifact to github repo
-
-`mvn clean package deploy`
- 
 ## Development notes
 
-- The version number is important; it should be the same in all of these files:
-  - `package.json` 
+- The version number for the module is important; it should be the same in both these files:
   - `pom.xml`
-  - `src/main/resources/frontend/index.html`
+  - `package.json` 
+  - `package-lock.json` 
   
-- In order for the backend to reflect the new changes on the frontend, we need to do the following
-  - Bump the version number in the frontend in all the files mentioned above
-  - Run a `mvn package deploy` on the frontend (do this ONLY when everything is tested and working as expected)
-    - If you're in development mode, you can skip the deploy mode for now. Just do a `mvn install` locally
-  - Bump the version dependency on the backend (`oscars-newtech`) in the top level `pom.xml`
-  - Then, in the backend, run `mvn clean install` from the top level directory
+You will only need to manually change the version number in in `pom.xml`. 
+After an `mvn package` or similar is run, `package[-lock].json` will be updated
+automatically. Remember to commit the updated files.
+
+ 
 
 ### IntelliJ IDEA settings 
 

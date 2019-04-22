@@ -36,6 +36,7 @@ public class ModelSteps {
     @When("^I \"([^\"]*)\" on the \"([^\"]*)\" command generator with the test commands$")
     public void i_EXEC_on_the_MODEL_command_generator_with_the_test_commands(CommandType t, DeviceModel m) {
         for (RouterTestSpec spec : loader.getSpecs()) {
+            log.info("file: "+spec.getFilename());
             try {
                 String config;
                 if (t.equals(CommandType.BUILD)) {

@@ -25,7 +25,7 @@ public class LogService {
     public void logEvent(String connectionId, Event ev) {
         EventLog eventLog = logRepo.findByConnectionId(connectionId)
                 .orElseGet(() -> EventLog.builder()
-                        .archived(Instant.MAX)
+                        .archived(null)
                         .created(Instant.now())
                         .connectionId(connectionId)
                         .events(new ArrayList<>())

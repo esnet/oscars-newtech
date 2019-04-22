@@ -50,10 +50,7 @@ public class TagController {
         TagCategory ctg = TagCategory.builder().category("").build();
 
         if (in.getId() != null) {
-            ctg = ctgRepo.findOne(in.getId());
-            if (ctg == null) {
-                throw new NoSuchElementException("category not found");
-            }
+            ctg = ctgRepo.findById(in.getId()).orElseThrow(NoSuchElementException::new);
         }
         if (in.getCategory() == null || in.getCategory().length() == 0) {
             throw new IllegalArgumentException("null or empty category!");
@@ -65,22 +62,17 @@ public class TagController {
     @RequestMapping(value = "/protected/tag/categories/delete/{id}", method = RequestMethod.GET)
     @ResponseBody
     public void delete(@PathVariable Integer id) {
-        TagCategory ctg = ctgRepo.findOne(id.longValue());
-        if (ctg != null) {
-            ctgRepo.delete(ctg);
-        }
+        TagCategory ctg = ctgRepo.findById(id.longValue()).orElseThrow(NoSuchElementException::new);
+        ctgRepo.delete(ctg);
 
     }
     @RequestMapping(value = "/protected/tag/categories/expunge/{id}", method = RequestMethod.GET)
     @ResponseBody
     public void expunge(@PathVariable Integer id) {
-        TagCategory ctg = ctgRepo.findOne(id.longValue());
-        if (ctg != null) {
-            String category = ctg.getCategory();
-            // TODO: actually expunge
-            ctgRepo.delete(ctg);
-
-        }
+        TagCategory ctg = ctgRepo.findById(id.longValue()).orElseThrow(NoSuchElementException::new);
+        String category = ctg.getCategory();
+        // TODO: actually expunge
+        ctgRepo.delete(ctg);
 
     }
 
@@ -113,9 +105,6 @@ public class TagController {
     public void addTag(@PathVariable String connectionId, @RequestBody Tag in) {
         if (in.getCategory() == null || in.getCategory().length() == 0) {
             throw new IllegalArgumentException("null / empty category");
-        }
-        if (in.getCategory() == null || in.getCategory().length() == 0) {
-            throw new IllegalArgumentException("empty contents");
         }
         Tag tag = Tag.builder().category(in.getCategory()).contents(in.getContents()).build();
 

@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Data
 @Entity
 @Builder
-@AllArgsConstructor(suppressConstructorProperties = true)
+@AllArgsConstructor
 @NoArgsConstructor
 public class Archived {
     @JsonCreator

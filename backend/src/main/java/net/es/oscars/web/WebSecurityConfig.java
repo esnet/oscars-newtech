@@ -2,10 +2,12 @@ package net.es.oscars.web;
 
 
 import net.es.oscars.security.jwt.JwtAuthenticationTokenFilter;
+import net.es.oscars.security.svc.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,7 +15,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -21,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter  {
 
 
 /*    @Autowired
@@ -29,8 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 */
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
+    private UserService userService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
+    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() {
         return new JwtAuthenticationTokenFilter();
     }
 
@@ -47,15 +47,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder)
             throws Exception {
         authenticationManagerBuilder
-                .userDetailsService(this.userDetailsService)
+                .userDetailsService(this.userService)
                 .passwordEncoder(passwordEncoder());
     }
 
+    @Bean
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
-        // don't apply the JWT filter or any kind of security for swagger,
-        // statics, SOAP calls (/services/**) or public API calls (/api/**)
+
+    @Override
+    public void configure(WebSecurity web) {
+
+        // don't apply the JWT filter or any kind of security for swagger
+        // or statics
         web.ignoring().antMatchers(
                 HttpMethod.GET,
                 "/",
@@ -65,7 +72,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/**/*.html",
                 "/**/*.css",
                 "/**/*.js",
-                "/api/**",
                 "/services/**",
                 "/documentation/**",
                 "/swagger-ui.html/**",
@@ -85,6 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/error").permitAll()
                 // allow everyone to public API
                 .antMatchers("/api/**").permitAll()
 

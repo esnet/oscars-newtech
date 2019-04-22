@@ -109,7 +109,7 @@ public class TransitionStates {
                 deleteThese.forEach(c -> {
                     log.debug("Deleting "+c.getConnectionId());
                 });
-                connRepo.delete(deleteThese);
+                connRepo.deleteAll(deleteThese);
 
                 archiveThese.forEach(c -> {
                     log.debug("Archiving "+c.getConnectionId());
