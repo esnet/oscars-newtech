@@ -10,10 +10,19 @@
     <parent>
         <artifactId>oscars</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>1.0.31</version>
+        <version>1.0.32</version>
     </parent>
+    <properties>
+        <frontend.version>${project.version}</frontend.version>
+    </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources/frontend</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -26,9 +35,6 @@
                     </filesets>
                 </configuration>
             </plugin>
-
-
-
             <plugin>
 
                 <groupId>com.github.eirslett</groupId>
@@ -44,14 +50,24 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v10.7.0</nodeVersion>
+                            <nodeVersion>v10.15.3</nodeVersion>
                         </configuration>
                     </execution>
+
                     <execution>
                         <id>npm install</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>npm version</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>version ${project.version} --allow-same-version</arguments>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>webpack build</id>

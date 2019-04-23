@@ -7,11 +7,12 @@
     <groupId>net.es.oscars</groupId>
     <artifactId>oscars</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.31</version>
+    <version>1.0.32</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <java.version>1.8</java.version>
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
@@ -71,20 +72,13 @@
     </profiles>
 
 
-    <repositories>
-        <repository>
-            <id>oscars-frontend-mvn-repo</id>
-            <url>https://raw.github.com/esnet/oscars-frontend/mvn-repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-
-    </repositories>
-
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.webjars</groupId>
+                <artifactId>webjars-locator-core</artifactId>
+                <version>0.37</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
