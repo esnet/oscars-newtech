@@ -39,7 +39,7 @@ class ScheduleControls extends Component {
 
     componentWillMount() {
         let startAt = new Date();
-        startAt.setTime(startAt.getTime() + 15 * 60 * 1000);
+        startAt.setTime(startAt.getTime());
 
         let endAt = new Date();
         endAt.setDate(endAt.getDate() + 365);
@@ -51,9 +51,9 @@ class ScheduleControls extends Component {
                 locked: true,
                 start: {
                     at: startAt,
-                    choice: "in 15 minutes",
+                    choice: "ASAP",
                     parsed: true,
-                    readable: Moment(startAt).format(format),
+                    readable: "",
                     validationState: "success",
                     validationText: ""
                 },
@@ -86,9 +86,13 @@ class ScheduleControls extends Component {
 
         /*
         now check if we're past the start time
+        it's ok to be past the start time if we are in ASAP mode
          */
 
-        if (conn.schedule.start.at < new Date()) {
+        if (
+            conn.schedule.start.at < new Date() &&
+            conn.schedule.start.choice.toUpperCase() !== "ASAP"
+        ) {
             this.props.controlsStore.setParamsForConnection({
                 schedule: {
                     locked: false,
@@ -125,7 +129,7 @@ class ScheduleControls extends Component {
         // This function will be called when matched pattern is found
         asapParser.extract = function(text, ref, match, opt) {
             if (text.toUpperCase() === "ASAP") {
-                let date = new Date(2019, 5, 5);
+                let date = new Date();
 
                 // TODO : Make an API call to fetch the earliest start date if ASAP option is chosen
                 // Currently return a parsed result, that is 5 May 2019
@@ -136,7 +140,10 @@ class ScheduleControls extends Component {
                     start: {
                         day: date.getDate(),
                         month: date.getMonth(),
-                        year: date.getFullYear()
+                        year: date.getFullYear(),
+                        hours: date.getHours(),
+                        minutes: date.getMinutes(),
+                        seconds: date.getSeconds()
                     }
                 });
             }
@@ -175,7 +182,7 @@ class ScheduleControls extends Component {
             params.schedule.end.choice = toJS(conn.schedule.end.choice);
             this.validateStartEnd(params, this.state.parser);
         } else {
-            params.schedule.start.validationText = "Invalid date";
+            params.schedule.startAtReadableext = "Invalid date";
             params.schedule.acceptable = false;
         }
         this.props.controlsStore.setParamsForConnection(params);
@@ -222,15 +229,20 @@ class ScheduleControls extends Component {
         params.schedule.start.validationState = "success";
         params.schedule.end.validationState = "success";
 
-        let startAt = this.state.parser.parseDate(params.schedule.start.choice);
+        let startChoice = params.schedule.start.choice;
+
+        let startAt = this.state.parser.parseDate(startChoice);
         let endAt = this.state.parser.parseDate(params.schedule.end.choice);
 
         let startError = false;
         let endError = false;
         let startAtReadable = Moment(startAt).format(format);
+        if (startChoice.toUpperCase() === "ASAP") {
+            startAtReadable = "";
+        }
         let endAtReadable = Moment(endAt).format(format);
 
-        if (startAt < new Date()) {
+        if (startAt < new Date() && startChoice.toUpperCase() !== "ASAP") {
             params.schedule.start.validationState = "error";
             params.schedule.start.validationText = "Start time is before now.";
             startError = true;
@@ -375,7 +387,7 @@ class ScheduleControls extends Component {
                                 type="text"
                                 valid={sched.start.validationState === "success"}
                                 invalid={sched.start.validationState === "error"}
-                                defaultValue="in 15 minutes"
+                                defaultValue="ASAP"
                                 disabled={sched.locked}
                                 onChange={this.onStartDateChange}
                             />
