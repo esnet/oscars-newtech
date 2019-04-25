@@ -334,12 +334,19 @@ class ScheduleControls extends Component {
                     Then, click "Lock schedule", so that the system can then calculate resource
                     availability.
                 </p>
-                <p>
-                    Relative time expressions such as "in 10 minutes" are accepted, but they are
-                    only evaluated when you type them in. The resulting times will not change as
-                    time passes.
-                </p>
                 <p>Unlocking the schedule will also unlock all other resources.</p>
+                <p>
+                    The (default) start time of "ASAP" is a special expression and means that the
+                    reservation should start as soon as the <u>Commit</u> button is pressed. The
+                    reservation start time will be about 30 seconds after the <u>Commit</u> action.
+                </p>
+                <p>
+                    Other time expressions such as "in 10 minutes" are accepted for convenience's
+                    sake, but they are only evaluated when you <b>type them in</b>. The resulting
+                    reservation interval will <b>not</b> change as time passes. It is recommended to
+                    use such expressions only when precision is <b>not</b> important, i.e. "in three
+                    months". When precision is needed please use specific dates and times instead.
+                </p>
             </span>
         );
 
