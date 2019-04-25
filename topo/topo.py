@@ -29,7 +29,7 @@ from esnet.topology.today_to_vlan import get_vlans
 # 2. Create topology from network data
 #      The OSCARS-style topology structure is created and goes through
 #      several processing steps. We need some config-provided topology hints from
-#      lags.json and dual_ports.json
+#      config files: lags.json, switches.json, vars.json
 # 3. Override properties with matches from overrides.json (TODO)
 #       The file contains override definitions for ports, devices and adjacencies.
 #       An output object that matches will have its properties overridden
@@ -94,7 +94,9 @@ def main():
         'CONFIG_DIR': "./config/",
         'ESDB_TOKEN': 'esdb_token.txt',
 
+        'VARS': "vars.json",
         'LAGS': "lags.json",
+        'SWITCHES': "switches.json",
 
         'LOOPBACK_NETS': ["134.55.200.", "198.129.245."],
         'VLAN_RANGE': "2-4094"
@@ -702,16 +704,25 @@ def to_oscars_adjcies(isis_adjcies=None):
 
         a_port = isis_adjcy["a_port"]
         a_addr = isis_adjcy["a_addr"]
-        z_addr = isis_adjcy["z_addr"]
-
         a_urn = urn_map[a_addr]["ifce_urn"]
+
+        z_port = isis_adjcy["z_port"]
+        z_addr = isis_adjcy["z_addr"]
         z_urn = urn_map[z_addr]["ifce_urn"]
 
         if a_urn is not None and z_urn is not None:
 
             oscars_adjcy = {
-                "a": a_urn,
-                "z": z_urn,
+                "a": {
+                    "port": a_port,
+                    "addr": a_addr,
+                    "ifce": a_urn,
+                },
+                "z": {
+                    "port": z_port,
+                    "addr": z_addr,
+                    "ifce": z_urn,
+                },
                 "metrics": {
                     "MPLS": isis_adjcy["latency"]
                 }
