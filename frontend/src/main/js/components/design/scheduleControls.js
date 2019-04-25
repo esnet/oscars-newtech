@@ -177,7 +177,7 @@ class ScheduleControls extends Component {
             params.schedule.end.choice = toJS(conn.schedule.end.choice);
             this.validateStartEnd(params, this.state.parser);
         } else {
-            params.schedule.startAtReadableext = "Invalid date";
+            params.schedule.start.validationText = "Invalid date";
             params.schedule.acceptable = false;
         }
         this.props.controlsStore.setParamsForConnection(params);
