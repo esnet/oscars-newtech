@@ -76,9 +76,7 @@ class ScheduleControls extends Component {
     periodicCheck() {
         let conn = this.props.controlsStore.connection;
 
-        /*
-        if the schedule input is not acceptable after it's been changed etc, unlock all resources
-         */
+        // if the schedule input is not acceptable after it's been changed etc, unlock all resources
         if (!conn.schedule.acceptable) {
             this.props.designStore.unlockAll();
             return;
@@ -87,7 +85,7 @@ class ScheduleControls extends Component {
         /*
         now check if we're past the start time
         it's ok to be past the start time if we are in ASAP mode
-         */
+        */
 
         if (
             conn.schedule.start.at < new Date() &&
@@ -130,9 +128,6 @@ class ScheduleControls extends Component {
         asapParser.extract = function(text, ref, match, opt) {
             if (text.toUpperCase() === "ASAP") {
                 let date = new Date();
-
-                // TODO : Make an API call to fetch the earliest start date if ASAP option is chosen
-                // Currently return a parsed result, that is 5 May 2019
                 return new chrono.ParsedResult({
                     ref: ref,
                     text: match[0],
@@ -221,7 +216,6 @@ class ScheduleControls extends Component {
     };
 
     validateStartEnd(params) {
-        // console.log(toJS(params));
         if (!params.schedule.start.parsed || !params.schedule.end.parsed) {
             return;
         }
@@ -237,9 +231,11 @@ class ScheduleControls extends Component {
         let startError = false;
         let endError = false;
         let startAtReadable = Moment(startAt).format(format);
+
         if (startChoice.toUpperCase() === "ASAP") {
             startAtReadable = "";
         }
+
         let endAtReadable = Moment(endAt).format(format);
 
         if (startAt < new Date() && startChoice.toUpperCase() !== "ASAP") {
@@ -247,6 +243,7 @@ class ScheduleControls extends Component {
             params.schedule.start.validationText = "Start time is before now.";
             startError = true;
         }
+
         if (endAt < new Date()) {
             params.schedule.end.validationState = "error";
             params.schedule.end.validationText = "End time is before now.";
@@ -261,17 +258,18 @@ class ScheduleControls extends Component {
             startError = true;
             endError = true;
         }
+
         if (!startError) {
             params.schedule.start.readable = startAtReadable;
             params.schedule.start.at = startAt;
         }
+
         if (!endError) {
             params.schedule.end.readable = endAtReadable;
             params.schedule.end.at = endAt;
         }
 
         params.schedule.acceptable = !(startError || endError);
-        // console.log(toJS(params));
     }
 
     lockSchedule = () => {
