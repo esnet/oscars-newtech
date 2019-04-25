@@ -150,7 +150,7 @@ class ConnectionsList extends Component {
             filter[c] = this.props.connsStore.filter[c];
         });
         filter.page = csFilter.page;
-        filter.sizePerPage = csFilter.sizePerPage;
+        filter.sizePerPage = -1;
         filter.phase = csFilter.phase;
 
         myClient.submit("POST", "/api/conn/list", filter).then(
@@ -402,6 +402,7 @@ class ConnectionsList extends Component {
                 filterable
                 defaultPageSize={10}
                 className="-striped -highlight"
+                minRows={0}
             />
         );
 
