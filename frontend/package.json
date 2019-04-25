@@ -32,6 +32,7 @@
     "react-octicon": "^3.0.1",
     "react-router-dom": "^5.0.0",
     "react-select-plus": "^1.2.0",
+    "react-table": "^6.10.0",
     "react-toggle-display": "^2.2.0",
     "reactstrap": "^7.1.0",
     "visjs-network": "^4.24.4"

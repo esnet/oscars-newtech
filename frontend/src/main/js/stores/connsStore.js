@@ -127,7 +127,7 @@ class ConnectionsStore {
         description: "",
         phase: "RESERVED",
         state: "ACTIVE",
-        sizePerPage: 5,
+        sizePerPage: 10,
         page: 1,
         totalSize: 0
     };
