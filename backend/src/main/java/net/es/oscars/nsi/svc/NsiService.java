@@ -374,8 +374,7 @@ public class NsiService {
     // currently unused
     // TODO: trigger this when REST API terminates connection
     // (& possibly other errors)
-    public void forcedEnd(NsiMapping mapping)
-            throws InterruptedException {
+    public void forcedEnd(NsiMapping mapping) {
         log.info("starting forcedEnd task for "+mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
@@ -483,7 +482,7 @@ public class NsiService {
                 invalidMappings.add(mapping);
             }
         }
-        nsiRepo.delete(invalidMappings);
+        nsiRepo.deleteAll(invalidMappings);
         return qrct;
     }
 
@@ -530,7 +529,7 @@ public class NsiService {
                 invalidMappings.add(mapping);
             }
         }
-        nsiRepo.delete(invalidMappings);
+        nsiRepo.deleteAll(invalidMappings);
         log.debug("returning results, total: " + resultId);
         return qsct;
     }
@@ -1386,7 +1385,8 @@ public class NsiService {
             } else {
                 try {
 
-                    JAXBElement<P2PServiceBaseType> payload = (JAXBElement<P2PServiceBaseType>) o;
+                    @SuppressWarnings("unchecked") JAXBElement<P2PServiceBaseType> payload
+                            = (JAXBElement<P2PServiceBaseType>) o;
                     p2pt = payload.getValue();
                 } catch (ClassCastException ex) {
                     log.error(ex.getMessage(), ex);

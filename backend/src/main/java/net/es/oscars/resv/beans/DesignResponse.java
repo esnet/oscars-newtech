@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 public class DesignResponse {
     private Design design;
     private List<String> errors;

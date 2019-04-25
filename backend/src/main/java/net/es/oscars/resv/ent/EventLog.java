@@ -1,9 +1,6 @@
 package net.es.oscars.resv.ent;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -13,7 +10,7 @@ import java.util.List;
 @Data
 @Entity
 @Builder
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 @NoArgsConstructor
 public class EventLog {
     @JsonCreator
@@ -36,8 +33,10 @@ public class EventLog {
     private String connectionId;
 
     @NonNull
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER, timezone = "UTC")
     private Instant created;
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER, timezone = "UTC")
     private Instant archived;
 
     @OneToMany(cascade = CascadeType.ALL)

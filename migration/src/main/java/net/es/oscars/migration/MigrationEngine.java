@@ -59,7 +59,7 @@ public class MigrationEngine {
             }
             List<RouterCommands> existing = rcRepo.findByConnectionId(resv.getGri());
             if (existing.size() > 0) {
-                rcRepo.delete(existing);
+                rcRepo.deleteAll(existing);
                 rcRepo.flush();
             }
 
@@ -69,7 +69,7 @@ public class MigrationEngine {
 //            log.debug(pretty);
                 connRepo.save(c);
                 List<RouterCommands> rc = this.toCommands(resv);
-                rcRepo.save(rc);
+                rcRepo.saveAll(rc);
                 num++;
 
             } else {
@@ -276,12 +276,11 @@ public class MigrationEngine {
             List<EroHop> azERO = new ArrayList<>();
 
             for (InHop inHop : inResv.getCmp().getPipe()) {
-                String hopUrn = null;
                 String renamed = renamedPorts(inHop.getPort());
                 if (renamed != null) {
                     inHop.setPort(renamed);
                 }
-                hopUrn = inHop.getDevice() + ":" + inHop.getPort();
+                String hopUrn = inHop.getDevice() + ":" + inHop.getPort();
 
                 if (!urnMap.containsKey(hopUrn)) {
                     boolean found = false;

@@ -1,7 +1,7 @@
 let packageJSON = require("./package.json");
 let path = require("path");
 let HtmlWebpackPlugin = require("html-webpack-plugin");
-let ExtractTextPlugin = require("extract-text-webpack-plugin");
+let MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 let webpack = require("webpack");
 
@@ -19,7 +19,8 @@ const PATHS = {
         packageJSON.name,
         packageJSON.version
     ),
-    templates: path.join(__dirname, "src", "main", "resources", "templates")
+    templates: path.join(__dirname, "src", "main", "resources", "templates"),
+    public: "/webjars/oscars-frontend/" + packageJSON.version
 };
 
 // best for prod
@@ -36,17 +37,17 @@ let plugins = [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
     new LodashModuleReplacementPlugin({ currying: true, flattening: true }),
-    new ExtractTextPlugin("styles.css"),
+    new MiniCssExtractPlugin({
+        filename: "styles.css"
+    }),
     new HtmlWebpackPlugin({
-        template: PATHS.templates + "/template_index.html",
+        template: PATHS.templates + "/index.html",
         inject: "body",
         favicon: PATHS.templates + "/favicon.ico"
     })
     // enable to view module sizes on a browser window
     //    new BundleAnalyzerPlugin(),
 ];
-
-let publicPath = "/webjars/oscars-frontend/" + packageJSON.version + "/bundle.js";
 
 module.exports = {
     entry: ["@babel/polyfill", "./src/main/js/index.js"],
@@ -56,7 +57,7 @@ module.exports = {
 
     output: {
         path: PATHS.build,
-        publicPath: publicPath,
+        publicPath: PATHS.public,
         filename: "bundle.js"
     },
     performance: {
@@ -123,10 +124,7 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: { loader: "css-loader" }
-                })
+                use: [MiniCssExtractPlugin.loader, "css-loader"]
             }
         ]
     },

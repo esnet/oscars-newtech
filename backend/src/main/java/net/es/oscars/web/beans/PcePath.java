@@ -13,7 +13,7 @@ import java.util.Map;
 @Builder
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 public class PcePath {
     private double cost;
 

@@ -1,5 +1,6 @@
 package net.es.oscars.pss.ent;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.pss.st.ConfigStatus;
@@ -25,6 +26,7 @@ public class RouterCommandHistory {
     private String deviceUrn;
 
     @NonNull
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER, timezone = "UTC")
     private Instant date;
 
     @NonNull

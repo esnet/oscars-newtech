@@ -11,7 +11,7 @@ import java.util.Set;
 @Builder
 @Data
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties=true)
+@AllArgsConstructor
 public class CurrentlyHeldEntry {
     private String connectionId;
     private String username;

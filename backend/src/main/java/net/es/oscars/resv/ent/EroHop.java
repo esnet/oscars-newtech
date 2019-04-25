@@ -12,7 +12,7 @@ import javax.persistence.Id;
 @Data
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor(suppressConstructorProperties = true)
+@AllArgsConstructor
 @Entity
 public class EroHop {
     @JsonCreator
