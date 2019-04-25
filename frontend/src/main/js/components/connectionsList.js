@@ -4,12 +4,7 @@ import { toJS, autorun } from "mobx";
 import React, { Component } from "react";
 import { observer, inject } from "mobx-react";
 import { withRouter, Link } from "react-router-dom";
-// import BootstrapTable from "react-bootstrap-table-next";
-// import paginationFactory from "react-bootstrap-table2-paginator";
-import { Card, CardBody, ListGroupItem, ListGroup } from "reactstrap";
-// import filterFactory, { textFilter, selectFilter } from "react-bootstrap-table2-filter";
-
-// import "react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css";
+import { ListGroupItem, ListGroup } from "reactstrap";
 
 import transformer from "../lib/transform";
 import myClient from "../agents/client";
@@ -32,8 +27,8 @@ class DescFormatter extends Component {
         if ("tags" in this.props.row && size(this.props.row.tags) > 0) {
             let i = 0;
             let items = [];
-
             let key = this.props.row.connectionId + ":header";
+
             items.push(
                 <ListGroupItem color="info" className="p-1" key={key}>
                     <small>Tags</small>
@@ -50,9 +45,7 @@ class DescFormatter extends Component {
                         </small>
                     </ListGroupItem>
                 );
-
                 items.push(item);
-
                 i++;
             }
             tagList = <ListGroup className="m-0 p-0">{items}</ListGroup>;
@@ -112,21 +105,11 @@ class VlansFormatter extends Component {
 @inject("controlsStore", "connsStore", "mapStore", "modalStore", "commonStore")
 @observer
 class ConnectionsList extends Component {
-    constructor() {
-        super();
-        this.state = {
-            pages: 1
-        };
-        this.fetchData = this.fetchData.bind(this);
-    }
-
     componentWillMount() {
-        console.log("componentWillMount");
         this.updateList();
     }
 
     componentWillUnmount() {
-        console.log("componentWillUnmount");
         this.disposeOfUpdateList();
     }
 
@@ -137,18 +120,14 @@ class ConnectionsList extends Component {
         { delay: 1000 }
     );
 
-    fetchData(state, instance) {
-        console.log("fetchData");
-        console.log("state is ", state);
-    }
-
     updateList = () => {
-        console.log("updateList");
         let csFilter = this.props.connsStore.filter;
         let filter = {};
         csFilter.criteria.map(c => {
             filter[c] = this.props.connsStore.filter[c];
         });
+
+        // Setting the sizePerPage to -1 returns us the entire connection list
         filter.page = csFilter.page;
         filter.sizePerPage = -1;
         filter.phase = csFilter.phase;
@@ -157,6 +136,7 @@ class ConnectionsList extends Component {
             successResponse => {
                 let result = JSON.parse(successResponse);
                 let conns = result.connections;
+
                 this.props.connsStore.setFilter({
                     totalSize: result.totalSize
                 });
@@ -164,6 +144,7 @@ class ConnectionsList extends Component {
                 conns.map(conn => {
                     transformer.fixSerialization(conn);
                 });
+
                 this.props.connsStore.updateList(conns);
             },
             failResponse => {
@@ -179,40 +160,9 @@ class ConnectionsList extends Component {
         );
     };
 
-    onTableChange = (type, newState) => {
-        const cs = this.props.connsStore;
-        if (type === "pagination") {
-            cs.setFilter({
-                page: newState.page,
-                sizePerPage: newState.sizePerPage
-            });
-        }
-        if (type === "filter") {
-            cs.setFilter({
-                page: 1,
-                phase: newState.filters.phase.filterVal
-            });
-            const fields = ["username", "connectionId", "vlans", "ports", "description"];
-            let params = {
-                criteria: []
-            };
-            for (let field of fields) {
-                if (newState.filters[field] !== undefined) {
-                    if (field === "vlans" || field === "ports") {
-                        params[field] = [newState.filters[field].filterVal];
-                    } else {
-                        params[field] = newState.filters[field].filterVal;
-                    }
-                    params.criteria.push(field);
-                }
-            }
-            cs.setFilter(params);
-        }
-        this.updateList();
-    };
-
     columns = [
         {
+            accessor: "connectionId",
             Header: props => (
                 <div>
                     <br />
@@ -221,50 +171,56 @@ class ConnectionsList extends Component {
                     <br />
                 </div>
             ),
-            accessor: "connectionId",
             Cell: d => <HrefIdFormatter {...d} />,
+            filterMethod: (filter, row) => {
+                let upperCaseId = row[filter.id].toUpperCase();
+                let upperCaseValue = filter.value.toUpperCase();
+                return upperCaseId.includes(upperCaseValue);
+            },
             Filter: ({ filter, onChange }) => (
                 <input
                     type="text"
                     placeholder="Enter Connection ID"
                     value={filter ? filter.value : ""}
                     onChange={event => onChange(event.target.value)}
-                    style={{ fontStyle: "italic" }}
+                    style={{ fontStyle: "italic", width: "100%" }}
                 />
             )
         },
         {
+            accessor: "description",
             Header: props => (
                 <div>
                     <br />
                     <b>Description and Tags</b>
                     <br />
-                    <br />
                 </div>
             ),
-            accessor: "description",
             Cell: d => <DescFormatter {...d} />,
+            filterMethod: (filter, row) => {
+                let upperCaseDesc = row[filter.id].toUpperCase();
+                let upperCaseValue = filter.value.toUpperCase();
+                return upperCaseDesc.includes(upperCaseValue);
+            },
             Filter: ({ filter, onChange }) => (
                 <input
                     type="text"
                     placeholder="Enter Description"
                     value={filter ? filter.value : ""}
                     onChange={event => onChange(event.target.value)}
-                    style={{ fontStyle: "italic" }}
+                    style={{ fontStyle: "italic", width: "100%" }}
                 />
             )
         },
         {
+            accessor: "phase",
             Header: props => (
                 <div>
                     <br />
                     <b>Phase</b>
                     <br />
-                    <br />
                 </div>
             ),
-            accessor: "phase",
-            id: "phaseType",
             filterMethod: (filter, row) => {
                 if (filter.value === "any") {
                     return true;
@@ -278,7 +234,7 @@ class ConnectionsList extends Component {
                 <select
                     onChange={event => onChange(event.target.value)}
                     style={{ width: "100%" }}
-                    value={filter ? filter.value : "Any"}
+                    value={filter ? filter.value : "reserved"}
                 >
                     <option value="any">Any</option>
                     <option value="reserved">Reserved</option>
@@ -287,37 +243,49 @@ class ConnectionsList extends Component {
             )
         },
         {
+            accessor: "username",
             Header: props => (
                 <div>
                     <br />
                     <b>User</b>
                     <br />
-                    <br />
                 </div>
             ),
-            accessor: "username",
+            filterMethod: (filter, row) => {
+                let upperCaseUser = row[filter.id].toUpperCase();
+                let upperCaseValue = filter.value.toUpperCase();
+                return upperCaseUser.includes(upperCaseValue);
+            },
             Filter: ({ filter, onChange }) => (
                 <input
                     type="text"
                     placeholder="Enter User"
                     value={filter ? filter.value : ""}
                     onChange={event => onChange(event.target.value)}
-                    style={{ fontStyle: "italic" }}
+                    style={{ fontStyle: "italic", width: "100%" }}
                 />
             )
         },
         {
+            id: "ports",
             Header: props => (
                 <div>
                     <br />
                     <b>Ports</b>
                     <br />
-                    <br />
                 </div>
             ),
             Cell: props => <PortsFormatter {...props} />,
             filterMethod: (filter, row) => {
-                console.log("filter row ", filter, row);
+                let filtered = false;
+                row.fixtures.map(f => {
+                    let vlanId = String(f.portUrn).toLocaleUpperCase();
+                    let value = String(filter.value).toLocaleUpperCase();
+                    if (vlanId.includes(value)) {
+                        filtered = true;
+                    }
+                });
+                return filtered;
             },
             Filter: ({ filter, onChange }) => (
                 <input
@@ -325,38 +293,44 @@ class ConnectionsList extends Component {
                     placeholder="Enter Ports"
                     value={filter ? filter.value : ""}
                     onChange={event => onChange(event.target.value)}
-                    style={{ fontStyle: "italic" }}
+                    style={{ fontStyle: "italic", width: "100%" }}
                 />
             )
         },
         {
+            accessor: "fixtures",
             Header: props => (
                 <div>
                     <br />
                     <b>VLANs</b>
                     <br />
-                    <br />
                 </div>
             ),
-            accessor: "fixtures",
             Cell: d => <VlansFormatter {...d} />,
+            filterMethod: (filter, row) => {
+                let filtered = false;
+                row.fixtures.map(f => {
+                    let vlanId = String(f.vlan.vlanId);
+                    let value = String(filter.value);
+                    if (vlanId.includes(value)) {
+                        filtered = true;
+                    }
+                });
+                return filtered;
+            },
             Filter: ({ filter, onChange }) => (
                 <input
                     type="text"
                     placeholder="Enter VLANs"
                     value={filter ? filter.value : ""}
                     onChange={event => onChange(event.target.value)}
-                    style={{ fontStyle: "italic" }}
+                    style={{ fontStyle: "italic", width: "100%" }}
                 />
             )
         }
     ];
 
     render() {
-        console.log("render");
-
-        const { pages } = this.state;
-
         let cs = this.props.connsStore;
         const format = "Y/MM/DD HH:mm";
 
@@ -396,35 +370,12 @@ class ConnectionsList extends Component {
             <ReactTable
                 data={rows}
                 columns={this.columns}
-                // manual
-                // pages={pages}
-                // onFetchData={this.fetchData}
                 filterable
-                defaultPageSize={10}
+                minRows={3}
+                defaultPageSize={5}
                 className="-striped -highlight"
-                minRows={0}
             />
         );
-
-        // return (
-        //     <Card>
-        //         <CardBody>
-        //             <BootstrapTable
-        //                 keyField="connectionId"
-        //                 data={rows}
-        //                 columns={this.columns}
-        //                 remote={remote}
-        //                 onTableChange={this.onTableChange}
-        //                 pagination={paginationFactory({
-        //                     sizePerPage: cs.filter.sizePerPage,
-        //                     page: cs.filter.page,
-        //                     totalSize: cs.filter.totalSize
-        //                 })}
-        //                 filter={filterFactory()}
-        //             />
-        //         </CardBody>
-        //     </Card>
-        // );
     }
 }
 
