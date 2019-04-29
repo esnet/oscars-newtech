@@ -10,7 +10,6 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.framework.headers.CommonHeaderType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.ServiceExceptionType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.TypeValuePairType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.framework.types.VariablesType;
-import net.es.nsi.lib.soap.gen.nsi_2_0.services.definitions.NsiErrorType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.point2point.P2PServiceBaseType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.types.DirectionalityType;
 import net.es.nsi.lib.soap.gen.nsi_2_0.services.types.OrderedStpType;
@@ -724,13 +723,13 @@ public class NsiService {
             }
             // add a validity check
             try {
-                Validity v = connSvc.validateConnection(simpleConnection);
+                Validity v = connSvc.validateHold(simpleConnection);
 
                 if (!v.isValid()) {
                     throw new NsiException("Invalid input: " + v.getMessage(), NsiErrors.MSG_ERROR);
                 }
 
-            } catch (HoldException ex) {
+            } catch (ConnException ex) {
                 TypeValuePairType tvp = new TypeValuePairType();
                 tvp.setNamespace(nsTypes);
                 tvp.setType("connectionId");

@@ -1,7 +1,5 @@
 package net.es.oscars.web.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
@@ -11,6 +9,7 @@ import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.resv.svc.LogService;
+import net.es.oscars.web.beans.ConnException;
 import net.es.oscars.web.beans.CurrentlyHeldEntry;
 import net.es.oscars.web.beans.HoldException;
 import net.es.oscars.web.simple.SimpleConnection;
@@ -140,19 +139,19 @@ public class HoldController {
     @Transactional
     public SimpleConnection hold(Authentication authentication,
                                  @RequestBody SimpleConnection in)
-            throws StartupException, HoldException {
+            throws StartupException, ConnException {
 
         if (startup.isInStartup()) {
             throw new StartupException("OSCARS starting up");
         } else if (startup.isInShutdown()) {
             throw new StartupException("OSCARS shutting down");
         }
-        Validity v = connSvc.validateConnection(in);
+        Validity v = connSvc.validateHold(in);
         if (!v.isValid()) {
             in.setValidity(v);
             log.info("did not update invalid connection "+in.getConnectionId());
             log.info("reason: "+v.getMessage());
-            throw new HoldException(v.getMessage());
+            throw new ConnException(v.getMessage());
         }
 
         String username = authentication.getName();
@@ -211,7 +210,7 @@ public class HoldController {
     @Transactional
     public SimpleConnection pceHold(Authentication authentication,
                                  @RequestBody SimpleConnection in)
-            throws StartupException, HoldException {
+            throws StartupException, ConnException {
 
         return this.hold(authentication, in);
     }
