@@ -8,6 +8,7 @@ import net.es.oscars.resv.ent.Components;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.Tag;
 import net.es.oscars.resv.enums.Phase;
+import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.CommandParamType;
@@ -35,9 +36,10 @@ public class SimpleApiController {
     private ConnController connController;
 
     @Autowired
-    private Startup startup;
+    private ConnService connSvc;
+
     @Autowired
-    private TopoService topoService;
+    private Startup startup;
 
     @ExceptionHandler(StartupException.class)
     @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
@@ -112,7 +114,7 @@ public class SimpleApiController {
         if (c == null) {
             return  null;
         } else {
-            return fromConnection(c, false, false);
+            return connSvc.fromConnection(c, false, false);
         }
 
     }
@@ -145,7 +147,7 @@ public class SimpleApiController {
         List<Connection> connections = connController.list(f).getConnections();
         List<SimpleConnection> result = new ArrayList<>();
         for (Connection c : connections) {
-            result.add(fromConnection(c, return_svc_ids, false));
+            result.add(connSvc.fromConnection(c, return_svc_ids, false));
         }
         return result;
     }
@@ -161,114 +163,10 @@ public class SimpleApiController {
         List<Connection> connections = connController.list(f).getConnections();
         List<SimpleConnection> result = new ArrayList<>();
         for (Connection c : connections) {
-            result.add(fromConnection(c, false, true));
+            result.add(connSvc.fromConnection(c, false, true));
         }
         return result;
     }
 
-    public SimpleConnection fromConnection(Connection c, Boolean return_svc_ids, Boolean return_ifce_ero) {
-
-        Long b = c.getArchived().getSchedule().getBeginning().getEpochSecond();
-        Long e = c.getArchived().getSchedule().getEnding().getEpochSecond();
-        List<SimpleTag> simpleTags = new ArrayList<>();
-        for (Tag t : c.getTags()) {
-            simpleTags.add(SimpleTag.builder()
-                    .category(t.getCategory())
-                    .contents(t.getContents())
-                    .build());
-        }
-        List<Fixture> fixtures = new ArrayList<>();
-        List<Junction> junctions = new ArrayList<>();
-        List<Pipe> pipes = new ArrayList<>();
-        Components cmp = c.getArchived().getCmp();
-
-        cmp.getFixtures().forEach(f -> {
-            Fixture simpleF = Fixture.builder()
-                    .inMbps(f.getIngressBandwidth())
-                    .outMbps(f.getEgressBandwidth())
-                    .port(f.getPortUrn())
-                    .strict(f.getStrict())
-                    .junction(f.getJunction().getDeviceUrn())
-                    .vlan(f.getVlan().getVlanId())
-                    .build();
-            if (return_svc_ids) {
-                Set<CommandParam> cps = f.getJunction().getCommandParams();
-                Integer svcId = null;
-                for (CommandParam cp : cps) {
-                    if (cp.getParamType().equals(CommandParamType.ALU_SVC_ID)) {
-                        if (svcId == null) {
-                            svcId = cp.getResource();
-                        } else if (svcId > cp.getResource()) {
-                            svcId = cp.getResource();
-                        }
-                    }
-                }
-                simpleF.setSvcId(svcId);
-            }
-
-            fixtures.add(simpleF);
-        });
-        cmp.getJunctions().forEach(j -> {
-            junctions.add(Junction.builder()
-                    .device(j.getDeviceUrn())
-                    .build());
-        });
-        Map<String, TopoUrn> urnMap = topoService.getTopoUrnMap();
-        cmp.getPipes().forEach(p -> {
-            List<String> ero = new ArrayList<>();
-            if (return_ifce_ero) {
-                p.getAzERO().forEach(h -> {
-                    if (urnMap.containsKey(h.getUrn())) {
-                        TopoUrn topoUrn = urnMap.get(h.getUrn());
-                        if (topoUrn.getUrnType().equals(UrnType.PORT)) {
-                            Port port = topoUrn.getPort();
-
-                            if (port.getIfce() != null && !port.getIfce().equals("")) {
-                                ero.add(port.getDevice().getUrn()+":"+port.getIfce());
-                            } else {
-                                ero.add(h.getUrn());
-                            }
-
-                        } else {
-                            ero.add(h.getUrn());
-
-                        }
-
-                    } else {
-                        ero.add(h.getUrn());
-                    }
-                });
-
-            } else {
-                p.getAzERO().forEach(h -> {
-                    ero.add(h.getUrn());
-                });
-
-            }
-            pipes.add(Pipe.builder()
-                    .azMbps(p.getAzBandwidth())
-                    .zaMbps(p.getZaBandwidth())
-                    .a(p.getA().getDeviceUrn())
-                    .z(p.getZ().getDeviceUrn())
-                    .protect(p.getProtect())
-                    .ero(ero)
-                    .build());
-        });
-
-        return (SimpleConnection.builder()
-                .begin(b.intValue())
-                .end(e.intValue())
-                .connectionId(c.getConnectionId())
-                .tags(simpleTags)
-                .description(c.getDescription())
-                .mode(c.getMode())
-                .phase(c.getPhase())
-                .username(c.getUsername())
-                .state(c.getState())
-                .fixtures(fixtures)
-                .junctions(junctions)
-                .pipes(pipes)
-                .build());
-    }
 
 }

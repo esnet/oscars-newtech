@@ -18,11 +18,13 @@ import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
+import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.topo.ent.Port;
+import net.es.oscars.topo.enums.CommandParamType;
+import net.es.oscars.topo.enums.UrnType;
+import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.*;
-import net.es.oscars.web.simple.Fixture;
-import net.es.oscars.web.simple.Pipe;
-import net.es.oscars.web.simple.SimpleConnection;
-import net.es.oscars.web.simple.Validity;
+import net.es.oscars.web.simple.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
@@ -79,6 +81,10 @@ public class ConnService {
 
     @Autowired
     private DbAccess dbAccess;
+
+    @Autowired
+    private TopoService topoService;
+
 
     @Value("${pss.default-mtu:9000}")
     private Integer defaultMtu;
@@ -317,7 +323,7 @@ public class ConnService {
 
     }
 
-    public void modifySchedule (Connection c, ScheduleModifyRequest request) throws ModifyException {
+    public void modifySchedule(Connection c, ScheduleModifyRequest request) throws ModifyException {
         if (!c.getPhase().equals(Phase.RESERVED)) {
             throw new ModifyException("May only change schedule when RESERVED");
         }
@@ -339,7 +345,7 @@ public class ConnService {
     }
 
 
-    public ConnChangeResult commit(Connection c) throws PSSException, PCEException {
+    public ConnChangeResult commit(Connection c) throws PSSException, PCEException, ConnException {
 
         Held h = c.getHeld();
 
@@ -350,50 +356,13 @@ public class ConnService {
         if (h == null) {
             throw new PCEException("Null held " + c.getConnectionId());
         }
-        boolean valid = true;
 
         slack.sendMessage("User " + c.getUsername() + " committed reservation " + c.getConnectionId());
 
-        String error = "";
-        Multigraph<String, DefaultEdge> graph = new Multigraph<>(DefaultEdge.class);
-        for (VlanJunction j : h.getCmp().getJunctions()) {
-            graph.addVertex(j.getDeviceUrn());
+        Validity v = this.validateCommit(c);
+        if (!v.isValid()) {
+            throw new ConnException("Invalid connection for commit; errors follow: \n"+v.getMessage());
         }
-        for (VlanPipe pipe : h.getCmp().getPipes()) {
-            boolean pipeValid = true;
-            if (!graph.containsVertex(pipe.getA().getDeviceUrn())) {
-                pipeValid = false;
-                error += "invalid pipe A entry: " + pipe.getA().getDeviceUrn() + "\n";
-            }
-            if (!graph.containsVertex(pipe.getZ().getDeviceUrn())) {
-                pipeValid = false;
-                valid = false;
-                error += "invalid pipe Z entry: " + pipe.getZ().getDeviceUrn() + "\n";
-            }
-            if (pipeValid) {
-                graph.addEdge(pipe.getA().getDeviceUrn(), pipe.getZ().getDeviceUrn());
-            }
-        }
-
-        for (VlanFixture f : h.getCmp().getFixtures()) {
-            if (!graph.containsVertex(f.getJunction().getDeviceUrn())) {
-                valid = false;
-                error += "invalid fixture junction entry: " + f.getJunction().getDeviceUrn() + "\n";
-            } else {
-                graph.addVertex(f.getPortUrn());
-                graph.addEdge(f.getJunction().getDeviceUrn(), f.getPortUrn());
-            }
-        }
-
-        ConnectivityInspector<String, DefaultEdge> inspector = new ConnectivityInspector<>(graph);
-        if (!inspector.isConnected()) {
-            error += "fixture / junction / pipe graph is unconnected\n";
-            valid = false;
-        }
-        if (!valid) {
-            throw new PCEException(error);
-        }
-
 
         ReentrantLock connLock = dbAccess.getConnLock();
         if (connLock.isLocked()) {
@@ -451,7 +420,7 @@ public class ConnService {
     public ConnChangeResult release(Connection c) {
         // if it is HELD or DESIGN, delete it
         if (c.getPhase().equals(Phase.HELD) || c.getPhase().equals(Phase.DESIGN)) {
-            log.debug("deleting HELD / DESIGN connection during release"+c.getConnectionId());
+            log.debug("deleting HELD / DESIGN connection during release" + c.getConnectionId());
             connRepo.delete(c);
             connRepo.flush();
             return ConnChangeResult.builder()
@@ -469,7 +438,7 @@ public class ConnService {
         if (c.getPhase().equals(Phase.RESERVED)) {
             if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
                 // we haven't started yet; can delete without consequence
-                log.debug("deleting unstarted connection during release"+c.getConnectionId());
+                log.debug("deleting unstarted connection during release" + c.getConnectionId());
                 connRepo.delete(c);
                 Event ev = Event.builder()
                         .connectionId(c.getConnectionId())
@@ -487,7 +456,7 @@ public class ConnService {
             }
             if (c.getState().equals(State.ACTIVE)) {
                 slack.sendMessage("Cancelling active connection: " + c.getConnectionId());
-                log.debug("Releasing active connection: "+c.getConnectionId());
+                log.debug("Releasing active connection: " + c.getConnectionId());
 
                 // need to dismantle first, that part relies on Reserved components
                 try {
@@ -511,7 +480,7 @@ public class ConnService {
 
             } else {
                 slack.sendMessage("Releasing non-active connection: " + c.getConnectionId());
-                log.debug("Releasing non-active connection: "+c.getConnectionId());
+                log.debug("Releasing non-active connection: " + c.getConnectionId());
                 Event ev = Event.builder()
                         .connectionId(c.getConnectionId())
                         .description("released (inactive)")
@@ -716,14 +685,91 @@ public class ConnService {
 
     }
 
-    public Validity validateConnection(SimpleConnection in)
-            throws HoldException {
+    public Validity validateCommit(Connection in) throws ConnException {
+
+        Validity v = this.validateHold(this.fromConnection(in, false, false));
+
+        String error = v.getMessage();
+        boolean valid = v.isValid();
+
+
+        List<VlanFixture> fixtures = in.getHeld().getCmp().getFixtures();
+        if (fixtures == null) {
+            valid = false;
+            error += "Missing fixtures array";
+        } else if (fixtures.size() < 2) {
+            valid = false;
+            error += "Fixtures size is " + fixtures.size() + " ; minimum is 2";
+        }
+
+        List<VlanJunction> junctions = in.getHeld().getCmp().getJunctions();
+        if (junctions == null) {
+            valid = false;
+            error += "Missing junctions array";
+        } else if (junctions.size() < 1) {
+            valid = false;
+            error += "Junctions size is " + junctions.size() + " ; minimum is 1";
+        }
+
+        if (valid) {
+            boolean graphValid = true;
+            Multigraph<String, DefaultEdge> graph = new Multigraph<>(DefaultEdge.class);
+            for (VlanJunction j : junctions) {
+                graph.addVertex(j.getDeviceUrn());
+            }
+
+            List<VlanPipe> pipes = in.getHeld().getCmp().getPipes();
+
+            for (VlanPipe pipe : pipes) {
+                boolean pipeValid = true;
+                if (!graph.containsVertex(pipe.getA().getDeviceUrn())) {
+                    pipeValid = false;
+                    error += "invalid pipe A entry: " + pipe.getA().getDeviceUrn() + "\n";
+                }
+                if (!graph.containsVertex(pipe.getZ().getDeviceUrn())) {
+                    pipeValid = false;
+                    graphValid = false;
+                    error += "invalid pipe Z entry: " + pipe.getZ().getDeviceUrn() + "\n";
+                }
+                if (pipeValid) {
+                    graph.addEdge(pipe.getA().getDeviceUrn(), pipe.getZ().getDeviceUrn());
+                }
+            }
+
+            for (VlanFixture f : fixtures) {
+                if (!graph.containsVertex(f.getJunction().getDeviceUrn())) {
+                    graphValid = false;
+                    error += "invalid fixture junction entry: " + f.getJunction().getDeviceUrn() + "\n";
+                } else {
+                    graph.addVertex(f.getPortUrn());
+                    graph.addEdge(f.getJunction().getDeviceUrn(), f.getPortUrn());
+                }
+            }
+
+            ConnectivityInspector<String, DefaultEdge> inspector = new ConnectivityInspector<>(graph);
+            if (!inspector.isConnected()) {
+                error += "fixture / junction / pipe graph is unconnected\n";
+                graphValid = false;
+            }
+            valid = graphValid;
+        }
+
+        v.setMessage(error);
+        v.setValid(valid);
+
+        return v;
+
+    }
+
+
+    public Validity validateHold(SimpleConnection in)
+            throws ConnException {
 
         String error = "";
-        Boolean valid = true;
-        Boolean validInterval = true;
+        boolean valid = true;
+        boolean validInterval = true;
         if (in == null) {
-            throw new HoldException("null connection");
+            throw new ConnException("null connection");
         }
         Instant begin = Instant.now();
         Instant end;
@@ -791,7 +837,7 @@ public class ConnService {
             end = Instant.ofEpochSecond(in.getEnd());
             if (begin.plus(Duration.ofMinutes(this.minDuration)).isAfter(end)) {
                 valid = false;
-                error += "interval is too short (less than "+minDuration+" min)";
+                error += "interval is too short (less than " + minDuration + " min)";
             }
 
         }
@@ -1131,6 +1177,7 @@ public class ConnService {
 
         }
     }
+
     public Connection toNewConnection(SimpleConnection in) {
         Connection c = Connection.builder()
                 .mode(BuildMode.AUTOMATIC)
@@ -1146,5 +1193,109 @@ public class ConnService {
         return c;
     }
 
+    public SimpleConnection fromConnection(Connection c, Boolean return_svc_ids, Boolean return_ifce_ero) {
+
+        Long b = c.getArchived().getSchedule().getBeginning().getEpochSecond();
+        Long e = c.getArchived().getSchedule().getEnding().getEpochSecond();
+        List<SimpleTag> simpleTags = new ArrayList<>();
+        for (Tag t : c.getTags()) {
+            simpleTags.add(SimpleTag.builder()
+                    .category(t.getCategory())
+                    .contents(t.getContents())
+                    .build());
+        }
+        List<Fixture> fixtures = new ArrayList<>();
+        List<Junction> junctions = new ArrayList<>();
+        List<Pipe> pipes = new ArrayList<>();
+        Components cmp = c.getArchived().getCmp();
+
+        cmp.getFixtures().forEach(f -> {
+            Fixture simpleF = Fixture.builder()
+                    .inMbps(f.getIngressBandwidth())
+                    .outMbps(f.getEgressBandwidth())
+                    .port(f.getPortUrn())
+                    .strict(f.getStrict())
+                    .junction(f.getJunction().getDeviceUrn())
+                    .vlan(f.getVlan().getVlanId())
+                    .build();
+            if (return_svc_ids) {
+                Set<CommandParam> cps = f.getJunction().getCommandParams();
+                Integer svcId = null;
+                for (CommandParam cp : cps) {
+                    if (cp.getParamType().equals(CommandParamType.ALU_SVC_ID)) {
+                        if (svcId == null) {
+                            svcId = cp.getResource();
+                        } else if (svcId > cp.getResource()) {
+                            svcId = cp.getResource();
+                        }
+                    }
+                }
+                simpleF.setSvcId(svcId);
+            }
+
+            fixtures.add(simpleF);
+        });
+        cmp.getJunctions().forEach(j -> {
+            junctions.add(Junction.builder()
+                    .device(j.getDeviceUrn())
+                    .build());
+        });
+        Map<String, TopoUrn> urnMap = topoService.getTopoUrnMap();
+        cmp.getPipes().forEach(p -> {
+            List<String> ero = new ArrayList<>();
+            if (return_ifce_ero) {
+                p.getAzERO().forEach(h -> {
+                    if (urnMap.containsKey(h.getUrn())) {
+                        TopoUrn topoUrn = urnMap.get(h.getUrn());
+                        if (topoUrn.getUrnType().equals(UrnType.PORT)) {
+                            Port port = topoUrn.getPort();
+
+                            if (port.getIfce() != null && !port.getIfce().equals("")) {
+                                ero.add(port.getDevice().getUrn() + ":" + port.getIfce());
+                            } else {
+                                ero.add(h.getUrn());
+                            }
+
+                        } else {
+                            ero.add(h.getUrn());
+
+                        }
+
+                    } else {
+                        ero.add(h.getUrn());
+                    }
+                });
+
+            } else {
+                p.getAzERO().forEach(h -> {
+                    ero.add(h.getUrn());
+                });
+
+            }
+            pipes.add(Pipe.builder()
+                    .azMbps(p.getAzBandwidth())
+                    .zaMbps(p.getZaBandwidth())
+                    .a(p.getA().getDeviceUrn())
+                    .z(p.getZ().getDeviceUrn())
+                    .protect(p.getProtect())
+                    .ero(ero)
+                    .build());
+        });
+
+        return (SimpleConnection.builder()
+                .begin(b.intValue())
+                .end(e.intValue())
+                .connectionId(c.getConnectionId())
+                .tags(simpleTags)
+                .description(c.getDescription())
+                .mode(c.getMode())
+                .phase(c.getPhase())
+                .username(c.getUsername())
+                .state(c.getState())
+                .fixtures(fixtures)
+                .junctions(junctions)
+                .pipes(pipes)
+                .build());
+    }
 
 }
