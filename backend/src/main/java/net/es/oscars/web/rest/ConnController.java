@@ -37,11 +37,13 @@ public class ConnController {
 
     @Autowired
     private ConnectionRepository connRepo;
+
     @Autowired
     private CommandHistoryRepository historyRepo;
 
     @Autowired
     private ConnService connSvc;
+
     @Autowired
     private NsiService nsiSvc;
 
