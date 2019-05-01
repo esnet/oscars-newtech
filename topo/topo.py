@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 
 import argparse
@@ -51,8 +51,10 @@ def main():
     settings = {
         'VERBOSE': False,
 
-        'NETBEAM_URL': "https://esnet-netbeam.appspot.com/api/network/esnet/prod",
-        'ESDB_URL': "https://esdb.es.net/esdb_api/v1",
+        'URLS': {
+            'NETBEAM': "https://esnet-netbeam.appspot.com/api/network/esnet/prod",
+            'ESDB': "https://esdb.es.net/esdb_api/v1",
+        },
         'DATASETS': {
             'INTERFACES': {
                 'SOURCE': 'NETBEAM',
@@ -83,29 +85,35 @@ def main():
 
         },
 
-        'OUTPUT_DIR': "./output/",
-        'OUTPUT_DEVICES': 'devices.json',
-        'OUTPUT_ADJCIES': 'adjcies.json',
+        'CONFIG': {
+            'DIR': "./config/",
+            'ESDB_TOKEN': 'esdb_token.txt',
+            'FILES': {
+                'VARS': "vars.json",
+                'LAGS': "lags.json",
+                'SWITCHES': "switches.json",
+            }
+        },
 
-        'CACHE_DIR': "./cache/",
-        'SAVE_TO_CACHE': False,
-        'USE_CACHE': False,
+        'OUTPUT': {
+            'DIR': "./output/",
+            'DEVICES': 'devices.json',
+            'ADJCIES': 'adjcies.json'
+        },
 
-        'CONFIG_DIR': "./config/",
-        'ESDB_TOKEN': 'esdb_token.txt',
+        'CACHE': {
+            'DIR': './cache',
+            'SAVE': False,
+            'USE': False,
+        }
 
-        'VARS': "vars.json",
-        'LAGS': "lags.json",
-        'SWITCHES': "switches.json",
 
-        'LOOPBACK_NETS': ["134.55.200.", "198.129.245."],
-        'VLAN_RANGE': "2-4094"
     }
 
     parser = argparse.ArgumentParser(description='OSCARS topology generator')
     parser.add_argument('-v', '--verbose', action='count', default=0,
                         help="set verbosity level")
-    parser.add_argument('--cache-dir', default=settings['CACHE_DIR'], help="Set cache directory")
+    parser.add_argument('--cache-dir', default=settings['CACHE']['DIR'], help="Set cache directory")
 
     cache_action = parser.add_mutually_exclusive_group(required=False)
     cache_action.add_argument('-s', '--save-cache', action='count', default=0,
@@ -113,8 +121,8 @@ def main():
     cache_action.add_argument('-f', '--use-cache', action='count', default=0,
                               help="Fast mode (use cached data)")
 
-    parser.add_argument('--config-dir', default=settings['CONFIG_DIR'], help="Set config directory")
-    parser.add_argument('--output-dir', default=settings['OUTPUT_DIR'], help="Set output directory")
+    parser.add_argument('--config-dir', default=settings['CONFIG']['DIR'], help="Set config directory")
+    parser.add_argument('--output-dir', default=settings['OUTPUT']['DIR'], help="Set output directory")
 
     opts = parser.parse_args()
 
@@ -122,20 +130,19 @@ def main():
 
     config = load_config(settings)
 
-    network_data = load_datasets(settings)
-
-    adjacencies, devices = create_topology(settings, config, network_data)
+    adjacencies, devices = create_topology(settings, config)
 
     write_output(adjacencies, devices, settings)
 
 
-def create_topology(settings, config, network_data):
-    today = network_data['TODAY']['topology_snapshots'][0]['data']['today']
-    latency = network_data['TODAY']['topology_snapshots'][0]['data']['latency']
-    equipment = network_data['EQUIPMENT']
-    locations = network_data['LOCATIONS']
-    netbeam_interfaces = network_data['INTERFACES']
-    netbeam_saps = network_data['SAPS']
+def create_topology(settings, config):
+
+    datasets = load_datasets(settings)
+
+    today = datasets['TODAY']['topology_snapshots'][0]['data']['today']
+    latency = datasets['TODAY']['topology_snapshots'][0]['data']['latency']
+    netbeam_interfaces = datasets['INTERFACES']
+    netbeam_saps = datasets['SAPS']
 
     today_isis = get_isis_neighbors(today['ipv4net'], latency)
     isis_adjcies = make_isis_graph(today_isis)
@@ -148,12 +155,14 @@ def create_topology(settings, config, network_data):
     # done with OSCARS MPLS adjacencies
 
     today_devices = get_devices(today['router_system'])
+
     oscars_devices = to_oscars_devices(in_devices=today_devices,
-                                       equipment=equipment,
-                                       locations=locations,
+                                       datasets=datasets,
                                        igp_portmap=igp_portmap,
                                        addrs=addrs,
-                                       settings=settings)
+                                       settings=settings,
+                                       config=config)
+    merge_switch_devices(oscars_devices, config=config)
     # done with device base attributes
 
     # now for the device ports
@@ -175,15 +184,15 @@ def create_topology(settings, config, network_data):
     merge_lags(edge_ports, config)
 
     # merge all this info into the oscars_devices and we are d o n e
-    merge_edge_ports_vlans(oscars_devices, edge_ports, used_vlans, oscars_vlans, settings)
+    merge_edge_ports_vlans(oscars_devices, edge_ports, used_vlans, oscars_vlans, config)
     return oscars_adjcies, oscars_devices
 
 
 def merge_lags(edge_ports, config):
     lags = config['LAGS']
 
-    for device in lags.keys():
-        for lag in lags[device].keys():
+    for device in lags:
+        for lag in lags[device]:
             lag_found = False
             mbps = lags[device][lag]["mbps"]
             for entry in edge_ports:
@@ -204,7 +213,7 @@ def merge_lags(edge_ports, config):
                                 lag_sites.append(site)
 
                 if not port_found and lags[device][lag]["enable"]:
-                    print >> sys.stderr, "lag port not found: {}:{}".format(device, lag_port)
+                    eprint("lag port not found: {}:{}".format(device, lag_port))
 
             if not lag_found and lags[device][lag]["enable"]:
                 new_entry = {
@@ -222,24 +231,36 @@ def merge_lags(edge_ports, config):
                 edge_ports.append(new_entry)
 
 
-def merge_edge_ports_vlans(oscars_devices=None, edge_ports=None, used_vlans=None, oscars_vlans=None, settings=None):
+def merge_switch_devices(oscars_devices=None, config=None):
+    for sw_name, sw_entry in config['SWITCHES'].items():
+        print(sw_name)
+        for d_entry in oscars_devices:
+            if sw_name == d_entry['urn']:
+                print("bad urn")
+
+
+def merge_edge_ports_vlans(oscars_devices=None, edge_ports=None, used_vlans=None, oscars_vlans=None, config=None):
     for entry in edge_ports:
         port_urn = entry['device'] + ':' + entry['port']
         device_urn = entry['device']
-        if "lag" in entry.keys() and entry['lag'] == 'member':
+        if "lag" in entry and entry['lag'] == 'member':
             continue
 
         device = None
         for d in oscars_devices:
             if d['urn'] == device_urn:
                 device = d
+        if not device:
+            eprint("could not find device {}".format(device_urn))
+            continue
+
         found = False
         port_used_vlans = []
-        if port_urn in used_vlans.keys():
+        if port_urn in used_vlans:
             port_used_vlans = used_vlans[port_urn]
 
         port_oscars_vlans = []
-        if port_urn in oscars_vlans.keys():
+        if port_urn in oscars_vlans:
             port_oscars_vlans = oscars_vlans[port_urn]
 
         for p in device['ports']:
@@ -247,7 +268,7 @@ def merge_edge_ports_vlans(oscars_devices=None, edge_ports=None, used_vlans=None
                 if "ETHERNET" not in p["capabilities"]:
                     p["capabilities"].append("ETHERNET")
                 p["tags"] = entry['tags']
-                p["reservableVlans"] = make_reservable_vlans(port_used_vlans, port_oscars_vlans, settings)
+                p["reservableVlans"] = make_reservable_vlans(port_used_vlans, port_oscars_vlans, config)
                 found = True
         if not found:
             port_entry = {
@@ -257,20 +278,20 @@ def merge_edge_ports_vlans(oscars_devices=None, edge_ports=None, used_vlans=None
                 "capabilities": ["ETHERNET"],
                 "reservableIngressBw": entry['speed'],
                 "reservableEgressBw": entry['speed'],
-                "reservableVlans": make_reservable_vlans(port_used_vlans, port_oscars_vlans, settings)
+                "reservableVlans": make_reservable_vlans(port_used_vlans, port_oscars_vlans, config)
             }
             device["ports"].append(port_entry)
 
 
 def insert_isis_ports(oscars_devices=None, igp_portmap=None):
-    for dev_urn in igp_portmap.keys():
+    for dev_urn in igp_portmap:
         for oscars_device in oscars_devices:
             if oscars_device["urn"] == dev_urn:
-                for port in igp_portmap[dev_urn].keys():
+                for port in igp_portmap[dev_urn]:
                     port_urn = dev_urn + ":" + port
 
                     mbps = igp_portmap[dev_urn][port]["mbps"]
-                    ifce_names = igp_portmap[dev_urn][port]["ifces"].keys()
+                    ifce_names = igp_portmap[dev_urn][port]["ifces"]
                     ifces = []
                     tags = []
                     for ifce_name in ifce_names:
@@ -314,13 +335,13 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
     intracloud_ifces = []
 
     # SAPs are always customer facing
-    for router in saps_by_device.keys():
+    for router in saps_by_device:
         saps = saps_by_device[router]
         for sap in saps:
             port_urn = router + ":" + sap['port']
-            if port_urn not in candidate_ports.keys():
+            if port_urn not in candidate_ports:
                 tags = []
-                if 'description' in sap.keys() and sap['description'] is not None and sap['description'] != "":
+                if 'description' in sap and sap['description'] is not None and sap['description'] != "":
                     tags.append(sap['description'])
                 from_saps += 1
                 candidate_ports[port_urn] = {
@@ -337,7 +358,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
             entry = candidate_ports[port_urn]
             if sap['oscars']:
                 entry["oscars"] = True
-            if 'site' in sap.keys() and sap['site'] != "":
+            if 'site' in sap and sap['site'] != "":
                 if sap['site'] not in entry["sites"]:
                     entry["sites"].append(sap['site'])
             candidate_ports[port_urn] = entry
@@ -365,7 +386,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
             elif "sts192" in ifce_name:
                 keep = "No"
             else:
-                if ifce_urn not in keep_decisions.keys():
+                if ifce_urn not in keep_decisions:
                     keep = "Yes"
                 else:
                     keep = keep_decisions[ifce_urn]
@@ -411,7 +432,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
                     parts = ifce_name.split('.')
                     port = parts[0]
                     port_urn = ifce['device'] + ":" + port
-                    if port_urn not in sub_interfaces.keys():
+                    if port_urn not in sub_interfaces:
                         sub_interfaces[port_urn] = []
                     sub_interfaces[port_urn].append(ifce)
                 else:
@@ -419,7 +440,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
                     keep_decisions[ifce_urn] = "Maybe"
                     port = ifce_name
                     port_urn = ifce['device'] + ":" + port
-                    if port_urn not in sub_interfaces.keys():
+                    if port_urn not in sub_interfaces:
                         sub_interfaces[port_urn] = []
             else:
                 keep_decisions[ifce_urn] = "No"
@@ -456,7 +477,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
             from_netbeam += 1
 
             port_urn = ifce["device"] + ":" + ifce_name
-            if port_urn not in candidate_ports.keys():
+            if port_urn not in candidate_ports:
                 new_from_netbeam += 1
                 candidate_ports[port_urn] = {
                     "port": ifce_name,
@@ -473,7 +494,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
             entry["interface"] = True
             if ifce['oscars']:
                 entry["oscars"] = True
-            if 'speed' in ifce.keys() and ifce['speed'] is not None and ifce['speed'] != "":
+            if 'speed' in ifce and ifce['speed'] is not None and ifce['speed'] != "":
                 entry["speed"] = ifce['speed']
 
             oscars_tags = [ifce['description']]
@@ -481,14 +502,14 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
                 if oscars_tag != "" and oscars_tag not in entry['tags']:
                     entry["tags"].append(oscars_tag)
 
-            if 'site' in ifce.keys() and ifce['site'] != "":
+            if 'site' in ifce and ifce['site'] != "":
                 if ifce['site'] not in entry["sites"]:
                     entry["sites"].append(ifce['site'])
             candidate_ports[port_urn] = entry
 
-    for router in esdb_ports_by_rtr.keys():
+    for router in esdb_ports_by_rtr:
         if router in oscars_device_urns:
-            for port in esdb_ports_by_rtr[router].keys():
+            for port in esdb_ports_by_rtr[router]:
                 if port == "BLANK":
                     continue
                 port_ifces = esdb_ports_by_rtr[router][port]
@@ -505,7 +526,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
                         all_intracloud = False
 
                 port_urn = router + ":" + port
-                if port_urn in candidate_ports.keys():
+                if port_urn in candidate_ports:
                     entry = candidate_ports[port_urn]
                     for oscars_tag in oscars_tags:
                         if oscars_tag not in entry['tags']:
@@ -516,7 +537,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
 
                 if not all_intracloud:
                     from_esdb += 1
-                    if port_urn not in candidate_ports.keys():
+                    if port_urn not in candidate_ports:
                         new_from_esdb += 1
                         candidate_ports[port_urn] = {
                             "port": port,
@@ -536,7 +557,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
     #    print "saps: {} netbeam: {} ({} new) esdb: {} ({} new)"\
     #        .format(from_saps, from_netbeam, new_from_netbeam, from_esdb, new_from_esdb)
 
-    return candidate_ports.values()
+    return list(candidate_ports.values())
 
 
 def gather_used_vlans(netbeam_saps=None, netbeam_interfaces=None, esdb_ports_by_rtr=None, esdb_vlans=None):
@@ -550,18 +571,18 @@ def gather_used_vlans(netbeam_saps=None, netbeam_interfaces=None, esdb_ports_by_
     from_esdb = 0
     new_from_esdb = 0
 
-    for router in saps_by_device.keys():
+    for router in saps_by_device:
         saps = saps_by_device[router]
         for sap in saps:
             port_urn = router + ":" + sap['port']
             vlan = int(sap['vlan'])
             from_saps += 1
-            if port_urn not in used_vlans.keys():
+            if port_urn not in used_vlans:
                 used_vlans[port_urn] = []
             if vlan not in used_vlans[port_urn]:
                 used_vlans[port_urn].append(vlan)
             if sap['oscars']:
-                if port_urn not in oscars_vlans.keys():
+                if port_urn not in oscars_vlans:
                     oscars_vlans[port_urn] = []
                 oscars_vlans[port_urn].append({
                     "vlan": vlan,
@@ -575,7 +596,7 @@ def gather_used_vlans(netbeam_saps=None, netbeam_interfaces=None, esdb_ports_by_
             vlan = int(ifce["vlan"])
             if vlan is not None:
                 from_netbeam += 1
-                if port_urn not in used_vlans.keys():
+                if port_urn not in used_vlans:
                     new_from_netbeam += 1
                     used_vlans[port_urn] = []
 
@@ -591,22 +612,22 @@ def gather_used_vlans(netbeam_saps=None, netbeam_interfaces=None, esdb_ports_by_
                     vlan = int(parts[1])
                     port_urn = ifce["device"] + ":" + port
                     from_netbeam += 1
-                    if port_urn not in used_vlans.keys():
+                    if port_urn not in used_vlans:
                         new_from_netbeam += 1
                         used_vlans[port_urn] = []
 
                     if vlan not in used_vlans[port_urn]:
                         used_vlans[port_urn].append(vlan)
 
-    for router in esdb_ports_by_rtr.keys():
-        for port in esdb_ports_by_rtr[router].keys():
+    for router in esdb_ports_by_rtr:
+        for port in esdb_ports_by_rtr[router]:
             port_urn = router + ":" + port
             port_ifces = esdb_ports_by_rtr[router][port]
             for ifce_entry in port_ifces:
                 vlan = find_vlan(router, ifce_entry["int_name"], netbeam_interfaces, esdb_vlans)
                 if vlan is not None:
                     from_esdb += 1
-                    if port_urn not in used_vlans.keys():
+                    if port_urn not in used_vlans:
                         used_vlans[port_urn] = []
                         new_from_esdb += 1
                     if vlan not in used_vlans[port_urn]:
@@ -624,14 +645,14 @@ def find_vlan(router, ifce_name, netbeam_interfaces, esdb_vlans):
             if netbeam_vlan is None:
                 netbeam_vlan = entry["vlan"]
             else:
-                print >> sys.stderr, "multiple netbeam vlans found for {} -- {}".format(router, ifce_name)
+                eprint("multiple netbeam vlans found for {} -- {}".format(router, ifce_name))
     esdb_vlan = None
     for entry in esdb_vlans:
         if entry["router"] == router and entry["int_name"] == ifce_name:
             if esdb_vlan is None:
                 esdb_vlan = entry["vlan_id"]
             else:
-                print >> sys.stderr, "multiple esdb vlans found for {} -- {}".format(router, ifce_name)
+                eprint("multiple esdb vlans found for {} -- {}".format(router, ifce_name))
     ifce_name_vlan = None
     parts = ifce_name.split(".")
     if len(parts) == 2:
@@ -639,18 +660,18 @@ def find_vlan(router, ifce_name, netbeam_interfaces, esdb_vlans):
 
     if netbeam_vlan is not None and esdb_vlan is not None:
         if netbeam_vlan != esdb_vlan:
-            print >> sys.stderr, "Netbeam vlan ({}) differs from ESDB ({}) for {} -- {}" \
-                .format(netbeam_vlan, esdb_vlan, router, ifce_name)
+            eprint("Netbeam vlan ({}) differs from ESDB ({}) for {} -- {}"
+                   .format(netbeam_vlan, esdb_vlan, router, ifce_name))
 
     if netbeam_vlan is not None and ifce_name_vlan is not None:
         if netbeam_vlan != ifce_name_vlan:
-            print >> sys.stderr, "Netbeam vlan ({}) differs from ifce name VLAN ({}) for {} -- {}" \
-                .format(netbeam_vlan, ifce_name_vlan, router, ifce_name)
+            eprint("Netbeam vlan ({}) differs from ifce name VLAN ({}) for {} -- {}"
+                   .format(netbeam_vlan, ifce_name_vlan, router, ifce_name))
 
     if esdb_vlan is not None and ifce_name_vlan is not None:
         if esdb_vlan != ifce_name_vlan:
-            print >> sys.stderr, "ESDB vlan ({}) differs from ifce name VLAN ({}) for {} -- {}" \
-                .format(esdb_vlan, ifce_name_vlan, router, ifce_name)
+            eprint("ESDB vlan ({}) differs from ifce name VLAN ({}) for {} -- {}"
+                   .format(esdb_vlan, ifce_name_vlan, router, ifce_name))
     if netbeam_vlan is not None:
         return int(netbeam_vlan)
     elif esdb_vlan is not None:
@@ -670,7 +691,7 @@ def validate_oscars_adjacencies(oscars_adjcies=None):
                 found_inverse = True
         if not found_inverse:
             passes_validation = False
-            print >> sys.stderr, "No inverse adjacency for {} -- {}".format(a, z)
+            eprint("No inverse adjacency for {} -- {}".format(a, z))
 
     if not passes_validation:
         sys.exit(1)
@@ -683,14 +704,14 @@ def repair_blank_isis_ports(isis_adjcies=None, netbeam_interfaces=None, settings
                 if isis_adjcy["a"] == ifce["device"] and ifce["name"] == isis_adjcy["a_ifce"]:
                     isis_adjcy["a_port"] = ifce["port"]
                     if settings['VERBOSE']:
-                        print "repaired adjcy for {}:{}".format(isis_adjcy["a"], isis_adjcy["a_port"])
+                        print("repaired adjcy for {}:{}".format(isis_adjcy["a"], isis_adjcy["a_port"]))
 
         if isis_adjcy["z_port"] == "BLANK":
             for ifce in netbeam_interfaces:
                 if isis_adjcy["z"] == ifce["device"] and ifce["name"] == isis_adjcy["z_ifce"]:
                     isis_adjcy["z_port"] = ifce["port"]
                     if settings['VERBOSE']:
-                        print "repaired adjcy for {}:{}".format(isis_adjcy["z"], isis_adjcy["z_port"])
+                        print("repaired adjcy for {}:{}".format(isis_adjcy["z"], isis_adjcy["z_port"]))
 
 
 def to_oscars_adjcies(isis_adjcies=None):
@@ -706,6 +727,7 @@ def to_oscars_adjcies(isis_adjcies=None):
         a_addr = isis_adjcy["a_addr"]
         a_urn = urn_map[a_addr]["ifce_urn"]
 
+        z_router = isis_adjcy["z"]
         z_port = isis_adjcy["z_port"]
         z_addr = isis_adjcy["z_addr"]
         z_urn = urn_map[z_addr]["ifce_urn"]
@@ -714,11 +736,13 @@ def to_oscars_adjcies(isis_adjcies=None):
 
             oscars_adjcy = {
                 "a": {
+                    "device": a_router,
                     "port": a_port,
                     "addr": a_addr,
                     "ifce": a_urn,
                 },
                 "z": {
+                    "device": z_router,
                     "port": z_port,
                     "addr": z_addr,
                     "ifce": z_urn,
@@ -729,10 +753,10 @@ def to_oscars_adjcies(isis_adjcies=None):
             }
             oscars_adjcies.append(oscars_adjcy)
 
-            if a_router not in igp_portmap.keys():
+            if a_router not in igp_portmap:
                 igp_portmap[a_router] = {}
 
-            if a_port not in igp_portmap[a_router].keys():
+            if a_port not in igp_portmap[a_router]:
                 igp_portmap[a_router][a_port] = {
                     "mbps": isis_adjcy["mbps"],
                     "ifces": {}
@@ -782,7 +806,7 @@ def isis_urns_by_addr(isis_adjcies=None):
         port_urn_a = router_a + ":" + port_a
 
         ifce_urn_a = None
-        if "a_ifce" in isis_adjcy.keys():
+        if "a_ifce" in isis_adjcy:
             ifce_urn_a = router_a + ":" + isis_adjcy["a_ifce"]
 
         entry = {
@@ -808,8 +832,8 @@ def model_map(operating_system=None, description=None):
 
 def set_to_ranges(vlan_set=None):
     ranges = []
-    for k, g in groupby(enumerate(vlan_set), lambda (i, x): i - x):
-        group = map(itemgetter(1), g)
+    for k, g in groupby(enumerate(vlan_set), lambda p: p[0] - p[1]):
+        group = list(map(itemgetter(1), g))
         ranges.append((group[0], group[-1]))
 
     result = []
@@ -821,18 +845,22 @@ def set_to_ranges(vlan_set=None):
     return result
 
 
-def make_reservable_vlans(used_vlans=None, oscars_vlans=None, settings=None):
-    parts = settings['VLAN_RANGE'].split("-")
+def make_reservable_vlans(used_vlans=None, oscars_vlans=None, config=None):
     used_vlan_set = set(used_vlans)
     for entry in oscars_vlans:
         if entry['vlan'] in used_vlan_set:
             used_vlan_set.remove(entry['vlan'])
 
-    all_vlans = set()
-    for i in range(int(parts[0]), int(parts[1]) + 1):
-        all_vlans.add(i)
+    default_vlans_cfg = config['VARS']['vlan-ranges']['DEFAULT']
+    default_vlans = set()
 
-    avail_vlans = all_vlans - used_vlan_set
+    for vlan_range in default_vlans_cfg:
+        floor = vlan_range['floor']
+        ceiling = vlan_range['ceiling']
+        for i in range(floor, ceiling + 1):
+            default_vlans.add(i)
+
+    avail_vlans = default_vlans - used_vlan_set
     avail_vlans = list(avail_vlans)
     avail_vlans.sort()
 
@@ -840,10 +868,13 @@ def make_reservable_vlans(used_vlans=None, oscars_vlans=None, settings=None):
         return set_to_ranges(avail_vlans)
 
     else:
-        print "could not decide available vlans!"
+        print("could not decide available vlans!")
 
 
-def to_oscars_devices(in_devices=None, equipment=None, locations=None, igp_portmap=None, addrs=None, settings=None):
+def to_oscars_devices(in_devices=None, datasets=None, igp_portmap=None, addrs=None, settings=None, config=None):
+    equipment = datasets['EQUIPMENT']
+    locations = datasets['LOCATIONS']
+
     locs_by_id = {}
     equip_by_name = {}
     for entry in equipment['results']:
@@ -851,27 +882,29 @@ def to_oscars_devices(in_devices=None, equipment=None, locations=None, igp_portm
     for entry in locations['results']:
         locs_by_id[entry['id']] = entry
 
+    loopback_nets = config['VARS']['loopback-nets']
+
     out_routers = []
     for rs in in_devices:
         if rs["name"] not in equip_by_name:
-            print >> sys.stderr, "device not found in ESDB equipment: " + rs["name"]
+            eprint("device not found in ESDB equipment: " + rs["name"])
             exit(1)
-        if rs["name"] in igp_portmap.keys():
+        if rs["name"] in igp_portmap:
             loopback = None
             for addr in addrs:
                 int_name = addr["int_name"]
                 address = addr["address"]
                 router = addr["router"]
                 if int_name == "lo0.0" or int_name == "system":
-                    for net in settings['LOOPBACK_NETS']:
+                    for net in loopback_nets:
                         if address.startswith(net) and router == rs["name"]:
                             if loopback is None:
                                 loopback = address
                             else:
-                                print >> sys.stderr, "Multiple loopbacks for: " + rs["name"]
+                                eprint("Multiple loopbacks for: " + rs["name"])
 
             if loopback is None:
-                print >> sys.stderr, "Could not find loopback for: " + rs["name"]
+                eprint("Could not find loopback for: " + rs["name"])
 
             equip_entry = equip_by_name[rs["name"]]
             location = locs_by_id[equip_entry['location']['id']]
@@ -892,46 +925,51 @@ def to_oscars_devices(in_devices=None, equipment=None, locations=None, igp_portm
             out_routers.append(out_router)
         else:
             if settings['VERBOSE']:
-                print "did not add not-igp router " + rs["name"]
+                print("did not add not-igp router " + rs["name"])
 
     return out_routers
 
 
 def load_config(settings):
     config = {}
-    for arg in ['LAGS']:
-        path = os.path.join(settings['CONFIG_DIR'], settings[arg])
+    for key, filename in settings['CONFIG']['FILES'].items():
+        path = os.path.join(settings['CONFIG']['DIR'], filename)
         with open(path, 'r') as infile:
-            config[arg] = json.load(infile)
-
+            config[key] = json.load(infile)
     return config
 
 
 def process_options(opts, settings):
     settings['VERBOSE'] = opts.verbose
 
-    settings['SAVE_TO_CACHE'] = opts.save_cache
-    settings['USE_CACHE'] = opts.use_cache
-    settings['CACHE_DIR'] = opts.cache_dir
-    settings['OUTPUT_DIR'] = opts.output_dir
-    ensure_dir(settings['OUTPUT_DIR'])
+    settings['CACHE']['SAVE'] = opts.save_cache
+    settings['CACHE']['USE'] = opts.use_cache
+    settings['OUTPUT']['DIR'] = opts.output_dir
+    ensure_dir(settings['OUTPUT']['DIR'], create=True)
 
-    if settings['SAVE_TO_CACHE'] or settings['USE_CACHE']:
-        ensure_dir(settings['CACHE_DIR'])
-    settings['CONFIG_DIR'] = opts.config_dir
+    settings['CACHE']['DIR'] = opts.cache_dir
+    if settings['CACHE']['SAVE'] or settings['CACHE']['USE']:
+        ensure_dir(settings['CACHE']['DIR'], create=True)
+
+    settings['CONFIG']['DIR'] = opts.config_dir
+    ensure_dir(settings['CONFIG']['DIR'], create=False)
 
 
-def ensure_dir(path):
+def ensure_dir(path, create=False):
     if not os.path.isdir(path):
         if not os.path.exists(path):
-            print "creating directory: " + path
-            try:
-                os.makedirs(path)
-            except OSError as e:
-                if e.errno != errno.EEXIST:
-                    raise
+            if create:
+                print("creating directory: {}".format(path))
+                try:
+                    os.makedirs(path)
+                except OSError as e:
+                    if e.errno != errno.EEXIST:
+                        raise
+            else:
+                eprint("required path does not exist {}".format(path))
+                exit(1)
         else:
-            print >> sys.stderr, " requested path exists but is not directory: " + path
+            eprint("path exists but is not directory: {}".format(path))
             exit(1)
 
 
@@ -939,40 +977,39 @@ def load_datasets(settings):
     token = get_token(settings)
     verbose = settings['VERBOSE']
     results = {}
-    for set_name in settings['DATASETS'].keys():
+    for set_name, dataset in settings['DATASETS'].items():
         data = None
-        dataset = settings['DATASETS'][set_name]
         source = dataset['SOURCE']
         cache_filename = dataset['CACHE_FILENAME']
-        cache_path = os.path.join(settings['CACHE_DIR'], cache_filename)
+        cache_path = os.path.join(settings['CACHE']['DIR'], cache_filename)
 
-        if not settings['USE_CACHE']:
+        if not settings['CACHE']['USE']:
             if verbose:
-                print "retrieving {} from {}".format(cache_filename, source)
+                print("retrieving {} from {}".format(cache_filename, source))
             r = None
             if source is 'ESDB':
-                r = requests.get(settings['ESDB_URL'] + dataset['URL'],
+                r = requests.get(settings['URLS']['ESDB'] + dataset['URL'],
                                  headers=dict(Authorization='Token {0}'.format(token)))
             elif source is 'NETBEAM':
-                r = requests.get(settings['NETBEAM_URL'] + dataset['URL'])
+                r = requests.get(settings['URLS']['NETBEAM'] + dataset['URL'])
             if r is not None:
                 if r.status_code != requests.codes.ok:
-                    print "error:  " + r.text
+                    eprint("error:  {}".format(r.text))
                     exit(1)
                 data = r.json()
             else:
-                print >> sys.stderr, "could not determine data source for {}".format(set_name)
+                eprint("could not determine data source for {}".format(set_name))
                 exit(1)
 
         else:
             if verbose:
-                print "loading {}".format(cache_path)
+                print("loading {}".format(cache_path))
             with open(cache_path, 'r') as infile:
                 data = json.load(fp=infile)
 
-        if settings['SAVE_TO_CACHE']:
+        if settings['CACHE']['SAVE']:
             if verbose:
-                print "saving cache at {}".format(cache_path)
+                print("saving cache at {}".format(cache_path))
             with open(cache_path, 'w') as outfile:
                 json.dump(obj=data, fp=outfile, indent=2)
         results[set_name] = data
@@ -982,14 +1019,14 @@ def load_datasets(settings):
 
 def write_output(adjacencies, devices, settings):
     verbose = settings['VERBOSE']
-    devices_filename = os.path.join(settings['OUTPUT_DIR'], settings['OUTPUT_DEVICES'])
-    adjcies_filename = os.path.join(settings['OUTPUT_DIR'], settings['OUTPUT_ADJCIES'])
+    devices_filename = os.path.join(settings['OUTPUT']['DIR'], settings['OUTPUT']['DEVICES'])
+    adjcies_filename = os.path.join(settings['OUTPUT']['DIR'], settings['OUTPUT']['ADJCIES'])
     if verbose:
-        print "saving devices at {}".format(devices_filename)
+        print("saving devices at {}".format(devices_filename))
     with open(devices_filename, 'w') as outfile:
         json.dump(obj=devices, fp=outfile, indent=2)
     if verbose:
-        print "saving adjacencies at {}".format(adjcies_filename)
+        print("saving adjacencies at {}".format(adjcies_filename))
     with open(adjcies_filename, 'w') as outfile:
         json.dump(obj=adjacencies, fp=outfile, indent=2)
 
@@ -998,7 +1035,7 @@ def get_token(settings):
     """Gets the API token contents from the configured file
     """
 
-    token_path = os.path.join(settings['CONFIG_DIR'], settings['ESDB_TOKEN'])
+    token_path = os.path.join(settings['CONFIG']['DIR'], settings['CONFIG']['ESDB_TOKEN'])
 
     try:
         token = open(token_path, "r").read().strip()
@@ -1006,6 +1043,10 @@ def get_token(settings):
         raise Exception("{}: unable to get token: {}".format(sys.argv[0], e))
 
     return token
+
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 
 if __name__ == '__main__':

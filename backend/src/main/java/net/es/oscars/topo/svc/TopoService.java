@@ -7,12 +7,12 @@ import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.resv.svc.ResvLibrary;
 import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
+import net.es.oscars.topo.db.AdjcyRepository;
 import net.es.oscars.topo.db.PortRepository;
 import net.es.oscars.topo.db.VersionRepository;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
-import net.es.oscars.topo.ent.IfceAdjcy;
+import net.es.oscars.topo.ent.Adjcy;
 import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.CommandParamType;
 import net.es.oscars.topo.enums.Layer;
@@ -36,9 +36,7 @@ public class TopoService {
     @Autowired
     private PortRepository portRepo;
     @Autowired
-    private PortAdjcyRepository adjcyRepo;
-    @Autowired
-    private VersionRepository versionRepo;
+    private AdjcyRepository adjcyRepo;
 
     @Autowired
     private PssProperties pssProperties;
@@ -48,27 +46,20 @@ public class TopoService {
 
     @Transactional
     public void updateTopo() throws ConsistencyException, TopoException {
-        Optional<Version> maybeCurrent = currentVersion();
+        log.info("updating pathfinding topo to version: " + current.getId());
+        List<Device> devices = deviceRepo.findByVersion(current);
+        List<Adjcy> adjcies = adjcyRepo.findByVersion(current);
 
-        if (maybeCurrent.isPresent()) {
-            Version current = maybeCurrent.get();
-            log.info("updating pathfinding topo to version: " + current.getId());
-            List<Device> devices = deviceRepo.findByVersion(current);
-            List<IfceAdjcy> adjcies = adjcyRepo.findByVersion(current);
+        // first add all devices (and ports) to the urn map
+        this.topoUrnMap = this.urnsFromDevices(devices);
 
-            // first add all devices (and ports) to the urn map
-            this.topoUrnMap = this.urnsFromDevices(devices);
-
-            // now process all adjacencies
-            this.topoAdjcies = topoAdjciesFromDevices(devices);
-            this.topoAdjcies.addAll(topoAdjciesFromPortAdjcies(adjcies));
-            this.baseline = new HashMap<>();
+        // now process all adjacencies
+        this.topoAdjcies = topoAdjciesFromDevices(devices);
+        this.topoAdjcies.addAll(topoAdjciesFromDbAdjcies(adjcies));
+        this.baseline = new HashMap<>();
 
 
-            log.info("updated with " + this.topoAdjcies.size() + " topo adjacencies");
-        } else {
-            throw new TopoException("no valid topology version!");
-        }
+        log.info("updated with " + this.topoAdjcies.size() + " topo adjacencies");
 
     }
 
@@ -86,7 +77,7 @@ public class TopoService {
     public Topology currentTopology() throws ConsistencyException {
         Map<String, Device> deviceMap = new HashMap<>();
         Map<String, Port> portMap = new HashMap<>();
-        List<IfceAdjcy> adjcies = new ArrayList<>();
+        List<Adjcy> adjcies = new ArrayList<>();
         Topology t = Topology.builder()
                 .adjcies(adjcies)
                 .devices(deviceMap)
@@ -231,47 +222,58 @@ public class TopoService {
 
     }
 
-    private List<TopoAdjcy> topoAdjciesFromPortAdjcies(List<IfceAdjcy> portAdjcies) throws TopoException {
+    private List<TopoAdjcy> topoAdjciesFromDbAdjcies(List<Adjcy> dbAdjcies) throws TopoException {
         List<TopoAdjcy> adjcies = new ArrayList<>();
+        List<Adjcy> filtered = new ArrayList<>();
 
-        for (IfceAdjcy pa : portAdjcies) {
-            if (pa.getVersion() == null) {
-                log.info("null port adjcy: " + pa.getUrn());
-                continue;
-            } else if (!pa.getVersion().getValid()) {
-                log.info("invalid port adjcy: " + pa.getUrn());
-                continue;
+        for (Adjcy dbAdjcy : dbAdjcies) {
+            boolean shouldAdd = true;
+            if (dbAdjcy.getVersion() == null) {
+                log.error("null version for adjcy, ignoring: " + dbAdjcy.getUrn());
+                shouldAdd = false;
+            } else if (!dbAdjcy.getVersion().getValid()) {
+                log.info("invalid version for adjcy, ignoring: " + dbAdjcy.getUrn());
+                shouldAdd = false;
             }
-            // all our adjcies should point to ports in the topoUrnMap
+            List<String> portUrnsToVerify = new ArrayList<>();
+            portUrnsToVerify.add(dbAdjcy.getZ().getPortUrn());
+            portUrnsToVerify.add(dbAdjcy.getZ().getPortUrn());
 
-            if (!this.topoUrnMap.containsKey(pa.getA().getUrn())) {
-                log.error(pa.getA().getUrn() + " -- " + pa.getZ().getUrn());
-
-                throw new TopoException("missing A " + pa.getA().getUrn());
-
-            } else if (!this.topoUrnMap.containsKey(pa.getZ().getUrn())) {
-
-                log.error(pa.getA().getUrn() + " -- " + pa.getZ().getUrn());
-                throw new TopoException("missing Z " + pa.getZ().getUrn());
-            } else if (!pa.getA().getVersion().getValid()) {
-                throw new TopoException("invalid A in adjcy" + pa.getUrn());
-            } else if (!pa.getZ().getVersion().getValid()) {
-                throw new TopoException("invalid Z in adjcy" + pa.getUrn());
-
-            } else {
-
-                TopoUrn aUrn = this.topoUrnMap.get(pa.getA().getUrn());
-                TopoUrn zUrn = this.topoUrnMap.get(pa.getZ().getUrn());
-                Map<Layer, Long> metrics = new HashMap<>();
-
-                pa.getMetrics().entrySet().forEach(e -> {
-                    metrics.put(e.getKey(), e.getValue());
-                });
-
-                TopoAdjcy adjcy = TopoAdjcy.builder().a(aUrn).z(zUrn).metrics(metrics).build();
-                adjcies.add(adjcy);
+            for (String portUrn : portUrnsToVerify) {
+                if (!this.topoUrnMap.containsKey(portUrn)) {
+                    log.error("port not in topology: " + dbAdjcy.getUrn());
+                    shouldAdd = false;
+                } else {
+                    TopoUrn a = this.topoUrnMap.get(portUrn);
+                    if (!a.getUrnType().equals(UrnType.PORT)) {
+                        log.error("wrong port URN type: " + dbAdjcy.getUrn());
+                        shouldAdd = false;
+                    }
+                }
+            }
+            for (Adjcy alreadyPresent : filtered) {
+                if (dbAdjcy.equivalent(alreadyPresent)) {
+                    shouldAdd = false;
+                }
+            }
+            if (shouldAdd) {
+                filtered.add(dbAdjcy);
             }
 
+        }
+
+
+        for (Adjcy dbAdjcy : filtered) {
+            TopoUrn aUrn = this.topoUrnMap.get(dbAdjcy.getA().getUrn());
+            TopoUrn zUrn = this.topoUrnMap.get(dbAdjcy.getZ().getUrn());
+            Map<Layer, Long> metrics = new HashMap<>();
+
+            dbAdjcy.getMetrics().entrySet().forEach(e -> {
+                metrics.put(e.getKey(), e.getValue());
+            });
+
+            TopoAdjcy adjcy = TopoAdjcy.builder().a(aUrn).z(zUrn).metrics(metrics).build();
+            adjcies.add(adjcy);
         }
         return adjcies;
 

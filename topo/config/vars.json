@@ -1,8 +1,12 @@
 {
+  "loopback-nets": [
+    "134.55.200.",
+    "198.129.245."
+  ],
   "vlan-ranges": {
-    "default": [
+    "DEFAULT": [
       {
-        "comment": "all possible VLANs",
+        "comment": "all VLANs",
         "floor": 2,
         "ceiling": 4094
       }

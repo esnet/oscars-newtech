@@ -19,16 +19,12 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude={"capabilities", "reservableVlans", "ports", "id"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
                   property = "urn")
 public class Device {
     @Id
     @GeneratedValue
     private Long id;
-
-    @ManyToOne
-    private Version version;
 
     @NonNull
     @Column(unique = true)
@@ -81,6 +77,28 @@ public class Device {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Port> ports = new HashSet<>();
+
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null ) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Device other = (Device) obj;
+        return id != null && id.equals(other.getId());
+    }
+
 
     public String toString() {
         return this.getClass().getSimpleName() + "-" + getUrn();

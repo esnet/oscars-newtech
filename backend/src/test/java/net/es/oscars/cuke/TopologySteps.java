@@ -8,7 +8,7 @@ import net.es.oscars.topo.beans.Delta;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
+import net.es.oscars.topo.db.AdjcyRepository;
 import net.es.oscars.topo.db.PortRepository;
 import net.es.oscars.topo.db.VersionRepository;
 import net.es.oscars.topo.ent.Device;
@@ -36,7 +36,7 @@ public class TopologySteps extends CucumberSteps {
     @Autowired
     private DeviceRepository deviceRepo;
     @Autowired
-    private PortAdjcyRepository adjcyRepo;
+    private AdjcyRepository adjcyRepo;
     @Autowired
     private VersionRepository versionRepo;
 

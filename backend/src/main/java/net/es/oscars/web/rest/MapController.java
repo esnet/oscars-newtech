@@ -5,9 +5,9 @@ import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
+import net.es.oscars.topo.db.AdjcyRepository;
 import net.es.oscars.topo.ent.Device;
-import net.es.oscars.topo.ent.IfceAdjcy;
+import net.es.oscars.topo.ent.Adjcy;
 import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.UIPopulator;
 import net.es.oscars.topo.svc.TopoService;
@@ -24,7 +24,7 @@ public class MapController {
     @Autowired
     private DeviceRepository deviceRepo;
     @Autowired
-    private PortAdjcyRepository adjcyRepo;
+    private AdjcyRepository adjcyRepo;
     @Autowired
     private TopoService topoService;
 
@@ -76,7 +76,7 @@ public class MapController {
         }
 
         Set<String> added = new HashSet<>();
-        for (IfceAdjcy pa : topology.getAdjcies()) {
+        for (Adjcy pa : topology.getAdjcies()) {
 
             String edgeId = pa.getA().getUrn() + " -- " + pa.getZ().getUrn();
             String reverseEdgeId = pa.getZ().getUrn() + " -- " + pa.getA().getUrn();

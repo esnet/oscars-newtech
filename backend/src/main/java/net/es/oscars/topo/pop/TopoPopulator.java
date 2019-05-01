@@ -1,16 +1,14 @@
 package net.es.oscars.topo.pop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.props.TopoProperties;
 import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.beans.VersionDelta;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
-import net.es.oscars.topo.ent.IfceAdjcy;
+import net.es.oscars.topo.ent.Adjcy;
 import net.es.oscars.topo.ent.Version;
-import net.es.oscars.topo.enums.Layer;
 import net.es.oscars.topo.svc.TopoLibrary;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.topo.svc.UpdateSvc;
@@ -82,7 +80,7 @@ public class TopoPopulator {
             });
         });
 
-        List<IfceAdjcy> adjcies = loadPortAdjciesFromFile(adjciesFilename, portMap);
+        List<Adjcy> adjcies = loadDbAdjciesFromFile(adjciesFilename, portMap);
 
         return Topology.builder()
                 .adjcies(adjcies)
@@ -105,33 +103,34 @@ public class TopoPopulator {
         return devices;
     }
 
-    private List<IfceAdjcy> loadPortAdjciesFromFile(String filename, Map<String, Port> portMap) throws IOException {
+    private List<Adjcy> loadDbAdjciesFromFile(String filename, Map<String, Port> portMap) throws IOException {
         File jsonFile = new File(filename);
         ObjectMapper mapper = new ObjectMapper();
-        List<PortAdjcyForImport> fromFile = Arrays.asList(mapper.readValue(jsonFile, PortAdjcyForImport[].class));
-        List<IfceAdjcy> result = new ArrayList<>();
+        List<Adjcy> fromFile = Arrays.asList(mapper.readValue(jsonFile, Adjcy[].class));
+
+        List<Adjcy> filtered = new ArrayList<>();
+
         fromFile.forEach(t -> {
-            if (portMap.containsKey(t.getA()) && portMap.containsKey(t.getZ())) {
-                Port a = portMap.get(t.getA());
-                Port z = portMap.get(t.getZ());
-                Map<Layer, Long> metrics = t.getMetrics();
-                IfceAdjcy adjcy = IfceAdjcy.builder().a(a).z(z).metrics(metrics).build();
-                result.add(adjcy);
+            String aPortUrn = t.getA().getPortUrn();
+            String zPortUrn = t.getZ().getPortUrn();
+            boolean add = true;
+            if (!portMap.containsKey(aPortUrn)) {
+                log.error("  " + aPortUrn + " not in topology");
+                add = false;
+            }
+            if (!portMap.containsKey(zPortUrn)) {
+                log.error("  " + zPortUrn + " not in topology");
+                add = false;
+            }
+            if (add) {
+                filtered.add(t);
+
             } else {
-                log.error("Could not load an adjacency: " + t.getA() + " -- " + t.getZ());
-                log.error("  " + t.getA() + " in topology? : " + portMap.containsKey(t.getA()));
-                log.error("  " + t.getZ() + " in topology? : " + portMap.containsKey(t.getZ()));
+                log.error("Could not load an adjacency: " + t.getUrn());
             }
         });
-        return result;
+        return filtered;
 
     }
 
-
-    @Data
-    private static class PortAdjcyForImport {
-        private String a;
-        private String z;
-        private Map<Layer, Long> metrics = new HashMap<>();
-    }
 }

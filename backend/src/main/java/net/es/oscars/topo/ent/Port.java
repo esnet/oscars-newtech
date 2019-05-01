@@ -17,7 +17,6 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude={"device", "capabilities", "ifces", "reservableVlans", "tags", "id"})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
                   property = "urn")
 public class Port {
@@ -25,17 +24,16 @@ public class Port {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
-    private Version version;
-
     @NonNull
     @NaturalId
     @Column(unique = true)
+    @EqualsAndHashCode.Include
     private String urn;
 
     @Basic
     @Column(length = 65535)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @EqualsAndHashCode.Include
     private ArrayList<String> tags;
 
     @NonNull
@@ -45,26 +43,47 @@ public class Port {
 
     @Column
     @NonNull
+    @EqualsAndHashCode.Include
     private Integer reservableIngressBw;
 
     @Column
     @NonNull
+    @EqualsAndHashCode.Include
     private Integer reservableEgressBw;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private Set<Layer3Ifce> ifces = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @EqualsAndHashCode.Include
     private Set<IntRange> reservableVlans = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @EqualsAndHashCode.Include
     private Set<Layer> capabilities = new HashSet<>();
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null ) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Port other = (Port) obj;
+        return id != null && id.equals(other.getId());
+    }
+
 
     public String toString() {
         return this.getClass().getSimpleName() + "-" + getUrn();

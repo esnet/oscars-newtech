@@ -6,7 +6,7 @@ import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
+import net.es.oscars.topo.db.AdjcyRepository;
 import net.es.oscars.topo.db.PortRepository;
 import net.es.oscars.topo.db.VersionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class SharedSteps {
     @Autowired
     private DeviceRepository deviceRepo;
     @Autowired
-    private PortAdjcyRepository adjcyRepo;
+    private AdjcyRepository adjcyRepo;
     @Autowired
     private PortRepository portRepo;
     @Autowired
