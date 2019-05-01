@@ -5,7 +5,9 @@ import net.es.oscars.topo.enums.Layer;
 
 import javax.persistence.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 
 @Data
@@ -18,10 +20,10 @@ public class Adjcy {
     @GeneratedValue
     private Long id;
 
-    @Embedded
+    @OneToOne
     private Point a;
 
-    @Embedded
+    @OneToOne
     private Point z;
 
     @Override
@@ -80,18 +82,7 @@ public class Adjcy {
         return a.getUrn() + " - " + z.getUrn();
     }
 
-    /*
 
-    public Integer minimalReservableBandwidth() {
-        Set<Integer> reservableBandwidths = new HashSet<>();
-        reservableBandwidths.add(this.a.getPort().getReservableEgressBw());
-        reservableBandwidths.add(this.z.getPort().getReservableEgressBw());
-        reservableBandwidths.add(this.a.getPort().getReservableIngressBw());
-        reservableBandwidths.add(this.z.getPort().getReservableIngressBw());
-        // we can get() because the stream is not empty
-        return reservableBandwidths.stream().min(Integer::compare).get();
-    }
-     */
     public String toString() {
         return this.getClass().getSimpleName() + "-" + this.getUrn() + " " + getId();
     }

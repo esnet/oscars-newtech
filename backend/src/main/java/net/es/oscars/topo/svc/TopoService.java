@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -30,6 +31,8 @@ import java.util.*;
 public class TopoService {
     private Map<String, TopoUrn> topoUrnMap;
     private List<TopoAdjcy> topoAdjcies;
+    private Version current = null;
+
 
     @Autowired
     private DeviceRepository deviceRepo;
@@ -37,6 +40,8 @@ public class TopoService {
     private PortRepository portRepo;
     @Autowired
     private AdjcyRepository adjcyRepo;
+    @Autowired
+    private VersionRepository versionRepo;
 
     @Autowired
     private PssProperties pssProperties;
@@ -45,10 +50,9 @@ public class TopoService {
     private Map<String, PortBwVlan> baseline = new HashMap<>();
 
     @Transactional
-    public void updateTopo() throws ConsistencyException, TopoException {
-        log.info("updating pathfinding topo to version: " + current.getId());
-        List<Device> devices = deviceRepo.findByVersion(current);
-        List<Adjcy> adjcies = adjcyRepo.findByVersion(current);
+    public void updateInMemoryTopo() throws TopoException {
+        List<Device> devices = deviceRepo.findAll();
+        List<Adjcy> adjcies = adjcyRepo.findAll();
 
         // first add all devices (and ports) to the urn map
         this.topoUrnMap = this.urnsFromDevices(devices);
@@ -58,64 +62,77 @@ public class TopoService {
         this.topoAdjcies.addAll(topoAdjciesFromDbAdjcies(adjcies));
         this.baseline = new HashMap<>();
 
-
-        log.info("updated with " + this.topoAdjcies.size() + " topo adjacencies");
+        log.info("topo version " + this.current.getId() + " updated " +
+                "(" + devices.size() + " devices, " + this.topoAdjcies.size() + " adjcies)");
 
     }
 
-    public Optional<Version> currentVersion() throws ConsistencyException {
-        List<Version> valid = versionRepo.findByValid(true);
-        if (valid.size() == 0) {
+
+    public Optional<Version> latestVersion() throws ConsistencyException {
+        List<Version> maybeCurrent = versionRepo.findByValid(true);
+
+        if (maybeCurrent.size() == 1) {
+            return Optional.of(maybeCurrent.get(0));
+        } else if (maybeCurrent.isEmpty()) {
             return Optional.empty();
-        } else if (valid.size() == 1) {
-            return Optional.of(valid.get(0));
         } else {
-            throw new ConsistencyException("more than 1 valid versions found");
+            throw new ConsistencyException("Multiple valid versions found in db!");
         }
+
     }
 
-    public Topology currentTopology() throws ConsistencyException {
+    @Transactional
+    public Version bumpVersion() {
+        List<Version> maybeCurrent = versionRepo.findByValid(true);
+
+        if (!maybeCurrent.isEmpty()) {
+            for (Version noLongerValid : maybeCurrent) {
+                noLongerValid.setValid(false);
+                log.debug("Setting previous version to invalid: " + noLongerValid.getId());
+                versionRepo.save(noLongerValid);
+            }
+        }
+
+        Version newVersion = Version.builder().updated(Instant.now()).valid(true).build();
+        this.current = newVersion;
+        versionRepo.save(newVersion);
+        versionRepo.flush();
+        log.debug("New version id is: " + newVersion.getId());
+        return newVersion;
+    }
+
+
+    public Topology currentTopology() {
         Map<String, Device> deviceMap = new HashMap<>();
         Map<String, Port> portMap = new HashMap<>();
+
         List<Adjcy> adjcies = new ArrayList<>();
         Topology t = Topology.builder()
                 .adjcies(adjcies)
                 .devices(deviceMap)
                 .ports(portMap)
+                .version(current)
                 .build();
-        Version v = null;
-        if (versionRepo.findAll().size() != 0) {
-            List<Version> versions = versionRepo.findByValid(true);
-            if (versions.size() != 1) {
-                throw new ConsistencyException("exactly one valid version can exist");
-            } else {
-                v = versions.get(0);
-            }
-            List<Device> devices = deviceRepo.findByVersion(versions.get(0));
-            devices.forEach(d -> {
-                deviceMap.put(d.getUrn(), d);
-            });
 
-            adjcies = adjcyRepo.findByVersion(versions.get(0));
-            log.info("found " + devices.size() + " devices in version " + versions.get(0).getId());
-            log.info("found " + adjcies.size() + " adjcies in version " + versions.get(0).getId());
-            t.setDevices(deviceMap);
-            t.setAdjcies(adjcies);
+        List<Device> devices = deviceRepo.findAll();
+        devices.forEach(d -> {
+            deviceMap.put(d.getUrn(), d);
+        });
+
+        adjcies = adjcyRepo.findAll();
+        log.info("found " + devices.size() + " devices ");
+        log.info("found " + adjcies.size() + " adjcies ");
+        t.setDevices(deviceMap);
+        t.setAdjcies(adjcies);
 
 //            log.info(" current topo:");
-            devices.forEach(d -> {
+        devices.forEach(d -> {
 //                log.info(" d: "+d.getUrn());
-                for (Port p : d.getPorts()) {
-                    if (p.getVersion() != null && p.getVersion().getValid()) {
+            for (Port p : d.getPorts()) {
 //                        log.info(" +- "+p.getUrn());
-                        portMap.put(p.getUrn(), p);
-                    }
-                }
-            });
-        }
-        t.setVersion(v);
-
-
+                portMap.put(p.getUrn(), p);
+            }
+        });
         return t;
     }
 
@@ -131,90 +148,77 @@ public class TopoService {
         Map<String, TopoUrn> urns = new HashMap<>();
 
         devices.forEach(d -> {
-            if (d.getVersion().getValid()) {
 
+            // make a copy of the IntRanges otherwise it'd be set by reference
+            Set<IntRange> drv = new HashSet<>(IntRange.mergeIntRanges(d.getReservableVlans()));
+            Set<Layer> dCaps = new HashSet<>(d.getCapabilities());
+
+            TopoUrn deviceUrn = TopoUrn.builder()
+                    .urn(d.getUrn())
+                    .urnType(UrnType.DEVICE)
+                    .device(d)
+                    .reservableVlans(drv)
+                    .capabilities(dCaps)
+                    .reservableCommandParams(new HashSet<>())
+                    .build();
+
+            // for all devices, if this is MPLS-capable, reserve a VC id
+            if (d.getCapabilities().contains(Layer.MPLS)) {
+                Set<IntRange> vcIdRanges = IntRange.fromExpression(pssProperties.getVcidRange());
+                ReservableCommandParam vcCp = ReservableCommandParam.builder()
+                        .type(CommandParamType.VC_ID)
+                        .reservableRanges(vcIdRanges)
+                        .build();
+                deviceUrn.getReservableCommandParams().add(vcCp);
+            }
+
+            // for ALUs, add SVC, SDP and QOS ids as reservable
+            if (d.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
+
+                Set<IntRange> svcIdRanges = IntRange.fromExpression(pssProperties.getAluSvcidRange());
+                ReservableCommandParam aluSvcCp = ReservableCommandParam.builder()
+                        .type(CommandParamType.ALU_SVC_ID)
+                        .reservableRanges(svcIdRanges)
+                        .build();
+                deviceUrn.getReservableCommandParams().add(aluSvcCp);
+
+
+                Set<IntRange> sdpIdRanges = IntRange.fromExpression(pssProperties.getAluSdpidRange());
+                ReservableCommandParam aluSdpCp = ReservableCommandParam.builder()
+                        .type(CommandParamType.ALU_SDP_ID)
+                        .reservableRanges(sdpIdRanges)
+                        .build();
+                deviceUrn.getReservableCommandParams().add(aluSdpCp);
+
+                Set<IntRange> qosIdRanges = IntRange.fromExpression(pssProperties.getAluQosidRange());
+                ReservableCommandParam aluQosCp = ReservableCommandParam.builder()
+                        .type(CommandParamType.ALU_QOS_POLICY_ID)
+                        .reservableRanges(qosIdRanges)
+                        .build();
+                deviceUrn.getReservableCommandParams().add(aluQosCp);
+            }
+            urns.put(d.getUrn(), deviceUrn);
+
+            d.getPorts().forEach(p -> {
                 // make a copy of the IntRanges otherwise it'd be set by reference
-                Set<IntRange> drv = new HashSet<>();
-                drv.addAll(IntRange.mergeIntRanges(d.getReservableVlans()));
-                Set<Layer> dCaps = new HashSet<>();
-                dCaps.addAll(d.getCapabilities());
+                Set<IntRange> prv = new HashSet<>(IntRange.mergeIntRanges(p.getReservableVlans()));
+                Set<Layer> pCaps = new HashSet<>(p.getCapabilities());
 
-                TopoUrn deviceUrn = TopoUrn.builder()
-                        .urn(d.getUrn())
-                        .urnType(UrnType.DEVICE)
+                TopoUrn portUrn = TopoUrn.builder()
+                        .urn(p.getUrn())
+                        .urnType(UrnType.PORT)
+                        .capabilities(pCaps)
                         .device(d)
-                        .reservableVlans(drv)
-                        .capabilities(dCaps)
+                        .port(p)
+                        .reservableIngressBw(p.getReservableIngressBw())
+                        .reservableEgressBw(p.getReservableEgressBw())
+                        .reservableVlans(prv)
                         .reservableCommandParams(new HashSet<>())
                         .build();
 
-                // for all devices, if this is MPLS-capable, reserve a VC id
-                if (d.getCapabilities().contains(Layer.MPLS)) {
-                    Set<IntRange> vcIdRanges = IntRange.fromExpression(pssProperties.getVcidRange());
-                    ReservableCommandParam vcCp = ReservableCommandParam.builder()
-                            .type(CommandParamType.VC_ID)
-                            .reservableRanges(vcIdRanges)
-                            .build();
-                    deviceUrn.getReservableCommandParams().add(vcCp);
-                }
 
-                // for ALUs, add SVC, SDP and QOS ids as reservable
-                if (d.getModel().equals(DeviceModel.ALCATEL_SR7750)) {
-
-                    Set<IntRange> svcIdRanges = IntRange.fromExpression(pssProperties.getAluSvcidRange());
-                    ReservableCommandParam aluSvcCp = ReservableCommandParam.builder()
-                            .type(CommandParamType.ALU_SVC_ID)
-                            .reservableRanges(svcIdRanges)
-                            .build();
-                    deviceUrn.getReservableCommandParams().add(aluSvcCp);
-
-
-                    Set<IntRange> sdpIdRanges = IntRange.fromExpression(pssProperties.getAluSdpidRange());
-                    ReservableCommandParam aluSdpCp = ReservableCommandParam.builder()
-                            .type(CommandParamType.ALU_SDP_ID)
-                            .reservableRanges(sdpIdRanges)
-                            .build();
-                    deviceUrn.getReservableCommandParams().add(aluSdpCp);
-
-                    Set<IntRange> qosIdRanges = IntRange.fromExpression(pssProperties.getAluQosidRange());
-                    ReservableCommandParam aluQosCp = ReservableCommandParam.builder()
-                            .type(CommandParamType.ALU_QOS_POLICY_ID)
-                            .reservableRanges(qosIdRanges)
-                            .build();
-                    deviceUrn.getReservableCommandParams().add(aluQosCp);
-                }
-                urns.put(d.getUrn(), deviceUrn);
-
-                d.getPorts().forEach(p -> {
-                    if (p.getVersion().getValid()) {
-                        // make a copy of the IntRanges otherwise it'd be set by reference
-                        Set<IntRange> prv = new HashSet<>();
-                        prv.addAll(IntRange.mergeIntRanges(p.getReservableVlans()));
-                        Set<Layer> pCaps = new HashSet<>();
-                        pCaps.addAll(p.getCapabilities());
-
-                        TopoUrn portUrn = TopoUrn.builder()
-                                .urn(p.getUrn())
-                                .urnType(UrnType.PORT)
-                                .capabilities(pCaps)
-                                .device(d)
-                                .port(p)
-                                .reservableIngressBw(p.getReservableIngressBw())
-                                .reservableEgressBw(p.getReservableEgressBw())
-                                .reservableVlans(prv)
-                                .reservableCommandParams(new HashSet<>())
-                                .build();
-
-
-                        urns.put(p.getUrn(), portUrn);
-                    } else {
-                        log.debug("not adding invalid port " + p.getUrn());
-                    }
-                });
-            } else {
-                log.debug("not adding invalid device " + d.getUrn());
-
-            }
+                urns.put(p.getUrn(), portUrn);
+            });
 
         });
 
@@ -228,13 +232,7 @@ public class TopoService {
 
         for (Adjcy dbAdjcy : dbAdjcies) {
             boolean shouldAdd = true;
-            if (dbAdjcy.getVersion() == null) {
-                log.error("null version for adjcy, ignoring: " + dbAdjcy.getUrn());
-                shouldAdd = false;
-            } else if (!dbAdjcy.getVersion().getValid()) {
-                log.info("invalid version for adjcy, ignoring: " + dbAdjcy.getUrn());
-                shouldAdd = false;
-            }
+
             List<String> portUrnsToVerify = new ArrayList<>();
             portUrnsToVerify.add(dbAdjcy.getZ().getPortUrn());
             portUrnsToVerify.add(dbAdjcy.getZ().getPortUrn());
@@ -285,9 +283,6 @@ public class TopoService {
             if (this.topoUrnMap.containsKey(d.getUrn())) {
                 TopoUrn deviceUrn = this.topoUrnMap.get(d.getUrn());
                 for (Port p : d.getPorts()) {
-                    if (p.getVersion() == null || !p.getVersion().getValid()) {
-                        continue;
-                    }
                     if (this.topoUrnMap.containsKey(p.getUrn())) {
                         TopoUrn portUrn = this.topoUrnMap.get(p.getUrn());
                         TopoAdjcy az = TopoAdjcy.builder()
@@ -305,15 +300,30 @@ public class TopoService {
                         adjcies.add(az);
                         adjcies.add(za);
                     } else {
-                        throw new TopoException("missing a port urn "+p.getUrn());
+                        throw new TopoException("missing a port urn " + p.getUrn());
                     }
                 }
             } else {
-                throw new TopoException("missing a device urn "+d.getUrn());
+                throw new TopoException("missing a device urn " + d.getUrn());
             }
         }
 
         return adjcies;
     }
 
+    public Integer minimalReservableBandwidth(Adjcy adjcy) {
+        Set<Integer> reservableBandwidths = new HashSet<>();
+        TopoUrn aPortUrn = topoUrnMap.get(adjcy.getA().getPortUrn());
+        TopoUrn zPortUrn = topoUrnMap.get(adjcy.getA().getPortUrn());
+        Port aPort = aPortUrn.getPort();
+        Port zPort = zPortUrn.getPort();
+
+
+        reservableBandwidths.add(aPort.getReservableEgressBw());
+        reservableBandwidths.add(zPort.getReservableEgressBw());
+        reservableBandwidths.add(aPort.getReservableIngressBw());
+        reservableBandwidths.add(zPort.getReservableIngressBw());
+        // we can get() because the stream is not empty
+        return reservableBandwidths.stream().min(Integer::compare).get();
+    }
 }

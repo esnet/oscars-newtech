@@ -1,6 +1,7 @@
 package net.es.oscars.topo.beans;
 
 import lombok.*;
+import net.es.oscars.topo.ent.Adjcy;
 import net.es.oscars.topo.ent.Device;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.*;
@@ -20,10 +21,14 @@ public class TopoUrn {
     private UrnType urnType;
 
     // if this is a port, this will be set to the parent device entity
+    // if this is an adjcy, it will be null
     private Device device;
 
     // may be null
     private Port port;
+
+    // may be null
+    private Adjcy adjcy;
 
     private Integer reservableIngressBw;
 

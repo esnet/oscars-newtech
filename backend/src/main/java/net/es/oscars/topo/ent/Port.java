@@ -27,13 +27,11 @@ public class Port {
     @NonNull
     @NaturalId
     @Column(unique = true)
-    @EqualsAndHashCode.Include
     private String urn;
 
     @Basic
     @Column(length = 65535)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @EqualsAndHashCode.Include
     private ArrayList<String> tags;
 
     @NonNull
@@ -43,25 +41,25 @@ public class Port {
 
     @Column
     @NonNull
-    @EqualsAndHashCode.Include
     private Integer reservableIngressBw;
 
     @Column
     @NonNull
-    @EqualsAndHashCode.Include
     private Integer reservableEgressBw;
-
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @EqualsAndHashCode.Include
+    private Set<Layer3Ifce> ifces = new HashSet<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<IntRange> reservableVlans = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @EqualsAndHashCode.Include
     private Set<Layer> capabilities = new HashSet<>();
 
     @Override

@@ -6,6 +6,9 @@ import net.es.oscars.topo.enums.Layer;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +16,12 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Embeddable
-@EqualsAndHashCode
+@Entity
 public class Point {
+    @Id
+    @GeneratedValue
+    private Long id;
+
     private String device;
     private String port;
     private String addr;
@@ -31,6 +37,24 @@ public class Point {
         }
         return ifce;
     }
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null ) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Point other = (Point) obj;
+        return id != null && id.equals(other.getId());
+    }
 
 }

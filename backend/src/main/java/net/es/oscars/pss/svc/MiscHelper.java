@@ -7,6 +7,8 @@ import net.es.oscars.dto.pss.params.MplsHop;
 import net.es.oscars.dto.pss.params.MplsPath;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.topo.ent.Adjcy;
+import net.es.oscars.topo.ent.Point;
 import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
@@ -27,13 +29,18 @@ public class MiscHelper {
         Map<String, TopoUrn> urnMap = topoService.getTopoUrnMap();
         String name = pipe.getConnectionId() + "-" + pipe.getZ();
         List<MplsHop> hops = new ArrayList<>();
-        Integer order = 0;
+        int order = 0;
 
         for (EroHop eroHop : pipe.getAzERO()) {
             TopoUrn topoUrn = urnMap.get(eroHop.getUrn());
             if (topoUrn != null) {
-                if (topoUrn.getUrnType().equals(UrnType.PORT)) {
-                    String addr = topoUrn.getPort().getIpv4Address();
+                if (topoUrn.getUrnType().equals(UrnType.ADJCY)) {
+                    Adjcy adjcy = topoUrn.getAdjcy();
+                    Point a = adjcy.getA();
+                    Point z = adjcy.getZ();
+
+                    // XXX FIXME FIXME
+                    String addr = a.getAddr();
 
                     MplsHop hop = MplsHop.builder()
                             .address(addr)
@@ -86,8 +93,15 @@ public class MiscHelper {
                     throw new PSSException("Topo entity is not port for hop "+hop.getUrn());
                 }
                 Port port = topoService.getTopoUrnMap().get(hop.getUrn()).getPort();
+                Adjcy adjcy = topoUrn.getAdjcy();
+                Point a = adjcy.getA();
+                Point z = adjcy.getZ();
+
+                // XXX FIXME FIXME
+                String addr = a.getAddr();
+
                 MplsHop mplsHop = MplsHop.builder()
-                        .address(port.getIpv4Address())
+                        .address(addr)
                         .order(order)
                         .build();
                 order = order + 1;

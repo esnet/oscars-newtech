@@ -18,10 +18,7 @@ import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
-import net.es.oscars.topo.beans.TopoUrn;
-import net.es.oscars.topo.ent.Port;
 import net.es.oscars.topo.enums.CommandParamType;
-import net.es.oscars.topo.enums.UrnType;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.*;
 import net.es.oscars.web.simple.*;
@@ -120,7 +117,7 @@ public class ConnService {
         Random random = new Random();
 
         StringBuilder b = new StringBuilder();
-        Integer firstIdx = random.nextInt(FIRST_LETTER.length);
+        int firstIdx = random.nextInt(FIRST_LETTER.length);
         char firstLetter = FIRST_LETTER[firstIdx];
         b.append(firstLetter);
 
@@ -261,7 +258,7 @@ public class ConnService {
             intervalFiltered = new ArrayList<>();
             for (Connection c : vlanFiltered) {
                 boolean add = true;
-                Schedule s = null;
+                Schedule s;
                 if (c.getPhase().equals(Phase.ARCHIVED)) {
                     s = c.getArchived().getSchedule();
                 } else if (c.getPhase().equals(Phase.RESERVED)) {
@@ -647,6 +644,7 @@ public class ConnService {
         List<EroHop> res = new ArrayList<>();
         for (EroHop h : ero) {
             EroHop hc = EroHop.builder()
+                    .type(h.getType())
                     .urn(h.getUrn())
                     .build();
             res.add(hc);
@@ -687,7 +685,7 @@ public class ConnService {
 
     public Validity validateCommit(Connection in) throws ConnException {
 
-        Validity v = this.validateHold(this.fromConnection(in, false, false));
+        Validity v = this.validateHold(this.fromConnection(in, false));
 
         String error = v.getMessage();
         boolean valid = v.isValid();
@@ -810,8 +808,7 @@ public class ConnService {
             begin = Instant.ofEpochSecond(in.getBegin());
             if (!begin.isAfter(Instant.now())) {
                 begin = Instant.now().plus(30, ChronoUnit.SECONDS);
-                Long sec = begin.getEpochSecond();
-                in.setBegin(sec.intValue());
+                in.setBegin(new Long(begin.getEpochSecond()).intValue());
             }
         }
 
@@ -912,7 +909,6 @@ public class ConnService {
                     Integer ing = zaMbps;
                     boolean notDevice = false;
                     if (i % 3 == 1) {
-                        ing = zaMbps;
                         egr = azMbps;
                         notDevice = true;
                     } else if (i % 3 == 2) {
@@ -1193,7 +1189,7 @@ public class ConnService {
         return c;
     }
 
-    public SimpleConnection fromConnection(Connection c, Boolean return_svc_ids, Boolean return_ifce_ero) {
+    public SimpleConnection fromConnection(Connection c, Boolean return_svc_ids) {
 
         Long b = c.getArchived().getSchedule().getBeginning().getEpochSecond();
         Long e = c.getArchived().getSchedule().getEnding().getEpochSecond();
@@ -1240,38 +1236,11 @@ public class ConnService {
                     .device(j.getDeviceUrn())
                     .build());
         });
-        Map<String, TopoUrn> urnMap = topoService.getTopoUrnMap();
         cmp.getPipes().forEach(p -> {
             List<String> ero = new ArrayList<>();
-            if (return_ifce_ero) {
-                p.getAzERO().forEach(h -> {
-                    if (urnMap.containsKey(h.getUrn())) {
-                        TopoUrn topoUrn = urnMap.get(h.getUrn());
-                        if (topoUrn.getUrnType().equals(UrnType.PORT)) {
-                            Port port = topoUrn.getPort();
-
-                            if (port.getIfce() != null && !port.getIfce().equals("")) {
-                                ero.add(port.getDevice().getUrn() + ":" + port.getIfce());
-                            } else {
-                                ero.add(h.getUrn());
-                            }
-
-                        } else {
-                            ero.add(h.getUrn());
-
-                        }
-
-                    } else {
-                        ero.add(h.getUrn());
-                    }
-                });
-
-            } else {
-                p.getAzERO().forEach(h -> {
-                    ero.add(h.getUrn());
-                });
-
-            }
+            p.getAzERO().forEach(h -> {
+                ero.add(h.getUrn());
+            });
             pipes.add(Pipe.builder()
                     .azMbps(p.getAzBandwidth())
                     .zaMbps(p.getZaBandwidth())

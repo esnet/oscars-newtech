@@ -118,12 +118,10 @@ public class NmlController {
             throw new StartupException("NSI files not loaded");
         }
 
-
-        Optional<Version> maybeVersion = topoService.currentVersion();
-        if (!maybeVersion.isPresent()) {
+        if (topoService.getCurrent() == null) {
             throw new InternalError("no valid topology version");
         }
-        Version v = maybeVersion.get();
+        Version v = topoService.getCurrent();
 
         long ifModifiedSince = request.getDateHeader("If-Modified-Since");
         // log.info("ims from browser: "+ifModifiedSince);
@@ -511,11 +509,10 @@ public class NmlController {
                 .ofPattern(pattern)
                 .withZone(ZoneOffset.systemDefault());
 
-        Optional<Version> maybeVersion = topoService.currentVersion();
-        if (!maybeVersion.isPresent()) {
+        if (topoService.getCurrent() == null) {
             throw new InternalError("no valid topology version");
         }
-        Version v = maybeVersion.get();
+        Version v = topoService.getCurrent();
 
         long lastModified = v.getUpdated().getEpochSecond() * 1000; // I-M-S in milliseconds
         long ifModifiedSince = req.getDateHeader("If-Modified-Since");

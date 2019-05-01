@@ -84,10 +84,10 @@ public class MapController {
                 //
                 added.add(edgeId);
                 added.add(reverseEdgeId);
-                String aNodeId = pa.getA().getDevice().getUrn();
-                String zNodeId = pa.getZ().getDevice().getUrn();
+                String aNodeId = pa.getA().getDevice();
+                String zNodeId = pa.getZ().getDevice();
 
-                Integer bandwidthFloor = pa.minimalReservableBandwidth();
+                Integer bandwidthFloor = topoService.minimalReservableBandwidth(pa);
                 String capString = bandwidthFloor + "Mbps";
                 if (bandwidthFloor >= 1000) {
                     double minCapDub = (double) bandwidthFloor / 1000;

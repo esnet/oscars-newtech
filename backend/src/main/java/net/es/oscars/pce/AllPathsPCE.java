@@ -10,7 +10,6 @@ import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.enums.UrnType;
-import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.PcePath;
 import net.es.oscars.web.beans.PceResponse;
@@ -50,46 +49,39 @@ public class AllPathsPCE {
 
 
     private List<GraphPath<TopoUrn, TopoAdjcy>> cachedPaths
-            (TopoUrn src, TopoUrn dst, AllDirectedPaths<TopoUrn, TopoAdjcy> ap, Integer maxLength)
-            throws PCEException {
+            (TopoUrn src, TopoUrn dst, AllDirectedPaths<TopoUrn, TopoAdjcy> ap, Integer maxLength){
         List<GraphPath<TopoUrn, TopoAdjcy>> paths;
 
-        try {
 
-            boolean versionChanged = false;
-            Version current = topoService.currentTopology().getVersion();
-            if (this.cacheTopoVersion == null) {
-                versionChanged = true;
-            } else if (!this.cacheTopoVersion.getId().equals(current.getId())) {
-                versionChanged = true;
-            }
-            Pair<TopoUrn, TopoUrn> srcdst = Pair.of(src, dst);
-            boolean inCache = pathsCache.containsKey(srcdst);
+        boolean versionChanged = false;
+        Version current = topoService.getCurrent();
 
-            boolean mustCalculate = false;
-            if (versionChanged) {
-                mustCalculate = true;
-            } else if (!inCache) {
-                mustCalculate = true;
-            }
-            if (mustCalculate) {
-                Instant ps = Instant.now();
-                paths = ap.getAllPaths(src, dst, true, maxLength);
-                Instant pe = Instant.now();
-                log.info(paths.size()+ " distinct paths found between "+src.getUrn() +
-                        " and "+ dst.getUrn()+ " found in time "+ Duration.between(ps, pe));
-                this.cacheTopoVersion = current;
-                pathsCache.put(srcdst, paths);
-
-            } else {
-                paths = pathsCache.get(srcdst);
-            }
-
-        } catch (ConsistencyException ex) {
-            log.error(ex.getMessage(), ex);
-            throw new PCEException("Consistency exception in topology");
+        if (this.cacheTopoVersion == null) {
+            versionChanged = true;
+        } else if (!this.cacheTopoVersion.getId().equals(current.getId())) {
+            versionChanged = true;
         }
+        Pair<TopoUrn, TopoUrn> srcdst = Pair.of(src, dst);
+        boolean inCache = pathsCache.containsKey(srcdst);
 
+        boolean mustCalculate = false;
+        if (versionChanged) {
+            mustCalculate = true;
+        } else if (!inCache) {
+            mustCalculate = true;
+        }
+        if (mustCalculate) {
+            Instant ps = Instant.now();
+            paths = ap.getAllPaths(src, dst, true, maxLength);
+            Instant pe = Instant.now();
+            log.info(paths.size() + " distinct paths found between " + src.getUrn() +
+                    " and " + dst.getUrn() + " found in time " + Duration.between(ps, pe));
+            this.cacheTopoVersion = current;
+            pathsCache.put(srcdst, paths);
+
+        } else {
+            paths = pathsCache.get(srcdst);
+        }
 
 
         return paths;
@@ -128,17 +120,17 @@ public class AllPathsPCE {
         TopoUrn dst = topoService.getTopoUrnMap().get(requestPipe.getZ().getDeviceUrn());
 
         if (src == null) {
-            throw new PCEException(requestPipe.getA().getDeviceUrn()+" not found in topology");
+            throw new PCEException(requestPipe.getA().getDeviceUrn() + " not found in topology");
         }
         if (!src.getUrnType().equals(UrnType.DEVICE)) {
-            throw new PCEException(requestPipe.getA().getDeviceUrn()+" must point to a DEVICE but is "+src.getUrnType());
+            throw new PCEException(requestPipe.getA().getDeviceUrn() + " must point to a DEVICE but is " + src.getUrnType());
         }
 
         if (dst == null) {
-            throw new PCEException(requestPipe.getZ().getDeviceUrn()+" not found in topology");
+            throw new PCEException(requestPipe.getZ().getDeviceUrn() + " not found in topology");
         }
         if (!dst.getUrnType().equals(UrnType.DEVICE)) {
-            throw new PCEException(requestPipe.getZ().getDeviceUrn()+" must point to a DEVICE but is "+dst.getUrnType());
+            throw new PCEException(requestPipe.getZ().getDeviceUrn() + " must point to a DEVICE but is " + dst.getUrnType());
         }
 
         // first, get the shortest path (by metric)
@@ -158,7 +150,7 @@ public class AllPathsPCE {
 
         // dynamic detour: if it's a long path, use a different detour size
         // this is to reduce response time with very long paths
-        Integer maxLength = shortestPathLength + shortPathDetour;
+        int maxLength = shortestPathLength + shortPathDetour;
 
         if (PceLibrary.diameter == null) {
             // cache graph diameter
@@ -169,9 +161,9 @@ public class AllPathsPCE {
 
         if (lengthRatio > longPathRatio) {
             maxLength = shortestPathLength + longPathDetour;
-            log.info("long path; using long path max-length ("+maxLength+")");
+            log.info("long path; using long path max-length (" + maxLength + ")");
         } else {
-            log.info("short path; using short path max-length ("+maxLength+")");
+            log.info("short path; using short path max-length (" + maxLength + ")");
 
         }
 
@@ -228,7 +220,6 @@ public class AllPathsPCE {
             }
 
 
-
             Collections.reverse(zaEro);
 
             PcePath pcePath = PcePath.builder()
@@ -274,7 +265,7 @@ public class AllPathsPCE {
                 Integer prevSum = widestSum.getAzAvailable() + widestSum.getZaAvailable();
                 Integer newSum = pcePath.getAzAvailable() + pcePath.getZaAvailable();
                 if (prevSum < newSum) {
-                    widestSum  = pcePath;
+                    widestSum = pcePath;
                 } else if (prevSum.equals(newSum)) {
                     widestSum = preferredOf(widestSum, pcePath);
                 }
@@ -282,7 +273,7 @@ public class AllPathsPCE {
 
         }
         Instant ee = Instant.now();
-        log.info("widest paths found in time "+ Duration.between(es, ee));
+        log.info("widest paths found in time " + Duration.between(es, ee));
 
         return PceResponse.builder()
                 .widestAZ(widestAZ)
