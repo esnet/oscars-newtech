@@ -4,15 +4,103 @@ import { toJS, autorun } from "mobx";
 import React, { Component } from "react";
 import { observer, inject } from "mobx-react";
 import { withRouter, Link } from "react-router-dom";
-import BootstrapTable from "react-bootstrap-table-next";
-import paginationFactory from "react-bootstrap-table2-paginator";
-import { Card, CardBody, ListGroupItem, ListGroup } from "reactstrap";
-import filterFactory, { textFilter, selectFilter } from "react-bootstrap-table2-filter";
-
-import "react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css";
+import { ListGroupItem, ListGroup } from "reactstrap";
 
 import transformer from "../lib/transform";
 import myClient from "../agents/client";
+
+import ReactTable from "react-table";
+import "react-table/react-table.css";
+
+@observer
+class HrefIdFormatter extends Component {
+    render() {
+        const href = "/pages/details/" + this.props.row.connectionId;
+        return <Link to={href}>{this.props.row.connectionId}</Link>;
+    }
+}
+
+@observer
+class DescFormatter extends Component {
+    render() {
+        let tagList = null;
+        if ("tags" in this.props.row && size(this.props.row.tags) > 0) {
+            let i = 0;
+            let items = [];
+            let key = this.props.row.connectionId + ":header";
+
+            items.push(
+                <ListGroupItem color="info" className="p-1" key={key}>
+                    <small>Tags</small>
+                </ListGroupItem>
+            );
+
+            for (let tag of this.props.row.tags) {
+                console.log(tag);
+                key = this.props.row.connectionId + ":" + i;
+                let item = (
+                    <ListGroupItem className="p-1" key={key}>
+                        <small>
+                            {tag.category}: {tag.contents}
+                        </small>
+                    </ListGroupItem>
+                );
+                items.push(item);
+                i++;
+            }
+            tagList = <ListGroup className="m-0 p-0">{items}</ListGroup>;
+        }
+
+        return (
+            <div>
+                {this.props.row.description}
+                {tagList}
+            </div>
+        );
+    }
+}
+
+@observer
+class PortsFormatter extends Component {
+    render() {
+        let added = [];
+        let result = this.props.row.fixtures.map(f => {
+            let key = this.props.row.connectionId + ":" + f.portUrn;
+            if (added.includes(key)) {
+                return null;
+            } else {
+                added.push(key);
+                return (
+                    <ListGroupItem className="p-1" key={key}>
+                        <small>{f.portUrn}</small>
+                    </ListGroupItem>
+                );
+            }
+        });
+        return <ListGroup className="m-0 p-0">{result}</ListGroup>;
+    }
+}
+
+@observer
+class VlansFormatter extends Component {
+    render() {
+        let added = [];
+        let result = this.props.row.fixtures.map(f => {
+            let key = this.props.row.connectionId + ":" + f.vlan.vlanId;
+            if (added.includes(key)) {
+                return null;
+            } else {
+                added.push(key);
+                return (
+                    <ListGroupItem className="m-1 p-1" key={key}>
+                        <small>{f.vlan.vlanId}</small>
+                    </ListGroupItem>
+                );
+            }
+        });
+        return <ListGroup className="m-0 p-0">{result}</ListGroup>;
+    }
+}
 
 @inject("controlsStore", "connsStore", "mapStore", "modalStore", "commonStore")
 @observer
@@ -38,14 +126,17 @@ class ConnectionsList extends Component {
         csFilter.criteria.map(c => {
             filter[c] = this.props.connsStore.filter[c];
         });
+
+        // Setting the sizePerPage to -1 returns us the entire connection list
         filter.page = csFilter.page;
-        filter.sizePerPage = csFilter.sizePerPage;
+        filter.sizePerPage = -1;
         filter.phase = csFilter.phase;
 
         myClient.submit("POST", "/api/conn/list", filter).then(
             successResponse => {
                 let result = JSON.parse(successResponse);
                 let conns = result.connections;
+
                 this.props.connsStore.setFilter({
                     totalSize: result.totalSize
                 });
@@ -53,6 +144,7 @@ class ConnectionsList extends Component {
                 conns.map(conn => {
                     transformer.fixSerialization(conn);
                 });
+
                 this.props.connsStore.updateList(conns);
             },
             failResponse => {
@@ -68,160 +160,173 @@ class ConnectionsList extends Component {
         );
     };
 
-    hrefIdFormatter = (cell, row) => {
-        const href = "/pages/details/" + row.connectionId;
-        return <Link to={href}>{row.connectionId}</Link>;
-    };
-
-    portsFormatter = (cell, row) => {
-        let added = [];
-        let result = row.fixtures.map(f => {
-            let key = row.connectionId + ":" + f.portUrn;
-            if (added.includes(key)) {
-                return null;
-            } else {
-                added.push(key);
-                return (
-                    <ListGroupItem className="p-1" key={key}>
-                        <small>{f.portUrn}</small>
-                    </ListGroupItem>
-                );
-            }
-        });
-        return <ListGroup className="m-0 p-0">{result}</ListGroup>;
-    };
-
-    descFormatter = (cell, row) => {
-        let tagList = null;
-
-        if ("tags" in row && size(row.tags) > 0) {
-            let i = 0;
-            let items = [];
-
-            let key = row.connectionId + ":header";
-            items.push(
-                <ListGroupItem color="info" className="p-1" key={key}>
-                    <small>Tags</small>
-                </ListGroupItem>
-            );
-
-            for (let tag of row.tags) {
-                console.log(tag);
-                key = row.connectionId + ":" + i;
-                let item = (
-                    <ListGroupItem className="p-1" key={key}>
-                        <small>
-                            {tag.category}: {tag.contents}
-                        </small>
-                    </ListGroupItem>
-                );
-
-                items.push(item);
-
-                i++;
-            }
-            tagList = <ListGroup className="m-0 p-0">{items}</ListGroup>;
-        }
-
-        return (
-            <div>
-                {row.description}
-                {tagList}
-            </div>
-        );
-    };
-
-    vlansFormatter = (cell, row) => {
-        let added = [];
-        let result = row.fixtures.map(f => {
-            let key = row.connectionId + ":" + f.vlan.vlanId;
-            if (added.includes(key)) {
-                return null;
-            } else {
-                added.push(key);
-                return (
-                    <ListGroupItem className="m-1 p-1" key={key}>
-                        <small>{f.vlan.vlanId}</small>
-                    </ListGroupItem>
-                );
-            }
-        });
-        return <ListGroup className="m-0 p-0">{result}</ListGroup>;
-    };
-
-    onTableChange = (type, newState) => {
-        const cs = this.props.connsStore;
-        if (type === "pagination") {
-            cs.setFilter({
-                page: newState.page,
-                sizePerPage: newState.sizePerPage
-            });
-        }
-        if (type === "filter") {
-            cs.setFilter({
-                page: 1,
-                phase: newState.filters.phase.filterVal
-            });
-            const fields = ["username", "connectionId", "vlans", "ports", "description"];
-            let params = {
-                criteria: []
-            };
-            for (let field of fields) {
-                if (newState.filters[field] !== undefined) {
-                    if (field === "vlans" || field === "ports") {
-                        params[field] = [newState.filters[field].filterVal];
-                    } else {
-                        params[field] = newState.filters[field].filterVal;
-                    }
-                    params.criteria.push(field);
-                }
-            }
-            cs.setFilter(params);
-        }
-        this.updateList();
-    };
-
-    phaseOptions = {
-        RESERVED: "Reserved",
-        ARCHIVED: "Archived",
-        ANY: "Any"
-    };
-
     columns = [
         {
-            text: "Connection ID",
-            dataField: "connectionId",
-            filter: textFilter({ delay: 100 }),
-            formatter: this.hrefIdFormatter
+            accessor: "connectionId",
+            Header: props => (
+                <div>
+                    <br />
+                    <b>Connection ID</b>
+                    <br />
+                    <br />
+                </div>
+            ),
+            Cell: d => <HrefIdFormatter {...d} />,
+            filterMethod: (filter, row) => {
+                let upperCaseId = row[filter.id].toUpperCase();
+                let upperCaseValue = filter.value.toUpperCase();
+                return upperCaseId.includes(upperCaseValue);
+            },
+            Filter: ({ filter, onChange }) => (
+                <input
+                    type="text"
+                    placeholder="Enter Connection ID"
+                    value={filter ? filter.value : ""}
+                    onChange={event => onChange(event.target.value)}
+                    style={{ fontStyle: "italic", width: "100%" }}
+                />
+            )
         },
         {
-            dataField: "description",
-            text: "Description & tags",
-            filter: textFilter({ delay: 100 }),
-            formatter: this.descFormatter
+            accessor: "description",
+            Header: props => (
+                <div>
+                    <br />
+                    <b>Description and Tags</b>
+                    <br />
+                </div>
+            ),
+            Cell: d => <DescFormatter {...d} />,
+            filterMethod: (filter, row) => {
+                let upperCaseDesc = row[filter.id].toUpperCase();
+                let upperCaseValue = filter.value.toUpperCase();
+                return upperCaseDesc.includes(upperCaseValue);
+            },
+            Filter: ({ filter, onChange }) => (
+                <input
+                    type="text"
+                    placeholder="Enter Description"
+                    value={filter ? filter.value : ""}
+                    onChange={event => onChange(event.target.value)}
+                    style={{ fontStyle: "italic", width: "100%" }}
+                />
+            )
         },
         {
-            dataField: "phase",
-            text: "Phase",
-            filter: selectFilter({ options: this.phaseOptions, defaultValue: "RESERVED" })
+            accessor: "phase",
+            Header: props => (
+                <div>
+                    <br />
+                    <b>Phase</b>
+                    <br />
+                </div>
+            ),
+            filterMethod: (filter, row) => {
+                if (filter.value === "any") {
+                    return true;
+                }
+                if (filter.value === "reserved") {
+                    return row[filter.id] === "RESERVED";
+                }
+                return row[filter.id] === "ARCHIVED";
+            },
+            Filter: ({ filter, onChange }) => (
+                <select
+                    onChange={event => onChange(event.target.value)}
+                    style={{ width: "100%" }}
+                    value={filter ? filter.value : "reserved"}
+                >
+                    <option value="any">Any</option>
+                    <option value="reserved">Reserved</option>
+                    <option value="archived">Archived</option>
+                </select>
+            )
         },
-
         {
-            dataField: "username",
-            text: "User",
-            filter: textFilter({ delay: 100 })
+            accessor: "username",
+            Header: props => (
+                <div>
+                    <br />
+                    <b>User</b>
+                    <br />
+                </div>
+            ),
+            filterMethod: (filter, row) => {
+                let upperCaseUser = row[filter.id].toUpperCase();
+                let upperCaseValue = filter.value.toUpperCase();
+                return upperCaseUser.includes(upperCaseValue);
+            },
+            Filter: ({ filter, onChange }) => (
+                <input
+                    type="text"
+                    placeholder="Enter User"
+                    value={filter ? filter.value : ""}
+                    onChange={event => onChange(event.target.value)}
+                    style={{ fontStyle: "italic", width: "100%" }}
+                />
+            )
         },
         {
-            dataField: "ports",
-            text: "Ports",
-            formatter: this.portsFormatter,
-            filter: textFilter({ delay: 100 })
+            id: "ports",
+            Header: props => (
+                <div>
+                    <br />
+                    <b>Ports</b>
+                    <br />
+                </div>
+            ),
+            Cell: props => <PortsFormatter {...props} />,
+            filterMethod: (filter, row) => {
+                let filtered = false;
+                row.fixtures.map(f => {
+                    let vlanId = String(f.portUrn).toLocaleUpperCase();
+                    let value = String(filter.value).toLocaleUpperCase();
+                    if (vlanId.includes(value)) {
+                        filtered = true;
+                    }
+                });
+                return filtered;
+            },
+            Filter: ({ filter, onChange }) => (
+                <input
+                    type="text"
+                    placeholder="Enter Ports"
+                    value={filter ? filter.value : ""}
+                    onChange={event => onChange(event.target.value)}
+                    style={{ fontStyle: "italic", width: "100%" }}
+                />
+            )
         },
         {
-            dataField: "vlans",
-            text: "VLANs",
-            formatter: this.vlansFormatter,
-            filter: textFilter({ delay: 100 })
+            accessor: "fixtures",
+            Header: props => (
+                <div>
+                    <br />
+                    <b>VLANs</b>
+                    <br />
+                </div>
+            ),
+            Cell: d => <VlansFormatter {...d} />,
+            filterMethod: (filter, row) => {
+                let filtered = false;
+                row.fixtures.map(f => {
+                    let vlanId = String(f.vlan.vlanId);
+                    let value = String(filter.value);
+                    if (vlanId.includes(value)) {
+                        filtered = true;
+                    }
+                });
+                return filtered;
+            },
+            Filter: ({ filter, onChange }) => (
+                <input
+                    type="text"
+                    placeholder="Enter VLANs"
+                    value={filter ? filter.value : ""}
+                    onChange={event => onChange(event.target.value)}
+                    style={{ fontStyle: "italic", width: "100%" }}
+                />
+            )
         }
     ];
 
@@ -261,31 +366,15 @@ class ConnectionsList extends Component {
             rows.push(row);
         });
 
-        let remote = {
-            filter: true,
-            pagination: true,
-            sort: false,
-            cellEdit: false
-        };
-
         return (
-            <Card>
-                <CardBody>
-                    <BootstrapTable
-                        keyField="connectionId"
-                        data={rows}
-                        columns={this.columns}
-                        remote={remote}
-                        onTableChange={this.onTableChange}
-                        pagination={paginationFactory({
-                            sizePerPage: cs.filter.sizePerPage,
-                            page: cs.filter.page,
-                            totalSize: cs.filter.totalSize
-                        })}
-                        filter={filterFactory()}
-                    />
-                </CardBody>
-            </Card>
+            <ReactTable
+                data={rows}
+                columns={this.columns}
+                filterable
+                minRows={3}
+                defaultPageSize={5}
+                className="-striped -highlight"
+            />
         );
     }
 }
