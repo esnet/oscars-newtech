@@ -5,6 +5,6 @@
 .vscode/
 **/target
 **/node_modules
-**/logs/*.log
-**/*.log
+**/*logs*/
+backend/*.log*
 backend/src/main/resources

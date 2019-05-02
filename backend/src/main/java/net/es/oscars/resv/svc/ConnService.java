@@ -1182,9 +1182,19 @@ public class ConnService {
     }
 
     public SimpleConnection fromConnection(Connection c, Boolean return_svc_ids) {
+        Schedule s;
+        Components cmp;
 
-        Long b = c.getArchived().getSchedule().getBeginning().getEpochSecond();
-        Long e = c.getArchived().getSchedule().getEnding().getEpochSecond();
+        if (c.getPhase().equals(Phase.HELD)) {
+            s = c.getHeld().getSchedule();
+            cmp = c.getHeld().getCmp();
+        } else {
+            s = c.getArchived().getSchedule();
+            cmp = c.getArchived().getCmp();
+        }
+
+        Long b = s.getBeginning().getEpochSecond();
+        Long e = s.getEnding().getEpochSecond();
         List<SimpleTag> simpleTags = new ArrayList<>();
         for (Tag t : c.getTags()) {
             simpleTags.add(SimpleTag.builder()
@@ -1195,7 +1205,6 @@ public class ConnService {
         List<Fixture> fixtures = new ArrayList<>();
         List<Junction> junctions = new ArrayList<>();
         List<Pipe> pipes = new ArrayList<>();
-        Components cmp = c.getArchived().getCmp();
 
         cmp.getFixtures().forEach(f -> {
             Fixture simpleF = Fixture.builder()
