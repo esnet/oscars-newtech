@@ -32,11 +32,14 @@ const format = "Y/MM/DD HH:mm:ss";
 class ScheduleControls extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            parser: null
+        };
     }
 
     componentWillMount() {
         let startAt = new Date();
-        startAt.setTime(startAt.getTime() + 15 * 60 * 1000);
+        startAt.setTime(startAt.getTime());
 
         let endAt = new Date();
         endAt.setDate(endAt.getDate() + 365);
@@ -48,9 +51,9 @@ class ScheduleControls extends Component {
                 locked: true,
                 start: {
                     at: startAt,
-                    choice: "in 15 minutes",
+                    choice: "ASAP",
                     parsed: true,
-                    readable: Moment(startAt).format(format),
+                    readable: "",
                     validationState: "success",
                     validationText: ""
                 },
@@ -64,6 +67,8 @@ class ScheduleControls extends Component {
                 }
             }
         };
+
+        this.setState({ parser: this.createCustomParser() });
         this.props.controlsStore.setParamsForConnection(params);
         this.periodicCheck();
     }
@@ -71,9 +76,7 @@ class ScheduleControls extends Component {
     periodicCheck() {
         let conn = this.props.controlsStore.connection;
 
-        /*
-        if the schedule input is not acceptable after it's been changed etc, unlock all resources
-         */
+        // if the schedule input is not acceptable after it's been changed etc, unlock all resources
         if (!conn.schedule.acceptable) {
             this.props.designStore.unlockAll();
             return;
@@ -81,9 +84,13 @@ class ScheduleControls extends Component {
 
         /*
         now check if we're past the start time
-         */
+        it's ok to be past the start time if we are in ASAP mode
+        */
 
-        if (conn.schedule.start.at < new Date()) {
+        if (
+            conn.schedule.start.at < new Date() &&
+            conn.schedule.start.choice.toUpperCase() !== "ASAP"
+        ) {
             this.props.controlsStore.setParamsForConnection({
                 schedule: {
                     locked: false,
@@ -109,11 +116,46 @@ class ScheduleControls extends Component {
         this.props.controlsStore.setParamsForConnection({ schedule: { locked: false } });
     }
 
+    createCustomParser = e => {
+        let asapParser = new chrono.Parser();
+
+        // Provide search pattern
+        asapParser.pattern = function() {
+            return /\basap\b/i;
+        };
+
+        // This function will be called when matched pattern is found
+        asapParser.extract = function(text, ref, match, opt) {
+            if (text.toUpperCase() === "ASAP") {
+                let date = new Date();
+                return new chrono.ParsedResult({
+                    ref: ref,
+                    text: match[0],
+                    index: match.index,
+                    start: {
+                        day: date.getDate(),
+                        month: date.getMonth(),
+                        year: date.getFullYear(),
+                        hours: date.getHours(),
+                        minutes: date.getMinutes(),
+                        seconds: date.getSeconds()
+                    }
+                });
+            }
+        };
+
+        // Create a new custom Chrono
+        let custom = new chrono.Chrono();
+        custom.parsers.push(asapParser);
+
+        return custom;
+    };
+
     onStartDateChange = e => {
         let expr = e.target.value;
         let conn = this.props.controlsStore.connection;
+        let parsed = this.state.parser.parseDate(expr);
 
-        let parsed = chrono.parseDate(expr);
         let params = {
             schedule: {
                 start: {
@@ -133,7 +175,7 @@ class ScheduleControls extends Component {
             params.schedule.start.choice = expr;
             params.schedule.start.parsed = true;
             params.schedule.end.choice = toJS(conn.schedule.end.choice);
-            this.validateStartEnd(params);
+            this.validateStartEnd(params, this.state.parser);
         } else {
             params.schedule.start.validationText = "Invalid date";
             params.schedule.acceptable = false;
@@ -174,7 +216,6 @@ class ScheduleControls extends Component {
     };
 
     validateStartEnd(params) {
-        //        console.log(toJS(params));
         if (!params.schedule.start.parsed || !params.schedule.end.parsed) {
             return;
         }
@@ -182,19 +223,27 @@ class ScheduleControls extends Component {
         params.schedule.start.validationState = "success";
         params.schedule.end.validationState = "success";
 
-        let startAt = chrono.parseDate(params.schedule.start.choice);
-        let endAt = chrono.parseDate(params.schedule.end.choice);
+        let startChoice = params.schedule.start.choice;
+
+        let startAt = this.state.parser.parseDate(startChoice);
+        let endAt = this.state.parser.parseDate(params.schedule.end.choice);
 
         let startError = false;
         let endError = false;
         let startAtReadable = Moment(startAt).format(format);
+
+        if (startChoice.toUpperCase() === "ASAP") {
+            startAtReadable = "";
+        }
+
         let endAtReadable = Moment(endAt).format(format);
 
-        if (startAt < new Date()) {
+        if (startAt < new Date() && startChoice.toUpperCase() !== "ASAP") {
             params.schedule.start.validationState = "error";
             params.schedule.start.validationText = "Start time is before now.";
             startError = true;
         }
+
         if (endAt < new Date()) {
             params.schedule.end.validationState = "error";
             params.schedule.end.validationText = "End time is before now.";
@@ -209,17 +258,18 @@ class ScheduleControls extends Component {
             startError = true;
             endError = true;
         }
+
         if (!startError) {
             params.schedule.start.readable = startAtReadable;
             params.schedule.start.at = startAt;
         }
+
         if (!endError) {
             params.schedule.end.readable = endAtReadable;
             params.schedule.end.at = endAt;
         }
 
         params.schedule.acceptable = !(startError || endError);
-        //        console.log(toJS(params));
     }
 
     lockSchedule = () => {
@@ -282,12 +332,19 @@ class ScheduleControls extends Component {
                     Then, click "Lock schedule", so that the system can then calculate resource
                     availability.
                 </p>
-                <p>
-                    Relative time expressions such as "in 10 minutes" are accepted, but they are
-                    only evaluated when you type them in. The resulting times will not change as
-                    time passes.
-                </p>
                 <p>Unlocking the schedule will also unlock all other resources.</p>
+                <p>
+                    The (default) start time of "ASAP" is a special expression and means that the
+                    reservation should start as soon as the <u>Commit</u> button is pressed. The
+                    reservation start time will be about 30 seconds after the <u>Commit</u> action.
+                </p>
+                <p>
+                    Other time expressions such as "in 10 minutes" are accepted for convenience's
+                    sake, but they are only evaluated when you <b>type them in</b>. The resulting
+                    reservation interval will <b>not</b> change as time passes. It is recommended to
+                    use such expressions only when precision is <b>not</b> important, i.e. "in three
+                    months". When precision is needed please use specific dates and times instead.
+                </p>
             </span>
         );
 
@@ -335,7 +392,7 @@ class ScheduleControls extends Component {
                                 type="text"
                                 valid={sched.start.validationState === "success"}
                                 invalid={sched.start.validationState === "error"}
-                                defaultValue="in 15 minutes"
+                                defaultValue="ASAP"
                                 disabled={sched.locked}
                                 onChange={this.onStartDateChange}
                             />

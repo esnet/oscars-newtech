@@ -215,6 +215,11 @@ class HoldTimer extends Component {
 
             let cmp = Transformer.toBackend(this.props.designStore.design);
 
+            let beginms = conn.schedule.start.at.getTime() / 1000;
+            if (conn.schedule.start.choice.toUpperCase() === "ASAP") {
+                beginms = new Date().getTime() / 1000;
+            }
+
             // TODO: handle tags
             let connection = {
                 connectionId: conn.connectionId,
@@ -224,7 +229,7 @@ class HoldTimer extends Component {
                 username: "",
                 phase: "HELD",
                 state: "WAITING",
-                begin: conn.schedule.start.at.getTime() / 1000,
+                begin: beginms,
                 end: conn.schedule.end.at.getTime() / 1000,
                 tags: [],
                 pipes: cmp.pipes,
