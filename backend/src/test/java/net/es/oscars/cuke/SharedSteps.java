@@ -134,6 +134,9 @@ public class SharedSteps {
 
     @Then("^I did not receive an exception$")
     public void i_did_not_receive_an_exception() throws Throwable {
+        for (Exception ex: this.world.getExceptions()) {
+            log.error(ex.getMessage(), ex);
+        }
         assertThat(this.world.getExceptions().isEmpty(), is(true));
     }
 

@@ -1,28 +1,28 @@
 [
   {
     "a": {
-      "port": "A:1",
-      "ifce": "A:to_B"
+      "device": "A",
+      "port": "A:3"
     },
     "metrics": {
       "ETHERNET": 1
     },
     "z": {
-      "port": "B:2",
-      "ifce": "B:to_A"
+      "device": "B",
+      "port": "B:3"
     }
   },
   {
     "z": {
-      "port": "A:1",
-      "ifce": "A:to_B"
+      "device": "A",
+      "port": "A:3"
     },
     "metrics": {
       "ETHERNET": 1
     },
     "a": {
-      "port": "B:2",
-      "ifce": "B:to_A"
+      "device": "B",
+      "port": "B:3"
     }
   }
 

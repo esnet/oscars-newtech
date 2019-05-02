@@ -234,7 +234,7 @@ public class TopoService {
             boolean shouldAdd = true;
 
             List<String> portUrnsToVerify = new ArrayList<>();
-            portUrnsToVerify.add(dbAdjcy.getZ().getPortUrn());
+            portUrnsToVerify.add(dbAdjcy.getA().getPortUrn());
             portUrnsToVerify.add(dbAdjcy.getZ().getPortUrn());
 
             for (String portUrn : portUrnsToVerify) {
@@ -242,16 +242,11 @@ public class TopoService {
                     log.error("port not in topology: " + dbAdjcy.getUrn());
                     shouldAdd = false;
                 } else {
-                    TopoUrn a = this.topoUrnMap.get(portUrn);
-                    if (!a.getUrnType().equals(UrnType.PORT)) {
+                    TopoUrn topoUrn = this.topoUrnMap.get(portUrn);
+                    if (!topoUrn.getUrnType().equals(UrnType.PORT)) {
                         log.error("wrong port URN type: " + dbAdjcy.getUrn());
                         shouldAdd = false;
                     }
-                }
-            }
-            for (Adjcy alreadyPresent : filtered) {
-                if (dbAdjcy.equivalent(alreadyPresent)) {
-                    shouldAdd = false;
                 }
             }
             if (shouldAdd) {
@@ -260,10 +255,9 @@ public class TopoService {
 
         }
 
-
         for (Adjcy dbAdjcy : filtered) {
-            TopoUrn aUrn = this.topoUrnMap.get(dbAdjcy.getA().getUrn());
-            TopoUrn zUrn = this.topoUrnMap.get(dbAdjcy.getZ().getUrn());
+            TopoUrn aUrn = this.topoUrnMap.get(dbAdjcy.getA().getPortUrn());
+            TopoUrn zUrn = this.topoUrnMap.get(dbAdjcy.getZ().getPortUrn());
             Map<Layer, Long> metrics = new HashMap<>();
 
             dbAdjcy.getMetrics().entrySet().forEach(e -> {

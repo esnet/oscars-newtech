@@ -73,7 +73,6 @@ public class TopoPopulator {
         return latest;
     }
 
-    @Transactional
     public Topology loadFromDefaultFiles() throws ConsistencyException, IOException {
         log.info("loading topology DB from files");
         if (topoProperties == null) {
@@ -82,13 +81,12 @@ public class TopoPopulator {
         String devicesFilename = "./config/topo/" + topoProperties.getPrefix() + "-devices.json";
         String adjciesFilename = "./config/topo/" + topoProperties.getPrefix() + "-adjcies.json";
 
-
         Topology current = topoService.currentTopology();
         log.debug("Existing topology: dev: " + current.getDevices().size() + " adj: " + current.getAdjcies().size());
-        Topology incoming = this.loadTopology(devicesFilename, adjciesFilename);
-        return incoming;
+        return this.loadTopology(devicesFilename, adjciesFilename);
     }
 
+    @Transactional
     public void replaceDbTopology(Topology incoming) {
         deviceRepo.deleteAll();
         portRepo.deleteAll();
@@ -156,6 +154,7 @@ public class TopoPopulator {
                 log.error("  " + zPortUrn + " not in topology");
                 add = false;
             }
+
             if (add) {
                 filtered.add(t);
 

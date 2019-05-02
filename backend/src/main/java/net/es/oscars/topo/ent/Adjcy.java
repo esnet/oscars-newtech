@@ -5,9 +5,7 @@ import net.es.oscars.topo.enums.Layer;
 
 import javax.persistence.*;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 
 @Data
@@ -20,10 +18,10 @@ public class Adjcy {
     @GeneratedValue
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Point a;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Point z;
 
     @Override
@@ -46,6 +44,7 @@ public class Adjcy {
         return id != null && id.equals(other.getId());
     }
 
+
     /**
      *
      * @param other
@@ -55,10 +54,12 @@ public class Adjcy {
         if (this.equals(other)) {
             return true;
         }
-        boolean aisa = this.a.equals(other.getA());
-        boolean aisz = this.a.equals(other.getZ());
-        boolean zisa = this.z.equals(other.getA());
-        boolean zisz = this.z.equals(other.getZ());
+        boolean aisa = this.a.same(other.getA());
+        boolean aisz = this.a.same(other.getZ());
+
+        boolean zisa = this.z.same(other.getA());
+        boolean zisz = this.z.same(other.getZ());
+
         boolean mightBeEquivalent = false;
 
         if (aisa && zisz) {

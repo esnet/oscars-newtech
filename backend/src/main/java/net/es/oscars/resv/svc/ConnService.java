@@ -125,9 +125,7 @@ public class ConnService {
         int totalNumber = 3;
         IntStream stream = random.ints(totalNumber, 0, max);
 
-        stream.forEach(i -> {
-            b.append(SAFE_ALPHABET[i]);
-        });
+        stream.forEach(i -> b.append(SAFE_ALPHABET[i]));
         return b.toString();
 
     }
@@ -358,7 +356,7 @@ public class ConnService {
 
         Validity v = this.validateCommit(c);
         if (!v.isValid()) {
-            throw new ConnException("Invalid connection for commit; errors follow: \n"+v.getMessage());
+            throw new ConnException("Invalid connection for commit; errors follow: \n" + v.getMessage());
         }
 
         ReentrantLock connLock = dbAccess.getConnLock();
@@ -644,7 +642,6 @@ public class ConnService {
         List<EroHop> res = new ArrayList<>();
         for (EroHop h : ero) {
             EroHop hc = EroHop.builder()
-                    .type(h.getType())
                     .urn(h.getUrn())
                     .build();
             res.add(hc);
@@ -687,26 +684,26 @@ public class ConnService {
 
         Validity v = this.validateHold(this.fromConnection(in, false));
 
-        String error = v.getMessage();
+        StringBuilder error = new StringBuilder(v.getMessage());
         boolean valid = v.isValid();
 
 
         List<VlanFixture> fixtures = in.getHeld().getCmp().getFixtures();
         if (fixtures == null) {
             valid = false;
-            error += "Missing fixtures array";
+            error.append("Missing fixtures array");
         } else if (fixtures.size() < 2) {
             valid = false;
-            error += "Fixtures size is " + fixtures.size() + " ; minimum is 2";
+            error.append("Fixtures size is ").append(fixtures.size()).append(" ; minimum is 2");
         }
 
         List<VlanJunction> junctions = in.getHeld().getCmp().getJunctions();
         if (junctions == null) {
             valid = false;
-            error += "Missing junctions array";
+            error.append("Missing junctions array");
         } else if (junctions.size() < 1) {
             valid = false;
-            error += "Junctions size is " + junctions.size() + " ; minimum is 1";
+            error.append("Junctions size is ").append(junctions.size()).append(" ; minimum is 1");
         }
 
         if (valid) {
@@ -722,12 +719,12 @@ public class ConnService {
                 boolean pipeValid = true;
                 if (!graph.containsVertex(pipe.getA().getDeviceUrn())) {
                     pipeValid = false;
-                    error += "invalid pipe A entry: " + pipe.getA().getDeviceUrn() + "\n";
+                    error.append("invalid pipe A entry: ").append(pipe.getA().getDeviceUrn()).append("\n");
                 }
                 if (!graph.containsVertex(pipe.getZ().getDeviceUrn())) {
                     pipeValid = false;
                     graphValid = false;
-                    error += "invalid pipe Z entry: " + pipe.getZ().getDeviceUrn() + "\n";
+                    error.append("invalid pipe Z entry: ").append(pipe.getZ().getDeviceUrn()).append("\n");
                 }
                 if (pipeValid) {
                     graph.addEdge(pipe.getA().getDeviceUrn(), pipe.getZ().getDeviceUrn());
@@ -737,7 +734,7 @@ public class ConnService {
             for (VlanFixture f : fixtures) {
                 if (!graph.containsVertex(f.getJunction().getDeviceUrn())) {
                     graphValid = false;
-                    error += "invalid fixture junction entry: " + f.getJunction().getDeviceUrn() + "\n";
+                    error.append("invalid fixture junction entry: ").append(f.getJunction().getDeviceUrn()).append("\n");
                 } else {
                     graph.addVertex(f.getPortUrn());
                     graph.addEdge(f.getJunction().getDeviceUrn(), f.getPortUrn());
@@ -746,13 +743,13 @@ public class ConnService {
 
             ConnectivityInspector<String, DefaultEdge> inspector = new ConnectivityInspector<>(graph);
             if (!inspector.isConnected()) {
-                error += "fixture / junction / pipe graph is unconnected\n";
+                error.append("fixture / junction / pipe graph is unconnected\n");
                 graphValid = false;
             }
             valid = graphValid;
         }
 
-        v.setMessage(error);
+        v.setMessage(error.toString());
         v.setValid(valid);
 
         return v;
@@ -763,7 +760,7 @@ public class ConnService {
     public Validity validateHold(SimpleConnection in)
             throws ConnException {
 
-        String error = "";
+        StringBuilder error = new StringBuilder();
         boolean valid = true;
         boolean validInterval = true;
         if (in == null) {
@@ -774,18 +771,18 @@ public class ConnService {
 
         String connectionId = in.getConnectionId();
         if (connectionId == null) {
-            error += "null connection id\n";
+            error.append("null connection id\n");
             valid = false;
         } else {
             if (!connectionId.matches("^[a-zA-Z][a-zA-Z0-9_\\-]+$")) {
-                error += "connection id invalid format \n";
+                error.append("connection id invalid format \n");
                 valid = false;
             }
             if (connectionId.length() > 12) {
-                error += "connection id too long\n";
+                error.append("connection id too long\n");
                 valid = false;
             } else if (connectionId.length() < 4) {
-                error += "connection id too short\n";
+                error.append("connection id too short\n");
                 valid = false;
 
             }
@@ -793,7 +790,7 @@ public class ConnService {
 
         if (in.getConnection_mtu() != null) {
             if (in.getConnection_mtu() < minMtu || in.getConnection_mtu() > maxMtu) {
-                error += "MTU must be between " + minMtu + " and " + maxMtu + " (inclusive)";
+                error.append("MTU must be between ").append(minMtu).append(" and ").append(maxMtu).append(" (inclusive)");
                 valid = false;
             }
         } else {
@@ -801,7 +798,7 @@ public class ConnService {
         }
 
         if (in.getBegin() == null) {
-            error += "null begin field\n";
+            error.append("null begin field\n");
             valid = false;
             validInterval = false;
         } else {
@@ -813,18 +810,18 @@ public class ConnService {
         }
 
         if (in.getEnd() == null) {
-            error += "null end field\n";
+            error.append("null end field\n");
             valid = false;
             validInterval = false;
         } else {
             end = Instant.ofEpochSecond(in.getEnd());
             if (!end.isAfter(Instant.now())) {
-                error += "end date not past now()\n";
+                error.append("end date not past now()\n");
                 valid = false;
                 validInterval = false;
             }
             if (!end.isAfter(begin)) {
-                error += "end date not past begin()\n";
+                error.append("end date not past begin()\n");
                 valid = false;
                 validInterval = false;
             }
@@ -834,12 +831,12 @@ public class ConnService {
             end = Instant.ofEpochSecond(in.getEnd());
             if (begin.plus(Duration.ofMinutes(this.minDuration)).isAfter(end)) {
                 valid = false;
-                error += "interval is too short (less than " + minDuration + " min)";
+                error.append("interval is too short (less than ").append(minDuration).append(" min)");
             }
 
         }
         if (in.getDescription() == null) {
-            error += "null description\n";
+            error.append("null description\n");
             valid = false;
         }
 
@@ -886,7 +883,7 @@ public class ConnService {
                     vlans = inVlanMap.get(f.getPort());
                 }
                 if (vlans.contains(f.getVlan())) {
-                    error += "duplicate VLAN for " + f.getPort();
+                    error.append("duplicate VLAN for ").append(f.getPort());
                     valid = false;
                 } else {
                     vlans.add(f.getVlan());
@@ -909,7 +906,6 @@ public class ConnService {
                     Integer ing = zaMbps;
                     boolean notDevice = false;
                     if (i % 3 == 1) {
-                        egr = azMbps;
                         notDevice = true;
                     } else if (i % 3 == 2) {
                         ing = azMbps;
@@ -957,7 +953,7 @@ public class ConnService {
                         }
                     }
                     if (!atLeastOneContains) {
-                        error += "vlan not available: " + f.getJunction() + ":" + f.getPort() + "." + f.getVlan() + "\n";
+                        error.append("vlan not available: ").append(f.getJunction()).append(":").append(f.getPort()).append(".").append(f.getVlan()).append("\n");
                         valid = false;
                     }
                 }
@@ -967,26 +963,24 @@ public class ConnService {
                 PortBwVlan avail = availBwVlanMap.get(urn);
                 ImmutablePair<Integer, Integer> inBw = inBwMap.get(urn);
                 if (avail.getIngressBandwidth() < inBw.getLeft()) {
-                    error += "total port ingress bw exceeds available: " + urn
-                            + " " + inBw.getLeft() + "(req) / " + avail.getIngressBandwidth() + " (avail)\n";
+                    error.append("total port ingress bw exceeds available: ").append(urn).append(" ").append(inBw.getLeft()).append("(req) / ").append(avail.getIngressBandwidth()).append(" (avail)\n");
                     valid = false;
 
                 }
                 if (avail.getEgressBandwidth() < inBw.getRight()) {
-                    error += "total port egress bw exceeds available: " + urn
-                            + " " + inBw.getRight() + "(req) / " + avail.getEgressBandwidth() + " (avail)\n";
+                    error.append("total port egress bw exceeds available: ").append(urn).append(" ").append(inBw.getRight()).append("(req) / ").append(avail.getEgressBandwidth()).append(" (avail)\n");
                     valid = false;
                 }
             }
 
 
         } else {
-            error += "invalid interval, VLANs and bandwidths not checked\n";
+            error.append("invalid interval, VLANs and bandwidths not checked\n");
             valid = false;
         }
 
         Validity v = Validity.builder()
-                .message(error)
+                .message(error.toString())
                 .valid(valid)
                 .build();
 
@@ -1022,12 +1016,10 @@ public class ConnService {
                 c.setTags(new ArrayList<>());
             }
             c.getTags().clear();
-            in.getTags().forEach(t -> {
-                c.getTags().add(Tag.builder()
-                        .category(t.getCategory())
-                        .contents(t.getContents())
-                        .build());
-            });
+            in.getTags().forEach(t -> c.getTags().add(Tag.builder()
+                    .category(t.getCategory())
+                    .contents(t.getContents())
+                    .build()));
         }
         Schedule s = Schedule.builder()
                 .connectionId(in.getConnectionId())
@@ -1231,16 +1223,12 @@ public class ConnService {
 
             fixtures.add(simpleF);
         });
-        cmp.getJunctions().forEach(j -> {
-            junctions.add(Junction.builder()
-                    .device(j.getDeviceUrn())
-                    .build());
-        });
+        cmp.getJunctions().forEach(j -> junctions.add(Junction.builder()
+                .device(j.getDeviceUrn())
+                .build()));
         cmp.getPipes().forEach(p -> {
             List<String> ero = new ArrayList<>();
-            p.getAzERO().forEach(h -> {
-                ero.add(h.getUrn());
-            });
+            p.getAzERO().forEach(h -> ero.add(h.getUrn()));
             pipes.add(Pipe.builder()
                     .azMbps(p.getAzBandwidth())
                     .zaMbps(p.getZaBandwidth())

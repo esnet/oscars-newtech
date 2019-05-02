@@ -64,19 +64,8 @@ public class TopologySteps extends CucumberSteps {
         adjcyRepo.flush();
 
         log.info("clearing devices");
-        for (Device d : deviceRepo.findAll()) {
-            HashSet<Port> ports = new HashSet<>(d.getPorts());
-            for (Port p : ports) {
-                log.info("deleting "+p.getUrn());
-                d.getPorts().remove(p);
-                portRepo.delete(p);
-            }
-            deviceRepo.delete(d);
-            log.info("deleting "+d.getUrn());
-        }
-
+        deviceRepo.deleteAll();
         deviceRepo.flush();
-
 
         log.info("clearing ports");
         portRepo.deleteAll();
@@ -99,6 +88,7 @@ public class TopologySteps extends CucumberSteps {
 
     @When("^I merge the new topology$")
     public void i_merge_the_new_topology() throws Throwable {
+        topoService.bumpVersion();
         topoPopulator.replaceDbTopology(this.t);
     }
 

@@ -6212,22 +6212,6 @@
         ]
       },
       {
-        "urn": "newy-cr5:lag-1",
-        "ifces": [],
-        "tags": [],
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableIngressBw": null,
-        "reservableEgressBw": null,
-        "reservableVlans": [
-          {
-            "floor": 2,
-            "ceiling": 4094
-          }
-        ]
-      },
-      {
         "urn": "newy-cr5:lag-10",
         "ifces": [],
         "tags": [
@@ -6330,28 +6314,6 @@
           },
           {
             "floor": 2615,
-            "ceiling": 4094
-          }
-        ]
-      },
-      {
-        "urn": "newy-cr5:9/1/2",
-        "ifces": [],
-        "tags": [
-          "newy-cr5->lhc1-ps:10ge:ip_v4_l3vpn-lhcone:show:intercloud"
-        ],
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableIngressBw": null,
-        "reservableEgressBw": null,
-        "reservableVlans": [
-          {
-            "floor": 2,
-            "ceiling": 3000
-          },
-          {
-            "floor": 3002,
             "ceiling": 4094
           }
         ]
@@ -7089,22 +7051,6 @@
         "reservableVlans": [
           {
             "floor": 4,
-            "ceiling": 4094
-          }
-        ]
-      },
-      {
-        "urn": "pnwg-cr5:lag-2",
-        "ifces": [],
-        "tags": [],
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableIngressBw": null,
-        "reservableEgressBw": null,
-        "reservableVlans": [
-          {
-            "floor": 2,
             "ceiling": 4094
           }
         ]
@@ -8928,28 +8874,6 @@
         ]
       },
       {
-        "urn": "star-cr5:9/1/3",
-        "ifces": [],
-        "tags": [
-          "star-cr5->lhc1-ps:10ge:ip_v4_l3vpn-lhcone:show:intercloud"
-        ],
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableIngressBw": null,
-        "reservableEgressBw": null,
-        "reservableVlans": [
-          {
-            "floor": 2,
-            "ceiling": 3000
-          },
-          {
-            "floor": 3002,
-            "ceiling": 4094
-          }
-        ]
-      },
-      {
         "urn": "star-cr5:9/2/3",
         "ifces": [],
         "tags": [
@@ -10282,28 +10206,6 @@
           },
           {
             "floor": 901,
-            "ceiling": 4094
-          }
-        ]
-      },
-      {
-        "urn": "wash-cr5:10/1/6",
-        "ifces": [],
-        "tags": [
-          "wash-cr5->lhc1-ps:10ge:ip_v4_l3vpn-lhcone:show:intercloud"
-        ],
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableIngressBw": null,
-        "reservableEgressBw": null,
-        "reservableVlans": [
-          {
-            "floor": 2,
-            "ceiling": 3000
-          },
-          {
-            "floor": 3002,
             "ceiling": 4094
           }
         ]
@@ -12015,28 +11917,6 @@
           },
           {
             "floor": 2012,
-            "ceiling": 4094
-          }
-        ]
-      },
-      {
-        "urn": "cern-513-cr5:10/1/4",
-        "ifces": [],
-        "tags": [
-          "cern-513-cr5->lhc1-ps:10ge:ip_v4_l3vpn-lhcone:show:int-intercloud"
-        ],
-        "capabilities": [
-          "ETHERNET"
-        ],
-        "reservableIngressBw": null,
-        "reservableEgressBw": null,
-        "reservableVlans": [
-          {
-            "floor": 2,
-            "ceiling": 3000
-          },
-          {
-            "floor": 3002,
             "ceiling": 4094
           }
         ]

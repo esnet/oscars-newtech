@@ -1,7 +1,8 @@
 [
   {
     "a": {
-      "port": "A:1",
+      "device": "A",
+      "port": "A:2",
       "addr": "10.0.0.1",
       "ifce": "A:to_B"
     },
@@ -9,6 +10,7 @@
       "MPLS": 1
     },
     "z": {
+      "device": "B",
       "port": "B:2",
       "addr": "10.0.0.2",
       "ifce": "B:to_A"
@@ -16,7 +18,8 @@
   },
   {
     "z": {
-      "port": "A:1",
+      "device": "A",
+      "port": "A:2",
       "addr": "10.0.0.1",
       "ifce": "A:to_B"
     },
@@ -24,6 +27,7 @@
       "MPLS": 1
     },
     "a": {
+      "device": "B",
       "port": "B:2",
       "addr": "10.0.0.2",
       "ifce": "B:to_A"
