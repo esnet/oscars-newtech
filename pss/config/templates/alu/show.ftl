@@ -1,5 +1,15 @@
+<#-- @ftlvariable name="vpls" type="net.es.oscars.dto.pss.params.alu.AluVpls" -->
+<#-- @ftlvariable name="sap" type="net.es.oscars.dto.pss.params.alu.AluSap" -->
+<#-- @ftlvariable name="sdps" type="java.util.List" -->
+<#-- @ftlvariable name="sdp" type="net.es.oscars.dto.pss.params.alu.AluSdp" -->
+<#-- @ftlvariable name="lsps" type="java.util.List" -->
+<#-- @ftlvariable name="lsp" type="net.es.oscars.dto.pss.params.Lsp" -->
+<#-- @ftlvariable name="path" type="net.es.oscars.dto.pss.params.MplsPath" -->
+<#-- @ftlvariable name="paths" type="java.util.List" -->
+
 
 <#assign svcId = vpls.svcId>
+
 show service id ${svcId} sap
 show service id ${svcId} sdp
 

@@ -167,9 +167,16 @@ class Validator {
         }
 
         const now = Date.now();
-        if (connection.schedule.start.at < now || connection.schedule.end.at < now) {
+        if (connection.schedule.end.at < now) {
             result.ok = false;
-            result.errors.push("Start or end time set in the past!");
+            result.errors.push("End time set in the past!");
+        }
+        if (
+            connection.schedule.start.at < now &&
+            connection.schedule.start.choice.toUpperCase() !== "ASAP"
+        ) {
+            result.ok = false;
+            result.errors.push("Start time (not-ASAP) in the past!");
         }
 
         if (connection.schedule.start.at > connection.schedule.end.at) {
