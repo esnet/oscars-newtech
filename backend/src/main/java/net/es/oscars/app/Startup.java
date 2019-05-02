@@ -3,6 +3,7 @@ package net.es.oscars.app;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
+import net.es.oscars.app.util.DbAccess;
 import net.es.oscars.app.util.GitRepositoryState;
 import net.es.oscars.app.util.GitRepositoryStatePopulator;
 import net.es.oscars.ext.SlackConnector;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
@@ -33,8 +35,9 @@ public class Startup {
     private SlackConnector slackConnector;
 
     private TopoPopulator topoPopulator;
+    private DbAccess dbAccess;
 
-    private boolean inStartup = false;
+    private boolean inStartup = true;
     private boolean inShutdown = false;
 
     public void setInStartup(boolean inStartup) {
@@ -65,6 +68,7 @@ public class Startup {
                    TopoPopulator topoPopulator,
                    UserPopulator userPopulator,
                    SlackConnector slackConnector,
+                   DbAccess dbAccess,
                    UIPopulator uiPopulator,
                    PssHealthChecker pssHealthChecker,
                    GitRepositoryStatePopulator gitRepositoryStatePopulator) {
@@ -72,6 +76,7 @@ public class Startup {
         this.topoPopulator = topoPopulator;
         this.slackConnector = slackConnector;
         this.pssHealthChecker = pssHealthChecker;
+        this.dbAccess = dbAccess;
         this.gitRepositoryStatePopulator = gitRepositoryStatePopulator;
 
         components = new ArrayList<>();
@@ -92,9 +97,13 @@ public class Startup {
             System.out.println("Exiting (startup.exit is true)");
             System.exit(0);
         }
-
-
+        ReentrantLock topoLock = dbAccess.getTopoLock();
+        if (topoLock.isLocked()) {
+            log.debug("connection lock already locked! Will need to wait to complete.");
+        }
+        topoLock.lock();
         topoPopulator.refresh(false);
+        topoLock.unlock();
 
         try {
             for (StartupComponent sc : this.components) {

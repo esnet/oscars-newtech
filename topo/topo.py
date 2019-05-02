@@ -201,6 +201,7 @@ def merge_lags(edge_ports, config):
                     lag_found = True
                     if entry['speed'] != mbps:
                         entry['speed'] = mbps
+
             lag_sites = []
             for lag_port in lags[device][lag]["ports"]:
                 port_found = False
@@ -208,6 +209,8 @@ def merge_lags(edge_ports, config):
                     if entry['device'] == device and entry['port'] == lag_port:
                         entry['lag'] = 'member'
                         port_found = True
+#                        pp.pprint(entry)
+#                        print("lag port found: {}:{} ".format(entry['device'], entry['port']))
                         for site in entry['sites']:
                             if site not in lag_sites:
                                 lag_sites.append(site)
@@ -243,6 +246,9 @@ def merge_edge_ports_vlans(oscars_devices=None, edge_ports=None, used_vlans=None
     for entry in edge_ports:
         port_urn = entry['device'] + ':' + entry['port']
         device_urn = entry['device']
+        if 'speed' not in entry or entry['speed'] is None:
+            eprint("could not determine speed for {}, skipping".format(port_urn))
+            continue
         if "lag" in entry and entry['lag'] == 'member':
             continue
 
@@ -737,13 +743,13 @@ def to_oscars_adjcies(isis_adjcies=None):
             oscars_adjcy = {
                 "a": {
                     "device": a_router,
-                    "port": a_port,
+                    "port": "{}:{}".format(a_router, a_port),
                     "addr": a_addr,
                     "ifce": a_urn,
                 },
                 "z": {
                     "device": z_router,
-                    "port": z_port,
+                    "port": "{}:{}".format(z_router, z_port),
                     "addr": z_addr,
                     "ifce": z_urn,
                 },

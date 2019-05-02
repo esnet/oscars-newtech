@@ -96,7 +96,7 @@ public class TopoService {
         Version newVersion = Version.builder().updated(Instant.now()).valid(true).build();
         this.current = newVersion;
         versionRepo.save(newVersion);
-        versionRepo.flush();
+
         log.debug("New version id is: " + newVersion.getId());
         return newVersion;
     }

@@ -182,16 +182,14 @@ public class TopoPopulator {
 
         if (fileLoadNeeded) {
             log.info("Need to load new topology files");
-            topoService.bumpVersion();
             // load to DB from disk
             Topology incoming = loadFromDefaultFiles();
             replaceDbTopology(incoming);
+            topoService.bumpVersion();
             // load to memory from DB
             topoService.updateInMemoryTopo();
             // check consistency
             consistencySvc.checkConsistency();
-
-
         }
 
     }
