@@ -6,7 +6,7 @@ import net.es.oscars.topo.enums.TagInput;
 import java.util.List;
 
 @Data
-public class TagConfig {
+public class CategoryConfig {
     private String category;
 
     private String description;

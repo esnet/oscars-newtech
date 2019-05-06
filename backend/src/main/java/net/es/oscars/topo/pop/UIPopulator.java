@@ -7,7 +7,7 @@ import net.es.oscars.app.StartupComponent;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.TopoProperties;
 import net.es.oscars.topo.beans.DevicePositions;
-import net.es.oscars.topo.beans.TagConfig;
+import net.es.oscars.topo.beans.CategoryConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,11 +24,11 @@ import java.util.List;
 public class UIPopulator implements StartupComponent {
     private TopoProperties topoProperties;
 
-    @Value("${tags.files}")
-    private File[] tagConfigFiles;
+    @Value("${tags.categories}")
+    private File[] ctgConfigFiles;
 
 
-    private List<TagConfig> tagConfigs;
+    private List<CategoryConfig> ctgConfigs;
 
     @Autowired
     public UIPopulator(TopoProperties topoProperties) {
@@ -51,17 +51,17 @@ public class UIPopulator implements StartupComponent {
             throw new StartupException(e.getMessage());
         }
         log.info("positions imported for devices: " + positions.getPositions().size());
-        tagConfigs = new ArrayList<>();
+        ctgConfigs = new ArrayList<>();
 
         try {
-            for (File f : tagConfigFiles) {
-                TagConfig[] tagConfs = mapper.readValue(f, TagConfig[].class);
-                tagConfigs.addAll(Arrays.asList(tagConfs));
+            for (File f : ctgConfigFiles) {
+                CategoryConfig[] ctgConfs = mapper.readValue(f, CategoryConfig[].class);
+                ctgConfigs.addAll(Arrays.asList(ctgConfs));
             }
         } catch (IOException e) {
             throw new StartupException(e.getMessage());
         }
-        log.info("tag configs imported: " + tagConfigs.size());
+        log.info("category configs imported: " + ctgConfigs.size());
 
         started = true;
 
