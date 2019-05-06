@@ -1,0 +1,10 @@
+[
+  {
+    "category": "site",
+    "description": "Choose site(s)",
+    "input": "SELECT",
+    "mandatory": false,
+    "multivalue": true,
+    "options": ["LBNL", "FNAL", "SLAC", "PNNL"]
+  }
+]

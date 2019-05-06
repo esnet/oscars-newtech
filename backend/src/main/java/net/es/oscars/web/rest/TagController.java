@@ -7,6 +7,8 @@ import net.es.oscars.resv.db.TagCtgRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.Tag;
 import net.es.oscars.resv.ent.TagCategory;
+import net.es.oscars.topo.beans.TagConfig;
+import net.es.oscars.topo.pop.UIPopulator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +28,8 @@ import java.util.stream.Stream;
 @RestController
 @Slf4j
 public class TagController {
+    @Autowired
+    private UIPopulator uiPopulator;
 
     @Autowired
     private TagCtgRepository ctgRepo;
@@ -118,4 +122,11 @@ public class TagController {
         }
 
     }
+
+    @RequestMapping(value = "/protected/tag/config", method = RequestMethod.GET)
+    @ResponseBody
+    public List<TagConfig> tagConfig() {
+        return uiPopulator.getTagConfigs();
+    }
+
 }
