@@ -85,7 +85,6 @@ public class ConnService {
     @Autowired
     private TopoService topoService;
 
-
     @Value("${pss.default-mtu:9000}")
     private Integer defaultMtu;
 
@@ -97,6 +96,8 @@ public class ConnService {
 
     @Value("${resv.minimum-duration:15}")
     private Integer minDuration;
+
+    private Integer lastModified;
 
     public String generateConnectionId() {
         boolean found = false;

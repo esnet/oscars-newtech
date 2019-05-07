@@ -29,7 +29,8 @@ public class Connection {
                       @JsonProperty("tags") List<Tag> tags,
                       @JsonProperty("held") Held held,
                       @JsonProperty("archived") Archived archived,
-                      @JsonProperty("connection_mtu") Integer connection_mtu) {
+                      @JsonProperty("connection_mtu") Integer connection_mtu,
+                      @JsonProperty("last_modified") Integer last_modified) {
         this.connectionId = connectionId;
         this.phase = phase;
         this.mode = mode;
@@ -41,6 +42,7 @@ public class Connection {
         this.held = held;
         this.archived = archived;
         this.connection_mtu = connection_mtu;
+        this.last_modified = last_modified;
     }
 
 
@@ -86,4 +88,7 @@ public class Connection {
 
     @NonNull
     private Integer connection_mtu;
+
+    @NonNull
+    private Integer last_modified;
 }
