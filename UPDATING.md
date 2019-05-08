@@ -3,6 +3,16 @@ This file contains instructions for updating an existing installation of OSCARS 
 
 Instructions include config file changes, database schema changes, etc.
 
+## 1.0.32 to 1.0.33
+
+### Database schema changes:
+
+- In the `oscars_backend` database:
+
+```
+alter table connection add column last_modified int;
+update connection set last_modified = 0;
+```
 
 ## 1.0.26 to 1.0.32
 
