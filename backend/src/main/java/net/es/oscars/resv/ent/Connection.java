@@ -10,6 +10,7 @@ import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.List;
 
 @Data

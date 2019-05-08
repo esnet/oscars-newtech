@@ -97,8 +97,6 @@ public class ConnService {
     @Value("${resv.minimum-duration:15}")
     private Integer minDuration;
 
-    private Integer lastModified;
-
     public String generateConnectionId() {
         boolean found = false;
         String result = "";
@@ -382,6 +380,9 @@ public class ConnService {
             c.setHeld(null);
             connRepo.saveAndFlush(c);
 
+            Instant instant = Instant.now();
+            c.setLast_modified((int)instant.getEpochSecond());
+
         } finally {
             // log.debug("unlocked connections");
             connLock.unlock();
@@ -410,6 +411,7 @@ public class ConnService {
         c.setReserved(null);
         c.setHeld(h);
         connRepo.saveAndFlush(c);
+
         return ConnChangeResult.builder()
                 .what(ConnChange.UNCOMMITTED)
                 .phase(Phase.HELD)
@@ -516,6 +518,10 @@ public class ConnService {
             c.setPhase(Phase.ARCHIVED);
             c.setHeld(null);
             c.setReserved(null);
+
+            Instant instant = Instant.now();
+            c.setLast_modified((int)instant.getEpochSecond());
+
             connRepo.saveAndFlush(c);
 
         } finally {
@@ -1185,6 +1191,7 @@ public class ConnService {
                 .phase(Phase.HELD)
                 .description("")
                 .username("")
+                .last_modified((int)Instant.now().getEpochSecond())
                 .connectionId(in.getConnectionId())
                 .state(State.WAITING)
                 .connection_mtu(in.getConnection_mtu())
