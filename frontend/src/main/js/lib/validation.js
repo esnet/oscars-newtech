@@ -221,6 +221,10 @@ class Validator {
         }
         return inputStr;
     }
+
+    tagsControl(val, mandatory) {
+        console.log("tags control ", val, mandatory);
+    }
 }
 
 export default new Validator();

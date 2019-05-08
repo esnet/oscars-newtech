@@ -9,6 +9,9 @@ class ControlsStore {
         phase: "",
         mode: "AUTOMATIC",
         connection_mtu: 9000,
+        project: "",
+        priority: "",
+        sites: [],
         schedule: {
             locked: false,
             acceptable: false,
@@ -40,7 +43,8 @@ class ControlsStore {
         validation: {
             errors: [],
             acceptable: false
-        }
+        },
+        tags: []
     };
 
     @observable

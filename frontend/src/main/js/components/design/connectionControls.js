@@ -33,6 +33,15 @@ class ConnectionControls extends Component {
                 })
             );
         }
+
+        myClient.submitWithToken("GET", "/api/tag/categories/config").then(
+            action(response => {
+                let params = {
+                    tags: response
+                };
+                this.props.controlsStore.setParamsForConnection(params);
+            })
+        );
     }
 
     // TODO: make sure you can't uncommit past start time
@@ -59,6 +68,64 @@ class ConnectionControls extends Component {
 
     componentWillUnmount() {
         this.disposeOfValidate();
+    }
+
+    buildTags(conn) {
+        let tags = JSON.parse(conn.tags);
+        let inputs = [];
+
+        console.log("tags ", tags);
+        for (let key in tags) {
+            if (tags[key].input === "SELECT") {
+                let options = [];
+                let optionValues = tags[key].options;
+                for (let i in optionValues) {
+                    let option = <option value={optionValues[i]}>{optionValues[i]}</option>;
+                    options.push(option);
+                }
+                let category = tags[key].category;
+                let input = (
+                    <FormGroup>
+                        <Label>{tags[key].description}</Label>
+                        <Input
+                            name={category}
+                            id={category}
+                            type="select"
+                            multiple={tags[key].multivalue}
+                            valid={
+                                validator.tagsControl(conn.category, tags[key].mandatory) ===
+                                "success"
+                            }
+                            invalid={
+                                validator.tagsControl(conn.category, tags[key].mandatory) !==
+                                "success"
+                            }
+                            defaultValue={conn.category}
+                            onChange={this.onCategoryChange(category)}
+                        >
+                            {options}
+                        </Input>
+                    </FormGroup>
+                );
+                inputs.push(input);
+            }
+        }
+
+        return inputs;
+    }
+
+    onCategoryChange(e, category) {
+        let params;
+        if (category === "project") {
+            params = {
+                project: e.target.value
+            };
+        } else if (category === "priority") {
+            params = {
+                priority: e.target.value
+            };
+        }
+        this.props.controlsStore.setParamsForConnection(params);
     }
 
     onDescriptionChange = e => {
@@ -138,6 +205,8 @@ class ConnectionControls extends Component {
             </span>
         );
 
+        let inputs = this.buildTags(conn);
+
         return (
             <Card>
                 <CardBody>
@@ -169,6 +238,7 @@ class ConnectionControls extends Component {
                                 Connection id: {this.props.controlsStore.connection.connectionId}
                             </div>
                         </Alert>
+                        {inputs}
                         <FormGroup>
                             {" "}
                             <Label>Description:</Label>
