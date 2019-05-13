@@ -223,11 +223,7 @@ public class AluParamsAdapter {
             log.warn("path name trimmed to: " + pathName);
         }
 
-        String lspName = c.getConnectionId() + "-WRK-" + otherJunction.getDeviceUrn();
-        if (lspName.length() > 32) {
-            lspName = lspName.substring(0, 31);
-            log.warn("LSP name trimmed to: " + lspName);
-        }
+        String lspName = pathName;
 
         MplsPath path = MplsPath.builder()
                 .hops(mplsHops)
@@ -314,17 +310,13 @@ public class AluParamsAdapter {
             if (protectSdpId == null) {
                 throw new PSSException("no protect SDP id reserved!");
             }
-            String prtPathName = c.getConnectionId() + "-PRT-" + p.getZ().getDeviceUrn();
+            String prtPathName = c.getConnectionId() + "-PRT-" + otherJunction.getDeviceUrn();
             if (prtPathName.length() > 32) {
                 prtPathName = prtPathName.substring(0, 31);
                 log.warn("path name trimmed to: " + prtPathName);
+            }
 
-            }
-            String prtLspName = c.getConnectionId() + "-PRT-" + p.getZ().getDeviceUrn();
-            if (prtLspName.length() > 32) {
-                prtLspName = prtLspName.substring(0, 31);
-                log.warn("LSP name trimmed to: " + prtLspName);
-            }
+            String prtLspName = prtPathName;
             String prtSdpDescription = c.getConnectionId() + "-PRT-" + otherJunction.getDeviceUrn();
 
             MplsPath protectPath = MplsPath.builder()
