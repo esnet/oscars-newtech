@@ -5,19 +5,17 @@ import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
+import net.es.oscars.topo.db.AdjcyRepository;
 import net.es.oscars.topo.ent.Device;
-import net.es.oscars.topo.ent.PortAdjcy;
+import net.es.oscars.topo.ent.Adjcy;
 import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.UIPopulator;
 import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -26,7 +24,7 @@ public class MapController {
     @Autowired
     private DeviceRepository deviceRepo;
     @Autowired
-    private PortAdjcyRepository adjcyRepo;
+    private AdjcyRepository adjcyRepo;
     @Autowired
     private TopoService topoService;
 
@@ -78,7 +76,7 @@ public class MapController {
         }
 
         Set<String> added = new HashSet<>();
-        for (PortAdjcy pa : topology.getAdjcies()) {
+        for (Adjcy pa : topology.getAdjcies()) {
 
             String edgeId = pa.getA().getUrn() + " -- " + pa.getZ().getUrn();
             String reverseEdgeId = pa.getZ().getUrn() + " -- " + pa.getA().getUrn();
@@ -86,10 +84,10 @@ public class MapController {
                 //
                 added.add(edgeId);
                 added.add(reverseEdgeId);
-                String aNodeId = pa.getA().getDevice().getUrn();
-                String zNodeId = pa.getZ().getDevice().getUrn();
+                String aNodeId = pa.getA().getDevice();
+                String zNodeId = pa.getZ().getDevice();
 
-                Integer bandwidthFloor = pa.minimalReservableBandwidth();
+                Integer bandwidthFloor = topoService.minimalReservableBandwidth(pa);
                 String capString = bandwidthFloor + "Mbps";
                 if (bandwidthFloor >= 1000) {
                     double minCapDub = (double) bandwidthFloor / 1000;

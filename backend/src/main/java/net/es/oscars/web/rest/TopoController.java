@@ -4,7 +4,6 @@ package net.es.oscars.web.rest;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
-import net.es.oscars.resv.svc.ResvLibrary;
 import net.es.oscars.resv.svc.ResvService;
 import net.es.oscars.topo.beans.*;
 import net.es.oscars.topo.ent.Device;
@@ -42,7 +41,6 @@ public class TopoController {
 
     // cache these in memory
     private Map<String, List<Port>> eppd = new HashMap<>();
-    private Map<String, PortBwVlan> baseline = new HashMap<>();
     private Version cachedVersion = null;
 
     @ExceptionHandler(NoSuchElementException.class)
@@ -88,8 +86,7 @@ public class TopoController {
             for (Device d : topology.getDevices().values()) {
                 List<Port> ports = new ArrayList<>();
                 for (Port p: d.getPorts()) {
-                    if (p.getCapabilities().contains(Layer.ETHERNET)
-                            && p.getVersion() != null && p.getVersion().getValid()) {
+                    if (p.getCapabilities().contains(Layer.ETHERNET)) {
                         ports.add(p);
                     }
                 }
@@ -149,7 +146,7 @@ public class TopoController {
     @ResponseBody
     public Version version() throws StartupException, ConsistencyException {
         this.startupCheck();
-        return topoService.currentVersion().orElseThrow(NoSuchElementException::new);
+        return topoService.getCurrent();
     }
 
     @RequestMapping(value = "/api/topo/report", method = RequestMethod.GET)

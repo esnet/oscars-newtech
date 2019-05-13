@@ -18,8 +18,4 @@ public class TopoAdjcy extends DefaultWeightedEdge {
 
     private Map<Layer, Long> metrics = new HashMap<>();
 
-    public String asLogString() {
-        return a.getUrn()+" -- "+z.getUrn();
-    }
-
 }

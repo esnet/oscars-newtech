@@ -114,7 +114,7 @@ public class SimpleApiController {
         if (c == null) {
             return  null;
         } else {
-            return connSvc.fromConnection(c, false, false);
+            return connSvc.fromConnection(c, false);
         }
 
     }
@@ -147,7 +147,7 @@ public class SimpleApiController {
         List<Connection> connections = connController.list(f).getConnections();
         List<SimpleConnection> result = new ArrayList<>();
         for (Connection c : connections) {
-            result.add(connSvc.fromConnection(c, return_svc_ids, false));
+            result.add(connSvc.fromConnection(c, return_svc_ids));
         }
         return result;
     }
@@ -163,7 +163,7 @@ public class SimpleApiController {
         List<Connection> connections = connController.list(f).getConnections();
         List<SimpleConnection> result = new ArrayList<>();
         for (Connection c : connections) {
-            result.add(connSvc.fromConnection(c, false, true));
+            result.add(connSvc.fromConnection(c, false));
         }
         return result;
     }

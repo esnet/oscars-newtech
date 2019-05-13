@@ -11,7 +11,6 @@ Feature: topology deserialization
     Then the "ports" repository has 0 entries
     Then the current topology is empty
     Given I load topology from "config/test/topo/one.json" and "config/test/topo/adj_none.json"
-    When I merge the new topology
     Then the "devices" repository has 1 entries
     Then the "ports" repository has 2 entries
     Then the "adjacencies" repository has 0 entries
@@ -40,58 +39,3 @@ Feature: topology deserialization
     Then I did not receive an exception
 
 
-
-  Scenario: topology deltas: adding
-    Given I have initialized the world
-    Given I clear the topology
-    Given I load topology from "config/test/topo/one.json" and "config/test/topo/adj_none.json"
-    Then the "device" delta has 1 entries "added"
-    Then the "port" delta has 2 entries "added"
-    Then the "adjcy" delta has 0 entries "added"
-    When I merge the new topology
-    Then the "devices" repository has 1 entries
-    Then the "ports" repository has 2 entries
-    Given I load topology from "config/test/topo/two_routers.json" and "config/test/topo/adj_a_b_mpls.json"
-    Then the "device" delta has 1 entries "added"
-    Then the "port" delta has 2 entries "added"
-    Then the "port" delta has 1 entries "modified"
-    Then the "adjcy" delta has 2 entries "added"
-    When I merge the new topology
-    Then the "devices" repository has 2 entries
-    Then the "ports" repository has 4 entries
-    Then the "adjacencies" repository has 2 entries
-    Then I did not receive an exception
-
-  Scenario: topology deltas: re-importing the same file should have no effect
-    Given I have initialized the world
-    Given I clear the topology
-    Given I load topology from "config/test/topo/two_routers.json" and "config/test/topo/adj_a_b_mpls.json"
-    When I merge the new topology
-    Given I load topology from "config/test/topo/two_routers.json" and "config/test/topo/adj_a_b_mpls.json"
-    Then the "device" delta has 0 entries "added"
-    Then the "device" delta has 0 entries "removed"
-    Then the "device" delta has 0 entries "modified"
-    Then the "port" delta has 0 entries "added"
-    Then the "port" delta has 0 entries "removed"
-    Then the "port" delta has 0 entries "modified"
-    Then the "adjcy" delta has 0 entries "added"
-    Then the "adjcy" delta has 0 entries "removed"
-    Then the "adjcy" delta has 0 entries "modified"
-    When I merge the new topology
-    Then the "devices" repository has 2 entries
-    Then the "ports" repository has 4 entries
-    Then the "adjacencies" repository has 2 entries
-    Then I did not receive an exception
-
-  Scenario: topology deltas: removing
-    Given I have initialized the world
-    Given I clear the topology
-    Given I load topology from "config/test/topo/two_routers.json" and "config/test/topo/adj_a_b_mpls.json"
-    When I merge the new topology
-    Given I load topology from "config/test/topo/one.json" and "config/test/topo/adj_none.json"
-    Then the "device" delta has 1 entries "removed"
-    Then the "port" delta has 2 entries "removed"
-    Then the "port" delta has 1 entries "modified"
-    Then the "adjcy" delta has 2 entries "removed"
-    When I merge the new topology
-    Then I did not receive an exception

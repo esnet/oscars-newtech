@@ -27,6 +27,8 @@ public class AluParamsAdapter {
 
     @Autowired
     private TopoService topoService;
+    @Autowired
+    private MiscHelper miscHelper;
 
     // TODO: configurize these
     private final static Integer LSP_WRK_HOLD_PRIORITY = 5;
@@ -214,7 +216,7 @@ public class AluParamsAdapter {
     public List<AluPipeResult> makePipe(VlanJunction otherJunction, List<EroHop> hops, VlanPipe p, VlanJunction j, Connection c, AluVpls vpls) throws PSSException {
         List<AluPipeResult> aluPipes = new ArrayList<>();
 
-        List<MplsHop> mplsHops = MiscHelper.mplsHops(hops, topoService);
+        List<MplsHop> mplsHops = miscHelper.mplsHops(hops);
         String pathName = c.getConnectionId() + "-WRK-" + otherJunction.getDeviceUrn();
         if (pathName.length() > 32) {
             pathName = pathName.substring(0, 31);
