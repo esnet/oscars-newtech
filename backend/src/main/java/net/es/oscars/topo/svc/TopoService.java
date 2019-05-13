@@ -120,8 +120,8 @@ public class TopoService {
         });
 
         adjcies = adjcyRepo.findAll();
-        log.info("found " + devices.size() + " devices ");
-        log.info("found " + adjcies.size() + " adjcies ");
+//        log.info("found " + devices.size() + " devices ");
+//        log.info("found " + adjcies.size() + " adjcies ");
         t.setDevices(deviceMap);
         t.setAdjcies(adjcies);
 
