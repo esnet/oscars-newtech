@@ -130,7 +130,7 @@ class ConnectionsList extends Component {
         // Setting the sizePerPage to -1 returns us the entire connection list
         filter.page = csFilter.page;
         filter.sizePerPage = -1;
-        filter.phase = csFilter.phase;
+        filter.phase = "ANY";
 
         myClient.submit("POST", "/api/conn/list", filter).then(
             successResponse => {
@@ -234,7 +234,7 @@ class ConnectionsList extends Component {
                 <select
                     onChange={event => onChange(event.target.value)}
                     style={{ width: "100%" }}
-                    value={filter ? filter.value : "reserved"}
+                    value={filter ? filter.value : "any"}
                 >
                     <option value="any">Any</option>
                     <option value="reserved">Reserved</option>
