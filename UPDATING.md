@@ -7,12 +7,22 @@ Instructions include config file changes, database schema changes, etc.
 
 ### Database schema changes:
 
-- In the `oscars_backend` database:
+- For the `oscars_backend` database:
 
 ```
-alter table connection add column last_modified int;
-update connection set last_modified = 0;
+psql -d oscars_backend < sql/1_0_32_to_1_0_33.sql
 ```
+
+### Config file changes
+- backend:
+```
+application.properties:
+
+```
+
+### Topology update changes:
+The new topo.py script will need to be installed and configured. 
+
 
 ## 1.0.26 to 1.0.32
 

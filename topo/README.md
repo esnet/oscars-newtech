@@ -15,7 +15,7 @@ and outputs the following files:
 
 ```
     output/devices.json
-    output/adjacencies.json
+    output/adjcies.json
 ```
 
 

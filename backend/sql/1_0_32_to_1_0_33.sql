@@ -9,6 +9,8 @@ DROP TABLE port_capabilities CASCADE;
 DROP TABLE port_reservable_vlans CASCADE;
 DROP TABLE version CASCADE;
 
+ALTER TABLE connection ADD COLUMN last_modified int;
+UPDATE connection SET last_modified = 0;
 
 
 CREATE TABLE public.adjcy (

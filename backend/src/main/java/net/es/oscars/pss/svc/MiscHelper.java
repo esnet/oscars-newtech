@@ -52,8 +52,8 @@ public class MiscHelper {
                 if (prevHop == null) {
                     throw new PSSException("Unexpected null previous hop for " + hop.getUrn());
                 }
-                log.debug("hop " + hop.getUrn());
-                log.debug("prevHop " + prevHop.getUrn());
+//                log.debug("hop " + hop.getUrn());
+ //               log.debug("prevHop " + prevHop.getUrn());
                 String address = this.findAddress(prevHop.getUrn(), hop.getUrn());
 
                 MplsHop mplsHop = MplsHop.builder()
