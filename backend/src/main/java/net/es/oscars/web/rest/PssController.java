@@ -142,6 +142,10 @@ public class PssController {
 
             try {
                 c.setState(pssAdapter.build(c));
+
+                Instant instant = Instant.now();
+                c.setLast_modified((int)instant.getEpochSecond());
+
             } catch (PSSException ex) {
                 c.setState(State.FAILED);
                 log.error(ex.getMessage(), ex);
@@ -174,6 +178,10 @@ public class PssController {
 
             try {
                 c.setState(pssAdapter.dismantle(c));
+
+                Instant instant = Instant.now();
+                c.setLast_modified((int)instant.getEpochSecond());
+
             } catch (PSSException ex) {
                 c.setState(State.FAILED);
                 log.error(ex.getMessage(), ex);

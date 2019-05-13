@@ -2,10 +2,9 @@ package net.es.oscars.task;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.Startup;
-import net.es.oscars.app.props.TopoProperties;
+import net.es.oscars.app.util.DbAccess;
 import net.es.oscars.topo.beans.TopoException;
-import net.es.oscars.topo.beans.VersionDelta;
-import net.es.oscars.topo.db.VersionRepository;
+import net.es.oscars.topo.beans.Topology;
 import net.es.oscars.topo.ent.Version;
 import net.es.oscars.topo.svc.ConsistencyService;
 import net.es.oscars.topo.pop.ConsistencyException;
@@ -16,78 +15,42 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
-import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 @Slf4j
 @Component
 public class RefreshTopology {
-
     @Autowired
     private Startup startup;
 
     @Autowired
-    private TopoService topoService;
+    private DbAccess dbAccess;
+
     @Autowired
     private TopoPopulator topoPopulator;
-
-    @Autowired
-    private TopoProperties topoProperties;
-
-    @Autowired
-    private ConsistencyService consistencySvc;
-
-    @Autowired
-    private VersionRepository versionRepo;
 
     @Scheduled(fixedDelay = 10000)
     @Transactional
     public void processingLoop() {
         if (startup.isInStartup() || startup.isInShutdown()) {
-//            log.info("application in startup or shutdown; will start refreshing topology later");
             return;
         }
+
         try {
-            Optional<Version> maybeV = topoService.currentVersion();
-            if (maybeV.isPresent()) {
-                String devicesFilename = "./config/topo/" + topoProperties.getPrefix() + "-devices.json";
-                File devFile = new File(devicesFilename);
-                Instant devLastMod = Instant.ofEpochMilli(devFile.lastModified());
-
-                String adjciesFilename = "./config/topo/" + topoProperties.getPrefix() + "-adjcies.json";
-                File adjFile = new File(adjciesFilename);
-                Instant adjLastMod = Instant.ofEpochMilli(adjFile.lastModified());
-
-                Instant latest = devLastMod;
-                if (adjLastMod.isAfter(devLastMod)) {
-                    latest = adjLastMod;
-                }
-                Version v = maybeV.get();
-
-                if (latest.isAfter(v.getUpdated())) {
-                    log.info("topology possibly modified since last update");
-                    VersionDelta vd = topoPopulator.refreshTopology();
-                    if (!vd.isChanged()) {
-                        v.setUpdated(Instant.now());
-                        versionRepo.save(v);
-                    } else {
-                        topoService.updateTopo();
-                        consistencySvc.checkConsistency();
-                    }
-
-                }
-
-
+            ReentrantLock topoLock = dbAccess.getTopoLock();
+            if (topoLock.isLocked()) {
+                log.debug("connection lock already locked; will need to wait to complete commit");
             } else {
-                log.error("no current version for the topology!");
+                topoLock.lock();
+                topoPopulator.refresh(true);
+                topoLock.unlock();
             }
         } catch (TopoException ex) {
             log.error("Topology import error!", ex);
         } catch (IOException ex) {
-            log.error("Topology load I/O error!", ex);
+            log.error("I/O error!", ex);
         } catch (ConsistencyException ex) {
             log.error("Consistency error!", ex);
         }

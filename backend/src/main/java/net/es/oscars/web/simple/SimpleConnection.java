@@ -21,6 +21,7 @@ public class SimpleConnection {
     protected Integer begin;
     protected Integer end;
     protected Integer connection_mtu;
+    protected Integer last_modified;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected Integer heldUntil;
     protected String username;

@@ -6,7 +6,7 @@ import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.topo.db.DeviceRepository;
-import net.es.oscars.topo.db.PortAdjcyRepository;
+import net.es.oscars.topo.db.AdjcyRepository;
 import net.es.oscars.topo.db.PortRepository;
 import net.es.oscars.topo.db.VersionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class SharedSteps {
     @Autowired
     private DeviceRepository deviceRepo;
     @Autowired
-    private PortAdjcyRepository adjcyRepo;
+    private AdjcyRepository adjcyRepo;
     @Autowired
     private PortRepository portRepo;
     @Autowired
@@ -134,6 +134,9 @@ public class SharedSteps {
 
     @Then("^I did not receive an exception$")
     public void i_did_not_receive_an_exception() throws Throwable {
+        for (Exception ex: this.world.getExceptions()) {
+            log.error(ex.getMessage(), ex);
+        }
         assertThat(this.world.getExceptions().isEmpty(), is(true));
     }
 

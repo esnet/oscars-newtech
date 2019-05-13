@@ -3,6 +3,26 @@ This file contains instructions for updating an existing installation of OSCARS 
 
 Instructions include config file changes, database schema changes, etc.
 
+## 1.0.32 to 1.0.33
+
+### Database schema changes:
+
+- For the `oscars_backend` database:
+
+```
+psql -d oscars_backend < sql/1_0_32_to_1_0_33.sql
+```
+
+### Config file changes
+- backend:
+```
+application.properties:
+
+```
+
+### Topology update changes:
+The new topo.py script will need to be installed and configured. 
+
 
 ## 1.0.26 to 1.0.32
 

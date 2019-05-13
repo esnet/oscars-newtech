@@ -1,8 +1,12 @@
 ## OSCARS Backend Release Notes
 
-### v1.0.32
+### v1.0.33
+> May 15, 2019
 
-- Use version for API endpoing
+- Improve versioning 
+- Extensive topology changes
+- Minor PSS bug fixes
+- Improved validation
 
 ### v1.0.31
 

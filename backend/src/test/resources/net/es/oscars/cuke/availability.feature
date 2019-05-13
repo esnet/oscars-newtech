@@ -11,6 +11,7 @@ Feature: availability calculations
     Given I load topology from "config/test/topo/two_routers.json" and "config/test/topo/adj_a_b_mpls.json"
     When I merge the new topology
     Then the "devices" repository has 2 entries
+    Then the "ports" repository has 6 entries
     Then the "adjacencies" repository has 2 entries
     Given I update the topology URN map after import
     Given I set these "INGRESS" bandwidth reservations
@@ -28,15 +29,21 @@ Feature: availability calculations
       | B:1 | 100 |
       | A:2 | 100 |
       | B:2 | 100 |
+      | A:3 | 100 |
+      | B:3 | 100 |
     Then the "INGRESS" bw availability map between 70 and 300 is
 #     | urn | in  |
       | A:1 | 90  |
       | B:1 | 90  |
       | A:2 | 90  |
       | B:2 | 90  |
+      | A:3 | 100 |
+      | B:3 | 100 |
     Then the vlan availability map between 0 and 5 is
 #     | urn | bw          |
       | A:1 | 100,102:200 |
       | B:1 | 100,102:200 |
+      | A:3 | 100:200 |
+      | B:3 | 100:200 |
 
     Then I did not receive an exception

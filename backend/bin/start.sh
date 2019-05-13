@@ -1,4 +1,7 @@
 #!/bin/bash
+function reset_tabname {
+    printf '\e]0;\a'
+}
 function tabname {
   echo -n -e "\033]0;$1\007"
 }
@@ -18,3 +21,4 @@ if [ "x$JARFILE" = "x" ]; then
 fi
 
 java -Xmx512m -jar ${JARFILE} $1 $2 $3 $4 $5
+reset_tabname

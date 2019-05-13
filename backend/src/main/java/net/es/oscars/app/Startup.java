@@ -3,18 +3,16 @@ package net.es.oscars.app;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
+import net.es.oscars.app.util.DbAccess;
 import net.es.oscars.app.util.GitRepositoryState;
 import net.es.oscars.app.util.GitRepositoryStatePopulator;
 import net.es.oscars.ext.SlackConnector;
-import net.es.oscars.nsi.svc.NsiPopulator;
 import net.es.oscars.pss.svc.PssHealthChecker;
 import net.es.oscars.security.db.UserPopulator;
 import net.es.oscars.topo.beans.TopoException;
 import net.es.oscars.topo.pop.ConsistencyException;
 import net.es.oscars.topo.pop.TopoPopulator;
 import net.es.oscars.topo.pop.UIPopulator;
-import net.es.oscars.topo.svc.ConsistencyService;
-import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -24,21 +22,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
 public class Startup {
 
     private List<StartupComponent> components;
-    private TopoPopulator topoPopulator;
     private StartupProperties startupProperties;
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
     private PssHealthChecker pssHealthChecker;
     private SlackConnector slackConnector;
-    private TopoService topoService;
-    private ConsistencyService consistencySvc;
 
-    private boolean inStartup = false;
+    private TopoPopulator topoPopulator;
+    private DbAccess dbAccess;
+
+    private boolean inStartup = true;
     private boolean inShutdown = false;
 
     public void setInStartup(boolean inStartup) {
@@ -66,21 +65,20 @@ public class Startup {
 
     @Autowired
     public Startup(StartupProperties startupProperties,
-                   TopoService topoService,
                    TopoPopulator topoPopulator,
                    UserPopulator userPopulator,
                    SlackConnector slackConnector,
+                   DbAccess dbAccess,
                    UIPopulator uiPopulator,
-                   ConsistencyService consistencySvc,
                    PssHealthChecker pssHealthChecker,
                    GitRepositoryStatePopulator gitRepositoryStatePopulator) {
         this.startupProperties = startupProperties;
         this.topoPopulator = topoPopulator;
-        this.topoService = topoService;
         this.slackConnector = slackConnector;
-        this.consistencySvc = consistencySvc;
         this.pssHealthChecker = pssHealthChecker;
+        this.dbAccess = dbAccess;
         this.gitRepositoryStatePopulator = gitRepositoryStatePopulator;
+
         components = new ArrayList<>();
         components.add(userPopulator);
         components.add(uiPopulator);
@@ -99,9 +97,13 @@ public class Startup {
             System.out.println("Exiting (startup.exit is true)");
             System.exit(0);
         }
-        topoPopulator.refreshTopology();
-        topoService.updateTopo();
-        consistencySvc.checkConsistency();
+        ReentrantLock topoLock = dbAccess.getTopoLock();
+        if (topoLock.isLocked()) {
+            log.debug("connection lock already locked! Will need to wait to complete.");
+        }
+        topoLock.lock();
+        topoPopulator.refresh(false);
+        topoLock.unlock();
 
         try {
             for (StartupComponent sc : this.components) {

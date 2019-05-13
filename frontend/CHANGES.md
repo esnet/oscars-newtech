@@ -1,4 +1,10 @@
 # OSCARS Frontend Release Notes
+## v1.0.33
+> May 16, 2019
+- ASAP schedule
+- List improvements
+- Tag forms 
+- Library updates & other misc maintenance
 
 ## v1.0.32
 > Apr 16, 2019

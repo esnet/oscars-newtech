@@ -30,6 +30,9 @@ public class MxParamsAdapter {
     @Autowired
     private TopoService topoService;
 
+    @Autowired
+    private MiscHelper miscHelper;
+
     // TODO: configurize these
     private final static Integer LSP_WRK_HOLD_PRIORITY = 5;
     private final static Integer LSP_WRK_SETUP_PRIORITY = 5;
@@ -198,7 +201,7 @@ public class MxParamsAdapter {
 
     public MxPipeResult makePipe(VlanJunction otherJ, List<EroHop> hops, boolean protect,
                                  VlanPipe p, Integer mbps, Connection c) throws PSSException {
-        List<MplsHop> mplsHops = MiscHelper.mplsHops(hops, topoService);
+        List<MplsHop> mplsHops = miscHelper.mplsHops(hops);
 
         String pathName = c.getConnectionId();
         String lspName = c.getConnectionId();

@@ -1,5 +1,18 @@
 # OSCARS Release Notes
 
+## v1.0.33
+> May 15, 2019
+- Backend:
+    - Extensive topology changes
+    - Minor PSS bug fixes
+    - Improved validation
+- Frontend:
+    - ASAP schedule
+    - List page improvements
+    - Tag editing
+    - Library updates & other misc maintenance
+- Improved versioning with Maven
+
 ## v1.0.32
 > Apr 16, 2019
 - Updated Spring Boot to v2
