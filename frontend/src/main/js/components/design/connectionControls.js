@@ -39,7 +39,6 @@ class ConnectionControls extends Component {
         myClient.submitWithToken("GET", "/api/tag/categories/config").then(
             action(response => {
                 let c = this.setDefaultValues(JSON.parse(response));
-                console.log("c is ", c);
                 let params = {
                     categories: c
                 };
