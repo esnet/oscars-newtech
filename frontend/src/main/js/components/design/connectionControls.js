@@ -38,10 +38,11 @@ class ConnectionControls extends Component {
 
         myClient.submitWithToken("GET", "/api/tag/categories/config").then(
             action(response => {
+                let c = this.setDefaultValues(JSON.parse(response));
+                console.log("c is ", c);
                 let params = {
-                    categories: JSON.parse(response)
+                    categories: c
                 };
-                this.setDefaultValues(this.props.controlsStore.connection);
                 this.props.controlsStore.setParamsForConnection(params);
             })
         );
@@ -122,25 +123,21 @@ class ConnectionControls extends Component {
     };
 
     // Set default values only once
-    setDefaultValues(conn) {
-        console.log("setDefaultValues");
-        let categories = conn.categories;
+    setDefaultValues(categories) {
         for (let key in categories) {
-            let { category, input, mandatory, options } = categories[key];
-            let entry;
+            let { input, mandatory, options } = categories[key];
             if (input === "SELECT") {
-                entry = {
-                    category: category,
-                    contents: mandatory ? options[0] : "-"
-                };
+                let content = mandatory ? options[0] : "-";
+                if (content === "-" || content === "") {
+                    categories[key].selected = [];
+                } else {
+                    categories[key].selected = [content];
+                }
             } else if (input === "TEXT") {
-                entry = {
-                    category: category,
-                    contents: ""
-                };
+                categories[key].selected = [""];
             }
-            this.props.controlsStore.setDefaultCategory(entry);
         }
+        return categories;
     }
 
     buildTags(conn) {

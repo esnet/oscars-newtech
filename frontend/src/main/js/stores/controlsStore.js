@@ -251,24 +251,8 @@ class ControlsStore {
     }
 
     @action
-    setDefaultCategory(entry) {
-        console.log("setDefaultCategory");
-        const categories = this.connection.categories;
-        for (let key in categories) {
-            if (categories[key].category === entry.category) {
-                if (entry.contents === "-" || entry.contents === "") {
-                    categories[key].selected = [];
-                } else {
-                    categories[key].selected = [entry.contents];
-                }
-            }
-        }
-    }
-
-    @action
     setCategory(entry) {
         const categories = this.connection.categories;
-
         for (let key in categories) {
             let d = categories[key];
             if (d.category === entry.category) {
