@@ -4,7 +4,7 @@ import { observer, inject } from "mobx-react";
 import { action, autorun } from "mobx";
 import Octicon from "react-octicon";
 import ToggleDisplay from "react-toggle-display";
-import { Alert, Form, Label, Button, Card, CardBody, FormGroup, Input } from "reactstrap";
+import { Alert, Form, Label, Button, Card, CardBody, FormGroup, Input, Collapse } from "reactstrap";
 
 import myClient from "../../agents/client";
 import validator from "../../lib/validation";
@@ -16,6 +16,8 @@ import HelpPopover from "../helpPopover";
 class ConnectionControls extends Component {
     constructor(props) {
         super(props);
+        this.toggle = this.toggle.bind(this);
+        this.state = { collapse: false };
     }
 
     componentWillMount() {
@@ -37,8 +39,9 @@ class ConnectionControls extends Component {
         myClient.submitWithToken("GET", "/api/tag/categories/config").then(
             action(response => {
                 let params = {
-                    tags: response
+                    categories: JSON.parse(response)
                 };
+                this.setDefaultValues(this.props.controlsStore.connection);
                 this.props.controlsStore.setParamsForConnection(params);
             })
         );
@@ -70,63 +73,32 @@ class ConnectionControls extends Component {
         this.disposeOfValidate();
     }
 
-    buildTags(conn) {
-        let tags = JSON.parse(conn.tags);
-        let inputs = [];
+    onCategoryChange = (e, category) => {
+        let options = e.target.options;
+        let entry;
 
-        console.log("tags ", tags);
-        for (let key in tags) {
-            if (tags[key].input === "SELECT") {
-                let options = [];
-                let optionValues = tags[key].options;
-                for (let i in optionValues) {
-                    let option = <option value={optionValues[i]}>{optionValues[i]}</option>;
-                    options.push(option);
+        if (options === undefined) {
+            entry = {
+                category: category,
+                contents: [e.target.value]
+            };
+        } else {
+            let values = [];
+            for (let i = 0, l = options.length; i < l; i++) {
+                if (options[i].selected) {
+                    values.push(options[i].value);
                 }
-                let category = tags[key].category;
-                let input = (
-                    <FormGroup>
-                        <Label>{tags[key].description}</Label>
-                        <Input
-                            name={category}
-                            id={category}
-                            type="select"
-                            multiple={tags[key].multivalue}
-                            valid={
-                                validator.tagsControl(conn.category, tags[key].mandatory) ===
-                                "success"
-                            }
-                            invalid={
-                                validator.tagsControl(conn.category, tags[key].mandatory) !==
-                                "success"
-                            }
-                            defaultValue={conn.category}
-                            onChange={this.onCategoryChange(category)}
-                        >
-                            {options}
-                        </Input>
-                    </FormGroup>
-                );
-                inputs.push(input);
             }
-        }
-
-        return inputs;
-    }
-
-    onCategoryChange(e, category) {
-        let params;
-        if (category === "project") {
-            params = {
-                project: e.target.value
-            };
-        } else if (category === "priority") {
-            params = {
-                priority: e.target.value
+            entry = {
+                category: category,
+                contents: values
             };
         }
-        this.props.controlsStore.setParamsForConnection(params);
-    }
+        this.props.controlsStore.setCategory(entry);
+
+        // TO DO : Hack
+        this.forceUpdate();
+    };
 
     onDescriptionChange = e => {
         const params = {
@@ -148,6 +120,112 @@ class ConnectionControls extends Component {
         };
         this.props.controlsStore.setParamsForConnection(params);
     };
+
+    // Set default values only once
+    setDefaultValues(conn) {
+        console.log("setDefaultValues");
+        let categories = conn.categories;
+        for (let key in categories) {
+            let { category, input, mandatory, options } = categories[key];
+            let entry;
+            if (input === "SELECT") {
+                entry = {
+                    category: category,
+                    contents: mandatory ? options[0] : "-"
+                };
+            } else if (input === "TEXT") {
+                entry = {
+                    category: category,
+                    contents: ""
+                };
+            }
+            this.props.controlsStore.setDefaultCategory(entry);
+        }
+    }
+
+    buildTags(conn) {
+        console.log("build tags");
+        let categories = conn.categories;
+        let inputs = [];
+
+        for (let key in categories) {
+            let { category, description, input, mandatory, multivalue, options } = categories[key];
+            if (input === "SELECT") {
+                let selectOptions = [];
+
+                // Add blank as an option if mandatory field is false
+                if (!mandatory) {
+                    let option = <option value={""}>-</option>;
+                    selectOptions.push(option);
+                }
+
+                // Generate list of options
+                for (let i in options) {
+                    let option = <option value={options[i]}>{options[i]}</option>;
+                    selectOptions.push(option);
+                }
+
+                // Create the input field
+                let inputTag = (
+                    <FormGroup>
+                        <Label>{description}</Label>
+                        <Input
+                            type="select"
+                            name={category}
+                            id={category}
+                            multiple={multivalue}
+                            valid={
+                                validator.tagsControl(conn.categories, category, mandatory) ===
+                                "success"
+                            }
+                            invalid={
+                                validator.tagsControl(conn.categories, category, mandatory) !==
+                                "success"
+                            }
+                            onChange={e => this.onCategoryChange(e, category)}
+                        >
+                            {selectOptions}
+                        </Input>
+                    </FormGroup>
+                );
+
+                inputs.push(inputTag);
+            } else if (input === "TEXT") {
+                // TODO : Can't do multivalue in text - does that mean text area?
+
+                // Create the input field
+                let inputTag = (
+                    <FormGroup>
+                        <Label>{description}</Label>
+                        <Input
+                            type="text"
+                            placeholder={"Enter " + category}
+                            name={category}
+                            id={category}
+                            // multiple={multivalue}
+                            valid={
+                                validator.tagsControl(conn.categories, category, mandatory) ===
+                                "success"
+                            }
+                            invalid={
+                                validator.tagsControl(conn.categories, category, mandatory) !==
+                                "success"
+                            }
+                            onChange={e => this.onCategoryChange(e, category)}
+                        />
+                    </FormGroup>
+                );
+
+                inputs.push(inputTag);
+            }
+        }
+
+        return inputs;
+    }
+
+    toggle() {
+        this.setState(state => ({ collapse: !state.collapse }));
+    }
 
     render() {
         const conn = this.props.controlsStore.connection;
@@ -238,7 +316,6 @@ class ConnectionControls extends Component {
                                 Connection id: {this.props.controlsStore.connection.connectionId}
                             </div>
                         </Alert>
-                        {inputs}
                         <FormGroup>
                             {" "}
                             <Label>Description:</Label>
@@ -273,6 +350,14 @@ class ConnectionControls extends Component {
                                 onChange={this.onMTUChange}
                             />
                         </FormGroup>
+                        <Button
+                            color="secondary"
+                            onClick={this.toggle}
+                            style={{ marginBottom: "1rem" }}
+                        >
+                            Click to fill project details
+                        </Button>
+                        <Collapse isOpen={this.state.collapse}>{inputs}</Collapse>
                         <FormGroup className="float-right">
                             <ToggleDisplay show={!conn.validation.acceptable}>
                                 <Button
@@ -285,13 +370,11 @@ class ConnectionControls extends Component {
                                     Display errors
                                 </Button>{" "}
                             </ToggleDisplay>
-
                             {/*
                             <ToggleDisplay show={conn.phase === 'RESERVED' && conn.schedule.start.at > new Date()}>
                                 <UncommitButton/>{' '}
                             </ToggleDisplay>
                             */}
-
                             <ToggleDisplay
                                 show={conn.validation.acceptable && conn.phase === "HELD"}
                             >

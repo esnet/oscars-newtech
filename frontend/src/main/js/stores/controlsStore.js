@@ -9,9 +9,6 @@ class ControlsStore {
         phase: "",
         mode: "AUTOMATIC",
         connection_mtu: 9000,
-        project: "",
-        priority: "",
-        sites: [],
         schedule: {
             locked: false,
             acceptable: false,
@@ -44,7 +41,8 @@ class ControlsStore {
             errors: [],
             acceptable: false
         },
-        tags: []
+        tags: [],
+        categories: []
     };
 
     @observable
@@ -236,6 +234,48 @@ class ControlsStore {
             return srcValue;
         }
     };
+
+    @action
+    setTags() {
+        const categories = this.connection.categories;
+        const tags = this.connection.tags;
+        for (let key in categories) {
+            for (let item in categories[key].selected) {
+                let entry = {
+                    category: categories[key].category,
+                    contents: categories[key].selected[item]
+                };
+                tags.push(entry);
+            }
+        }
+    }
+
+    @action
+    setDefaultCategory(entry) {
+        console.log("setDefaultCategory");
+        const categories = this.connection.categories;
+        for (let key in categories) {
+            if (categories[key].category === entry.category) {
+                if (entry.contents === "-" || entry.contents === "") {
+                    categories[key].selected = [];
+                } else {
+                    categories[key].selected = [entry.contents];
+                }
+            }
+        }
+    }
+
+    @action
+    setCategory(entry) {
+        const categories = this.connection.categories;
+
+        for (let key in categories) {
+            let d = categories[key];
+            if (d.category === entry.category) {
+                d.selected = entry.contents;
+            }
+        }
+    }
 
     @action
     setParamsForEditPipe(params) {

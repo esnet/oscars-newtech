@@ -133,6 +133,8 @@ class Validator {
 
         const connection = params.connection;
 
+        console.log("connection is ", connection);
+
         if (connection.description === "") {
             result.ok = false;
             result.errors.push("Description not set.");
@@ -222,8 +224,19 @@ class Validator {
         return inputStr;
     }
 
-    tagsControl(val, mandatory) {
-        console.log("tags control ", val, mandatory);
+    tagsControl(categories, category, mandatory) {
+        if (mandatory === false) {
+            return "success";
+        } else {
+            for (let i in categories) {
+                let c = categories[i].category;
+                let s = categories[i].selected;
+                if (c === category && (s === undefined || s.length === 0)) {
+                    return "error";
+                }
+            }
+            return "success";
+        }
     }
 }
 
