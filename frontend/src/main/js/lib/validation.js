@@ -185,6 +185,9 @@ class Validator {
             result.ok = false;
             result.errors.push("End time set before start time.");
         }
+
+        // TODO : Add validation stuff for project details
+
         return result;
     }
 
