@@ -20,7 +20,7 @@
     "description": "Contact",
     "input": "TEXT",
     "mandatory": false,
-    "multivalue": true
+    "multivalue": false
   }
 
 ]

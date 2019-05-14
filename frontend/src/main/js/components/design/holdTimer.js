@@ -231,7 +231,7 @@ class HoldTimer extends Component {
                 state: "WAITING",
                 begin: beginms,
                 end: conn.schedule.end.at.getTime() / 1000,
-                tags: [],
+                tags: conn.tags,
                 pipes: cmp.pipes,
                 junctions: cmp.junctions,
                 fixtures: cmp.fixtures

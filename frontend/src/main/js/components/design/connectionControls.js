@@ -10,6 +10,7 @@ import myClient from "../../agents/client";
 import validator from "../../lib/validation";
 import CommitButton from "./commitButton";
 import HelpPopover from "../helpPopover";
+import TagControls from "./tagControls";
 
 @inject("controlsStore", "designStore", "modalStore")
 @observer
@@ -35,16 +36,6 @@ class ConnectionControls extends Component {
                 })
             );
         }
-
-        myClient.submitWithToken("GET", "/api/tag/categories/config").then(
-            action(response => {
-                let c = this.setDefaultValues(JSON.parse(response));
-                let params = {
-                    categories: c
-                };
-                this.props.controlsStore.setParamsForConnection(params);
-            })
-        );
     }
 
     // TODO: make sure you can't uncommit past start time
@@ -73,33 +64,6 @@ class ConnectionControls extends Component {
         this.disposeOfValidate();
     }
 
-    onCategoryChange = (e, category) => {
-        let options = e.target.options;
-        let entry;
-
-        if (options === undefined) {
-            entry = {
-                category: category,
-                contents: [e.target.value]
-            };
-        } else {
-            let values = [];
-            for (let i = 0, l = options.length; i < l; i++) {
-                if (options[i].selected) {
-                    values.push(options[i].value);
-                }
-            }
-            entry = {
-                category: category,
-                contents: values
-            };
-        }
-        this.props.controlsStore.setCategory(entry);
-
-        // TO DO : Hack
-        this.forceUpdate();
-    };
-
     onDescriptionChange = e => {
         const params = {
             description: e.target.value
@@ -121,110 +85,13 @@ class ConnectionControls extends Component {
         this.props.controlsStore.setParamsForConnection(params);
     };
 
-    // Set default values only once
-    setDefaultValues(categories) {
-        for (let key in categories) {
-            let { input, mandatory, options } = categories[key];
-            if (input === "SELECT") {
-                let content = mandatory ? options[0] : "-";
-                if (content === "-" || content === "") {
-                    categories[key].selected = [];
-                } else {
-                    categories[key].selected = [content];
-                }
-            } else if (input === "TEXT") {
-                categories[key].selected = [""];
-            }
-        }
-        return categories;
-    }
-
-    buildTags(conn) {
-        console.log("build tags");
-        let categories = conn.categories;
-        let inputs = [];
-
-        for (let key in categories) {
-            let { category, description, input, mandatory, multivalue, options } = categories[key];
-            if (input === "SELECT") {
-                let selectOptions = [];
-
-                // Add blank as an option if mandatory field is false
-                if (!mandatory) {
-                    let option = <option value={""}>-</option>;
-                    selectOptions.push(option);
-                }
-
-                // Generate list of options
-                for (let i in options) {
-                    let option = <option value={options[i]}>{options[i]}</option>;
-                    selectOptions.push(option);
-                }
-
-                // Create the input field
-                let inputTag = (
-                    <FormGroup>
-                        <Label>{description}</Label>
-                        <Input
-                            type="select"
-                            name={category}
-                            id={category}
-                            multiple={multivalue}
-                            valid={
-                                validator.tagsControl(conn.categories, category, mandatory) ===
-                                "success"
-                            }
-                            invalid={
-                                validator.tagsControl(conn.categories, category, mandatory) !==
-                                "success"
-                            }
-                            onChange={e => this.onCategoryChange(e, category)}
-                        >
-                            {selectOptions}
-                        </Input>
-                    </FormGroup>
-                );
-
-                inputs.push(inputTag);
-            } else if (input === "TEXT") {
-                // TODO : Can't do multivalue in text - does that mean text area?
-
-                // Create the input field
-                let inputTag = (
-                    <FormGroup>
-                        <Label>{description}</Label>
-                        <Input
-                            type="text"
-                            placeholder={"Enter " + category}
-                            name={category}
-                            id={category}
-                            // multiple={multivalue}
-                            valid={
-                                validator.tagsControl(conn.categories, category, mandatory) ===
-                                "success"
-                            }
-                            invalid={
-                                validator.tagsControl(conn.categories, category, mandatory) !==
-                                "success"
-                            }
-                            onChange={e => this.onCategoryChange(e, category)}
-                        />
-                    </FormGroup>
-                );
-
-                inputs.push(inputTag);
-            }
-        }
-
-        return inputs;
-    }
-
     toggle() {
         this.setState(state => ({ collapse: !state.collapse }));
     }
 
     render() {
         const conn = this.props.controlsStore.connection;
+        let connectionId = conn.connectionId;
 
         const buildHelpHeader = <span>Build mode help</span>;
         const buildHelpBody = (
@@ -279,8 +146,6 @@ class ConnectionControls extends Component {
             </span>
         );
 
-        let inputs = this.buildTags(conn);
-
         return (
             <Card>
                 <CardBody>
@@ -308,9 +173,7 @@ class ConnectionControls extends Component {
                                     </span>
                                 </span>
                             </strong>
-                            <div>
-                                Connection id: {this.props.controlsStore.connection.connectionId}
-                            </div>
+                            <div>Connection id: {connectionId}</div>
                         </Alert>
                         <FormGroup>
                             {" "}
@@ -353,7 +216,9 @@ class ConnectionControls extends Component {
                         >
                             Click to fill project details
                         </Button>
-                        <Collapse isOpen={this.state.collapse}>{inputs}</Collapse>
+                        <Collapse isOpen={this.state.collapse}>
+                            <TagControls />
+                        </Collapse>
                         <FormGroup className="float-right">
                             <ToggleDisplay show={!conn.validation.acceptable}>
                                 <Button

@@ -1,6 +1,6 @@
 import Moment from "moment";
 import { observable, action } from "mobx";
-import { merge, isArray, mergeWith } from "lodash-es";
+import { merge, isArray, mergeWith, remove } from "lodash-es";
 
 class ControlsStore {
     @observable connection = {
@@ -236,27 +236,35 @@ class ControlsStore {
     };
 
     @action
-    setTags() {
+    setCategory(category, value) {
         const categories = this.connection.categories;
         const tags = this.connection.tags;
         for (let key in categories) {
-            for (let item in categories[key].selected) {
-                let entry = {
-                    category: categories[key].category,
-                    contents: categories[key].selected[item]
-                };
-                tags.push(entry);
-            }
-        }
-    }
-
-    @action
-    setCategory(entry) {
-        const categories = this.connection.categories;
-        for (let key in categories) {
             let d = categories[key];
-            if (d.category === entry.category) {
-                d.selected = entry.contents;
+            if (d.category === category) {
+                d.selected = value;
+                let removed = remove(tags, elem => {
+                    return elem.category === category;
+                });
+
+                if (d.multivalue) {
+                    for (let vkey in value) {
+                        let contents = value[vkey];
+                        if (contents !== "") {
+                            tags.push({
+                                category: category,
+                                contents: contents
+                            });
+                        }
+                    }
+                } else {
+                    if (value !== "") {
+                        tags.push({
+                            category: category,
+                            contents: value
+                        });
+                    }
+                }
             }
         }
     }

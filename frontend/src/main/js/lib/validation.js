@@ -1,6 +1,7 @@
 import React from "react";
 import Octicon from "react-octicon";
 import { Graph, alg } from "graphlib";
+import { toJS } from "mobx";
 
 class Validator {
     label(state) {
@@ -133,8 +134,6 @@ class Validator {
 
         const connection = params.connection;
 
-        console.log("connection is ", connection);
-
         if (connection.description === "") {
             result.ok = false;
             result.errors.push("Description not set.");
@@ -186,7 +185,25 @@ class Validator {
             result.errors.push("End time set before start time.");
         }
 
-        // TODO : Add validation stuff for project details
+        for (let ctgKey in connection.categories) {
+            let ctgEntry = connection.categories[ctgKey];
+            if (ctgEntry["mandatory"]) {
+                let category = ctgEntry["category"];
+                let found = false;
+                for (let tagKey in connection.tags) {
+                    let tagEntry = connection.tags[tagKey];
+                    if (tagEntry["category"] === category) {
+                        if (tagEntry["contents"] != null && tagEntry["contents"] !== "") {
+                            found = true;
+                        }
+                    }
+                }
+                if (!found) {
+                    result.ok = false;
+                    result.errors.push("Empty tag for mandatory category " + category);
+                }
+            }
+        }
 
         return result;
     }

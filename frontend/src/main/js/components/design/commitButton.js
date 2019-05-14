@@ -25,9 +25,6 @@ class CommitButton extends Component {
                     phase: phase
                 });
 
-                // Push data from categories to tags on commit
-                this.props.controlsStore.setTags();
-
                 this.props.controlsStore.clearEditConnection();
                 this.props.controlsStore.clearEditDesign();
                 this.props.designStore.clear();
