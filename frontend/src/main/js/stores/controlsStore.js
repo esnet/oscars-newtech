@@ -1,6 +1,6 @@
 import Moment from "moment";
 import { observable, action } from "mobx";
-import { merge, isArray, mergeWith } from "lodash-es";
+import { merge, isArray, mergeWith, remove } from "lodash-es";
 
 class ControlsStore {
     @observable connection = {
@@ -40,7 +40,9 @@ class ControlsStore {
         validation: {
             errors: [],
             acceptable: false
-        }
+        },
+        tags: [],
+        categories: []
     };
 
     @observable
@@ -232,6 +234,40 @@ class ControlsStore {
             return srcValue;
         }
     };
+
+    @action
+    setCategory(category, value) {
+        const categories = this.connection.categories;
+        const tags = this.connection.tags;
+        for (let key in categories) {
+            let d = categories[key];
+            if (d.category === category) {
+                d.selected = value;
+                let removed = remove(tags, elem => {
+                    return elem.category === category;
+                });
+
+                if (d.multivalue) {
+                    for (let vkey in value) {
+                        let contents = value[vkey];
+                        if (contents !== "") {
+                            tags.push({
+                                category: category,
+                                contents: contents
+                            });
+                        }
+                    }
+                } else {
+                    if (value !== "") {
+                        tags.push({
+                            category: category,
+                            contents: value
+                        });
+                    }
+                }
+            }
+        }
+    }
 
     @action
     setParamsForEditPipe(params) {

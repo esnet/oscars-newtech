@@ -7,28 +7,26 @@ import net.es.oscars.resv.db.TagCtgRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.Tag;
 import net.es.oscars.resv.ent.TagCategory;
+import net.es.oscars.topo.beans.CategoryConfig;
+import net.es.oscars.topo.pop.UIPopulator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 
 @RestController
 @Slf4j
 public class TagController {
+    @Autowired
+    private UIPopulator uiPopulator;
 
     @Autowired
     private TagCtgRepository ctgRepo;
+
     @Autowired
     private ConnectionRepository connRepo;
 
@@ -118,4 +116,11 @@ public class TagController {
         }
 
     }
+
+    @RequestMapping(value = "/api/tag/categories/config", method = RequestMethod.GET)
+    @ResponseBody
+    public List<CategoryConfig> categoryConfig() {
+        return uiPopulator.getCtgConfigs();
+    }
+
 }

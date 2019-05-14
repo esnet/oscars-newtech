@@ -1,6 +1,7 @@
 import React from "react";
 import Octicon from "react-octicon";
 import { Graph, alg } from "graphlib";
+import { toJS } from "mobx";
 
 class Validator {
     label(state) {
@@ -183,6 +184,27 @@ class Validator {
             result.ok = false;
             result.errors.push("End time set before start time.");
         }
+
+        for (let ctgKey in connection.categories) {
+            let ctgEntry = connection.categories[ctgKey];
+            if (ctgEntry["mandatory"]) {
+                let category = ctgEntry["category"];
+                let found = false;
+                for (let tagKey in connection.tags) {
+                    let tagEntry = connection.tags[tagKey];
+                    if (tagEntry["category"] === category) {
+                        if (tagEntry["contents"] != null && tagEntry["contents"] !== "") {
+                            found = true;
+                        }
+                    }
+                }
+                if (!found) {
+                    result.ok = false;
+                    result.errors.push("Empty tag for mandatory category " + category);
+                }
+            }
+        }
+
         return result;
     }
 
@@ -220,6 +242,21 @@ class Validator {
             control.value = inputStr;
         }
         return inputStr;
+    }
+
+    tagsControl(categories, category, mandatory) {
+        if (mandatory === false) {
+            return "success";
+        } else {
+            for (let i in categories) {
+                let c = categories[i].category;
+                let s = categories[i].selected;
+                if (c === category && (s === undefined || s.length === 0)) {
+                    return "error";
+                }
+            }
+            return "success";
+        }
     }
 }
 

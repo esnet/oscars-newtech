@@ -4,18 +4,21 @@ import { observer, inject } from "mobx-react";
 import { action, autorun } from "mobx";
 import Octicon from "react-octicon";
 import ToggleDisplay from "react-toggle-display";
-import { Alert, Form, Label, Button, Card, CardBody, FormGroup, Input } from "reactstrap";
+import { Alert, Form, Label, Button, Card, CardBody, FormGroup, Input, Collapse } from "reactstrap";
 
 import myClient from "../../agents/client";
 import validator from "../../lib/validation";
 import CommitButton from "./commitButton";
 import HelpPopover from "../helpPopover";
+import TagControls from "./tagControls";
 
 @inject("controlsStore", "designStore", "modalStore")
 @observer
 class ConnectionControls extends Component {
     constructor(props) {
         super(props);
+        this.toggle = this.toggle.bind(this);
+        this.state = { collapse: false };
     }
 
     componentWillMount() {
@@ -82,8 +85,13 @@ class ConnectionControls extends Component {
         this.props.controlsStore.setParamsForConnection(params);
     };
 
+    toggle() {
+        this.setState(state => ({ collapse: !state.collapse }));
+    }
+
     render() {
         const conn = this.props.controlsStore.connection;
+        let connectionId = conn.connectionId;
 
         const buildHelpHeader = <span>Build mode help</span>;
         const buildHelpBody = (
@@ -165,9 +173,7 @@ class ConnectionControls extends Component {
                                     </span>
                                 </span>
                             </strong>
-                            <div>
-                                Connection id: {this.props.controlsStore.connection.connectionId}
-                            </div>
+                            <div>Connection id: {connectionId}</div>
                         </Alert>
                         <FormGroup>
                             {" "}
@@ -203,6 +209,16 @@ class ConnectionControls extends Component {
                                 onChange={this.onMTUChange}
                             />
                         </FormGroup>
+                        <Button
+                            color="secondary"
+                            onClick={this.toggle}
+                            style={{ marginBottom: "1rem" }}
+                        >
+                            Click to fill project details
+                        </Button>
+                        <Collapse isOpen={this.state.collapse}>
+                            <TagControls />
+                        </Collapse>
                         <FormGroup className="float-right">
                             <ToggleDisplay show={!conn.validation.acceptable}>
                                 <Button
@@ -215,13 +231,11 @@ class ConnectionControls extends Component {
                                     Display errors
                                 </Button>{" "}
                             </ToggleDisplay>
-
                             {/*
                             <ToggleDisplay show={conn.phase === 'RESERVED' && conn.schedule.start.at > new Date()}>
                                 <UncommitButton/>{' '}
                             </ToggleDisplay>
                             */}
-
                             <ToggleDisplay
                                 show={conn.validation.acceptable && conn.phase === "HELD"}
                             >

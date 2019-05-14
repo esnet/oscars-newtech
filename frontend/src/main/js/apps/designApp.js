@@ -64,6 +64,7 @@ class DesignApp extends Component {
                 </Col>
                 <Col md={3} sm={3}>
                     <HoldTimer />
+                    <br />
                     <SelectPortTypeahead />
                     <br />
                     <DesignComponents />

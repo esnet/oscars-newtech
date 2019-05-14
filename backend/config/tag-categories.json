@@ -1,0 +1,26 @@
+[
+  {
+    "category": "project",
+    "description": "Project ID",
+    "input": "SELECT",
+    "mandatory": true,
+    "multivalue": false,
+    "options": ["ESnet", "Testing", "LHCone"]
+  },
+  {
+    "category": "priority",
+    "description": "Priority",
+    "input": "SELECT",
+    "mandatory": false,
+    "multivalue": false,
+    "options": ["Low", "Mid", "High"]
+  },
+  {
+    "category": "contact",
+    "description": "Contact",
+    "input": "TEXT",
+    "mandatory": false,
+    "multivalue": false
+  }
+
+]
