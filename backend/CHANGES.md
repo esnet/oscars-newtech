@@ -7,6 +7,7 @@
 - Extensive topology changes
 - Minor PSS bug fixes
 - Improved validation
+- Tag categories
 
 ### v1.0.31
 

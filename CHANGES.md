@@ -6,10 +6,11 @@
     - Extensive topology changes
     - Minor PSS bug fixes
     - Improved validation
+    - Tag categories
 - Frontend:
-    - ASAP schedule
+    - ASAP schedule option, is the new default
     - List page improvements
-    - Tag editing
+    - Tag controls in New Connection
     - Library updates & other misc maintenance
 - Improved versioning with Maven
 

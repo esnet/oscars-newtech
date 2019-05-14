@@ -10,18 +10,23 @@ Instructions include config file changes, database schema changes, etc.
 - For the `oscars_backend` database:
 
 ```
-psql -d oscars_backend < sql/1_0_32_to_1_0_33.sql
+psql -d oscars_backend < backend/sql/1_0_32_to_1_0_33.sql
 ```
 
 ### Config file changes
-- backend:
+- Backend:
+New supported entry:
 ```
 application.properties:
 
+tags.categories=
 ```
 
+May be left empty or be a comma-separated list of files to load as tag category specifications.
+
+
 ### Topology update changes:
-The new topo.py script will need to be installed and configured. 
+The new topo.py script will need to be installed and configured where required.
 
 
 ## 1.0.26 to 1.0.32
