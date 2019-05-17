@@ -281,10 +281,7 @@
                         </goals>
                         <configuration>
                             <hooks>
-                                <pre-commit>
-                                    echo updating version numbers
-                                    exec mvn -N versions:update-child-modules
-                                </pre-commit>
+                                <pre-commit>exec git-hooks/pre-commit.sh</pre-commit>
                             </hooks>
                         </configuration>
                     </execution>
