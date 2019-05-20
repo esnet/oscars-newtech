@@ -144,15 +144,17 @@ class ConnectionsList extends Component {
     filterData = (filter, filtered) => {
         if (filtered.length > 0) {
             for (let key in filtered) {
-                let item = filtered[key];
-                if (item["id"] === "ports") {
-                    filter[item["id"]] = [item["value"]];
-                } else if (item["id"] === "fixtures") {
-                    filter["vlans"] = [item["value"]];
-                } else if (item["id"] === "phase") {
-                    filter[item["id"]] = item["value"].toLocaleUpperCase();
+                let itemKey = filtered[key]["id"];
+                let itemValue = filtered[key]["value"];
+
+                if (itemKey === "ports") {
+                    filter[itemKey] = [itemValue];
+                } else if (itemKey === "fixtures") {
+                    filter["vlans"] = [itemValue];
+                } else if (itemKey === "phase") {
+                    filter[itemKey] = itemValue.toLocaleUpperCase();
                 } else {
-                    filter[item["id"]] = item["value"];
+                    filter[itemKey] = itemValue;
                 }
             }
         }
