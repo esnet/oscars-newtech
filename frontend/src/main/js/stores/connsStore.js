@@ -128,8 +128,9 @@ class ConnectionsStore {
         phase: "RESERVED",
         state: "ACTIVE",
         sizePerPage: 5,
-        page: 1,
-        totalSize: 0
+        page: 0,
+        totalPages: 1,
+        filtered: []
     };
 
     @action setParamsForEditSchedule(params) {
