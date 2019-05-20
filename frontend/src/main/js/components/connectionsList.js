@@ -105,6 +105,13 @@ class VlansFormatter extends Component {
 @inject("controlsStore", "connsStore", "mapStore", "modalStore", "commonStore")
 @observer
 class ConnectionsList extends Component {
+    constructor() {
+        super();
+        this.state = {
+            loading: true
+        };
+    }
+
     componentWillMount() {
         this.updateList();
     }
@@ -120,6 +127,36 @@ class ConnectionsList extends Component {
         { delay: 1000 }
     );
 
+    // Whenever the table model changes, or the user sorts or changes pages,
+    // this method gets called and passed the current table model.
+    fetchData = (state, instance) => {
+        this.setState({ loading: true });
+
+        this.props.connsStore.setFilter({
+            sizePerPage: state.pageSize,
+            page: state.page,
+            filtered: state.filtered
+        });
+
+        this.updateList();
+    };
+
+    filterData = (filter, filtered) => {
+        for (let key in filtered) {
+            let item = filtered[key];
+            if (item["id"] === "ports") {
+                filter[item["id"]] = [item["value"]];
+            } else if (item["id"] === "fixtures") {
+                filter["vlans"] = [item["value"]];
+            } else if (item["id"] === "phase") {
+                filter[item["id"]] = item["value"].toLocaleUpperCase();
+            } else {
+                filter[item["id"]] = item["value"];
+            }
+        }
+        return filter;
+    };
+
     updateList = () => {
         let csFilter = this.props.connsStore.filter;
         let filter = {};
@@ -127,10 +164,12 @@ class ConnectionsList extends Component {
             filter[c] = this.props.connsStore.filter[c];
         });
 
-        // Setting the sizePerPage to -1 returns us the entire connection list
-        filter.page = csFilter.page;
-        filter.sizePerPage = -1;
-        filter.phase = "ANY";
+        filter.page = csFilter.page + 1;
+        filter.sizePerPage = csFilter.sizePerPage;
+        filter.phase = csFilter.phase;
+
+        // If any filters are applied, apply the filter here
+        filter = this.filterData(filter, csFilter.filtered);
 
         myClient.submit("POST", "/api/conn/list", filter).then(
             successResponse => {
@@ -138,7 +177,7 @@ class ConnectionsList extends Component {
                 let conns = result.connections;
 
                 this.props.connsStore.setFilter({
-                    totalSize: result.totalSize
+                    totalPages: Math.ceil(result.totalSize / result.sizePerPage)
                 });
 
                 conns.map(conn => {
@@ -146,6 +185,8 @@ class ConnectionsList extends Component {
                 });
 
                 this.props.connsStore.updateList(conns);
+
+                this.setState({ loading: false });
             },
             failResponse => {
                 this.props.commonStore.addAlert({
@@ -234,7 +275,7 @@ class ConnectionsList extends Component {
                 <select
                     onChange={event => onChange(event.target.value)}
                     style={{ width: "100%" }}
-                    value={filter ? filter.value : "any"}
+                    value={filter ? filter.value : "reserved"}
                 >
                     <option value="any">Any</option>
                     <option value="reserved">Reserved</option>
@@ -333,6 +374,7 @@ class ConnectionsList extends Component {
     render() {
         let cs = this.props.connsStore;
         const format = "Y/MM/DD HH:mm";
+        const { loading } = this.state;
 
         let rows = [];
 
@@ -368,6 +410,10 @@ class ConnectionsList extends Component {
 
         return (
             <ReactTable
+                manual
+                pages={cs.filter.totalPages}
+                loading={loading}
+                onFetchData={this.fetchData}
                 data={rows}
                 columns={this.columns}
                 filterable
