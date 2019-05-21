@@ -1,5 +1,11 @@
 # OSCARS Release Notes
 
+## v1.0.34
+> May 21, 2019
+- Fontend:
+    - Fix connection list slow fetch times
+	- Restore prior default phase option "Reserved"
+
 ## v1.0.33
 > May 15, 2019
 - Backend:
