@@ -1,0 +1,177 @@
+module oscars {
+    namespace "http://com/example/oscars";
+    prefix oscars;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+
+    import tailf-ncs {
+        prefix ncs;
+    }
+
+    import tailf-common {
+        prefix tailf;
+    }
+
+    list oscars {
+
+        uses ncs:service-data;
+        ncs:servicepoint "oscars";
+
+        key name;
+        leaf name {
+            type string;
+        }
+
+        leaf aluSvcId {
+            type uint32 {
+                range "6000..6999";
+            }
+        }
+
+        list junction {
+            key "junction";
+            leaf junction {
+                tailf:info "Junction";
+                type leafref {
+                    path "/ncs:devices/ncs:device/ncs:name";
+                }
+            }
+            list fixtures {
+                key "id";
+                leaf id {
+                    type string;
+                }
+                leaf port {
+                    mandatory true;
+                    type string;
+                }
+                leaf vlan-id {
+                    mandatory true;
+                    type uint32 {
+                        range "2..4094";
+                    }
+                }
+                leaf qos {
+                    tailf:info "QoS policy id";
+                    type leafref {
+                        path "/qos/id";
+                    }
+                }
+            }
+
+            list sdp {
+                key sdpId;
+                leaf sdpId {
+                    mandatory true;
+                    type uint32 {
+                        range "6000..6999";
+                    }
+                }
+                leaf vcId {
+                    mandatory true;
+                    type uint32 {
+                        range "6000..6999";
+                    }
+                }
+                leaf type {
+                    type enumeration {
+                        enum primary;
+                        enum protect;
+                    }
+                }
+                leaf far-end {
+                    mandatory true;
+                    type inet:ip-address;
+                }
+                leaf lsp {
+                    mandatory true;
+                    type leafref {
+                        path "/oscars/junction/lsp/name";
+                    }
+                }
+
+            }
+
+            list lsp {
+                key name;
+                leaf name {
+                    type string;
+                }
+
+
+                leaf to {
+                    mandatory true;
+                    type inet:ip-address;
+                }
+
+                leaf metric {
+                    mandatory true;
+                    type uint32 {
+                        range "1..4096";
+                    }
+                }
+                leaf holdPriority {
+                    mandatory true;
+                    type uint32 {
+                        range "1..4096";
+                    }
+                }
+                leaf setupPriority {
+                    mandatory true;
+                    type uint32 {
+                        range "1..4096";
+                    }
+                }
+
+                list hops {
+                    leaf order {
+                        mandatory true;
+                        type uint32 {
+                            range "1..4096";
+                        }
+                    }
+                    key address;
+                    leaf address {
+                        mandatory true;
+                        type inet:ip-address;
+                    }
+                }
+            }
+
+
+        }
+    }
+
+    list qos {
+        key "id";
+        leaf id {
+            type string;
+        }
+        leaf excess-action {
+            mandatory true;
+            type enumeration {
+                enum drop {
+                    tailf:info "Drop";
+                }
+                enum scavenger {
+                    tailf:info "Re-mark as scavenger";
+                }
+            }
+
+        }
+        leaf inMbps {
+            mandatory true;
+            type uint32 {
+                range "0..100000";
+            }
+        }
+        leaf egMbps {
+            mandatory true;
+            type uint32 {
+                range "0..100000";
+            }
+        }
+    }
+}

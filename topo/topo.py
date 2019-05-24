@@ -236,7 +236,6 @@ def merge_lags(edge_ports, config):
 
 def merge_switch_devices(oscars_devices=None, config=None):
     for sw_name, sw_entry in config['SWITCHES'].items():
-        print(sw_name)
         for d_entry in oscars_devices:
             if sw_name == d_entry['urn']:
                 print("bad urn")
@@ -404,8 +403,9 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
         if ifce["nokiaType"] == "network":
             ifce_type = "nokia"
             keep = "No"
-            parent_port_urn = ifce['device'] + ":" + ifce["port"]
-            keep_decisions[parent_port_urn] = "No"
+            if ifce['port']:
+                parent_port_urn = ifce['device'] + ":" + ifce["port"]
+                keep_decisions[parent_port_urn] = "No"
 
         if ifce_name.startswith('ge'):
             keep = "Yes"
