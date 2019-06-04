@@ -1,0 +1,20 @@
+edit oscars XYZY serviceId 6100
+up
+set device netlab-7750sr12-rt1-es1 fixture 4/1/1 500
+set device netlab-7750sr12-rt1-es1 fixture 4/1/1 600
+
+top
+
+edit oscars ABCD serviceId 6600
+up
+set device netlab-mx960-rt1-es1 fixture xe-0/2/0 500
+set device netlab-mx960-rt1-es1 fixture xe-0/2/0 600
+
+top
+
+
+
+edit oscars SOLIS serviceId 6500
+up
+set device netlab-7750sr12-rt2-es1 fixture 10/1/4 500
+set device netlab-7750sr12-rt2-es1 fixture 10/1/4 600

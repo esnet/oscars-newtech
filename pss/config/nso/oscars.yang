@@ -1,5 +1,5 @@
 module oscars {
-    namespace "http://com/example/oscars";
+    namespace "http://net.es/oscars";
     prefix oscars;
 
     import ietf-inet-types {
@@ -24,7 +24,8 @@ module oscars {
             type string;
         }
 
-        leaf aluSvcId {
+        leaf serviceId {
+            mandatory true;
             type uint32 {
                 range "6000..6999";
             }
@@ -68,6 +69,10 @@ module oscars {
                     }
                 }
             }
+            leaf aluLoopback {
+                type inet:ip-address;
+            }
+
 
             list sdp {
                 key sdpId;

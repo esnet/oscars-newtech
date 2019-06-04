@@ -1,12 +1,15 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0" servicepoint="oscars">
+    <?set serviceName = "OSCARS-{name}"?>
+
     <devices xmlns="http://tail-f.com/ns/ncs">
         <?foreach {device}?>
-
         <device tags="nocreate">
             <name>{name}</name>
             <config tags="merge">
                 <!-- Juniper config -->
                 <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+                    <?set community="OSCARS-{name}-{serviceId}"?>
+                    <?set members="65000:672277L:{serviceId}"?>
                     <interfaces>
                         <?foreach {fixture}?>
                         <interface>
@@ -15,28 +18,19 @@
                                 <name>{vlan-id}</name>
                                 <encapsulation>vlan-vpls</encapsulation>
                                 <vlan-id>{vlan-id}</vlan-id>
-                                <output-vlan-map>swap</output-vlan-map>
+                                <output-vlan-map><swap /></output-vlan-map>
                             </unit>
                         </interface>
-
                         <?end?>
                     </interfaces>
                     <protocols>
                         <mpls>
                             <?foreach {lsp}?>
-                            <label-switched-path>
-                                <name>OSCARS-{name}-lsp</name>
-                                <to>{to}</to>
-                                <metric>{metric}</metric>
-                                <primary>{name}-path</primary>
-                                <priority>
-                                    <setup-priority>{setupPriority}</setup-priority>
-                                    <reservation-priority>{holdPriority}</reservation-priority>
-                                </priority>
-                                <no-cspf/>
-                            </label-switched-path>
+                            <?set lsp_name = "OSCARS-{name}-lsp"?>
+                            <?set path_name = "OSCARS-{name}-path"?>
+
                             <path>
-                                <name>OSCARS-{name}-path</name>
+                                <name>{$path_name}</name>
                                 <?foreach {hop}?>
                                 <path-list>
                                     <name>{address}</name>
@@ -44,6 +38,18 @@
                                 </path-list>
                                 <?end?>
                             </path>
+
+                            <label-switched-path>
+                                <name>{$lsp_name}</name>
+                                <to>{to}</to>
+                                <metric>{metric}</metric>
+                                <primary><name>{$path_name}</name></primary>
+                                <priority>
+                                    <setup-priority>{setupPriority}</setup-priority>
+                                    <reservation-priority>{holdPriority}</reservation-priority>
+                                </priority>
+                                <no-cspf/>
+                            </label-switched-path>
                             <?end?>
                         </mpls>
                     </protocols>
@@ -88,10 +94,11 @@
                             </protocols>
                         </instance>
                     </routing-instances>
+
                     <policy-options>
                         <community>
                             <name>{$community}</name>
-                            <members>{$members}</members>>
+                            <members>{$members}</members>
                         </community>
                         <policy-statement>
                             <name>OSCARS-{name}</name>
@@ -122,9 +129,100 @@
                 </configuration>
 
                 <!-- ALU config -->
-                <port xmlns="http://tail-f.com/ned/alu-sr">
-                </port>
+                <service xmlns="http://tail-f.com/ned/alu-sr">
+                    <vpls>
+                        <service-id>{string(../serviceId)}</service-id>
+                        <name>{$serviceName}</name>
+                        <customer>1</customer>
+
+                        <?foreach {fixture}?>
+                        <?set sap_id = "{ifce}:{vlan-id}"?>
+                        <sap>
+                            <sap-id>{$sap_id}</sap-id>
+                            <auto-learn-mac-protect/>
+                            <restrict-protected-src>
+                                <restrict-protected-src-value>discard-frame</restrict-protected-src-value>
+                            </restrict-protected-src>
+                        </sap>
+                        <?end?>
+
+                        <service-mtu>{mtu}</service-mtu>
+                        <fdb-table-size>4096</fdb-table-size>
+                        <shutdown>false</shutdown>
+
+                        <?foreach {sdp}?>
+                        <spoke-sdp>
+                            <sdp-id>{sdpId}</sdp-id>
+                            <vc-id>{vc-id}</vc-id>
+                            <vc-type>vlan</vc-type>
+                        </spoke-sdp>
+                        <?end?>
+                    </vpls>
+
+                    <?foreach {sdp}?>
+                    <sdp>
+                        <sdp-id>{sdpId}</sdp-id>
+                        <shutdown>false</shutdown>
+                        <lsp>
+                            <lsp-name>{lsp/name}</lsp-name>
+                        </lsp>
+                        <far-end>{far-end}</far-end>
+                    </sdp>
+                    <?end?>
+
+                </service>
                 <router xmlns="http://tail-f.com/ned/alu-sr">
+                    <router-name>Base</router-name>
+                    <?set loopback_name = "lo0-{../name}"?>
+                    <?if {aluLoopback}?>
+                    <pim>
+                        <interface>
+                            <ip-int-name>{$loopback_name}</ip-int-name>
+                            <shutdown>true</shutdown>
+                        </interface>
+                    </pim>
+                    <?end?>
+                    <?if {aluLoopback}?>
+                    <interface>
+                        <interface-name>{$loopback_name}</interface-name>
+                        <address>{aluLoopback}/32</address>
+                        <loopback/>
+                        <shutdown>false</shutdown>
+                        <enable-ingress-stats/>
+                    </interface>
+                    <?end?>
+
+                    <mpls>
+                        <?foreach {lsp}?>
+                        <?set lsp_name = "OSCARS-{name}-lsp"?>
+                        <?set path_name = "OSCARS-{name}-path"?>
+                        <path>
+                            <name>{$path_name}</name>
+                            <?foreach {hop}?>
+                            <hop>
+                                <hop-number>{order}</hop-number>
+                                <ip-address>{address}</ip-address>
+                                <mode>strict</mode>
+                            </hop>
+                            <?end?>
+                            <shutdown>false</shutdown>
+                        </path>
+
+                        <lsp>
+                            <name>{$lsp_name}</name>
+
+                            <to>{to}</to>
+                            <primary>
+                                <path>{$path_name}</path>
+                                <priority>
+                                    <setup-priority>{setupPriority}</setup-priority>
+                                    <hold-priority>{holdPriority}</hold-priority>
+                                </priority>
+                            </primary>
+                            <shutdown>false</shutdown>
+                        </lsp>
+                        <?end?>
+                    </mpls>
                 </router>
             </config>
         </device>
