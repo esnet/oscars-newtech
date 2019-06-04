@@ -1,0 +1,134 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0" servicepoint="oscars">
+    <devices xmlns="http://tail-f.com/ns/ncs">
+        <?foreach {device}?>
+
+        <device tags="nocreate">
+            <name>{name}</name>
+            <config tags="merge">
+                <!-- Juniper config -->
+                <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+                    <interfaces>
+                        <?foreach {fixture}?>
+                        <interface>
+                            <name>{ifce}</name>
+                            <unit>
+                                <name>{vlan-id}</name>
+                                <encapsulation>vlan-vpls</encapsulation>
+                                <vlan-id>{vlan-id}</vlan-id>
+                                <output-vlan-map>swap</output-vlan-map>
+                            </unit>
+                        </interface>
+
+                        <?end?>
+                    </interfaces>
+                    <protocols>
+                        <mpls>
+                            <?foreach {lsp}?>
+                            <label-switched-path>
+                                <name>OSCARS-{name}-lsp</name>
+                                <to>{to}</to>
+                                <metric>{metric}</metric>
+                                <primary>{name}-path</primary>
+                                <priority>
+                                    <setup-priority>{setupPriority}</setup-priority>
+                                    <reservation-priority>{holdPriority}</reservation-priority>
+                                </priority>
+                                <no-cspf/>
+                            </label-switched-path>
+                            <path>
+                                <name>OSCARS-{name}-path</name>
+                                <?foreach {hop}?>
+                                <path-list>
+                                    <name>{address}</name>
+                                    <strict />
+                                </path-list>
+                                <?end?>
+                            </path>
+                            <?end?>
+                        </mpls>
+                    </protocols>
+                    <routing-instances>
+                        <instance>
+                            <name>{name}</name>
+                            <instance-type>vpls</instance-type>
+                            <?foreach {fixture}?>
+                            <interface>
+                                <name>{ifce}.{vlan-id}</name>
+                            </interface>
+                            <?end?>
+                            <protocols>
+                                <vpls>
+                                    <no-tunnel-services/>
+                                    <mtu>{mtu}</mtu>
+
+                                    <site>
+                                        <name>CE</name>
+                                        <?foreach {fixture}?>
+                                        <interface>
+                                            <name>{ifce}.{vlan-id}</name>
+                                        </interface>
+                                        <?end?>
+                                    </site>
+
+                                    <?foreach {sdp}?>
+                                    <mesh-group>
+                                        <name>{name}</name>
+                                        <vpls-id>{vc-id}</vpls-id>
+                                        <local-switching/>
+                                        <neighbor>
+                                            <name>{lsp/neighbor}</name>
+                                            <psn-tunnel-endpoint>{lsp/to}</psn-tunnel-endpoint>
+                                            <community>{$community}</community>
+                                            <encapsulation-type>ethernet-vlan</encapsulation-type>
+                                        </neighbor>
+                                    </mesh-group>
+                                    <?end?>
+
+                                </vpls>
+                            </protocols>
+                        </instance>
+                    </routing-instances>
+                    <policy-options>
+                        <community>
+                            <name>{$community}</name>
+                            <members>{$members}</members>>
+                        </community>
+                        <policy-statement>
+                            <name>OSCARS-{name}</name>
+                            <term>
+                                <name>forward-to-lsp</name>
+                                <from>
+                                    <community>{$community}</community>
+                                </from>
+                                <then>
+                                    <?foreach {lsp}?>
+                                    <install-nexthop>
+                                        <lsp>{name}</lsp>
+                                    </install-nexthop>
+                                    <accept/>
+                                    <?end?>
+                                </then>
+                            </term>
+                        </policy-statement>
+                    </policy-options>
+
+                    <routing-options>
+                        <forwarding-table>
+                            <export>OSCARS-{name}</export>
+                            <indirect-next-hop/>
+                        </forwarding-table>
+                    </routing-options>
+
+                </configuration>
+
+                <!-- ALU config -->
+                <port xmlns="http://tail-f.com/ned/alu-sr">
+                </port>
+                <router xmlns="http://tail-f.com/ned/alu-sr">
+                </router>
+            </config>
+        </device>
+        <?end?>
+
+    </devices>
+</config-template>

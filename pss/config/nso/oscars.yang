@@ -30,29 +30,37 @@ module oscars {
             }
         }
 
-        list junction {
-            key "junction";
-            leaf junction {
-                tailf:info "Junction";
+        leaf mtu {
+            type uint32 {
+                range "1500..9800";
+            }
+        }
+
+        grouping endpoint {
+            leaf ifce {
+                mandatory true;
+                type string;
+            }
+            leaf vlan-id {
+                mandatory true;
+                type uint32 {
+                    range "2..4094";
+                }
+            }
+
+        }
+
+        list device {
+            key "name";
+            leaf name {
+                tailf:info "Device";
                 type leafref {
                     path "/ncs:devices/ncs:device/ncs:name";
                 }
             }
-            list fixtures {
-                key "id";
-                leaf id {
-                    type string;
-                }
-                leaf port {
-                    mandatory true;
-                    type string;
-                }
-                leaf vlan-id {
-                    mandatory true;
-                    type uint32 {
-                        range "2..4094";
-                    }
-                }
+            list fixture {
+                uses endpoint;
+                key "ifce vlan-id";
                 leaf qos {
                     tailf:info "QoS policy id";
                     type leafref {
@@ -69,7 +77,12 @@ module oscars {
                         range "6000..6999";
                     }
                 }
-                leaf vcId {
+                leaf name {
+                    mandatory true;
+                    type string;
+                }
+
+                leaf vc-id {
                     mandatory true;
                     type uint32 {
                         range "6000..6999";
@@ -88,7 +101,7 @@ module oscars {
                 leaf lsp {
                     mandatory true;
                     type leafref {
-                        path "/oscars/junction/lsp/name";
+                        path "/oscars/device/lsp/name";
                     }
                 }
 
@@ -100,6 +113,9 @@ module oscars {
                     type string;
                 }
 
+                leaf neighbor {
+                    type inet:ip-address;
+                }
 
                 leaf to {
                     mandatory true;
