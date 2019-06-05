@@ -15,6 +15,8 @@ import net.es.oscars.nsi.svc.NsiService;
 import net.es.oscars.pss.db.RouterCommandsRepository;
 import net.es.oscars.pss.ent.RouterCommandHistory;
 import net.es.oscars.pss.ent.RouterCommands;
+import net.es.oscars.pss.nso.NsoRestServer;
+import net.es.oscars.pss.nso.NsoService;
 import net.es.oscars.resv.db.CommandHistoryRepository;
 import net.es.oscars.resv.ent.Connection;
 import net.es.oscars.resv.ent.Event;
@@ -22,6 +24,7 @@ import net.es.oscars.resv.ent.VlanJunction;
 import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.resv.svc.LogService;
+import org.opensaml.xml.signature.P;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,16 +46,21 @@ public class PSSAdapter {
     private PSSParamsAdapter paramsAdapter;
     private CommandHistoryRepository historyRepo;
     private NsiService nsiService;
+    private NsoService nsoService;
+    private NsoRestServer nsoRestServer;
     private LogService logService;
 
     @Autowired
     public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr,
                       CommandHistoryRepository historyRepo, NsiService nsiService,
+                      NsoService nsoService, NsoRestServer nsoRestServer,
                       PSSParamsAdapter paramsAdapter, LogService logService, PssProperties properties) {
         this.pssProxy = pssProxy;
         this.rcr = rcr;
         this.historyRepo = historyRepo;
         this.paramsAdapter = paramsAdapter;
+        this.nsoService = nsoService;
+        this.nsoRestServer = nsoRestServer;
         this.nsiService = nsiService;
         this.logService = logService;
         this.properties = properties;
@@ -60,9 +68,24 @@ public class PSSAdapter {
 
 
     public void generateConfig(Connection conn) throws PSSException {
-        log.info("generating config");
 
-        // TODO: possibly a map device urn <-> pss device ?
+        if (properties.getNso()) {
+            log.info("Generating NSO config");
+            String xml = nsoService.makeOscarsConfig(conn);
+            for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
+                RouterCommands rce = RouterCommands.builder()
+                        .connectionId(conn.getConnectionId())
+                        .deviceUrn(j.getDeviceUrn())
+                        .contents(xml)
+                        .type(CommandType.BUILD)
+                        .build();
+                rcr.save(rce);
+            }
+            return;
+        }
+
+
+        log.info("generating config from PSS");
         List<Command> commands = new ArrayList<>();
         try {
             commands.addAll(this.buildCommands(conn));
@@ -90,10 +113,36 @@ public class PSSAdapter {
     }
 
     public State build(Connection conn) throws PSSException {
-        log.info("building " + conn.getConnectionId());
+        Instant now = Instant.now();
+
+        if (properties.getNso()) {
+            log.info("building (NSO) " + conn.getConnectionId());
+            State result = State.ACTIVE;
+            String xml = nsoService.makeOscarsConfig(conn);
+            String output = nsoRestServer.postOscars(xml);
+            if (output == null) {
+                output = "success";
+            }
+
+            for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
+                RouterCommandHistory rch = RouterCommandHistory.builder()
+                        .connectionId(conn.getConnectionId())
+                        .date(now)
+                        .deviceUrn(j.getDeviceUrn())
+                        .commands(xml)
+                        .output(output)
+                        .configStatus(ConfigStatus.OK)
+                        .type(CommandType.BUILD)
+                        .build();
+                historyRepo.save(rch);
+            }
+            return result;
+
+        }
+        log.info("building (PSS) " + conn.getConnectionId());
+
         List<Command> commands = this.buildCommands(conn);
         List<CommandStatus> stable = this.getStableStatuses(commands);
-        Instant now = Instant.now();
 
         State result = State.ACTIVE;
         for (CommandStatus st : stable) {
@@ -136,10 +185,32 @@ public class PSSAdapter {
     }
 
     public State dismantle(Connection conn) throws PSSException {
-        log.info("dismantling " + conn.getConnectionId());
+        Instant now = Instant.now();
+
+        if (properties.getNso()) {
+            log.info("dismantling (NSO) " + conn.getConnectionId());
+            State result = State.WAITING;
+            nsoRestServer.deleteOscars(conn.getConnectionId());
+
+            for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
+                RouterCommandHistory rch = RouterCommandHistory.builder()
+                        .connectionId(conn.getConnectionId())
+                        .date(now)
+                        .deviceUrn(j.getDeviceUrn())
+                        .commands("DELETE /api/running/oscars/"+conn.getConnectionId())
+                        .output("")
+                        .configStatus(ConfigStatus.OK)
+                        .type(CommandType.DISMANTLE)
+                        .build();
+                historyRepo.save(rch);
+            }
+            return result;
+
+        }
+
+        log.info("dismantling (PSS)" + conn.getConnectionId());
         List<Command> commands = this.dismantleCommands(conn);
         List<CommandStatus> stable = this.getStableStatuses(commands);
-        Instant now = Instant.now();
         State result = State.WAITING;
         for (CommandStatus st : stable) {
             RouterCommandHistory rch = RouterCommandHistory.builder()

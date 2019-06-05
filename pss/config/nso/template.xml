@@ -8,7 +8,7 @@
             <config tags="merge">
                 <!-- Juniper config -->
                 <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
-                    <?set community="OSCARS-{name}-{serviceId}"?>
+                    <?set community="OSCARS-{../name}-{serviceId}"?>
                     <?set members="65000:672277L:{serviceId}"?>
                     <interfaces>
                         <?foreach {fixture}?>
@@ -95,13 +95,17 @@
                         </instance>
                     </routing-instances>
 
+
+                    <?set policy_name="OSCARS-{../name}"?>
+
+                    <?if {sdp}?>
                     <policy-options>
                         <community>
                             <name>{$community}</name>
                             <members>{$members}</members>
                         </community>
                         <policy-statement>
-                            <name>OSCARS-{name}</name>
+                            <name>{$policy_name}</name>
                             <term>
                                 <name>forward-to-lsp</name>
                                 <from>
@@ -118,13 +122,16 @@
                             </term>
                         </policy-statement>
                     </policy-options>
+                    <?end?>
 
+                    <?if {sdp}?>
                     <routing-options>
                         <forwarding-table>
-                            <export>OSCARS-{name}</export>
+                            <export>{$policy_name}</export>
                             <indirect-next-hop/>
                         </forwarding-table>
                     </routing-options>
+                    <?end?>
 
                 </configuration>
 

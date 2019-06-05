@@ -28,4 +28,30 @@ public class NsoTest extends CucumberSteps {
         nsoRestServer.getOscars();
     }
 
+    @Then("^I can submit a test oscars$")
+    public void submit_oscars_create() {
+        String create = "<oscars xmlns=\"http://net.es/oscars\">\n" +
+                "    <name>SOLIS</name>\n" +
+                "    <serviceId>6500</serviceId>\n" +
+                "    <device xmlns=\"http://net.es/oscars\">\n" +
+                "      <name>netlab-7750sr12-rt2-es1</name>\n" +
+                "      <fixture xmlns=\"http://net.es/oscars\">\n" +
+                "        <ifce>10/1/4</ifce>\n" +
+                "        <vlan-id>500</vlan-id>\n" +
+                "      </fixture>\n" +
+                "      <fixture xmlns=\"http://net.es/oscars\">\n" +
+                "        <ifce>10/1/4</ifce>\n" +
+                "        <vlan-id>600</vlan-id>\n" +
+                "      </fixture>\n" +
+                "    </device>" +
+                "</oscars>";
+        nsoRestServer.postOscars(create);
+
+    }
+    @Then("^I can delete the test oscars$")
+    public void submit_oscars_delete() {
+        nsoRestServer.deleteOscars("SOLIS");
+
+    }
+
 }

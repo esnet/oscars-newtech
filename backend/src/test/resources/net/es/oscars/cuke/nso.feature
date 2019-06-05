@@ -7,5 +7,9 @@ Feature: basic NSO functionality
   Scenario: Basic availability calculation
     Given I have initialized the world
     Then I can get the OSCARS NSO config
+    Then I can submit a test oscars
+    Then I can get the OSCARS NSO config
+    Then I can delete the test oscars
+    Then I can get the OSCARS NSO config
     Then I did not receive an exception
 
