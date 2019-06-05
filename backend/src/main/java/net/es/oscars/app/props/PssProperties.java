@@ -49,4 +49,7 @@ public class PssProperties {
     @NonNull
     private Integer controlPlaneCheckMaxTries;
 
+    @NonNull
+    private Boolean nso;
+
 }

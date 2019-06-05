@@ -36,6 +36,12 @@
             </properties>
         </profile>
         <profile>
+            <id>nso</id>
+            <properties>
+                <cucumber.options>--tags @nso --strict</cucumber.options>
+            </properties>
+        </profile>
+        <profile>
             <id>noTest</id>
             <properties>
                 <cucumber.options>--tags @none --strict</cucumber.options>
