@@ -64,13 +64,14 @@ public class MapController {
                     .type(d.getType().toString())
                     .build();
 
-            if (positionMap.keySet().contains(d.getUrn())) {
-                n.setX(positionMap.get(d.getUrn()).getX());
-                n.setY(positionMap.get(d.getUrn()).getY());
-                n.setFixed(new HashMap<>());
-                n.getFixed().put("x", true);
-                n.getFixed().put("y", true);
-
+            for (String key: positionMap.keySet()) {
+                if (d.getUrn().contains(key)) {
+                    n.setX(positionMap.get(key).getX());
+                    n.setY(positionMap.get(key).getY());
+                    n.setFixed(new HashMap<>());
+                    n.getFixed().put("x", true);
+                    n.getFixed().put("y", true);
+                }
             }
             g.getNodes().add(n);
         }
