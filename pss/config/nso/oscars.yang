@@ -103,6 +103,9 @@ module oscars {
                     mandatory true;
                     type inet:ip-address;
                 }
+                leaf neighbor {
+                    type inet:ip-address;
+                }
                 leaf lsp {
                     mandatory true;
                     type leafref {
@@ -130,7 +133,7 @@ module oscars {
                 leaf metric {
                     mandatory true;
                     type uint32 {
-                        range "1..4096";
+                        range "1..99999";
                     }
                 }
                 leaf holdPriority {
@@ -146,7 +149,7 @@ module oscars {
                     }
                 }
 
-                list hops {
+                list hop {
                     leaf order {
                         mandatory true;
                         type uint32 {

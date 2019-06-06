@@ -8,8 +8,10 @@
             <config tags="merge">
                 <!-- Juniper config -->
                 <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
-                    <?set community="OSCARS-{../name}-{serviceId}"?>
-                    <?set members="65000:672277L:{serviceId}"?>
+                    <?set community="OSCARS-{../name}-{../serviceId}"?>
+                    <?set members="65000:672277L:{../serviceId}"?>
+                    <?set ri_name = "OSCARS-{../name}"?>
+                    <?set policy_name="OSCARS-{../name}"?>
                     <interfaces>
                         <?foreach {fixture}?>
                         <interface>
@@ -44,10 +46,12 @@
                                 <to>{to}</to>
                                 <metric>{metric}</metric>
                                 <primary><name>{$path_name}</name></primary>
+                                <!-- these cause a syntax error in juniper netconf! junos version bug??
                                 <priority>
                                     <setup-priority>{setupPriority}</setup-priority>
                                     <reservation-priority>{holdPriority}</reservation-priority>
                                 </priority>
+                                -->
                                 <no-cspf/>
                             </label-switched-path>
                             <?end?>
@@ -55,13 +59,15 @@
                     </protocols>
                     <routing-instances>
                         <instance>
-                            <name>{name}</name>
+                            <name>{$ri_name}</name>
                             <instance-type>vpls</instance-type>
                             <?foreach {fixture}?>
+                            <?set ifce_id = "{ifce}.{vlan-id}"?>
                             <interface>
-                                <name>{ifce}.{vlan-id}</name>
+                                <name>{$ifce_id}</name>
                             </interface>
                             <?end?>
+
                             <protocols>
                                 <vpls>
                                     <no-tunnel-services/>
@@ -70,8 +76,9 @@
                                     <site>
                                         <name>CE</name>
                                         <?foreach {fixture}?>
+                                        <?set ifce_id = "{ifce}.{vlan-id}"?>
                                         <interface>
-                                            <name>{ifce}.{vlan-id}</name>
+                                            <name>{$ifce_id}</name>
                                         </interface>
                                         <?end?>
                                     </site>
@@ -82,8 +89,8 @@
                                         <vpls-id>{vc-id}</vpls-id>
                                         <local-switching/>
                                         <neighbor>
-                                            <name>{lsp/neighbor}</name>
-                                            <psn-tunnel-endpoint>{lsp/to}</psn-tunnel-endpoint>
+                                            <name>{neighbor}</name>
+                                            <psn-tunnel-endpoint>{far-end}</psn-tunnel-endpoint>
                                             <community>{$community}</community>
                                             <encapsulation-type>ethernet-vlan</encapsulation-type>
                                         </neighbor>
@@ -95,8 +102,6 @@
                         </instance>
                     </routing-instances>
 
-
-                    <?set policy_name="OSCARS-{../name}"?>
 
                     <?if {sdp}?>
                     <policy-options>
