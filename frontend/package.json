@@ -25,6 +25,8 @@
     "react-bootstrap-table2-paginator": "^2.0.4",
     "react-bootstrap-typeahead": "^3.4.2",
     "react-bs-notifier": "^5.0.0",
+    "react-dnd": "^7.4.5",
+    "react-dnd-html5-backend": "^7.4.4",
     "react-dom": "^16.8.6",
     "react-idle-timer": "^4.2.3",
     "react-lazylog": "^3.2.0",
@@ -33,6 +35,7 @@
     "react-router-dom": "^5.0.0",
     "react-select-plus": "^1.2.0",
     "react-table": "^6.10.0",
+    "react-tag-input": "^6.4.0",
     "react-toggle-display": "^2.2.0",
     "reactstrap": "^8.0.0",
     "visjs-network": "^4.24.4"

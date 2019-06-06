@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 
 import { observer, inject } from "mobx-react";
-import { action, toJS } from "mobx";
+import { action } from "mobx";
 
 import { Label, FormGroup, Input } from "reactstrap";
+import { WithContext as ReactTags } from 'react-tag-input';
 
 import myClient from "../../agents/client";
 import validator from "../../lib/validation";
@@ -23,6 +24,23 @@ class TagControls extends Component {
                 this.props.controlsStore.setParamsForConnection(params);
             })
         );
+    }
+
+    handleAddition = (e, category) => {
+        let value = [e.text];
+        this.props.controlsStore.setCategory(category, value, "TEXT");
+    }
+
+    handleDelete = (i, category) => {
+        const tags = this.props.controlsStore.getTags(category);
+        const filteredTags = tags.filter((tag, index) => index !== i);
+
+        let value = [];
+        for (let i = 0, l = filteredTags.length; i < l; i++) {
+            value.push(filteredTags[i].text);
+        }
+
+        this.props.controlsStore.setCategory(category, value);
     }
 
     onCategoryChange = (e, category, multivalue) => {
@@ -102,6 +120,7 @@ class TagControls extends Component {
                 options,
                 selected
             } = categories[key];
+
             if (input === "SELECT") {
                 let selectOptions = [];
 
@@ -149,34 +168,67 @@ class TagControls extends Component {
 
                 inputs.push(inputTag);
             } else if (input === "TEXT") {
-                // TODO : Can't do multivalue in text - does that mean text area?
+                if (!multivalue) {
 
-                // Create the input field
-                let inputTag = (
-                    <FormGroup key={category}>
-                        <Label>{description}</Label>
-                        <Input
-                            type="text"
-                            placeholder={"Enter " + category}
-                            name={category}
-                            id={category}
-                            valid={
-                                validator.tagsControl(conn.categories, category, mandatory) ===
-                                "success"
-                            }
-                            invalid={
-                                validator.tagsControl(conn.categories, category, mandatory) !==
-                                "success"
-                            }
-                            onChange={e => this.onCategoryChange(e, category)}
-                        />
-                    </FormGroup>
-                );
+                    // Create the input field
+                    let inputTag = (
+                        <FormGroup key={category}>
+                            <Label>{description}</Label>
+                            <Input
+                                type="text"
+                                placeholder={"Enter " + category}
+                                name={category}
+                                id={category}
+                                valid={
+                                    validator.tagsControl(conn.categories, category, mandatory) ===
+                                    "success"
+                                }
+                                invalid={
+                                    validator.tagsControl(conn.categories, category, mandatory) !==
+                                    "success"
+                                }
+                                onChange={e => this.onCategoryChange(e, category)}
+                            />
+                        </FormGroup>
+                    );
 
-                inputs.push(inputTag);
+                    inputs.push(inputTag);
+
+                } else {
+
+                    // For multivalue text inputs
+                    const KeyCodes = {
+                        comma: 188,
+                        enter: 13,
+                    };
+
+                    const delimiters = [KeyCodes.comma, KeyCodes.enter];
+
+                    // Get Tags for a particular category
+                    const tags = this.props.controlsStore.getTags(category);
+                    
+                    let inputTag = (
+                        <FormGroup key={category}>
+                            <Label>{description}</Label>
+                            <ReactTags
+                                tags={tags}
+                                placeholder={"Enter value(s) separated by a comma"}
+                                handleDelete={e => this.handleDelete(e, category)}
+                                handleAddition={e => this.handleAddition(e, category, multivalue)}
+                                allowDragDrop={false}
+                                delimiters={delimiters}
+                                classNames={{
+                                    tagInputField: (validator.tagsControl(conn.categories, category, mandatory) === "success") ? 'form-control is-valid' : 'form-control is-invalid',
+                                    tag: 'btn btn-primary',
+                                }}
+                            />
+                        </FormGroup>
+                    );
+
+                    inputs.push(inputTag);     
+                }
             }
         }
-
         return inputs;
     }
 }
