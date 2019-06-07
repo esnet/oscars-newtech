@@ -66,6 +66,7 @@ public class MapController {
                     .type(d.getType().toString())
                     .build();
 
+            boolean devicePresent = false;
             for (String key: positionMap.keySet()) {
                 if (d.getUrn().contains(key)) {
                     if (seenDevices.containsKey(key)) {
@@ -76,10 +77,18 @@ public class MapController {
                         n.setFixed(new HashMap<>());
                         n.getFixed().put("x", true);
                         n.getFixed().put("y", true);
+
                         seenDevices.put(key, true);
+                        devicePresent = true;
                     }
                 }
             }
+
+            // When device is completely missed
+            if (!devicePresent) {
+                log.info("Device not present in position map");
+            }
+
             g.getNodes().add(n);
         }
 
