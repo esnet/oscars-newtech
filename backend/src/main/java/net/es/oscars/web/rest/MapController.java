@@ -55,6 +55,8 @@ public class MapController {
 
         Topology topology = topoService.currentTopology();
 
+        Map<String, Boolean> seenDevices = new HashMap<>();
+
         for (Device d : topology.getDevices().values()) {
             MapNode n = MapNode.builder()
                     .id(d.getUrn())
@@ -66,11 +68,16 @@ public class MapController {
 
             for (String key: positionMap.keySet()) {
                 if (d.getUrn().contains(key)) {
-                    n.setX(positionMap.get(key).getX());
-                    n.setY(positionMap.get(key).getY());
-                    n.setFixed(new HashMap<>());
-                    n.getFixed().put("x", true);
-                    n.getFixed().put("y", true);
+                    if (seenDevices.containsKey(key)) {
+                        log.info("Same device is seen twice");
+                    } else {
+                        n.setX(positionMap.get(key).getX());
+                        n.setY(positionMap.get(key).getY());
+                        n.setFixed(new HashMap<>());
+                        n.getFixed().put("x", true);
+                        n.getFixed().put("y", true);
+                        seenDevices.put(key, true);
+                    }
                 }
             }
             g.getNodes().add(n);
