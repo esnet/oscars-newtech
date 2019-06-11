@@ -222,6 +222,23 @@ public class PssController {
         return checker.getStatuses().get(deviceUrn);
 
     }
+
+    @RequestMapping(value = "/api/pss/opStatusCommands/{connectionId:.+}", method = RequestMethod.GET)
+    public List<RouterCommands> operationalStatusCommands(@PathVariable String connectionId) throws StartupException {
+        this.checkStartup();
+        List<RouterCommands> allCommands = rcRepo.findByConnectionId(connectionId);
+
+        List<RouterCommands> result = new ArrayList<>();
+        allCommands.forEach(c -> {
+            if (c.getType().equals(CommandType.OPERATIONAL_STATUS)) {
+                result.add(c);
+            }
+        });
+
+        return result;
+
+    }
+
     private void checkStartup() throws StartupException {
 
         if (startup.isInStartup()) {
