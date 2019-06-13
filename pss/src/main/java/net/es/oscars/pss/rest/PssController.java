@@ -1,17 +1,13 @@
 package net.es.oscars.pss.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.cp.ControlPlaneHealth;
 import net.es.oscars.pss.beans.ConfigException;
-import net.es.oscars.pss.beans.UrnMappingException;
 import net.es.oscars.pss.beans.VerifyException;
 import net.es.oscars.pss.svc.CommandQueuer;
 import net.es.oscars.pss.svc.ConfigCollector;
 import net.es.oscars.pss.svc.HealthService;
-import net.es.oscars.pss.svc.RouterConfigBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,17 +19,14 @@ import java.util.*;
 public class PssController {
 
     private HealthService healthService;
-    private RouterConfigBuilder routerConfigBuilder;
     private CommandQueuer commandQueuer;
     private ConfigCollector configCollector;
 
     @Autowired
     public PssController(HealthService healthService,
                          CommandQueuer commandQueuer,
-                         ConfigCollector configCollector,
-                         RouterConfigBuilder routerConfigBuilder) {
+                         ConfigCollector configCollector) {
         this.healthService = healthService;
-        this.routerConfigBuilder = routerConfigBuilder;
         this.commandQueuer = commandQueuer;
         this.configCollector = configCollector;
     }
@@ -75,24 +68,6 @@ public class PssController {
         return this.configCollector.getConfig(request);
     }
 
-
-    @RequestMapping(value = "/generate", method = RequestMethod.POST)
-    public GenerateResponse generate(@RequestBody Command cmd)
-            throws ConfigException, UrnMappingException, JsonProcessingException {
-        log.info("generating router config");
-
-        ObjectMapper mapper = new ObjectMapper();
-        String pretty = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(cmd);
-        log.info(pretty);
-
-        String generated = routerConfigBuilder.generate(cmd);
-        return GenerateResponse.builder()
-                .connectionId(cmd.getConnectionId())
-                .device(cmd.getDevice())
-                .commandType(cmd.getType())
-                .generated(generated)
-                .build();
-    }
 
     @RequestMapping(value = "/status/{commandId}", method = RequestMethod.GET)
     public CommandStatus commandStatus(@PathVariable("commandId") String commandId) {

@@ -5,6 +5,7 @@ import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.util.DbAccess;
 import net.es.oscars.pss.db.RouterCommandsRepository;
+import net.es.oscars.pss.svc.ConfigGenService;
 import net.es.oscars.pss.svc.PSSAdapter;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
@@ -27,6 +28,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PssTask {
     @Autowired
     private PSSAdapter pssAdapter;
+
+    @Autowired
+    private ConfigGenService cgs;
+
 
     @Autowired
     private ConnectionRepository connRepo;
@@ -76,7 +81,7 @@ public class PssTask {
                     if (tried < maxTries) {
                         tried = tried + 1;
                         try {
-                            pssAdapter.generateConfig(c);
+                            cgs.generateConfig(c);
                             attempts.remove(c.getConnectionId());
                         } catch (PSSException e) {
                             attempts.put(c.getConnectionId(), tried);

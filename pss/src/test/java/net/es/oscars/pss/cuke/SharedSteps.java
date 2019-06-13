@@ -2,7 +2,6 @@ package net.es.oscars.pss.cuke;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import net.es.oscars.dto.topo.enums.DeviceModel;
 import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.ctg.UnitTests;
 import net.es.oscars.pss.help.PssTestConfig;
@@ -13,7 +12,6 @@ import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
