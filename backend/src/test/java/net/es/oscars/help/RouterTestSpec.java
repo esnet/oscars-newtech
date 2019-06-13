@@ -1,4 +1,4 @@
-package net.es.oscars.pss.help;
+package net.es.oscars.help;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

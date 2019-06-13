@@ -4,7 +4,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.ctg.UnitTests;
-import net.es.oscars.pss.help.PssTestConfig;
 import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.prop.RancidProps;
 import net.es.oscars.pss.prop.UrnMappingProps;

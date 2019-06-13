@@ -1,16 +1,16 @@
-package net.es.oscars.pss.cuke;
+package net.es.oscars.cuke;
 
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.topo.DeviceModel;
-import net.es.oscars.pss.beans.ConfigException;
-import net.es.oscars.pss.ctg.UnitTests;
-import net.es.oscars.pss.help.ParamsLoader;
-import net.es.oscars.pss.help.RouterTestSpec;
-import net.es.oscars.pss.svc.AluCommandGenerator;
-import net.es.oscars.pss.svc.ExCommandGenerator;
-import net.es.oscars.pss.svc.MxCommandGenerator;
+import net.es.oscars.ctg.UnitTests;
+import net.es.oscars.help.ParamsLoader;
+import net.es.oscars.help.RouterTestSpec;
+import net.es.oscars.pss.equip.AluCommandGenerator;
+import net.es.oscars.pss.equip.ExCommandGenerator;
+import net.es.oscars.pss.equip.MxCommandGenerator;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -65,7 +65,7 @@ public class ModelSteps {
                             break;
                     }
                 }
-            } catch (ConfigException ex) {
+            } catch (PSSException ex) {
                 world.add(ex);
             }
         }

@@ -1,4 +1,4 @@
-package net.es.oscars.pss.help;
+package net.es.oscars.help;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

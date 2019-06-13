@@ -1,4 +1,4 @@
-package net.es.oscars.pss.ctg;
+package net.es.oscars.ctg;
 
 public interface AluTests {
 }
