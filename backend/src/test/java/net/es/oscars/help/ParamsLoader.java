@@ -2,8 +2,8 @@ package net.es.oscars.help;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.dto.pss.cmd.CommandType;
-import net.es.oscars.pss.beans.ConfigException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ public class ParamsLoader {
         return this.specs;
     }
 
-    public void loadSpecs(CommandType type) throws IOException,ConfigException {
+    public void loadSpecs(CommandType type) throws IOException, PSSException {
         List<RouterTestSpec> result = new ArrayList<>();
 
         String[] extensions = {"json"};
@@ -57,7 +57,7 @@ public class ParamsLoader {
                 prefix = "cpl_status";
                 break;
             default:
-                throw new ConfigException("no test specification for " + type);
+                throw new PSSException("no test specification for " + type);
 
         }
 

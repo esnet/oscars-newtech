@@ -3,9 +3,9 @@ package net.es.oscars.cuke;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.topo.DeviceModel;
-import net.es.oscars.pss.beans.ConfigException;
 import net.es.oscars.ctg.UnitTests;
 import net.es.oscars.help.ParamsLoader;
 import net.es.oscars.help.PssTestConfig;
@@ -45,7 +45,7 @@ public class CommandParamsLoadingSteps extends CucumberSteps {
     public void i_have_loaded_the_CommandType_test_commands(CommandType t) {
         try {
             loader.loadSpecs(t);
-        } catch (ConfigException | IOException ex) {
+        } catch (PSSException | IOException ex) {
             log.error(ex.getMessage(), ex);
             world.add(ex);
         }

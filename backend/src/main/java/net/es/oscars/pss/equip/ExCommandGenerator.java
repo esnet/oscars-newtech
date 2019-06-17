@@ -2,6 +2,7 @@ package net.es.oscars.pss.equip;
 
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.pss.params.ex.ExParams;
 import net.es.oscars.pss.params.ex.ExVlan;
 import net.es.oscars.pss.beans.*;
@@ -28,7 +29,7 @@ public class ExCommandGenerator {
         this.validator = validator;
     }
 
-    public String dismantle(ExParams params) throws ConfigException {
+    public String dismantle(ExParams params) throws PSSException {
         this.protectVsNulls(params);
         this.verifyParams(params);
         ExTemplatePaths exp = ExTemplatePaths.builder()
@@ -37,7 +38,7 @@ public class ExCommandGenerator {
         return fill(exp, params);
     }
 
-    public String build(ExParams params) throws ConfigException {
+    public String build(ExParams params) throws PSSException {
         this.protectVsNulls(params);
         this.verifyParams(params);
         ExTemplatePaths exp = ExTemplatePaths.builder()
@@ -46,7 +47,7 @@ public class ExCommandGenerator {
         return fill(exp, params);
     }
 
-    private String fill(ExTemplatePaths etp, ExParams params) throws ConfigException {
+    private String fill(ExTemplatePaths etp, ExParams params) throws PSSException {
 
         String top = "ex/ex-top.ftl";
 
@@ -60,37 +61,37 @@ public class ExCommandGenerator {
             return assembler.assemble(fragments, top);
         } catch (IOException | TemplateException ex) {
             log.error("templating error", ex);
-            throw new ConfigException("template system error");
+            throw new PSSException("template system error");
         }
     }
 
 
-    private void protectVsNulls(ExParams params) throws ConfigException {
+    private void protectVsNulls(ExParams params) throws PSSException {
 
         if (params == null) {
             log.error("whoa whoa whoa there, no passing null params!");
-            throw new ConfigException("null Juniper EX params");
+            throw new PSSException("null Juniper EX params");
         }
         if (params.getVlans() == null) {
-            throw new ConfigException("null VLANs in Juniper EX params");
+            throw new PSSException("null VLANs in Juniper EX params");
         }
         for (ExVlan vlan : params.getVlans()) {
             if (vlan.getIfces() == null) {
-                throw new ConfigException("null ifces in Juniper EX VLAN");
+                throw new PSSException("null ifces in Juniper EX VLAN");
             }
             if (vlan.getDescription() == null) {
                 vlan.setDescription("");
             }
             if (vlan.getName() == null) {
-                throw new ConfigException("null name in Juniper EX VLAN");
+                throw new PSSException("null name in Juniper EX VLAN");
             }
             if (vlan.getVlanId() == null) {
-                throw new ConfigException("null vlan id in Juniper EX VLAN");
+                throw new PSSException("null vlan id in Juniper EX VLAN");
             }
         }
     }
 
-    private void verifyParams(ExParams params) throws ConfigException {
+    private void verifyParams(ExParams params) throws PSSException {
         StringBuilder errorStr = new StringBuilder("");
         Boolean hasError = false;
 
@@ -131,7 +132,7 @@ public class ExCommandGenerator {
 
         if (hasError) {
             log.error(errorStr.toString());
-            throw new ConfigException(errorStr.toString());
+            throw new PSSException(errorStr.toString());
         }
 
     }

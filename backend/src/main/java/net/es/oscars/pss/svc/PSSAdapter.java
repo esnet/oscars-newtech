@@ -1,7 +1,5 @@
 package net.es.oscars.pss.svc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.ServiceException;
 import net.es.oscars.app.exc.NsiException;
@@ -22,10 +20,12 @@ import net.es.oscars.resv.ent.VlanJunction;
 import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.resv.svc.LogService;
+import net.es.oscars.topo.beans.TopoUrn;
+import net.es.oscars.topo.enums.UrnType;
+import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,19 +40,20 @@ public class PSSAdapter {
     private PSSProxy pssProxy;
     private PssProperties properties;
     private RouterCommandsRepository rcr;
-    private PSSParamsAdapter paramsAdapter;
     private CommandHistoryRepository historyRepo;
     private NsiService nsiService;
     private LogService logService;
 
+    private TopoService topoService;
+
     @Autowired
     public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr,
                       CommandHistoryRepository historyRepo, NsiService nsiService,
-                      PSSParamsAdapter paramsAdapter, LogService logService, PssProperties properties) {
+                      TopoService topoService, LogService logService, PssProperties properties) {
         this.pssProxy = pssProxy;
         this.rcr = rcr;
         this.historyRepo = historyRepo;
-        this.paramsAdapter = paramsAdapter;
+        this.topoService = topoService;
         this.nsiService = nsiService;
         this.logService = logService;
         this.properties = properties;
@@ -277,8 +278,11 @@ public class PSSAdapter {
             RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.BUILD);
             if (existing != null) {
                 log.info("dismantle commands already exist for " + conn.getConnectionId());
+            } else {
+                Command cmd = this.makeCmd(conn.getConnectionId(), CommandType.BUILD, j.getDeviceUrn());
+                commands.add(cmd);
+
             }
-            commands.add(paramsAdapter.command(CommandType.BUILD, conn, j, existing));
         }
 
         log.info("gathered " + commands.size() + " commands");
@@ -307,8 +311,12 @@ public class PSSAdapter {
             RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.DISMANTLE);
             if (existing != null) {
                 log.info("dismantle commands already exist for " + conn.getConnectionId());
+            } else {
+                Command cmd = this.makeCmd(conn.getConnectionId(), CommandType.DISMANTLE, j.getDeviceUrn());
+                commands.add(cmd);
+
             }
-            commands.add(paramsAdapter.command(CommandType.DISMANTLE, conn, j, existing));
+
         }
 
         log.info("gathered " + commands.size() + " commands");
@@ -332,12 +340,32 @@ public class PSSAdapter {
         List<Command> commands = new ArrayList<>();
 
         for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
-            commands.add(paramsAdapter.command(CommandType.OPERATIONAL_STATUS, conn, j, null));
+            Command cmd = this.makeCmd(conn.getConnectionId(), CommandType.OPERATIONAL_STATUS, j.getDeviceUrn());
+            commands.add(cmd);
         }
 
         log.info("gathered " + commands.size() + " commands");
 
 
         return commands;
+    }
+
+    private Command makeCmd(String connId, CommandType type, String device) throws PSSException {
+        TopoUrn devUrn = topoService.getTopoUrnMap().get(device);
+        if (devUrn == null) {
+            throw new PSSException("could not locate topo URN for "+device);
+
+        }
+        if (!devUrn.getUrnType().equals(UrnType.DEVICE)) {
+            throw new PSSException("bad urn type");
+        }
+
+        return Command.builder()
+                .connectionId(connId)
+                .type(type)
+                .model(devUrn.getDevice().getModel())
+                .device(devUrn.getUrn())
+                .profile(properties.getProfile())
+                .build();
     }
 }

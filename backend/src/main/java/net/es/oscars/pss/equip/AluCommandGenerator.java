@@ -2,6 +2,7 @@ package net.es.oscars.pss.equip;
 
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.pss.params.*;
 import net.es.oscars.pss.params.alu.*;
 import net.es.oscars.pss.beans.*;
@@ -28,9 +29,9 @@ public class AluCommandGenerator {
         this.validator = validator;
     }
 
-    public void validate(AluParams params) throws ConfigException {
+    public void validate(AluParams params) throws PSSException {
         if (params == null) {
-            throw new ConfigException("null ALU params!");
+            throw new PSSException("null ALU params!");
         }
         this.protectVsNulls(params);
         this.verifyKeywords(params);
@@ -40,7 +41,7 @@ public class AluCommandGenerator {
 
     }
 
-    public String show(AluParams params) throws ConfigException {
+    public String show(AluParams params) throws PSSException {
         this.validate(params);
         String top = "alu/show.ftl";
 
@@ -53,13 +54,13 @@ public class AluCommandGenerator {
             return stringifier.stringify(root, top);
         } catch (IOException | TemplateException ex) {
             log.error("templating error", ex);
-            throw new ConfigException("template system error");
+            throw new PSSException("template system error");
         }
 
     }
 
 
-    public String dismantle(AluParams params) throws ConfigException {
+    public String dismantle(AluParams params) throws PSSException {
 
         this.validate(params);
         AluTemplatePaths atp = AluTemplatePaths.builder()
@@ -74,7 +75,7 @@ public class AluCommandGenerator {
     }
 
 
-    public String build(AluParams params) throws ConfigException {
+    public String build(AluParams params) throws PSSException {
         this.validate(params);
 
         AluTemplatePaths atp = AluTemplatePaths.builder()
@@ -88,7 +89,7 @@ public class AluCommandGenerator {
         return fill(atp, params, false);
     }
 
-    private String fill(AluTemplatePaths atp, AluParams params, boolean reverse) throws ConfigException {
+    private String fill(AluTemplatePaths atp, AluParams params, boolean reverse) throws PSSException {
 
         String top = "alu/alu-top.ftl";
 
@@ -177,7 +178,7 @@ public class AluCommandGenerator {
             return assembler.assemble(fragments, top);
         } catch (IOException | TemplateException ex) {
             log.error("templating error", ex);
-            throw new ConfigException("template system error");
+            throw new PSSException("template system error");
         }
     }
 
@@ -208,7 +209,7 @@ public class AluCommandGenerator {
         }
     }
 
-    private void verifyPaths(AluParams params) throws ConfigException {
+    private void verifyPaths(AluParams params) throws PSSException {
 
 
         Set<String> lspNamesFromSdps = new HashSet<>();
@@ -229,16 +230,16 @@ public class AluCommandGenerator {
             pathNamesFromPaths.add(path.getName());
         }
         if (!lspNamesFromLsps.equals(lspNamesFromSdps)) {
-            throw new ConfigException("LSP name mismatch");
+            throw new PSSException("LSP name mismatch");
         }
         if (!pathNamesFromLsps.equals(pathNamesFromPaths)) {
-            throw new ConfigException("Path name mismatch");
+            throw new PSSException("Path name mismatch");
         }
 
 
     }
 
-    private void verifySdpIds(AluParams params) throws ConfigException {
+    private void verifySdpIds(AluParams params) throws PSSException {
         List<AluSdpToVcId> aluSdpToVcIds = params.getAluVpls().getSdpToVcIds();
         Set<Integer> sdpIdsA = new HashSet<>();
         Set<Integer> sdpIdsB = new HashSet<>();
@@ -249,12 +250,12 @@ public class AluCommandGenerator {
             sdpIdsB.add(sdp.getSdpId());
         }
         if (!sdpIdsA.equals(sdpIdsB)) {
-            throw new ConfigException("SDP ID mismatch!");
+            throw new PSSException("SDP ID mismatch!");
         }
 
     }
 
-    private void verifyAluQosParams(AluParams params) throws ConfigException {
+    private void verifyAluQosParams(AluParams params) throws PSSException {
         List<AluSap> saps = params.getAluVpls().getSaps();
         List<AluQos> qoses = params.getQoses();
         Set<Integer> sapInQosIds = new HashSet<>();
@@ -271,19 +272,19 @@ public class AluCommandGenerator {
         Set<Integer> egQosIds = new HashSet<>();
         for (AluQos qos : qoses) {
             if (qos.getPolicyId() == null) {
-                throw new ConfigException("qos policy id missing");
+                throw new PSSException("qos policy id missing");
             }
             if (qos.getType() == null) {
-                throw new ConfigException("qos type missing");
+                throw new PSSException("qos type missing");
             }
             if (qos.getType().equals(AluQosType.SAP_INGRESS)) {
                 if (inQosIds.contains(qos.getPolicyId())) {
-                    throw new ConfigException("duplicate ingress qos policy id " + qos.getPolicyId());
+                    throw new PSSException("duplicate ingress qos policy id " + qos.getPolicyId());
                 }
                 inQosIds.add(qos.getPolicyId());
             } else if (qos.getType().equals(AluQosType.SAP_EGRESS)) {
                 if (egQosIds.contains(qos.getPolicyId())) {
-                    throw new ConfigException("duplicate egress qos policy id" + qos.getPolicyId());
+                    throw new PSSException("duplicate egress qos policy id" + qos.getPolicyId());
                 }
                 egQosIds.add(qos.getPolicyId());
             }
@@ -299,12 +300,12 @@ public class AluCommandGenerator {
             error += " Egress qos id mismatch";
         }
         if (!ok) {
-            throw new ConfigException(error);
+            throw new PSSException(error);
         }
 
 
     }
-    private void verifyKeywords(AluParams params) throws ConfigException {
+    private void verifyKeywords(AluParams params) throws PSSException {
         StringBuilder errorStr = new StringBuilder("");
         Boolean hasError = false;
 
@@ -395,7 +396,7 @@ public class AluCommandGenerator {
 
         if (hasError) {
             log.error(errorStr.toString());
-            throw new ConfigException(errorStr.toString());
+            throw new PSSException(errorStr.toString());
         }
 
     }
