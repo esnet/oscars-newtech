@@ -4,6 +4,8 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.cuke.CucumberSteps;
+import net.es.oscars.cuke.CucumberWorld;
 import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.topo.DeviceModel;
 import net.es.oscars.ctg.UnitTests;
@@ -29,6 +31,12 @@ public class CommandParamsLoadingSteps extends CucumberSteps {
     private CucumberWorld world;
     @Autowired
     private PssTestConfig pssTestConfig;
+
+    @Then("^I set the test specification directory to \"([^\"]*)\"$")
+    public void i_set_the_test_specification_directory_to(String arg1) throws Throwable {
+        pssTestConfig.setCaseDirectory(arg1);
+    }
+
 
     @Then("^I will clear all the loaded test specs$")
     public void i_will_clear_all_the_loaded_test_specs() throws Throwable {
