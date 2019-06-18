@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.util.DbAccess;
+import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.ext.SlackConnector;
 import net.es.oscars.pss.svc.PSSAdapter;
+import net.es.oscars.pss.svc.PSSQueuer;
 import net.es.oscars.pss.svc.PssResourceService;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.ent.*;
@@ -74,7 +76,7 @@ public class ConnService {
     private ReservedRepository reservedRepo;
 
     @Autowired
-    private PSSAdapter pssAdapter;
+    private PSSQueuer pssQueuer;
 
     @Autowired
     private DbAccess dbAccess;
@@ -456,16 +458,7 @@ public class ConnService {
                 slack.sendMessage("Cancelling active connection: " + c.getConnectionId());
                 log.debug("Releasing active connection: " + c.getConnectionId());
 
-                // need to dismantle first, that part relies on Reserved components
-                try {
-                    State s = pssAdapter.dismantle(c);
-                    if (!s.equals(State.FAILED)) {
-                        c.setState(State.FINISHED);
-                    }
-                } catch (PSSException ex) {
-                    c.setState(State.FAILED);
-                    log.error(ex.getMessage(), ex);
-                }
+                pssQueuer.add(CommandType.DISMANTLE, c.getConnectionId(), State.FINISHED);
                 Event ev = Event.builder()
                         .connectionId(c.getConnectionId())
                         .description("released (active)")
@@ -529,6 +522,15 @@ public class ConnService {
                 .what(ConnChange.ARCHIVED)
                 .when(Instant.now())
                 .build();
+    }
+
+    public void updateState(Connection c, State newState) {
+        c.setState(newState);
+
+        Instant instant = Instant.now();
+        c.setLast_modified((int)instant.getEpochSecond());
+
+        connRepo.save(c);
     }
 
     public void reservedFromHeld(Connection c) {

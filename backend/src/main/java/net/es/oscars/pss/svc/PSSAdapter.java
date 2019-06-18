@@ -19,6 +19,7 @@ import net.es.oscars.resv.ent.Event;
 import net.es.oscars.resv.ent.VlanJunction;
 import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.State;
+import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.resv.svc.LogService;
 import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.enums.UrnType;
@@ -43,15 +44,19 @@ public class PSSAdapter {
     private CommandHistoryRepository historyRepo;
     private NsiService nsiService;
     private LogService logService;
+    private ConnService connService;
+    private PSSQueuer queuer;
 
     private TopoService topoService;
 
     @Autowired
-    public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr,
-                      CommandHistoryRepository historyRepo, NsiService nsiService,
+    public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr, CommandHistoryRepository historyRepo,
+                      NsiService nsiService, ConnService connService, PSSQueuer queuer,
                       TopoService topoService, LogService logService, PssProperties properties) {
         this.pssProxy = pssProxy;
         this.rcr = rcr;
+        this.queuer = queuer;
+        this.connService = connService;
         this.historyRepo = historyRepo;
         this.topoService = topoService;
         this.nsiService = nsiService;
@@ -59,6 +64,32 @@ public class PSSAdapter {
         this.properties = properties;
     }
 
+    public State processTask(Connection conn, CommandType commandType, State intent) {
+        log.info("processing "+conn.getConnectionId()+" "+commandType);
+        State newState = intent;
+        try {
+            if (commandType.equals(CommandType.BUILD)) {
+                newState = this.build(conn);
+                connService.updateState(conn, newState);
+                queuer.complete(commandType, conn.getConnectionId());
+
+            } else if (commandType.equals(CommandType.DISMANTLE)) {
+                newState = this.dismantle(conn);
+                if (intent == State.FINISHED && newState == State.WAITING) {
+                    newState = State.FINISHED;
+                }
+                connService.updateState(conn, newState);
+                log.info("completing task "+conn.getConnectionId()+" "+commandType);
+                queuer.complete(commandType, conn.getConnectionId());
+            }
+        } catch (PSSException ex) {
+            log.error(ex.getMessage(), ex);
+            connService.updateState(conn, State.FAILED);
+            queuer.complete(commandType, conn.getConnectionId());
+        }
+        log.info("processed "+conn.getConnectionId()+" "+commandType);
+        return newState;
+    }
 
     public State build(Connection conn) throws PSSException {
         log.info("building " + conn.getConnectionId());
@@ -160,6 +191,12 @@ public class PSSAdapter {
 
     }
 
+
+
+
+
+
+
     public List<CommandStatus> getStableStatuses(List<Command> commands) throws PSSException {
         try {
             List<CommandResponse> responses = parallelSubmit(commands);
@@ -193,6 +230,7 @@ public class PSSAdapter {
                     elapsed = elapsed + 1000;
                     if (elapsed > timeoutMillis) {
                         timedOut = true;
+                        log.error("timed out!");
                     }
                 }
             }
@@ -262,7 +300,6 @@ public class PSSAdapter {
         }
 
         for (int j = 0; j < threadNum; j++) {
-            FutureTask<CommandStatus> futureTask = taskList.get(j);
             statuses.add(taskList.get(j).get());
         }
         executor.shutdown();

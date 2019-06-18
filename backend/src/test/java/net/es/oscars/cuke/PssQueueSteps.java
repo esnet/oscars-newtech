@@ -6,10 +6,15 @@ import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.ctg.UnitTests;
 import net.es.oscars.dto.pss.cmd.CommandType;
+import net.es.oscars.pss.beans.PssTask;
 import net.es.oscars.pss.beans.QueueName;
 import net.es.oscars.pss.svc.PSSQueuer;
+import net.es.oscars.resv.enums.State;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Slf4j
@@ -20,12 +25,14 @@ public class PssQueueSteps extends CucumberSteps {
 
     @Given("^I clear all sets$")
     public void i_clear_all_sets() {
-        queuer.clear();
+        queuer.clear(QueueName.DONE);
+        queuer.clear(QueueName.RUNNING);
+        queuer.clear(QueueName.WAITING);
     }
 
-    @When("^I add a \"([^\"]*)\" task for \"([^\"]*)\" on \"([^\"]*)\"$")
-    public void i_add_a_task_for_on(CommandType ct, String connId, String deviceUrn) {
-        queuer.add(ct, connId, deviceUrn);
+    @When("^I add a \"([^\"]*)\" task for \"([^\"]*)\" intending \"([^\"]*)\"$")
+    public void i_add_a_task_for_on(CommandType ct, String connId, State intent) {
+        queuer.add(ct, connId, intent);
     }
 
     @Then("^the \"([^\"]*)\" set has (\\d+) entries$")
@@ -40,7 +47,10 @@ public class PssQueueSteps extends CucumberSteps {
 
     @When("^I make all running tasks complete$")
     public void i_make_all_running_tasks_complete() {
-        queuer.forceCompletion();
+        List<PssTask> running = new ArrayList<>(queuer.entries(QueueName.RUNNING));
+        for (PssTask task : running) {
+            queuer.complete(task.getCommandType(), task.getConnectionId());
+        }
     }
 
 }
