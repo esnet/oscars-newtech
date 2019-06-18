@@ -80,23 +80,6 @@ class DetailsInfo extends Component {
             .then(action(response => {}));
     };
 
-    render() {
-        const selected = this.props.connsStore.store.selected;
-        if (typeof selected.type === "undefined") {
-            return <DetailsGeneral />;
-        }
-        if (selected.type === "fixture") {
-            return this.fixtureInfo();
-        } else if (selected.type === "junction") {
-            return this.junctionInfo();
-        } else if (selected.type === "pipe") {
-            return this.pipeInfo();
-        } else if (selected.type === "connection") {
-            return <DetailsGeneral />;
-        }
-        return <h3>error!</h3>;
-    }
-
     fixtureInfo() {
         const d = this.props.connsStore.store.selected.data;
         let policingText = "Soft";
@@ -404,6 +387,23 @@ class DetailsInfo extends Component {
                 </CardBody>
             </Card>
         );
+    }
+
+    render() {
+        const selected = this.props.connsStore.store.selected;
+        if (typeof selected.type === "undefined") {
+            return <DetailsGeneral />;
+        }
+        if (selected.type === "fixture") {
+            return this.fixtureInfo();
+        } else if (selected.type === "junction") {
+            return this.junctionInfo();
+        } else if (selected.type === "pipe") {
+            return this.pipeInfo();
+        } else if (selected.type === "connection") {
+            return <DetailsGeneral />;
+        }
+        return <h3>error!</h3>;
     }
 }
 

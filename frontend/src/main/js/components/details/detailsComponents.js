@@ -12,6 +12,7 @@ import {
 import ToggleDisplay from "react-toggle-display";
 import { size } from "lodash-es";
 import HelpPopover from "../helpPopover";
+import { withRouter } from 'react-router-dom';
 
 @inject("connsStore")
 @observer
@@ -21,6 +22,7 @@ class DetailsComponents extends Component {
     }
 
     onFixtureClicked = fixture => {
+        console.log("on fixture clicked ", this.props.history);
         this.props.connsStore.setSelected({
             type: "fixture",
             data: fixture
