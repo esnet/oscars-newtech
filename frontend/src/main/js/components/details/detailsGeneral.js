@@ -19,7 +19,6 @@ import DetailsDrawing from "./detailsDrawing";
 import DetailsEditForm from "./detailsEditForm";
 import DetailsTags from "./detailsTags";
 import HelpPopover from "../helpPopover";
-import DetailsComponents from "./detailsComponents";
 
 @inject("connsStore")
 @observer
@@ -115,17 +114,6 @@ class DetailsGeneral extends Component {
                             <NavItem>
                                 <NavLink
                                     href="#"
-                                    className={classnames({ active: this.state.tab === "components" })}
-                                    onClick={() => {
-                                        this.setTab("components");
-                                    }}
-                                >
-                                    Components
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink
-                                    href="#"
                                     className={classnames({ active: this.state.tab === "tags" })}
                                     onClick={() => {
                                         this.setTab("tags");
@@ -153,10 +141,7 @@ class DetailsGeneral extends Component {
                                 <br />
                                 {states}
                                 <br />
-                                <DetailsComponents />
-                            </TabPane>
-                            <TabPane tabId="components" title="Components">
-                                <DetailsComponents />
+                                <DetailsButtons />
                             </TabPane>
                             <TabPane tabId="drawing" title="Drawing">
                                 <DetailsDrawing />

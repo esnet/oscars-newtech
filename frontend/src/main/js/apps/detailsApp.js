@@ -5,7 +5,6 @@ import { Row, Col } from "reactstrap";
 import DetailsControls from "../components/details/detailsControls";
 import DetailsComponents from "../components/details/detailsComponents";
 import DetailsInfo from "../components/details/detailsInfo";
-import DetailsButtons from "../components/details/detailsButtons";
 import myClient from "../agents/client";
 import transformer from "../lib/transform";
 
@@ -119,7 +118,7 @@ class DetailsApp extends Component {
                         <DetailsInfo refresh={this.refresh} />
                     </Col>
                     <Col sm={3} md={3} lg={3}>
-                        <DetailsButtons />
+                        <DetailsComponents />
                     </Col>
                 </Row>
             );
