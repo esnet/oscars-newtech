@@ -76,7 +76,7 @@ class DetailsComponents extends Component {
 
         return (
             <Card>
-                <CardHeader className="p-1">Components {help}</CardHeader>
+                <CardHeader>Components {help}</CardHeader>
                 <CardBody>
                     <CardSubtitle>Connection info:</CardSubtitle>
                     <ListGroup className="p-1">

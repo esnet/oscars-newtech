@@ -21,7 +21,7 @@ class DetailsStatus extends Component {
     render() {
         return (
             <Card>
-                <CardHeader className="p-0">Current Status</CardHeader>
+                <CardHeader> Current Status </CardHeader>
                 <CardBody>
                     <FormGroup>
                         <Input
