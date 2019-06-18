@@ -49,15 +49,19 @@ public class MapController {
             throw new StartupException("OSCARS shutting down");
         }
 
-
         MapGraph g = MapGraph.builder().edges(new ArrayList<>()).nodes(new ArrayList<>()).build();
         Map<String, Position> positionMap = uiPopulator.getPositions().getPositions();
 
+        log.info("Position Map is " + positionMap);
+
         Topology topology = topoService.currentTopology();
 
-        Map<String, Boolean> seenDevices = new HashMap<>();
+        Map<String, Boolean> seenKeys = new HashMap<>();
 
         for (Device d : topology.getDevices().values()) {
+            // llnldc-rt5 matching with both llnl and llnldc
+            // netl-pgh showing in the map but it's not in the positionMap
+
             MapNode n = MapNode.builder()
                     .id(d.getUrn())
                     .label(d.getUrn())
@@ -69,8 +73,9 @@ public class MapController {
             boolean devicePresent = false;
             for (String key: positionMap.keySet()) {
                 if (d.getUrn().contains(key)) {
-                    if (seenDevices.containsKey(key)) {
-                        log.info("Same device is seen twice");
+                    if (seenKeys.containsKey(key)) {
+                        log.info("Same device " + d.getUrn() + " has matched more than once in the positionMap");
+                        log.info("Seen Keys HashMap is " + seenKeys);
                     } else {
                         n.setX(positionMap.get(key).getX());
                         n.setY(positionMap.get(key).getY());
@@ -78,15 +83,15 @@ public class MapController {
                         n.getFixed().put("x", true);
                         n.getFixed().put("y", true);
 
-                        seenDevices.put(key, true);
-                        devicePresent = true;
+                        seenKeys.put(key, true);
                     }
+                    devicePresent = true;
                 }
             }
 
             // When device is completely missed
             if (!devicePresent) {
-                log.info("Device not present in position map");
+                log.info("Device " + d.getUrn() + " not present in position map");
             }
 
             g.getNodes().add(n);
