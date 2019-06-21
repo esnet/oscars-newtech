@@ -54,4 +54,4 @@ class DetailsStatus extends Component {
     }
 }
 
-export default withRouter(DetailsStatus);
+export default DetailsStatus;
