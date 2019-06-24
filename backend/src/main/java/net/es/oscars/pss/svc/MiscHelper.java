@@ -3,7 +3,7 @@ package net.es.oscars.pss.svc;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PSSException;
-import net.es.oscars.dto.pss.params.MplsHop;
+import net.es.oscars.pss.params.MplsHop;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.topo.db.AdjcyRepository;
 import net.es.oscars.topo.ent.Adjcy;

@@ -2,6 +2,7 @@ package net.es.oscars.cuke;
 
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.ctg.UnitTests;
 import net.es.oscars.pce.PceLibrary;
 import net.es.oscars.topo.beans.TopoAdjcy;
 import net.es.oscars.topo.beans.TopoUrn;
@@ -10,6 +11,7 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,7 @@ import java.time.Instant;
 import java.util.*;
 
 @Slf4j
-@Transactional
+@Category({UnitTests.class})
 public class FancyPCESteps extends CucumberSteps {
     @Autowired
     private TopoService topoService;

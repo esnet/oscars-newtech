@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import net.es.oscars.dto.topo.enums.DeviceModel;
+import net.es.oscars.dto.topo.DeviceModel;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.enums.DeviceType;
 import net.es.oscars.topo.enums.Layer;

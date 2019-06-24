@@ -2,7 +2,7 @@ package net.es.oscars.dto.pss.cmd;
 
 
 import lombok.*;
-import net.es.oscars.dto.topo.enums.DeviceModel;
+import net.es.oscars.dto.topo.DeviceModel;
 
 import java.time.Instant;
 

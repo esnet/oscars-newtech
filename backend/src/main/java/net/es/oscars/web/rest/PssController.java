@@ -11,7 +11,7 @@ import net.es.oscars.dto.pss.st.ControlPlaneStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
 import net.es.oscars.pss.db.RouterCommandsRepository;
 import net.es.oscars.pss.ent.RouterCommands;
-import net.es.oscars.pss.svc.PSSAdapter;
+import net.es.oscars.pss.svc.PSSQueuer;
 import net.es.oscars.pss.svc.PssHealthChecker;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
@@ -34,7 +34,7 @@ public class PssController {
     @Autowired
     private Startup startup;
     @Autowired
-    private PSSAdapter pssAdapter;
+    private PSSQueuer pssQueuer;
 
     @Autowired
     private RouterCommandsRepository rcRepo;
@@ -131,26 +131,20 @@ public class PssController {
                 throw new PSSException("invalid connection phase");
             } else if (!c.getMode().equals(BuildMode.MANUAL)) {
                 throw new PSSException("build mode not manual");
-            } else if (!c.getState().equals(State.WAITING)) {
-                throw new PSSException("state not active");
+            } else if (c.getState().equals(State.FAILED)) {
+                throw new PSSException("state is FAILED");
+            } else if (c.getState().equals(State.FINISHED)) {
+                throw new PSSException("state is FINISHED");
+            } else if (c.getState().equals(State.ACTIVE)) {
+                return;
             } else if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
                 throw new PSSException("cannot build before begin time");
 
             } else if  (c.getReserved().getSchedule().getEnding().isBefore(Instant.now())) {
                 throw new PSSException("cannot build after end time");
             }
+            pssQueuer.add(CommandType.BUILD, c.getConnectionId(), State.ACTIVE);
 
-            try {
-                c.setState(pssAdapter.build(c));
-
-                Instant instant = Instant.now();
-                c.setLast_modified((int)instant.getEpochSecond());
-
-            } catch (PSSException ex) {
-                c.setState(State.FAILED);
-                log.error(ex.getMessage(), ex);
-            }
-            connRepo.save(c);
         }
     }
     @RequestMapping(value = "/protected/pss/dismantle/{connectionId:.+}", method = RequestMethod.GET)
@@ -168,25 +162,15 @@ public class PssController {
             } else if (!c.getMode().equals(BuildMode.MANUAL)) {
                 throw new PSSException("build mode not manual");
             } else if (!c.getState().equals(State.ACTIVE)) {
-                throw new PSSException("state not active");
+                return;
             } else if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
                 throw new PSSException("cannot dismantle before begin time");
 
             } else if  (c.getReserved().getSchedule().getEnding().isBefore(Instant.now())) {
                 throw new PSSException("cannot dismantle after end time");
             }
+            pssQueuer.add(CommandType.DISMANTLE, c.getConnectionId(), State.ACTIVE);
 
-            try {
-                c.setState(pssAdapter.dismantle(c));
-
-                Instant instant = Instant.now();
-                c.setLast_modified((int)instant.getEpochSecond());
-
-            } catch (PSSException ex) {
-                c.setState(State.FAILED);
-                log.error(ex.getMessage(), ex);
-            }
-            connRepo.save(c);
 
         }
 
