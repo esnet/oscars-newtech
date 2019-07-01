@@ -297,6 +297,7 @@
                 <version>1.0.0</version>
                 <executions>
                     <execution>
+                        <id>pre-commit</id>
                         <goals>
                             <goal>install</goal>
                         </goals>

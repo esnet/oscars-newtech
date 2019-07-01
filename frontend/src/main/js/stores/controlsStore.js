@@ -236,16 +236,36 @@ class ControlsStore {
     };
 
     @action
-    setCategory(category, value) {
+    getTags(category) {
+        const tags = this.connection.tags;
+        let output = [];
+        for (let key in tags) {
+            let d = tags[key];
+            if (d.category === category) {
+                output.push({
+                    id: d.contents,
+                    text: d.contents
+                });
+            }
+        }
+        return output;
+    }
+
+    @action
+    setCategory(category, value, input = null) {
         const categories = this.connection.categories;
         const tags = this.connection.tags;
         for (let key in categories) {
             let d = categories[key];
             if (d.category === category) {
                 d.selected = value;
-                let removed = remove(tags, elem => {
-                    return elem.category === category;
-                });
+                
+                // Remove previous values when we have multivalue select element
+                if (input === null) {
+                    remove(tags, elem => {
+                        return elem.category === category;
+                    });
+                }
 
                 if (d.multivalue) {
                     for (let vkey in value) {
