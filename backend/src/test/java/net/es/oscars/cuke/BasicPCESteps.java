@@ -3,6 +3,7 @@ package net.es.oscars.cuke;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.ctg.UnitTests;
 import net.es.oscars.pce.AllPathsPCE;
 import net.es.oscars.resv.ent.EroHop;
 import net.es.oscars.resv.ent.VlanJunction;
@@ -14,13 +15,14 @@ import net.es.oscars.topo.beans.TopoUrn;
 import net.es.oscars.topo.svc.TopoService;
 import net.es.oscars.web.beans.PcePath;
 import net.es.oscars.web.beans.PceResponse;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Slf4j
-@Transactional
+@Category({UnitTests.class})
 public class BasicPCESteps extends CucumberSteps {
     @Autowired
     private CucumberWorld world;

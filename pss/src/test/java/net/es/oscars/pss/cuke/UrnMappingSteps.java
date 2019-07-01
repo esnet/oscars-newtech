@@ -4,22 +4,13 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.dto.pss.cmd.CommandStatus;
-import net.es.oscars.dto.pss.st.ControlPlaneStatus;
-import net.es.oscars.dto.pss.st.LifecycleStatus;
 import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.ctg.UnitTests;
-import net.es.oscars.pss.help.PssTestConfig;
 import net.es.oscars.pss.prop.PssProps;
-import net.es.oscars.pss.prop.UrnMappingProps;
-import net.es.oscars.pss.svc.CommandQueuer;
-import net.es.oscars.pss.svc.HealthService;
 import net.es.oscars.pss.svc.UrnMappingService;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.hamcrest.core.Is.is;

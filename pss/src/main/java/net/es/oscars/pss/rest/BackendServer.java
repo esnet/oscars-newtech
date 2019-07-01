@@ -1,7 +1,7 @@
 package net.es.oscars.pss.rest;
 
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.dto.pss.cmd.*;
+import net.es.oscars.dto.pss.cmd.GeneratedCommands;
 import net.es.oscars.pss.beans.PssProfile;
 import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.rest.RestConfigurer;

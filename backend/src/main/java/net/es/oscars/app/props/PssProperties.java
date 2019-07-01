@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 @NoArgsConstructor
 public class PssProperties {
+    @NonNull
+    private String[] templateDirs;
 
     @NonNull
     private String url;

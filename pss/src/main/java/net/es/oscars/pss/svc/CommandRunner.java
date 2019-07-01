@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.Command;
 import net.es.oscars.dto.pss.cmd.CommandStatus;
 import net.es.oscars.dto.pss.st.*;
-import net.es.oscars.dto.topo.enums.DeviceModel;
+import net.es.oscars.dto.topo.DeviceModel;
 import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.rancid.RancidArguments;
 import net.es.oscars.pss.rancid.RancidResult;
