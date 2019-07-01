@@ -146,12 +146,14 @@ public class HoldController {
         } else if (startup.isInShutdown()) {
             throw new StartupException("OSCARS shutting down");
         }
+
+        // TODO: Don't throw exception; populate all the Validity entries instead
         Validity v = connSvc.validateHold(in);
         if (!v.isValid()) {
             in.setValidity(v);
             log.info("did not update invalid connection "+in.getConnectionId());
             log.info("reason: "+v.getMessage());
-            throw new ConnException(v.getMessage());
+            return in;
         }
 
         String username = authentication.getName();
