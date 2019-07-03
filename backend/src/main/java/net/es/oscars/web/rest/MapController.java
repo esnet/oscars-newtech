@@ -23,13 +23,16 @@ public class MapController {
 
     @Autowired
     private DeviceRepository deviceRepo;
+
     @Autowired
     private AdjcyRepository adjcyRepo;
+
     @Autowired
     private TopoService topoService;
 
     @Autowired
     private Startup startup;
+
     @Autowired
     private UIPopulator uiPopulator;
 
@@ -39,6 +42,50 @@ public class MapController {
         log.warn("Still in startup");
     }
 
+    public MapNode addNode(Device d, Map<String, Position> positionMap) {
+        List<String> k = new ArrayList<>();
+
+        MapNode n = MapNode.builder()
+                .id(d.getUrn())
+                .label(d.getUrn())
+                .title(d.getUrn())
+                .value(1)
+                .type(d.getType().toString())
+                .build();
+
+        boolean devicePresent = false;
+        for (String key: positionMap.keySet()) {
+            if (d.getUrn().contains(key)) {
+                // If that key has already been seen
+                if (k.contains(key)) {
+                    log.info("Same device " + d.getUrn() + " has matched more than once in the positionMap");
+                } else {
+                    k.add(key);
+                }
+
+                devicePresent = true;
+            }
+        }
+
+        if (devicePresent) {
+            if (k.size() > 1) {
+                // Get the longest string match
+                Collections.sort(k, Comparator.comparing(String::length).reversed());
+            }
+
+            n.setX(positionMap.get(k.get(0)).getX());
+            n.setY(positionMap.get(k.get(0)).getY());
+            n.setFixed(new HashMap<>());
+            n.getFixed().put("x", true);
+            n.getFixed().put("y", true);
+
+        } else {
+            // When device is completely missed
+            log.info("Device " + d.getUrn() + " not present in position map");
+        }
+
+        return n;
+    }
 
     @RequestMapping(value = "/api/map", method = RequestMethod.GET)
     @ResponseBody
@@ -51,49 +98,10 @@ public class MapController {
 
         MapGraph g = MapGraph.builder().edges(new ArrayList<>()).nodes(new ArrayList<>()).build();
         Map<String, Position> positionMap = uiPopulator.getPositions().getPositions();
-
-        log.info("Position Map is " + positionMap);
-
         Topology topology = topoService.currentTopology();
 
-        Map<String, Boolean> seenKeys = new HashMap<>();
-
         for (Device d : topology.getDevices().values()) {
-            // llnldc-rt5 matching with both llnl and llnldc
-            // netl-pgh showing in the map but it's not in the positionMap
-
-            MapNode n = MapNode.builder()
-                    .id(d.getUrn())
-                    .label(d.getUrn())
-                    .title(d.getUrn())
-                    .value(1)
-                    .type(d.getType().toString())
-                    .build();
-
-            boolean devicePresent = false;
-            for (String key: positionMap.keySet()) {
-                if (d.getUrn().contains(key)) {
-                    if (seenKeys.containsKey(key)) {
-                        log.info("Same device " + d.getUrn() + " has matched more than once in the positionMap");
-                        log.info("Seen Keys HashMap is " + seenKeys);
-                    } else {
-                        n.setX(positionMap.get(key).getX());
-                        n.setY(positionMap.get(key).getY());
-                        n.setFixed(new HashMap<>());
-                        n.getFixed().put("x", true);
-                        n.getFixed().put("y", true);
-
-                        seenKeys.put(key, true);
-                    }
-                    devicePresent = true;
-                }
-            }
-
-            // When device is completely missed
-            if (!devicePresent) {
-                log.info("Device " + d.getUrn() + " not present in position map");
-            }
-
+            MapNode n = addNode(d, positionMap);
             g.getNodes().add(n);
         }
 
@@ -127,8 +135,6 @@ public class MapController {
 
                 g.getEdges().add(ve);
             }
-
-
         }
         return g;
     }
@@ -142,7 +148,6 @@ public class MapController {
             throw new StartupException("OSCARS shutting down");
         }
         return uiPopulator.getPositions().getPositions();
-
     }
 
 }
