@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.PSSException;
-import net.es.oscars.dto.topo.enums.DeviceModel;
+import net.es.oscars.dto.topo.DeviceModel;
 import net.es.oscars.resv.db.FixtureRepository;
 import net.es.oscars.resv.db.JunctionRepository;
 import net.es.oscars.resv.ent.*;

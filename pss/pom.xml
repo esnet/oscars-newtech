@@ -110,10 +110,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-freemarker</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
                 <exclusion>
@@ -255,47 +251,6 @@
                             </sources>
                         </mapping>
                         <mapping>
-                            <directory>${rpm.home}/config/templates/alu</directory>
-                            <sources>
-                                <source>
-                                    <location>${project.basedir}/config/templates/alu</location>
-                                    <includes>
-                                        <include>*</include>
-                                    </includes>
-                                </source>
-                            </sources>
-                        </mapping>
-                        <mapping>
-                            <directory>${rpm.home}/config/templates/ex</directory>
-                            <sources>
-                                <source>
-                                    <location>${project.basedir}/config/templates/ex</location>
-                                    <includes>
-                                        <include>*</include>
-                                    </includes>
-                                </source>
-                            </sources>
-                        </mapping>
-                        <mapping>
-                            <directory>${rpm.home}/config/templates/mx</directory>
-                            <sources>
-                                <source>
-                                    <location>${project.basedir}/config/templates/mx</location>
-                                    <includes>
-                                        <include>*</include>
-                                    </includes>
-                                </source>
-                            </sources>
-                        </mapping>
-                        <mapping>
-                            <directory>${rpm.home}/config/templates</directory>
-                            <sources>
-                                <source>
-                                    <location>${project.basedir}/config/templates/top.ftl</location>
-                                </source>
-                            </sources>
-                        </mapping>
-                        <mapping>
                             <directory>${rpm.home}/logs</directory>
                         </mapping>
                         <mapping>
@@ -310,6 +265,18 @@
                     </mappings>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>io.github.phillipuniverse</groupId>
+                <artifactId>githook-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>pre-commit</id>
+                        <phase/>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

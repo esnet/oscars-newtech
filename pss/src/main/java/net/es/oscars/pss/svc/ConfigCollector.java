@@ -3,7 +3,7 @@ package net.es.oscars.pss.svc;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.dto.pss.cmd.DeviceConfigRequest;
 import net.es.oscars.dto.pss.cmd.DeviceConfigResponse;
-import net.es.oscars.dto.topo.enums.DeviceModel;
+import net.es.oscars.dto.topo.DeviceModel;
 import net.es.oscars.pss.beans.*;
 import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.prop.RancidProps;

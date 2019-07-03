@@ -5,10 +5,12 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.ctg.UnitTests;
 import net.es.oscars.resv.beans.DesignResponse;
 import net.es.oscars.resv.ent.Design;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.svc.DesignService;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +19,7 @@ import java.io.File;
 import java.util.Optional;
 
 @Slf4j
-@Transactional
+@Category({UnitTests.class})
 public class DesignSteps extends CucumberSteps {
 
     @Autowired
