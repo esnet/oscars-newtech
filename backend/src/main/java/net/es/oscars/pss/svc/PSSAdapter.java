@@ -33,6 +33,11 @@ import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+import com.cloudbees.syslog.Facility;
+import com.cloudbees.syslog.MessageFormat;
+import com.cloudbees.syslog.Severity;
+import com.cloudbees.syslog.sender.UdpSyslogMessageSender;
+
 
 @Component
 @Slf4j
@@ -58,6 +63,19 @@ public class PSSAdapter {
         this.properties = properties;
     }
 
+    public void setSyslogProperties(UdpSyslogMessageSender messageSender) {
+
+        messageSender.setDefaultMessageHostname("myhostname"); // some syslog cloud services may use this field to transmit a secret key
+        messageSender.setDefaultAppName("myapp");
+        messageSender.setDefaultFacility(Facility.USER);
+        messageSender.setDefaultSeverity(Severity.INFORMATIONAL);
+        messageSender.setSyslogServerHostname("127.0.0.1");
+
+        // syslog udp usually uses port 514 as per https://tools.ietf.org/html/rfc3164#page-5
+        messageSender.setSyslogServerPort(514);
+        messageSender.setMessageFormat(MessageFormat.RFC_3164); // optional, default is RFC 3164
+
+    }
 
     public void generateConfig(Connection conn) throws PSSException {
         log.info("generating config");
@@ -127,6 +145,11 @@ public class PSSAdapter {
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
+
+                // Send Syslog Message
+                UdpSyslogMessageSender messageSender = new UdpSyslogMessageSender();
+                setSyslogProperties(messageSender);
+                messageSender.sendMessage("OSCARS BUILD START : " + conn.getConnectionId());
             }
 
 
@@ -171,6 +194,11 @@ public class PSSAdapter {
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
+
+                // Send Syslog Message
+                UdpSyslogMessageSender messageSender = new UdpSyslogMessageSender();
+                setSyslogProperties(messageSender);
+                messageSender.sendMessage("OSCARS BUILD END : " + conn.getConnectionId());
             }
         }
         this.triggerNsi(conn, result);
