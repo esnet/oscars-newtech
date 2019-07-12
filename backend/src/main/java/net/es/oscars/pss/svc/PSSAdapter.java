@@ -335,7 +335,7 @@ public class PSSAdapter {
         log.info("gathering "+ct+" commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
 
-        for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
+        for (VlanJunction j : conn.getArchived().getCmp().getJunctions()) {
             RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), ct);
             if (existing != null) {
                 Command cmd = this.makeCmd(conn.getConnectionId(), ct, j.getDeviceUrn());
@@ -367,7 +367,7 @@ public class PSSAdapter {
         log.info("gathering op check commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
 
-        for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
+        for (VlanJunction j : conn.getArchived().getCmp().getJunctions()) {
             Command cmd = this.makeCmd(conn.getConnectionId(), CommandType.OPERATIONAL_STATUS, j.getDeviceUrn());
             commands.add(cmd);
         }
