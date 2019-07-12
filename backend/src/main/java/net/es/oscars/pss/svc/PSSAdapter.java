@@ -93,7 +93,7 @@ public class PSSAdapter {
 
     public State build(Connection conn) throws PSSException {
         log.info("building " + conn.getConnectionId());
-        List<Command> commands = this.buildCommands(conn);
+        List<Command> commands = this.configCommands(conn, CommandType.BUILD);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
 
@@ -139,7 +139,7 @@ public class PSSAdapter {
 
     public State dismantle(Connection conn) throws PSSException {
         log.info("dismantling " + conn.getConnectionId());
-        List<Command> commands = this.dismantleCommands(conn);
+        List<Command> commands = this.configCommands(conn, CommandType.DISMANTLE);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
         State result = State.WAITING;
@@ -197,6 +197,15 @@ public class PSSAdapter {
 
 
 
+    public List<CommandStatus> getStableStatusesSerial(List<Command> commands) throws PSSException {
+        List<CommandResponse> responses = serialSubmit(commands);
+        List<String> commandIds = responses.stream()
+                .map(CommandResponse::getCommandId)
+                .collect(Collectors.toList());
+        return pollUntilStable(commandIds);
+    }
+
+
     public List<CommandStatus> getStableStatuses(List<Command> commands) throws PSSException {
         try {
             List<CommandResponse> responses = parallelSubmit(commands);
@@ -209,6 +218,8 @@ public class PSSAdapter {
             throw new PSSException("interrupted");
         }
     }
+
+
 
     public List<CommandStatus> pollUntilStable(List<String> commandIds)
             throws PSSException {
@@ -256,6 +267,18 @@ public class PSSAdapter {
         return allDone;
     }
 
+    public List<CommandResponse> serialSubmit(List<Command> commands) throws PSSException {
+        List<CommandResponse> responses = new ArrayList<>();
+
+
+        List<FutureTask<CommandResponse>> taskList = new ArrayList<>();
+        for (Command cmd : commands) {
+            log.info("submit to PSS: "+cmd.getConnectionId());
+            CommandResponse cr = pssProxy.submitCommand(cmd);
+            responses.add(cr);
+        }
+        return responses;
+    }
 
     public List<CommandResponse> parallelSubmit(List<Command> commands)
             throws InterruptedException, ExecutionException {
@@ -269,6 +292,7 @@ public class PSSAdapter {
 
         List<FutureTask<CommandResponse>> taskList = new ArrayList<>();
         for (Command cmd : commands) {
+            log.info("submit to PSS: "+cmd.getConnectionId());
             FutureTask<CommandResponse> task = new FutureTask<>(() -> pssProxy.submitCommand(cmd));
             taskList.add(task);
             executor.execute(task);
@@ -307,17 +331,18 @@ public class PSSAdapter {
     }
 
 
-    public List<Command> buildCommands(Connection conn) throws PSSException {
-        log.info("gathering build commands for " + conn.getConnectionId());
+    public List<Command> configCommands(Connection conn, CommandType ct) throws PSSException {
+        log.info("gathering "+ct+" commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
 
         for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
-            RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.BUILD);
+            RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), ct);
             if (existing != null) {
-                log.info("dismantle commands already exist for " + conn.getConnectionId());
-            } else {
-                Command cmd = this.makeCmd(conn.getConnectionId(), CommandType.BUILD, j.getDeviceUrn());
+                Command cmd = this.makeCmd(conn.getConnectionId(), ct, j.getDeviceUrn());
                 commands.add(cmd);
+
+            } else {
+                log.error(ct+" config does not exist for " + conn.getConnectionId());
 
             }
         }
@@ -327,40 +352,6 @@ public class PSSAdapter {
         return commands;
     }
 
-
-    public List<Command> dismantleCommands(Connection conn) throws PSSException {
-        log.info("gathering dismantle commands for " + conn.getConnectionId());
-
-        /*
-        try {
-            String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(conn);
-            log.debug(pretty);
-
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-
-        }
-        */
-
-        List<Command> commands = new ArrayList<>();
-
-        for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
-            RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), CommandType.DISMANTLE);
-            if (existing != null) {
-                log.info("dismantle commands already exist for " + conn.getConnectionId());
-            } else {
-                Command cmd = this.makeCmd(conn.getConnectionId(), CommandType.DISMANTLE, j.getDeviceUrn());
-                commands.add(cmd);
-
-            }
-
-        }
-
-        log.info("gathered " + commands.size() + " commands");
-
-
-        return commands;
-    }
 
     public RouterCommands existing(String connId, String deviceUrn, CommandType commandType) {
         List<RouterCommands> existing = rcr.findByConnectionIdAndDeviceUrn(connId, deviceUrn);
