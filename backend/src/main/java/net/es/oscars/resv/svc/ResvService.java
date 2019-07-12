@@ -256,9 +256,14 @@ public class ResvService {
 
     public Set<Integer> availableLoopbacks(Interval interval) throws PSSException {
         Set<Integer> available = new HashSet<>();
-
         List<Schedule> scheds = scheduleRepo.findOverlapping(interval.getBeginning(), interval.getEnding());
-        Set<CommandParam> reservedLoopbacks = this.reservedLoopbacks(scheds);
+        List<Schedule> heldOrReservedScheds = new ArrayList<>();
+        for (Schedule sch : scheds) {
+            if (sch.getPhase().equals(Phase.HELD) || sch.getPhase().equals(Phase.RESERVED)) {
+                heldOrReservedScheds.add(sch);
+            }
+        }
+        Set<CommandParam> reservedLoopbacks = this.reservedLoopbacks(heldOrReservedScheds);
 
 
         String range = pssProperties.getLoopbackRange();
