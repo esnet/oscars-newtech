@@ -2,7 +2,7 @@ package net.es.oscars.pss.cuke;
 
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
-import net.es.oscars.dto.topo.enums.DeviceModel;
+import net.es.oscars.dto.topo.DeviceModel;
 import net.es.oscars.pss.beans.VerifyException;
 import net.es.oscars.pss.ctg.UnitTests;
 import net.es.oscars.pss.svc.ConfigCollector;

@@ -1,10 +1,10 @@
 {
   "positions": {
-    "nersc-tb1": {
+    "nersc": {
       "x": 0,
       "y": 0
     },
-    "star-tb1": {
+    "star": {
       "x": 300,
       "y": 0
     }

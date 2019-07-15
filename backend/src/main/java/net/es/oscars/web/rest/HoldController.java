@@ -69,17 +69,14 @@ public class HoldController {
         Optional<Connection> maybeConnection = connRepo.findByConnectionId(connectionId);
 
         Instant exp = Instant.now().plus(resvTimeout, ChronoUnit.SECONDS);
+
         if (maybeConnection.isPresent()) {
             Connection conn = maybeConnection.get();
             if (conn.getPhase().equals(Phase.HELD)) {
-                Instant start  = conn.getHeld().getSchedule().getBeginning();
-                // hold time will end at start time, at most
-                if (!start.isAfter(exp)) {
-                    exp = start;
-                }
 
                 conn.getHeld().setExpiration(exp);
                 connRepo.save(conn);
+
                 return exp;
             } else {
                 return Instant.MIN;
@@ -146,12 +143,14 @@ public class HoldController {
         } else if (startup.isInShutdown()) {
             throw new StartupException("OSCARS shutting down");
         }
+
+        // TODO: Don't throw exception; populate all the Validity entries instead
         Validity v = connSvc.validateHold(in);
         if (!v.isValid()) {
             in.setValidity(v);
             log.info("did not update invalid connection "+in.getConnectionId());
             log.info("reason: "+v.getMessage());
-            throw new ConnException(v.getMessage());
+            return in;
         }
 
         String username = authentication.getName();
@@ -200,7 +199,6 @@ public class HoldController {
             connRepo.save(c);
         }
 
-        log.info("returning");
         return in;
     }
 

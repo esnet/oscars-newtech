@@ -17,6 +17,7 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.services.types.StpListType;
 import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.app.exc.PCEException;
 import net.es.oscars.app.exc.PSSException;
+import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.nsi.beans.NsiErrors;
 import net.es.oscars.nsi.beans.NsiEvent;
 import net.es.oscars.nsi.beans.NsiHoldResult;
@@ -25,7 +26,7 @@ import net.es.oscars.nsi.db.NsiRequesterNSARepository;
 import net.es.oscars.nsi.ent.NsiMapping;
 import net.es.oscars.nsi.ent.NsiRequesterNSA;
 import net.es.oscars.pce.PceService;
-import net.es.oscars.pss.svc.PSSAdapter;
+import net.es.oscars.pss.svc.PSSQueuer;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.resv.enums.BuildMode;
@@ -119,7 +120,7 @@ public class NsiService {
     private ClientUtil clientUtil;
 
     @Autowired
-    private PSSAdapter pssAdapter;
+    private PSSQueuer pssQueuer;
 
     @Autowired
     private TaskExecutor taskExecutor;
@@ -306,16 +307,9 @@ public class NsiService {
                 // if we are after start time, we will need to tear down
                 if (Instant.now().isAfter(c.getReserved().getSchedule().getBeginning())) {
                     if (c.getState().equals(State.ACTIVE)) {
-                        try {
-                            c.setState(pssAdapter.dismantle(c));
-                        } catch (PSSException ex) {
-                            // TODO: trigger a forcedEnd?
-                            c.setState(State.FAILED);
-                            log.error(ex.getMessage(), ex);
-                        }
+                        pssQueuer.add(CommandType.DISMANTLE, c.getConnectionId(), State.FINISHED);
                     }
                 }
-                connRepo.save(c);
 
                 nsiStateEngine.release(NsiEvent.REL_CF, mapping);
 

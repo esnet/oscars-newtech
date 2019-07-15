@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import net.es.oscars.web.beans.PceMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @Data
@@ -30,7 +32,11 @@ public class Pipe {
 
     protected List<String> ero = new ArrayList<>();
     protected List<String> exclude = new ArrayList<>();
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected Validity validity;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    protected Map<String, Validity> eroValidity = new HashMap<>();
 
 }

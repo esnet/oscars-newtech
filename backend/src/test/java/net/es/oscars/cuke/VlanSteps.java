@@ -4,17 +4,19 @@ import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.ctg.UnitTests;
 import net.es.oscars.resv.ent.Vlan;
 import net.es.oscars.resv.svc.ResvLibrary;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.TopoUrn;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Slf4j
-@Transactional
+@Category({UnitTests.class})
 public class VlanSteps extends CucumberSteps {
     @Autowired
     private CucumberWorld world;

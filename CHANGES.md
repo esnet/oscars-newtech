@@ -1,11 +1,20 @@
 # OSCARS Release Notes
 
+## v1.0.35
+> June xx, 2019
+- Backend:
+    - PSS config generation refactoring 
+    - PSS improved queueing, bug fixing
+
+
 ## v1.0.34
 > May 21, 2019
-- Fontend:
-    - Fix connection list slow fetch times
-	- Restore prior default phase option "Reserved"
-
+- Frontend:
+    - Fix connection list slow fetch times   
+    - Restore prior default phase option "Reserved"
+- Backend:
+    - No changes
+    
 ## v1.0.33
 > May 15, 2019
 - Backend:

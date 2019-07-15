@@ -16,10 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 public class PssProps {
 
-
-    @NonNull
-    private String[] templateDirs;
-
     @NonNull
     private List<PssProfile> profiles = new ArrayList<>();
 
