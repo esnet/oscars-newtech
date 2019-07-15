@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -135,14 +136,26 @@ public class ConnService {
     public ConnectionList filter(ConnectionFilter filter) {
 
         List<Connection> reservedAndArchived = new ArrayList<>();
+        List<Phase> phases = new ArrayList<>();
+        phases.add(Phase.ARCHIVED);
+        phases.add(Phase.RESERVED);
 
         // first we don't take into account anything that doesn't have any archived
         // i.e. we discount any temporarily held
-        connRepo.findAll().forEach(c -> {
-            if (c.getArchived() != null) {
-                reservedAndArchived.add(c);
+        for (Connection c: connRepo.findByPhaseIn(phases)) {
+            try {
+                if (c.getArchived() != null) {
+                    reservedAndArchived.add(c);
+                } else {
+                    log.error("no archived components for "+c.getConnectionId());
+
+                }
+
+            } catch (EntityNotFoundException ex) {
+                log.error("missed a connection somehow "+c.getConnectionId());
+
             }
-        });
+        }
 
         List<Connection> connIdFiltered = reservedAndArchived;
 
