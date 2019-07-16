@@ -19,6 +19,7 @@ class ConnectionsStore {
             dirty: false
         },
         foundCurrent: false,
+        pssStatus: "Status not loaded yet...",
         selected: {},
         commands: new Map(),
         statuses: new Map(),
@@ -147,6 +148,10 @@ class ConnectionsStore {
 
     @action setHistory(history) {
         this.store.history = history;
+    }
+
+    @action setPssStatus(status) {
+        this.store.pssStatus = status;
     }
 
     @action showControls(value) {
