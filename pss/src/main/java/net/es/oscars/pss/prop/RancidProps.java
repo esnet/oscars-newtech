@@ -25,6 +25,8 @@ public class RancidProps {
     @NonNull
     private String cloginrc;
 
+    private Integer delay;
+
 
     private String identityFile;
 
