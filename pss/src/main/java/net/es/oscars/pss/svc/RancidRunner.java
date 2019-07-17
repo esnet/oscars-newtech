@@ -47,6 +47,14 @@ public class RancidRunner {
         if (!props.getPerform()) {
             log.info("configured to not actually run rancid");
             String output = "Not performing rancid, output is router config.\n"+arguments.getRouterConfig();
+
+            if (props.getDelay() != null) {
+                int millis = props.getDelay() * 1000;
+                log.info("sleeping for "+millis+"ms");
+                Thread.sleep(millis);
+                log.info("woke up");
+            }
+
             return RancidResult.builder().commandline("").output(output).exitCode(0).build();
         }
         File temp = File.createTempFile("oscars-routerConfig-", ".tmp");
