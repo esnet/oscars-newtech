@@ -49,14 +49,6 @@ public class RestPssServer implements PSSProxy {
 
     }
 
-    public GenerateResponse generate(Command cmd) {
-        log.info("generate - conn id " + cmd.getConnectionId());
-        String pssUrl = props.getUrl();
-        String submitUrl = "/generate";
-        String restPath = pssUrl + submitUrl;
-        return restTemplate.postForObject(restPath, cmd, GenerateResponse.class);
-    }
-
     public DeviceConfigResponse getConfig(DeviceConfigRequest request) {
         log.info("getConfig - device " + request.getDevice());
         String pssUrl = props.getUrl();

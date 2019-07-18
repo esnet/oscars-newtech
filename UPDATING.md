@@ -2,6 +2,13 @@
 This file contains instructions for updating an existing installation of OSCARS from a previous version to a newer version. 
 
 Instructions include config file changes, database schema changes, etc.
+## 1.0.34 to 1.0.35
+- Config file changes
+  * The PSS config gen templates have been moved to `backend/config/templates/`.
+  * The  `pss.template-dirs` directive has been moved to the backend `config/application.properties` file.
+
+## 1.0.33 to 1.0.34
+N/A
 
 ## 1.0.32 to 1.0.33
 

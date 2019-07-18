@@ -3,9 +3,11 @@ package net.es.oscars.cuke;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.ctg.UnitTests;
 import net.es.oscars.resv.beans.PeriodBandwidth;
 import net.es.oscars.resv.enums.BwDirection;
 import net.es.oscars.resv.svc.ResvLibrary;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Transactional
+@Category({UnitTests.class})
 public class AvailabilitySteps extends CucumberSteps {
 
     @Autowired

@@ -9,9 +9,11 @@ import net.es.oscars.dto.pss.cmd.CommandType;
 import net.es.oscars.dto.pss.cmd.GeneratedCommands;
 import net.es.oscars.dto.pss.st.ControlPlaneStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
+import net.es.oscars.pss.beans.PssTask;
+import net.es.oscars.pss.beans.QueueName;
 import net.es.oscars.pss.db.RouterCommandsRepository;
 import net.es.oscars.pss.ent.RouterCommands;
-import net.es.oscars.pss.svc.PSSAdapter;
+import net.es.oscars.pss.svc.PSSQueuer;
 import net.es.oscars.pss.svc.PssHealthChecker;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.Connection;
@@ -19,6 +21,7 @@ import net.es.oscars.resv.ent.Tag;
 import net.es.oscars.resv.enums.BuildMode;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
+import net.es.oscars.web.beans.PssWorkStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +37,7 @@ public class PssController {
     @Autowired
     private Startup startup;
     @Autowired
-    private PSSAdapter pssAdapter;
+    private PSSQueuer pssQueuer;
 
     @Autowired
     private RouterCommandsRepository rcRepo;
@@ -91,6 +94,60 @@ public class PssController {
 
     }
 
+
+
+    @RequestMapping(value = "/protected/pss/work_status/{connectionId:.+}", method = RequestMethod.GET)
+    @ResponseBody
+    public PssWorkStatus working(@PathVariable String connectionId) throws StartupException, PSSException {
+        this.checkStartup();
+
+        this.checkStartup();
+        Optional<Connection> maybeC = connRepo.findByConnectionId(connectionId);
+        if (!maybeC.isPresent()) {
+            throw new NoSuchElementException("connection not found");
+
+        } else {
+            Connection c = maybeC.get();
+            if (!c.getPhase().equals(Phase.RESERVED)) {
+                throw new PSSException("can only get PSS tasks for a connection in RESERVED phase");
+            }
+            PssWorkStatus pwt = PssWorkStatus.builder()
+                    .connectionId(connectionId)
+                    .build();
+
+            for (PssTask t : pssQueuer.entries(QueueName.RUNNING)) {
+                if (t.getConnectionId().equals(connectionId)) {
+                    pwt.setNext(t.getIntent());
+                    pwt.setWork(QueueName.RUNNING);
+                    if (t.getIntent().equals(State.ACTIVE)) {
+                        pwt.setExplanation("Currently working to configure devices for BUILD");
+                    } else if (t.getIntent().equals(State.WAITING)) {
+                        pwt.setExplanation("Currently working to deconfigure devices and DISMANTLE");
+                    }
+                    return pwt;
+                }
+            }
+            for (PssTask t : pssQueuer.entries(QueueName.WAITING)) {
+                if (t.getConnectionId().equals(connectionId)) {
+                    pwt.setNext(t.getIntent());
+                    pwt.setWork(QueueName.WAITING);
+                    if (t.getIntent().equals(State.ACTIVE)) {
+                        pwt.setExplanation("Waiting in line; next action is to configure devices for BUILD");
+                    } else if (t.getIntent().equals(State.WAITING)) {
+                        pwt.setExplanation("Waiting in line; next action is to deconfigure devices and DISMANTLE");
+                    }
+                    return pwt;
+                }
+            }
+            pwt.setNext(null);
+            pwt.setWork(null);
+            return pwt;
+
+        }
+
+    }
+
+
     @RequestMapping(value = "/protected/pss/regenerate/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     @Transactional
@@ -131,26 +188,20 @@ public class PssController {
                 throw new PSSException("invalid connection phase");
             } else if (!c.getMode().equals(BuildMode.MANUAL)) {
                 throw new PSSException("build mode not manual");
-            } else if (!c.getState().equals(State.WAITING)) {
-                throw new PSSException("state not active");
+            } else if (c.getState().equals(State.FAILED)) {
+                throw new PSSException("state is FAILED");
+            } else if (c.getState().equals(State.FINISHED)) {
+                throw new PSSException("state is FINISHED");
+            } else if (c.getState().equals(State.ACTIVE)) {
+                return;
             } else if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
                 throw new PSSException("cannot build before begin time");
 
             } else if  (c.getReserved().getSchedule().getEnding().isBefore(Instant.now())) {
                 throw new PSSException("cannot build after end time");
             }
+            pssQueuer.add(CommandType.BUILD, c.getConnectionId(), State.ACTIVE);
 
-            try {
-                c.setState(pssAdapter.build(c));
-
-                Instant instant = Instant.now();
-                c.setLast_modified((int)instant.getEpochSecond());
-
-            } catch (PSSException ex) {
-                c.setState(State.FAILED);
-                log.error(ex.getMessage(), ex);
-            }
-            connRepo.save(c);
         }
     }
     @RequestMapping(value = "/protected/pss/dismantle/{connectionId:.+}", method = RequestMethod.GET)
@@ -168,25 +219,15 @@ public class PssController {
             } else if (!c.getMode().equals(BuildMode.MANUAL)) {
                 throw new PSSException("build mode not manual");
             } else if (!c.getState().equals(State.ACTIVE)) {
-                throw new PSSException("state not active");
+                return;
             } else if (c.getReserved().getSchedule().getBeginning().isAfter(Instant.now())) {
                 throw new PSSException("cannot dismantle before begin time");
 
             } else if  (c.getReserved().getSchedule().getEnding().isBefore(Instant.now())) {
                 throw new PSSException("cannot dismantle after end time");
             }
+            pssQueuer.add(CommandType.DISMANTLE, c.getConnectionId(), State.ACTIVE);
 
-            try {
-                c.setState(pssAdapter.dismantle(c));
-
-                Instant instant = Instant.now();
-                c.setLast_modified((int)instant.getEpochSecond());
-
-            } catch (PSSException ex) {
-                c.setState(State.FAILED);
-                log.error(ex.getMessage(), ex);
-            }
-            connRepo.save(c);
 
         }
 

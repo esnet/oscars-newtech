@@ -4,10 +4,12 @@ import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
+import net.es.oscars.ctg.UnitTests;
 import net.es.oscars.resv.ent.Schedule;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ResvLibrary;
 
+import org.junit.experimental.categories.Category;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Transactional
+@Category({UnitTests.class})
 public class ScheduleSteps extends CucumberSteps {
     private List<Schedule> schedules;
 
