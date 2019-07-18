@@ -12,16 +12,13 @@ import myClient from "../../agents/client";
 class DetailsStatus extends Component {
     constructor(props) {
         super(props);
-        this.handleStatusChange = this.handleStatusChange.bind(this);
     }
 
     componentWillMount() {
-        console.log("component will mount");
         this.refreshStatus();
     }
 
     componentWillUnmount() {
-        console.log("component will unmount");
         clearTimeout(this.refreshTimeout);
     }
 
@@ -29,10 +26,7 @@ class DetailsStatus extends Component {
         const conn = this.props.connsStore.store.current;
         const connectionId = conn.connectionId;
 
-        console.log('running refresh connId : ', connectionId);
-
         if (connectionId !== undefined) {
-            console.log("conn ", conn);
             if (conn.phase === "RESERVED") {
                 // In case of ASAP, handle the case
                 const cur = new Moment().add(30, 's');
@@ -44,22 +38,15 @@ class DetailsStatus extends Component {
                             this.handleStatusChange(explanation);
                         })
                     );
-                    this.refreshTimeout = setTimeout(this.refreshStatus, 3000); // update per 5 seconds
+                    this.refreshTimeout = setTimeout(this.refreshStatus, 3000); // update per 3 seconds
                 }
             } else {
-                this.handleStatusChange('Connection is ARCHIVED');
+                this.handleStatusChange('Can only get PSS status for a RESERVED connection');
             }
         } else {
-            this.refreshTimeout = setTimeout(this.refreshStatus, 3000); // update per 5 seconds
+            this.refreshTimeout = setTimeout(this.refreshStatus, 3000); // update per 3 seconds
         }
     }
-
-    getMoreInfo = (e) => {
-        if (e === "overall") {
-            // Show panel with overall information
-            this.props.history.push("/pages/status");
-        }
-    };
 
     handleStatusChange(result) {
         let explanation = '';
@@ -82,18 +69,8 @@ class DetailsStatus extends Component {
                             type="text"
                             disabled
                             value={store.pssStatus}
-                            onChange={this.handleStatusChange}
                         />
                     </FormGroup>
-                    {/* <Button
-                        color="primary"
-                        onClick={() => {
-                            this.getMoreInfo("overall");
-                        }}
-                        className="float-right"
-                    >
-                        Overall Information
-                    </Button> */}
                 </CardBody>
             </Card>
         );

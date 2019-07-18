@@ -383,7 +383,6 @@ class ConnectionsList extends Component {
         let rows = [];
 
         cs.store.conns.map(c => {
-            console.log("c is ", c);
             const beg = Moment(c.archived.schedule.beginning * 1000);
             const end = Moment(c.archived.schedule.ending * 1000);
 
