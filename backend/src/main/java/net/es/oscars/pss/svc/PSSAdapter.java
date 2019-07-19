@@ -27,11 +27,13 @@ import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.cloudbees.syslog.Facility;
@@ -53,6 +55,8 @@ public class PSSAdapter {
     private PSSQueuer queuer;
 
     private TopoService topoService;
+
+    private static final Logger LOGGER = Logger.getLogger(PSSAdapter.class.getName());
 
     @Autowired
     public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr, CommandHistoryRepository historyRepo,
@@ -150,9 +154,15 @@ public class PSSAdapter {
                 logService.logEvent(conn.getConnectionId(), ev);
 
                 // Send Syslog Message
-                UdpSyslogMessageSender messageSender = new UdpSyslogMessageSender();
-                setSyslogProperties(messageSender);
-                messageSender.sendMessage("OSCARS BUILD START : " + conn.getConnectionId());
+                LOGGER.info( "OSCARS BUILD START : " + conn.getConnectionId());
+
+//                UdpSyslogMessageSender messageSender = new UdpSyslogMessageSender();
+//                setSyslogProperties(messageSender);
+//                try {
+//                    messageSender.sendMessage("OSCARS BUILD START : " + conn.getConnectionId());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
 
 
@@ -199,9 +209,15 @@ public class PSSAdapter {
                 logService.logEvent(conn.getConnectionId(), ev);
 
                 // Send Syslog Message
-                UdpSyslogMessageSender messageSender = new UdpSyslogMessageSender();
-                setSyslogProperties(messageSender);
-                messageSender.sendMessage("OSCARS BUILD END : " + conn.getConnectionId());
+                LOGGER.info( "OSCARS BUILD END : " + conn.getConnectionId());
+
+//                UdpSyslogMessageSender messageSender = new UdpSyslogMessageSender();
+//                setSyslogProperties(messageSender);
+//                try {
+//                    messageSender.sendMessage("OSCARS BUILD END : " + conn.getConnectionId());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
         this.triggerNsi(conn, result);
@@ -220,12 +236,6 @@ public class PSSAdapter {
 
     }
 
-
-
-
-
-
-
     public List<CommandStatus> getStableStatusesSerial(List<Command> commands) throws PSSException {
         List<CommandResponse> responses = serialSubmit(commands);
         List<String> commandIds = responses.stream()
@@ -233,7 +243,6 @@ public class PSSAdapter {
                 .collect(Collectors.toList());
         return pollUntilStable(commandIds);
     }
-
 
     public List<CommandStatus> getStableStatuses(List<Command> commands) throws PSSException {
         try {
@@ -247,8 +256,6 @@ public class PSSAdapter {
             throw new PSSException("interrupted");
         }
     }
-
-
 
     public List<CommandStatus> pollUntilStable(List<String> commandIds)
             throws PSSException {
@@ -335,7 +342,6 @@ public class PSSAdapter {
         return responses;
     }
 
-
     public List<CommandStatus> pollStatuses(List<String> commandIds)
             throws InterruptedException, ExecutionException {
         List<CommandStatus> statuses = new ArrayList<>();
@@ -359,7 +365,6 @@ public class PSSAdapter {
         return statuses;
     }
 
-
     public List<Command> configCommands(Connection conn, CommandType ct) throws PSSException {
         log.info("gathering "+ct+" commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
@@ -380,7 +385,6 @@ public class PSSAdapter {
 
         return commands;
     }
-
 
     public RouterCommands existing(String connId, String deviceUrn, CommandType commandType) {
         List<RouterCommands> existing = rcr.findByConnectionIdAndDeviceUrn(connId, deviceUrn);
