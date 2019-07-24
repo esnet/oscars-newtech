@@ -36,12 +36,6 @@ import java.util.concurrent.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.cloudbees.syslog.Facility;
-import com.cloudbees.syslog.MessageFormat;
-import com.cloudbees.syslog.Severity;
-import com.cloudbees.syslog.sender.UdpSyslogMessageSender;
-
-
 @Component
 @Slf4j
 public class PSSAdapter {
@@ -71,20 +65,6 @@ public class PSSAdapter {
         this.nsiService = nsiService;
         this.logService = logService;
         this.properties = properties;
-    }
-
-    public void setSyslogProperties(UdpSyslogMessageSender messageSender) {
-
-        messageSender.setDefaultMessageHostname("myhostname"); // some syslog cloud services may use this field to transmit a secret key
-        messageSender.setDefaultAppName("myapp");
-        messageSender.setDefaultFacility(Facility.USER);
-        messageSender.setDefaultSeverity(Severity.INFORMATIONAL);
-        messageSender.setSyslogServerHostname("127.0.0.1");
-
-        // syslog udp usually uses port 514 as per https://tools.ietf.org/html/rfc3164#page-5
-        messageSender.setSyslogServerPort(514);
-        messageSender.setMessageFormat(MessageFormat.RFC_3164); // optional, default is RFC 3164
-
     }
 
     public State processTask(Connection conn, CommandType commandType, State intent) {
@@ -155,14 +135,6 @@ public class PSSAdapter {
 
                 // Send Syslog Message
                 LOGGER.info( "OSCARS BUILD START : " + conn.getConnectionId());
-
-//                UdpSyslogMessageSender messageSender = new UdpSyslogMessageSender();
-//                setSyslogProperties(messageSender);
-//                try {
-//                    messageSender.sendMessage("OSCARS BUILD START : " + conn.getConnectionId());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             }
 
 
@@ -210,14 +182,6 @@ public class PSSAdapter {
 
                 // Send Syslog Message
                 LOGGER.info( "OSCARS BUILD END : " + conn.getConnectionId());
-
-//                UdpSyslogMessageSender messageSender = new UdpSyslogMessageSender();
-//                setSyslogProperties(messageSender);
-//                try {
-//                    messageSender.sendMessage("OSCARS BUILD END : " + conn.getConnectionId());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             }
         }
         this.triggerNsi(conn, result);
