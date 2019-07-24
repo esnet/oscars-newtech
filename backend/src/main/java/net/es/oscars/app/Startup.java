@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 @Slf4j
 @Component
@@ -56,7 +57,7 @@ public class Startup {
         return this.inStartup;
     }
 
-
+    private static final Logger LOGGER = Logger.getLogger(Startup.class.getName());
 
     @Bean
     public Executor taskExecutor() {
@@ -117,9 +118,10 @@ public class Startup {
         GitRepositoryState gitRepositoryState = this.gitRepositoryStatePopulator.getGitRepositoryState();
         log.info("OSCARS backend (" + gitRepositoryState.getDescribe() + " on " + gitRepositoryState.getBranch() + ")");
         log.info("Built by " + gitRepositoryState.getBuildUserEmail() + " on " + gitRepositoryState.getBuildHost() + " at " + gitRepositoryState.getBuildTime());
-
-
         log.info("OSCARS startup successful.");
+
+        LOGGER.info( "OSCARS STARTED SUCCESSFULLY SYSLOG ");
+
         this.setInStartup(false);
 
     }

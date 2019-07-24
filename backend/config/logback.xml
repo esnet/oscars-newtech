@@ -21,7 +21,7 @@
     </appender>
 
     <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
-        <syslogHost>localhost</syslogHost>
+        <syslogHost>127.0.0.1</syslogHost>
         <facility>USER</facility>
         <port>514</port>
         <throwableExcluded>true</throwableExcluded>
@@ -34,7 +34,7 @@
     <root level="WARN">
         <appender-ref ref="FILE"/>
         <!--<appender-ref ref="SYSLOG" />-->
-        <!--<appender-ref ref="STDOUT" />-->
+        <appender-ref ref="STDOUT" />
     </root>
 
     <!--<logger name="net.es.oscars" level="debug"/>-->
@@ -42,7 +42,7 @@
     <logger name="org.apache.cxf.services" level="INFO" />
     <logger name="io.undertow.websockets.jsr" level="ERROR" />
 
-    <logger name="net.es.oscars" level="DEBUG">
+    <logger name="net.es.oscars" level="INFO">
         <appender-ref ref="SYSLOG" />
     </logger>
 
