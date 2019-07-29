@@ -97,7 +97,7 @@ class DetailsGeneral extends Component {
 
             return (
                 <Card>
-                    <CardHeader className="p-1">Info</CardHeader>
+                    <CardHeader>Connection Information</CardHeader>
                     <CardBody>
                         <Nav tabs>
                             <NavItem>
@@ -140,8 +140,8 @@ class DetailsGeneral extends Component {
                                 {editDetails}
                                 <br />
                                 {states}
-                                <br />
-                                <DetailsButtons />
+                                {/* <br /> */}
+                                {/* <DetailsButtons /> */}
                             </TabPane>
                             <TabPane tabId="drawing" title="Drawing">
                                 <DetailsDrawing />
