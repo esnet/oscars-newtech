@@ -3,9 +3,18 @@ This file contains instructions for updating an existing installation of OSCARS 
 
 Instructions include config file changes, database schema changes, etc.
 ## 1.0.34 to 1.0.35
-- Config file changes
-  * The PSS config gen templates have been moved to `backend/config/templates/`.
-  * The  `pss.template-dirs` directive has been moved to the backend `config/application.properties` file.
+
+### Config file changes
+The PSS config gen templates have been moved to `backend/config/templates/`.
+The  `pss.template-dirs` directive has been moved to the backend `config/application.properties` file.
+For an existing installation, you will need to:
+* `mv /usr/local/esnet/oscars-pss/config/templates /usr/local/esnet/oscars-backend/config/templates`
+*  Edit `/usr/local/esnet/oscars-pss/config/application.properties` and remove the `pss.template-dirs` line,
+*  Edit `/usr/local/esnet/oscars-backend/config/application.properties` and add the same line:
+```
+pss.template-dirs=./config/templates/
+```
+
 
 ## 1.0.33 to 1.0.34
 N/A
