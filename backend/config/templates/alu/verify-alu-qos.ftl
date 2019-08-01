@@ -2,6 +2,7 @@
 <#-- @ftlvariable name="qos" type="net.es.oscars.pss.params.alu.AluQos" -->
 <#-- @ftlvariable name="protect" type="boolean" -->
 <#-- @ftlvariable name="apply" type="boolean" -->
+@version: 1.0.35
 
 <#list qosList as qos>
 

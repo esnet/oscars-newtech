@@ -1,5 +1,7 @@
 <#-- @ftlvariable name="mxLsps" type="java.util.List<net.es.oscars.pss.params.mx.MxLsp>" -->
 <#-- @ftlvariable name="vpls" type="net.es.oscars.pss.params.mx.MxVpls" -->
+@version: 1.0.35
+
 <#assign communityMembers = "65000:672277L:"+vpls.communityId>
 
 set policy-options community "${vpls.communityName}" members ${communityMembers}

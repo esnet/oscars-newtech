@@ -1,5 +1,6 @@
 <#-- @ftlvariable name="lsps" type="java.util.List" -->
 <#-- @ftlvariable name="lsp" type="net.es.oscars.pss.params.Lsp" -->
+@version: 1.0.35
 
 <#list lsps as lsp>
 <#assign lspName = lsp.name >

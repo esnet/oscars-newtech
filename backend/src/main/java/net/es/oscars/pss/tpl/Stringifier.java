@@ -3,10 +3,7 @@ package net.es.oscars.pss.tpl;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import freemarker.template.*;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.pss.beans.TemplateOutput;
@@ -33,15 +30,20 @@ public class Stringifier {
     @Autowired
     public Stringifier(PssProperties props) {
         this.props = props;
-        this.configureTemplates();
+        this.configureTemplates(false);
     }
 
-    public void configureTemplates() {
+    public void configureTemplates(boolean ignoreErrors) {
 
         fmCfg = new Configuration(Configuration.VERSION_2_3_22);
         fmCfg.setDefaultEncoding("UTF-8");
         fmCfg.setObjectWrapper(new DefaultObjectWrapper(Configuration.VERSION_2_3_22));
         fmCfg.setNumberFormat("computer");
+        if (ignoreErrors) {
+            // this is used to suppress errors during some tests
+            fmCfg.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
+            fmCfg.setLogTemplateExceptions(false);
+        }
 
         List<TemplateLoader> loaderList = new ArrayList<>();
 

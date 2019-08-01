@@ -1,6 +1,7 @@
 <#-- @ftlvariable name="vpls" type="net.es.oscars.pss.params.alu.AluVpls" -->
 <#-- @ftlvariable name="sap" type="net.es.oscars.pss.params.alu.AluSap" -->
 <#-- @ftlvariable name="sdp" type="net.es.oscars.pss.params.alu.AluSdp" -->
+@version: 1.0.35
 
 <#assign svcId = vpls.svcId>
 /configure service vpls ${svcId} shutdown

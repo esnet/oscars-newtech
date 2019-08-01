@@ -1,6 +1,5 @@
 package net.es.oscars.cuke;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -9,6 +8,7 @@ import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.props.PssProperties;
 import net.es.oscars.ctg.UnitTests;
 import net.es.oscars.pss.beans.TemplateOutput;
+import net.es.oscars.pss.beans.TemplateVersionReport;
 import net.es.oscars.pss.svc.ConfigGenService;
 import net.es.oscars.pss.tpl.Stringifier;
 import org.junit.experimental.categories.Category;
@@ -30,6 +30,8 @@ public class TemplateVersionSteps extends CucumberSteps {
 
     private List<String> templateFilenames;
 
+    private String[] savedTemplateDirs = null;
+
     private String templateDir = null;
     @Autowired
     private PssProperties pssProps;
@@ -39,7 +41,7 @@ public class TemplateVersionSteps extends CucumberSteps {
         String[] tds = {dir};
         templateDir = dir;
         pssProps.setTemplateDirs(tds);
-        stringifier.configureTemplates();
+        stringifier.configureTemplates(true);
     }
 
     @When("^I load the template \"([^\"]*)\"$")
@@ -60,12 +62,21 @@ public class TemplateVersionSteps extends CucumberSteps {
         }
         if (maybe.equals("is")) {
             if (encounteredException) {
+                this.logTemplateVersionReport();
                 throw new PSSException("should not have encountered exception but did");
             }
         } else {
             if (!encounteredException) {
+                this.logTemplateVersionReport();
                 throw new PSSException("should have encountered exception but did not");
             }
+        }
+    }
+
+    public void logTemplateVersionReport() throws PSSException {
+        List<TemplateVersionReport> tvrs = cgs.versionReport(templateFilenames);
+        for (TemplateVersionReport tvr : tvrs) {
+            log.error(tvr.getTemplateFilename()+ " "+tvr.getTemplateVersion());
         }
     }
 
@@ -88,10 +99,15 @@ public class TemplateVersionSteps extends CucumberSteps {
         Files.list(Paths.get(templateDir))
                 .filter(Files::isRegularFile)
                 .forEach(p -> this.templateFilenames.add(p.getFileName().toString()));
-        for (String f: this.templateFilenames) {
-            log.info(f);
-        }
     }
 
+    @Then("^I \"([^\"]*)\" the template directory property$")
+    public void i_the_template_directory_property(String what) {
+        if (what.equals("save")) {
+            savedTemplateDirs = pssProps.getTemplateDirs();
+        } else if (what.equals("restore")) {
+            pssProps.setTemplateDirs(savedTemplateDirs);
+        }
+    }
 
 }

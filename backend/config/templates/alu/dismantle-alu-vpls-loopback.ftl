@@ -1,4 +1,5 @@
 <#-- @ftlvariable name="loopback_ifce_name" type="java.lang.String" -->
+@version: 1.0.35
 
 /configure router interface "${loopback_ifce_name}" shutdown
 /configure router interface "${loopback_ifce_name}" no address
