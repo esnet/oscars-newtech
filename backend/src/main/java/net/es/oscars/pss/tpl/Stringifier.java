@@ -9,6 +9,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.props.PssProperties;
+import net.es.oscars.pss.beans.TemplateOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,7 +46,7 @@ public class Stringifier {
         List<TemplateLoader> loaderList = new ArrayList<>();
 
 
-        for (String templatePath : this.props.getTemplateDirs()) {
+            for (String templatePath : this.props.getTemplateDirs()) {
             try {
                 FileTemplateLoader ftl = new FileTemplateLoader(new File(templatePath));
                 loaderList.add(ftl);
@@ -61,17 +62,45 @@ public class Stringifier {
         fmCfg.setTemplateLoader(mtl);
     }
 
-    public String stringify(Map<String, Object> root, String templateFilename) throws IOException, TemplateException {
+    public TemplateOutput stringify(Map<String, Object> root, String templateFilename) throws IOException, TemplateException {
 
         Writer writer = new StringWriter();
         Template tpl = fmCfg.getTemplate(templateFilename);
         tpl.process(root, writer);
         writer.flush();
+        String unprocessed = writer.toString();
+        List<String> unprocessedLines = Arrays.asList(unprocessed.split("[\\r\\n]+"));
+        List<String> processedLines = new ArrayList<>();
+        String templateVersion = null;
+        boolean hasVersion = false;
 
-        String output = writer.toString();
-        List<String> lines = Arrays.asList(output.split("[\\r\\n]+"));
+        for (String line : unprocessedLines) {
+            if (line.startsWith("@version")) {
+                List<String> parts = Arrays.asList(line.split(":+"));
+                if (parts.size() == 2) {
+                    templateVersion = parts.get(1).replaceAll("\\s+", "");
+                    if (templateVersion.length() > 0) {
+                        hasVersion = true;
+                    }
+                } else {
+                    log.error("invalid version line in "+templateFilename+" : [ "+line+" ]");
+                }
+            } else {
+                processedLines.add(line);
+            }
+        }
+        String processed = String.join("\n", processedLines);
 
-        return String.join("\n", lines);
+        return TemplateOutput.builder()
+                .unprocessed(unprocessed)
+                .unprocessedLines(unprocessedLines)
+                .processed(processed)
+                .processedLines(processedLines)
+                .hasVersion(hasVersion)
+                .templateVersion(templateVersion)
+                .build();
+
 
     }
+
 }

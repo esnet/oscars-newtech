@@ -26,6 +26,9 @@ public class RouterCommands {
     private CommandType type;
 
     @NonNull
+    private String templateVersion;
+
+    @NonNull
     @Column(length = 65536)
     private String contents;
 

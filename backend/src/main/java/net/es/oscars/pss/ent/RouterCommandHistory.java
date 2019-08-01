@@ -46,4 +46,7 @@ public class RouterCommandHistory {
     @Column(length = 65536)
     private String output;
 
+    @NonNull
+    private String templateVersion;
+
 }
