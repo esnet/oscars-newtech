@@ -122,7 +122,7 @@ public class Startup {
         log.info("Built by " + gitRepositoryState.getBuildUserEmail() + " on " + gitRepositoryState.getBuildHost() + " at " + gitRepositoryState.getBuildTime());
         log.info("OSCARS startup successful.");
 
-        syslogger.sendSyslog( "OSCARS STARTED SUCCESSFULLY SYSLOG ");
+        syslogger.sendSyslog("OSCARS STARTED SUCCESSFULLY SYSLOG");
 
         this.setInStartup(false);
 

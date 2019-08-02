@@ -5,6 +5,7 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.ServiceException;
 import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.props.PssProperties;
+import net.es.oscars.app.syslog.Syslogger;
 import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.st.ConfigStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
@@ -47,10 +48,8 @@ public class PSSAdapter {
     private LogService logService;
     private ConnService connService;
     private PSSQueuer queuer;
-
     private TopoService topoService;
-
-    private static final Logger LOGGER = Logger.getLogger(PSSAdapter.class.getName());
+    private Syslogger syslogger;
 
     @Autowired
     public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr, CommandHistoryRepository historyRepo,
@@ -65,6 +64,7 @@ public class PSSAdapter {
         this.nsiService = nsiService;
         this.logService = logService;
         this.properties = properties;
+        this.syslogger = syslogger;
     }
 
     public State processTask(Connection conn, CommandType commandType, State intent) {
@@ -134,7 +134,7 @@ public class PSSAdapter {
                 logService.logEvent(conn.getConnectionId(), ev);
 
                 // Send Syslog Message
-                LOGGER.info( "OSCARS BUILD START : " + conn.getConnectionId());
+                syslogger.sendSyslog( "OSCARS BUILD START : " + conn.getConnectionId());
             }
 
 
@@ -181,7 +181,7 @@ public class PSSAdapter {
                 logService.logEvent(conn.getConnectionId(), ev);
 
                 // Send Syslog Message
-                LOGGER.info( "OSCARS BUILD END : " + conn.getConnectionId());
+                syslogger.sendSyslog( "OSCARS BUILD END : " + conn.getConnectionId());
             }
         }
         this.triggerNsi(conn, result);
