@@ -12,7 +12,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>backed.log</file>
+        <file>log/backend.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
                 %d %clr(%-5p) %clr(%-35logger{5}){cyan} - %-60msg%n
@@ -23,9 +23,8 @@
     <appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
         <syslogHost>127.0.0.1</syslogHost>
         <facility>USER</facility>
-        <port>514</port>
+        <port>10514</port>
         <throwableExcluded>true</throwableExcluded>
-        <suffixPattern>%d %clr(%-5p) %clr(%-35logger{5}){cyan} - %-60msg%n</suffixPattern>
     </appender>
 
     <!-- magic line: ties to spring logging.file property -->
@@ -33,7 +32,7 @@
 
     <root level="WARN">
         <appender-ref ref="FILE"/>
-        <!--<appender-ref ref="SYSLOG" />-->
+        <appender-ref ref="SYSLOG" />
         <appender-ref ref="STDOUT" />
     </root>
 
@@ -42,8 +41,12 @@
     <logger name="org.apache.cxf.services" level="INFO" />
     <logger name="io.undertow.websockets.jsr" level="ERROR" />
 
-    <logger name="net.es.oscars" level="INFO">
+    <logger name="net.es.oscars.app.syslog" additivity="false" level="INFO">
         <appender-ref ref="SYSLOG" />
+    </logger>
+
+    <logger name="net.es.oscars" additivity="false" level="INFO">
+        <appender-ref ref="STDOUT" />
     </logger>
 
     <logger name="org.springframework" level="ERROR">
