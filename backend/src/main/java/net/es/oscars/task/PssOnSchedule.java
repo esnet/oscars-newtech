@@ -82,7 +82,7 @@ public class PssOnSchedule {
                     attempts.remove(c.getConnectionId());
                 } catch (PSSException e) {
                     attempts.put(c.getConnectionId(), tried);
-                    e.printStackTrace();
+                    log.error(e.getMessage(), e);
                 }
 
             } else if (tried.equals(maxTries)) {
