@@ -35,10 +35,10 @@ public class PSSQueuer {
 
     public void process() {
         for (PssTask rt : running) {
-            log.info("running : "+rt.getConnectionId()+ " "+rt.getCommandType());
+            log.info("running : " + rt.getConnectionId() + " " + rt.getCommandType());
         }
         for (PssTask wt : waiting) {
-            log.info("waiting : "+wt.getConnectionId()+ " "+wt.getCommandType());
+            log.info("waiting : " + wt.getConnectionId() + " " + wt.getCommandType());
         }
         running.addAll(waiting);
 
@@ -50,14 +50,14 @@ public class PSSQueuer {
 
         List<FutureTask<State>> taskList = new ArrayList<>();
         for (PssTask wt : waiting) {
-            cr.findByConnectionId(wt.getConnectionId()).ifPresent( conn -> {
+            cr.findByConnectionId(wt.getConnectionId()).ifPresent(conn -> {
                 FutureTask<State> task = new FutureTask<>(() -> adapter.processTask(conn, wt.getCommandType(), wt.getIntent()));
                 taskList.add(task);
             });
         }
         waiting.clear();
 
-        for (FutureTask<State> ft: taskList) {
+        for (FutureTask<State> ft : taskList) {
             try {
                 executor.execute(ft);
                 ft.get();
@@ -85,13 +85,13 @@ public class PSSQueuer {
     }
 
     public void complete(CommandType ct, String connId) {
-        log.info("completing : "+connId+ " "+ct);
+        log.info("completing : " + connId + " " + ct);
         PssTask completed = null;
         for (PssTask task : running) {
             if (task.getCommandType().equals(ct) &&
-                task.getConnectionId().equals(connId)) {
+                    task.getConnectionId().equals(connId)) {
                 completed = task;
-                log.info("completed : "+connId+ " "+ct);
+                log.info("completed : " + connId + " " + ct);
             }
         }
         if (completed != null) {
@@ -100,6 +100,23 @@ public class PSSQueuer {
         }
 
     }
+
+    public void remove(CommandType ct, String connId) {
+        log.info("removing : " + connId + " " + ct);
+        PssTask remove = null;
+        for (PssTask task : running) {
+            if (task.getCommandType().equals(ct) &&
+                    task.getConnectionId().equals(connId)) {
+                remove = task;
+                log.info("removing : " + connId + " " + ct);
+            }
+        }
+        if (remove != null) {
+            running.remove(remove);
+        }
+    }
+
+
     public void add(CommandType ct, String connId, State intent) {
 
         PssTask pt = PssTask.builder()
@@ -114,7 +131,7 @@ public class PSSQueuer {
             if (task.getConnectionId().equals(connId)) {
                 if (task.getCommandType().equals(ct)) {
                     add = false;
-                    log.info("will not add since already running: "+connId+" "+ct);
+                    log.info("will not add since already running: " + connId + " " + ct);
                 }
             }
         }
@@ -125,17 +142,17 @@ public class PSSQueuer {
                 if (task.getConnectionId().equals(connId)) {
                     if (task.getCommandType().equals(ct)) {
                         add = false;
-                        log.info("will not add since already waiting: "+connId+" "+ct);
+                        log.info("will not add since already waiting: " + connId + " " + ct);
                     } else if (task.getCommandType().equals(CommandType.DISMANTLE) && ct.equals(CommandType.BUILD)) {
                         add = false;
                         removeFromWaiting = true;
                         removeThis = task;
-                        log.info("incoming dismantle canceled a build "+connId);
+                        log.info("incoming dismantle canceled a build " + connId);
                     } else if (task.getCommandType().equals(CommandType.BUILD) && ct.equals(CommandType.DISMANTLE)) {
                         add = false;
                         removeFromWaiting = true;
                         removeThis = task;
-                        log.info("incoming build canceled a dismantle "+connId);
+                        log.info("incoming build canceled a dismantle " + connId);
                     }
                 }
             }
@@ -145,7 +162,7 @@ public class PSSQueuer {
             }
         }
         if (add) {
-            log.info("adding task to waiting: "+connId+" "+ct);
+            log.info("adding task to waiting: " + connId + " " + ct);
             waiting.add(pt);
         }
     }

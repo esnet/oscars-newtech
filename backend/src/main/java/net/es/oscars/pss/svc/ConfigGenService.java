@@ -38,6 +38,15 @@ public class ConfigGenService {
 
 
     public void generateConfig(Connection conn) throws PSSException {
+        /*
+        try {
+            log.info("sleeping a bit to simulate slow config gen");
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        */
+
         log.info("generating config for " + conn.getConnectionId());
         for (VlanJunction j : conn.getReserved().getCmp().getJunctions()) {
             Device d = topoSvc.getDeviceRepo().findByUrn(j.getDeviceUrn()).orElseThrow(PSSException::new);
