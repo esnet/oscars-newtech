@@ -335,6 +335,8 @@ public class PSSAdapter {
         log.info("gathering "+ct+" commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
 
+        boolean hadError = false;
+
         for (VlanJunction j : conn.getArchived().getCmp().getJunctions()) {
             RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), ct);
             if (existing != null) {
@@ -343,11 +345,16 @@ public class PSSAdapter {
 
             } else {
                 log.error(ct+" config does not exist for " + conn.getConnectionId());
-
+                hadError = true;
             }
         }
+        int needed = conn.getArchived().getCmp().getJunctions().size();
+        int got = commands.size();
 
-        log.info("gathered " + commands.size() + " commands");
+        log.info("gathered " + got + "/"+needed+" commands");
+        if (hadError) {
+            throw new PSSException("waiting for all "+needed+" commands to be generated for "+conn.getConnectionId());
+        }
 
         return commands;
     }

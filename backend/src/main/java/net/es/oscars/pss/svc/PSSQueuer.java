@@ -135,7 +135,7 @@ public class PSSQueuer {
                         add = false;
                         removeFromWaiting = true;
                         removeThis = task;
-                        log.info("incoming build canceled a dismantke "+connId);
+                        log.info("incoming build canceled a dismantle "+connId);
                     }
                 }
             }
