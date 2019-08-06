@@ -1,7 +1,11 @@
 ## OSCARS Backend Release Notes
 
+### v1.0.36
+> Aug 2, 2019
+- PSS race condition hotfix
+
 ### v1.0.35
-> June xx, 2019
+> Jul 30, 2019
 - BREAKING CHANGE: /protected/hold will NOT throw an exception if resources unavailable any more. Callers must check the `validity.valid` field.
 - PSS config generation refactoring 
 - PSS improved queueing, bug fixing
