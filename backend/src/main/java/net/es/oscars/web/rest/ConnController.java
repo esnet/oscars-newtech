@@ -11,7 +11,9 @@ import net.es.oscars.nsi.svc.NsiService;
 import net.es.oscars.pss.ent.RouterCommandHistory;
 import net.es.oscars.resv.db.CommandHistoryRepository;
 import net.es.oscars.resv.db.ConnectionRepository;
+import net.es.oscars.resv.db.LogRepository;
 import net.es.oscars.resv.ent.Connection;
+import net.es.oscars.resv.ent.EventLog;
 import net.es.oscars.resv.enums.BuildMode;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
@@ -40,6 +42,9 @@ public class ConnController {
 
     @Autowired
     private CommandHistoryRepository historyRepo;
+
+    @Autowired
+    private LogRepository eventlogRepo;
 
     @Autowired
     private ConnService connSvc;
@@ -155,6 +160,17 @@ public class ConnController {
         c.setState(State.valueOf(state));
         connRepo.save(c);
 
+    }
+
+    @RequestMapping(value = "/api/conn/eventlog/{connectionId:.+}", method = RequestMethod.GET)
+    @ResponseBody
+    public Optional<EventLog> eventlog(@PathVariable String connectionId) throws StartupException, ConnException {
+        this.checkStartup();
+        if (connectionId == null || connectionId.equals("")) {
+            log.info("Connection ID not provided!");
+            throw new ConnException("Connection ID not provided");
+        }
+        return eventlogRepo.findByConnectionId(connectionId);
     }
 
     @RequestMapping(value = "/api/conn/info/{connectionId:.+}", method = RequestMethod.GET)
