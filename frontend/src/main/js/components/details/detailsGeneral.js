@@ -232,7 +232,7 @@ class DetailsGeneral extends Component {
         );
         return (
             <span className="float-right">
-                <HelpPopover header={header} body={body} placement="right" popoverId="state-help" />
+                <HelpPopover header={header} body={body} placement="right" popoverId="build-help" />
             </span>
         );
     }
