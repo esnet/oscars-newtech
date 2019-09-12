@@ -12,7 +12,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>log/backend.log</file>
+        <file>logs/pss.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
                 %d %clr(%-5p) %clr(%-35logger{5}){cyan} - %-60msg%n
@@ -39,8 +39,6 @@
     </root>
 
     <!--<logger name="net.es.oscars" level="debug"/>-->
-    <logger name="org.hibernate.tool.hbm2ddl.SchemaExport" level="off" />
-    <logger name="org.apache.cxf.services" level="INFO" />
     <logger name="io.undertow.websockets.jsr" level="ERROR" />
 
     <logger name="net.es.oscars.dto.app.syslog" additivity="false" level="INFO">

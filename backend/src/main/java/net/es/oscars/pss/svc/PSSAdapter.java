@@ -5,7 +5,7 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.ServiceException;
 import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.props.PssProperties;
-import net.es.oscars.app.syslog.Syslogger;
+import net.es.oscars.dto.app.syslog.Syslogger;
 import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.st.ConfigStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
@@ -96,6 +96,8 @@ public class PSSAdapter {
 
     public State build(Connection conn) throws PSSException {
         log.info("building " + conn.getConnectionId());
+        syslogger.sendSyslog( "OSCARS BUILD STARTED : " + conn.getConnectionId());
+
         List<Command> commands = this.configCommands(conn, CommandType.BUILD);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
@@ -123,6 +125,9 @@ public class PSSAdapter {
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
+
+                // Send Syslog Message
+                syslogger.sendSyslog( "OSCARS BUILD FAILED : " + conn.getConnectionId());
             } else {
                 Event ev = Event.builder()
                         .connectionId(conn.getConnectionId())
@@ -134,7 +139,7 @@ public class PSSAdapter {
                 logService.logEvent(conn.getConnectionId(), ev);
 
                 // Send Syslog Message
-                syslogger.sendSyslog( "OSCARS BUILD START : " + conn.getConnectionId());
+                syslogger.sendSyslog( "OSCARS BUILD ENDED SUCCESSFULLY : " + conn.getConnectionId());
             }
 
 
@@ -145,6 +150,8 @@ public class PSSAdapter {
 
     public State dismantle(Connection conn) throws PSSException {
         log.info("dismantling " + conn.getConnectionId());
+        syslogger.sendSyslog( "OSCARS DISMANTLE STARTED : " + conn.getConnectionId());
+
         List<Command> commands = this.configCommands(conn, CommandType.DISMANTLE);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
@@ -170,6 +177,7 @@ public class PSSAdapter {
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
+                syslogger.sendSyslog( "OSCARS DISMANTLE FAILED : " + conn.getConnectionId());
             } else {
                 Event ev = Event.builder()
                         .connectionId(conn.getConnectionId())
@@ -181,7 +189,7 @@ public class PSSAdapter {
                 logService.logEvent(conn.getConnectionId(), ev);
 
                 // Send Syslog Message
-                syslogger.sendSyslog( "OSCARS BUILD END : " + conn.getConnectionId());
+                syslogger.sendSyslog( "OSCARS DISMANTLE ENDED SUCCESSFULLY : " + conn.getConnectionId());
             }
         }
         this.triggerNsi(conn, result);

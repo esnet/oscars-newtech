@@ -3,7 +3,7 @@ package net.es.oscars.app;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
-import net.es.oscars.app.syslog.Syslogger;
+import net.es.oscars.dto.app.syslog.Syslogger;
 import net.es.oscars.app.util.DbAccess;
 import net.es.oscars.app.util.GitRepositoryState;
 import net.es.oscars.app.util.GitRepositoryStatePopulator;
@@ -95,8 +95,10 @@ public class Startup {
 
         this.setInStartup(true);
         if (startupProperties.getExit()) {
+            log.info("In Shutdown");
             this.setInStartup(false);
             this.setInShutdown(true);
+            syslogger.sendSyslog("OSCARS STOPPED SUCCESSFULLY");
             System.out.println("Exiting (startup.exit is true)");
             System.exit(0);
         }
@@ -122,7 +124,7 @@ public class Startup {
         log.info("Built by " + gitRepositoryState.getBuildUserEmail() + " on " + gitRepositoryState.getBuildHost() + " at " + gitRepositoryState.getBuildTime());
         log.info("OSCARS startup successful.");
 
-        syslogger.sendSyslog("OSCARS STARTED SUCCESSFULLY SYSLOG");
+        syslogger.sendSyslog("OSCARS STARTED SUCCESSFULLY");
 
         this.setInStartup(false);
 

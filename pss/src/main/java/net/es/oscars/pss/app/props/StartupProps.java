@@ -1,4 +1,4 @@
-package net.es.oscars.app.props;
+package net.es.oscars.pss.app.props;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,11 +9,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@EnableConfigurationProperties(StartupProperties.class)
+@EnableConfigurationProperties(StartupProps.class)
 @ConfigurationProperties(prefix = "startup")
 @NoArgsConstructor
-public class StartupProperties {
+public class StartupProps {
     @NonNull
     private Boolean exit = false;
     private String banner = "";
 }
+
+
+
