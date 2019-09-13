@@ -7,6 +7,9 @@ import myClient from "../../agents/client";
 import { Row, Col } from "reactstrap";
 import DetailsControls from "./detailsControls";
 
+import ReactTable from "react-table";
+import "react-table/react-table.css";
+
 @inject("connsStore", "commonStore")
 @observer
 class DetailsHistory extends Component {
@@ -51,6 +54,31 @@ class DetailsHistory extends Component {
             })
         );
     };
+
+    columns = [
+        {
+            accessor: "at",
+            Header: props => (
+                <div>
+                    <br />
+                    <b>Timestamp</b>
+                    <br />
+                    <br />
+                </div>
+            )
+          },
+          {
+            accessor: "description",
+            Header: props => (
+                <div>
+                    <br />
+                    <b>Description</b>
+                    <br />
+                    <br />
+                </div>
+            )
+          }
+    ];
 
     render() {
         let cs = this.props.connsStore;
@@ -111,24 +139,50 @@ class DetailsHistory extends Component {
                 </div>
             )
         } else {
+            let rows = [];
+            log.events.reverse().map(c => {
+                let row = {
+                    at: c.at,
+                    type: c.type,
+                    description: c.description
+                };
+                rows.push(row);
+            });
+
             return (
-                <Card>
-                    <CardBody>
-                        <b>Event Log</b>
-                        <ListGroup>
-                            {log.events.reverse().map(c => {
-                                console.log("c is ", c);
-                                return (
-                                    <ListGroupItem className="p-1 m-1" key={c.at}>
-                                        {c.at}{" "}
-                                        <span className="pull-right">{c.description}</span>
-                                    </ListGroupItem>
-                                );
-                            })}
-                        </ListGroup>
-                    </CardBody>
-                </Card>
+                <ReactTable
+                    data={rows}
+                    columns={this.columns}
+                    minRows={3}
+                    className="-striped -highlight"
+                    getTrProps={(state, rowInfo, column) => {
+                        return {
+                          style: {
+                            padding: '10px'
+                          }
+                        }
+                      }}
+                />
             );
+
+            // return (
+            //     <Card>
+            //         <CardBody>
+            //             <b>Event Log</b>
+            //             <ListGroup>
+            //                 {log.events.reverse().map(c => {
+            //                     console.log("c is ", c);
+            //                     return (
+            //                         <ListGroupItem className="p-1 m-1" key={c.at}>
+            //                             {c.at}{" "}
+            //                             <span className="pull-right">{c.description}</span>
+            //                         </ListGroupItem>
+            //                     );
+            //                 })}
+            //             </ListGroup>
+            //         </CardBody>
+            //     </Card>
+            // );
         }
     }
 }
