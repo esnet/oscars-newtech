@@ -23,7 +23,8 @@ class ConnectionsStore {
         selected: {},
         commands: new Map(),
         statuses: new Map(),
-        history: new Map()
+        history: new Map(),
+        eventLog: []
     };
 
     @observable editSchedule = {
@@ -148,6 +149,10 @@ class ConnectionsStore {
 
     @action setHistory(history) {
         this.store.history = history;
+    }
+
+    @action setEventLog(eventLog) {
+        this.store.eventLog = eventLog;
     }
 
     @action setPssStatus(status) {

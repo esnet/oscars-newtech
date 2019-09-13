@@ -162,17 +162,6 @@ public class ConnController {
 
     }
 
-    @RequestMapping(value = "/api/conn/eventlog/{connectionId:.+}", method = RequestMethod.GET)
-    @ResponseBody
-    public Optional<EventLog> eventlog(@PathVariable String connectionId) throws StartupException, ConnException {
-        this.checkStartup();
-        if (connectionId == null || connectionId.equals("")) {
-            log.info("Connection ID not provided!");
-            throw new ConnException("Connection ID not provided");
-        }
-        return eventlogRepo.findByConnectionId(connectionId);
-    }
-
     @RequestMapping(value = "/api/conn/info/{connectionId:.+}", method = RequestMethod.GET)
     @ResponseBody
     public Connection info(@PathVariable String connectionId) throws StartupException, NoSuchElementException {
