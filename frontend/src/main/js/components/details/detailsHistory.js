@@ -1,16 +1,13 @@
-import React, { Component } from "react";
-import { action, autorun } from "mobx";
+import { action } from "mobx";
 import { inject, observer } from "mobx-react";
-import { Card, CardBody, CardHeader, ListGroup, ListGroupItem } from "reactstrap";
-import HelpPopover from "../helpPopover";
-import myClient from "../../agents/client";
-import { Row, Col } from "reactstrap";
-import DetailsControls from "./detailsControls";
-
+import Moment from "moment";
+import React, { Component } from "react";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 
-@inject("connsStore", "commonStore")
+import myClient from "../../agents/client";
+
+@inject("connsStore")
 @observer
 class DetailsHistory extends Component {
     constructor(props) {
@@ -21,23 +18,12 @@ class DetailsHistory extends Component {
     }
     
     componentWillMount() {
-        this.props.commonStore.setActiveNav("history");
-
         const pathConnectionId = this.props.connsStore.store.current.connectionId;
         this.updateList(pathConnectionId);
-        this.periodicCheck();
     }
 
     componentWillUnmount() {
-        clearTimeout(this.timeoutId);
         this.props.connsStore.clearCurrent();
-    }
-
-    periodicCheck() {
-        this.timeoutId = setTimeout(() => {
-            this.refresh();
-            this.periodicCheck();
-        }, 60000);
     }
 
     refresh = () => {
@@ -82,56 +68,8 @@ class DetailsHistory extends Component {
 
     render() {
         let cs = this.props.connsStore;
-        const connId = cs.store.current.connectionId;
         const log = cs.store.eventLog;
 
-        const events = log.events;
-        // cs.store.conns.map(c => {
-        //     const beg = Moment(c.archived.schedule.beginning * 1000);
-        //     const end = Moment(c.archived.schedule.ending * 1000);
-
-        //     let beginning = beg.format(format) + " (" + beg.fromNow() + ")";
-        //     let ending = end.format(format) + " (" + end.fromNow() + ")";
-        //     let fixtures = [];
-        //     let fixtureBits = [];
-        //     c.archived.cmp.fixtures.map(f => {
-        //         fixtures.push(f);
-        //         const fixtureBit = f.portUrn + "." + f.vlan.vlanId;
-        //         fixtureBits.push(fixtureBit);
-        //     });
-        //     let fixtureString = fixtureBits.join(" ");
-
-        //     let row = {
-        //         connectionId: c.connectionId,
-        //         description: c.description,
-        //         phase: c.phase,
-        //         state: c.state,
-        //         tags: toJS(c.tags),
-        //         username: c.username,
-        //         fixtures: fixtures,
-        //         fixtureString: fixtureString,
-        //         beginning: beginning,
-        //         ending: ending
-        //     };
-        //     rows.push(row);
-        // });
-
-        // return (
-        //     <ReactTable
-        //         manual
-        //         pages={cs.filter.totalPages}
-        //         loading={loading}
-        //         onFetchData={this.fetchData}
-        //         data={rows}
-        //         columns={this.columns}
-        //         filterable
-        //         minRows={3}
-        //         defaultPageSize={5}
-        //         className="-striped -highlight"
-        //     />
-        // );
-
-        console.log("log is ", log, log.length);
         if (log === undefined || log.length === 0) {
             return (
                 <div>
@@ -142,7 +80,7 @@ class DetailsHistory extends Component {
             let rows = [];
             log.events.reverse().map(c => {
                 let row = {
-                    at: c.at,
+                    at: Moment(c.at).format('Y/MM/DD HH:mm:ss'),
                     type: c.type,
                     description: c.description
                 };
@@ -164,25 +102,6 @@ class DetailsHistory extends Component {
                       }}
                 />
             );
-
-            // return (
-            //     <Card>
-            //         <CardBody>
-            //             <b>Event Log</b>
-            //             <ListGroup>
-            //                 {log.events.reverse().map(c => {
-            //                     console.log("c is ", c);
-            //                     return (
-            //                         <ListGroupItem className="p-1 m-1" key={c.at}>
-            //                             {c.at}{" "}
-            //                             <span className="pull-right">{c.description}</span>
-            //                         </ListGroupItem>
-            //                     );
-            //                 })}
-            //             </ListGroup>
-            //         </CardBody>
-            //     </Card>
-            // );
         }
     }
 }
