@@ -11,9 +11,7 @@ import net.es.oscars.nsi.svc.NsiService;
 import net.es.oscars.pss.ent.RouterCommandHistory;
 import net.es.oscars.resv.db.CommandHistoryRepository;
 import net.es.oscars.resv.db.ConnectionRepository;
-import net.es.oscars.resv.db.LogRepository;
 import net.es.oscars.resv.ent.Connection;
-import net.es.oscars.resv.ent.EventLog;
 import net.es.oscars.resv.enums.BuildMode;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
@@ -42,9 +40,6 @@ public class ConnController {
 
     @Autowired
     private CommandHistoryRepository historyRepo;
-
-    @Autowired
-    private LogRepository eventlogRepo;
 
     @Autowired
     private ConnService connSvc;
