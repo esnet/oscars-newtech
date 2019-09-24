@@ -1,6 +1,7 @@
 ## topo
 
-Topology-related scripts and utilities; currently mostly ESnet-specific Python code that work with Python 2.x
+Topology-related scripts and utilities; currently mostly
+ESnet-specific Python code that works with Python 2.x and 3.x.
 
 ### Installation
 
@@ -40,5 +41,16 @@ optional arguments:
 
 ```
 
-The `run.sh` shell script will be used to pass production-ready parameters to `topo.py` .
+The `run.sh` shell script can be used to pass production-ready
+parameters to `topo.py` .  It is intended to be run from cron(8), with
+a crontab(5) entry such as:
+```
+5,35 * * * *  /usr/local/esnet/topo-update/run.sh
+```
+There may be some permissions issues that require this script to run
+as `root`.
 
+It currently assumes that `run.sh` and `topo.py` are installed in the
+directory `/usr/local/esnet/topo-update`, and that topology files are
+to be placed in the OSCARS configuration directory
+`/usr/local/esnet/oscars-backend/config/topo`.
