@@ -32,16 +32,12 @@ public class PssApp {
             }
         });
 
-        startup.onStart();
-
-//        try {
-//            log.info("PSS startup try block start");
-//            startup.onStart();
-//            log.info("PSS startup try block done");
-//        } catch (Exception ex) {
-//            log.error("PSS startup error!", ex);
-//            System.exit(1);
-//        }
+        try {
+            startup.onStart();
+        } catch (Exception ex) {
+            log.error("PSS startup error!", ex);
+            System.exit(1);
+        }
     }
 
     @Configuration
