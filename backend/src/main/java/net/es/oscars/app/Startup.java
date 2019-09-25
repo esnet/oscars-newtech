@@ -3,7 +3,7 @@ package net.es.oscars.app;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
-import net.es.oscars.dto.app.syslog.Syslogger;
+import net.es.oscars.app.syslog.Syslogger;
 import net.es.oscars.app.util.DbAccess;
 import net.es.oscars.app.util.GitRepositoryState;
 import net.es.oscars.app.util.GitRepositoryStatePopulator;

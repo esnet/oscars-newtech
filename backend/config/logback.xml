@@ -43,7 +43,7 @@
     <logger name="org.apache.cxf.services" level="INFO" />
     <logger name="io.undertow.websockets.jsr" level="ERROR" />
 
-    <logger name="net.es.oscars.dto.app.syslog" additivity="false" level="INFO">
+    <logger name="net.es.oscars.app.syslog" additivity="false" level="INFO">
         <appender-ref ref="SYSLOG" />
     </logger>
 

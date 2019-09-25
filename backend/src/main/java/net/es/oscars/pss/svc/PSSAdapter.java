@@ -5,7 +5,7 @@ import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.ServiceException;
 import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.props.PssProperties;
-import net.es.oscars.dto.app.syslog.Syslogger;
+import net.es.oscars.app.syslog.Syslogger;
 import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.st.ConfigStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
@@ -28,13 +28,11 @@ import net.es.oscars.topo.svc.TopoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Component

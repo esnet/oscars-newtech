@@ -1,4 +1,4 @@
-package net.es.oscars.dto.app.syslog;
+package net.es.oscars.app.syslog;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

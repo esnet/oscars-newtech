@@ -2,7 +2,7 @@ package net.es.oscars.pss.app;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.pss.app.props.StartupProps;
-import net.es.oscars.dto.app.syslog.Syslogger;
+import net.es.oscars.pss.app.syslog.Syslogger;
 import net.es.oscars.pss.prop.PssProps;
 import net.es.oscars.pss.svc.CommandQueuer;
 import net.es.oscars.pss.svc.UrnMappingService;
@@ -58,9 +58,11 @@ public class Startup {
                    CommandQueuer queuer,
                    HealthService healthService,
                    UrnMappingService urnMappingService,
+                   Syslogger syslogger,
                    PssProps props) {
         this.queuer = queuer;
         this.props = props;
+        this.syslogger = syslogger;
         this.healthService = healthService;
         this.urnMappingService = urnMappingService;
         this.startupProps = startupProps;
