@@ -1,11 +1,24 @@
 # OSCARS Release Notes
 
+## v1.0.36
+> Aug 6, 2019
+- Backend:
+    - PSS bug hotfix
+
+- Frontend:
+    - Minor cosmetic fixes
+    
 ## v1.0.35
-> June xx, 2019
+> July 30, 2019
 - Backend:
     - PSS config generation refactoring 
     - PSS improved queueing, bug fixing
-
+    - Add a opStatus REST endpoint
+    - Allow partial match for map positions
+    - Add a PSS work status API
+- Frontend:
+    - Add PSS Feedback on the connection description page
+    - Add the option for multivalue text input 
 
 ## v1.0.34
 > May 21, 2019

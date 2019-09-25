@@ -7,7 +7,7 @@
     <groupId>net.es.oscars</groupId>
     <artifactId>oscars</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.34</version>
+    <version>1.0.36</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

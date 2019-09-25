@@ -2,6 +2,7 @@ package net.es.oscars.pss.svc;
 
 import lombok.extern.slf4j.Slf4j;
 import net.es.nsi.lib.soap.gen.nsi_2_0.connection.ifce.ServiceException;
+import net.es.oscars.app.exc.NotReadyException;
 import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.props.PssProperties;
@@ -83,6 +84,9 @@ public class PSSAdapter {
                 log.info("completing task "+conn.getConnectionId()+" "+commandType);
                 queuer.complete(commandType, conn.getConnectionId());
             }
+        } catch (NotReadyException ex) {
+            log.info("not ready, will retry task "+conn.getConnectionId()+" "+commandType);
+            queuer.remove(commandType, conn.getConnectionId());
         } catch (PSSException ex) {
             log.error(ex.getMessage(), ex);
             connService.updateState(conn, State.FAILED);
@@ -92,7 +96,7 @@ public class PSSAdapter {
         return newState;
     }
 
-    public State build(Connection conn) throws PSSException {
+    public State build(Connection conn) throws PSSException, NotReadyException {
         log.info("building " + conn.getConnectionId());
         syslogger.sendSyslog( "OSCARS BUILD STARTED : " + conn.getConnectionId());
 
@@ -146,7 +150,7 @@ public class PSSAdapter {
         return result;
     }
 
-    public State dismantle(Connection conn) throws PSSException {
+    public State dismantle(Connection conn) throws PSSException, NotReadyException {
         log.info("dismantling " + conn.getConnectionId());
         syslogger.sendSyslog( "OSCARS DISMANTLE STARTED : " + conn.getConnectionId());
 
@@ -335,9 +339,11 @@ public class PSSAdapter {
         return statuses;
     }
 
-    public List<Command> configCommands(Connection conn, CommandType ct) throws PSSException {
+   public List<Command> configCommands(Connection conn, CommandType ct) throws PSSException, NotReadyException {
         log.info("gathering "+ct+" commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
+
+        boolean hadError = false;
 
         for (VlanJunction j : conn.getArchived().getCmp().getJunctions()) {
             RouterCommands existing = existing(conn.getConnectionId(), j.getDeviceUrn(), ct);
@@ -347,11 +353,16 @@ public class PSSAdapter {
 
             } else {
                 log.error(ct+" config does not exist for " + conn.getConnectionId());
-
+                hadError = true;
             }
         }
+        int needed = conn.getArchived().getCmp().getJunctions().size();
+        int got = commands.size();
 
-        log.info("gathered " + commands.size() + " commands");
+        log.info("gathered " + got + "/"+needed+" commands");
+        if (hadError) {
+            throw new NotReadyException("waiting for all "+needed+" commands to be generated for "+conn.getConnectionId());
+        }
 
         return commands;
     }

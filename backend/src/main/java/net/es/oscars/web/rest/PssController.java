@@ -108,12 +108,16 @@ public class PssController {
 
         } else {
             Connection c = maybeC.get();
-            if (!c.getPhase().equals(Phase.RESERVED)) {
-                throw new PSSException("can only get PSS tasks for a connection in RESERVED phase");
-            }
             PssWorkStatus pwt = PssWorkStatus.builder()
                     .connectionId(connectionId)
                     .build();
+            if (!c.getPhase().equals(Phase.RESERVED)) {
+
+                pwt.setNext(null);
+                pwt.setWork(null);
+                pwt.setExplanation("No tasks; connection is not RESERVED");
+                return pwt;
+            }
 
             for (PssTask t : pssQueuer.entries(QueueName.RUNNING)) {
                 if (t.getConnectionId().equals(connectionId)) {

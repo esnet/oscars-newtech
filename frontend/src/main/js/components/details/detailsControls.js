@@ -36,7 +36,7 @@ class DetailsControls extends Component {
 
         return (
             <Card>
-                <CardHeader className="p-0">Search</CardHeader>
+                <CardHeader>Search</CardHeader>
                 <CardBody>
                     <FormGroup>
                         <Label>Connection ID:</Label>{" "}

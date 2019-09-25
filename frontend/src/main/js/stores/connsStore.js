@@ -19,10 +19,12 @@ class ConnectionsStore {
             dirty: false
         },
         foundCurrent: false,
+        pssStatus: "Status not loaded yet...",
         selected: {},
         commands: new Map(),
         statuses: new Map(),
-        history: new Map()
+        history: new Map(),
+        eventLog: []
     };
 
     @observable editSchedule = {
@@ -147,6 +149,14 @@ class ConnectionsStore {
 
     @action setHistory(history) {
         this.store.history = history;
+    }
+
+    @action setEventLog(eventLog) {
+        this.store.eventLog = eventLog;
+    }
+
+    @action setPssStatus(status) {
+        this.store.pssStatus = status;
     }
 
     @action showControls(value) {

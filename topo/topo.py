@@ -379,6 +379,7 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
     # first pass we decide whether to keep interfaces around for a second pass
     sub_interfaces = {}
     keep_decisions = {}
+    oscars_desc_ifces = []
     for ifce in netbeam_interfaces:
         ifce_name = ifce["name"]
         ifce_urn = ifce['device'] + ":" + ifce["name"]
@@ -424,6 +425,10 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
 
         if ifce["device"] not in oscars_device_urns:
             keep = "No"
+
+        if "OSCARS" in ifce["description"]:
+            if ifce_urn not in oscars_desc_ifces:
+                oscars_desc_ifces.append(ifce_urn)
 
         ifce_urn = ifce["device"] + ":" + ifce["name"]
         if ifce["intracloud"]:
@@ -500,6 +505,10 @@ def gather_edge_ports(netbeam_saps=None, netbeam_interfaces=None,
             entry["interface"] = True
             if ifce['oscars']:
                 entry["oscars"] = True
+
+            if ifce_urn in oscars_desc_ifces:
+                entry["oscars"] = True
+
             if 'speed' in ifce and ifce['speed'] is not None and ifce['speed'] != "":
                 entry["speed"] = ifce['speed']
 
@@ -605,9 +614,9 @@ def gather_used_vlans(netbeam_saps=None, netbeam_interfaces=None, esdb_ports_by_
                 if port_urn not in used_vlans:
                     new_from_netbeam += 1
                     used_vlans[port_urn] = []
-
                 if vlan not in used_vlans[port_urn]:
                     used_vlans[port_urn].append(vlan)
+
         if ifce["port"] is None:
             ifce_name = ifce["name"]
             if ifce_name.startswith('ge') or ifce_name.startswith('xe') or \
