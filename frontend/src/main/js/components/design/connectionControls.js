@@ -90,6 +90,7 @@ class ConnectionControls extends Component {
     }
 
     render() {
+        console.log("connectionControls props ", this.props);
         const conn = this.props.controlsStore.connection;
         let connectionId = conn.connectionId;
 
@@ -145,6 +146,13 @@ class ConnectionControls extends Component {
                 />
             </span>
         );
+
+        let mtu;
+        if (this.props.cloneConnMTU) {
+            mtu = this.props.cloneConnMTU
+        } else {
+            mtu = conn.connection_mtu
+        }
 
         return (
             <Card>
@@ -203,9 +211,9 @@ class ConnectionControls extends Component {
                             <Input
                                 type="number"
                                 placeholder="Desired data MTU size"
-                                valid={validator.mtuControl(conn.connection_mtu) === "success"}
-                                invalid={validator.mtuControl(conn.connection_mtu) !== "success"}
-                                defaultValue={conn.connection_mtu}
+                                valid={validator.mtuControl(mtu) === "success"}
+                                invalid={validator.mtuControl(mtu) !== "success"}
+                                defaultValue={mtu}
                                 onChange={this.onMTUChange}
                             />
                         </FormGroup>

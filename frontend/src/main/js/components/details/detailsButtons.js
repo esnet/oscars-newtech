@@ -99,10 +99,12 @@ class DetailsButtons extends Component {
     doCloneConnection = () => {
         let conn = this.props.connsStore.store.current; 
         console.log("this.props detailsButtons ", this.props);
+        console.log("conn ", conn);
         this.props.history.push({
             pathname: '/pages/newDesign',
             state: {
-                oldConnID : conn.connectionId
+                oldConnID : conn.connectionId,
+                oldConnMTU : conn.connection_mtu
             }
         });
     }

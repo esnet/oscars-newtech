@@ -50,11 +50,11 @@ class DesignApp extends Component {
     };
 
     render() {
-        console.log("After navigation ", this.props, this.props.location.state.oldConnID);
+        console.log("After navigation ", this.props, this.props.location.state.oldConnID, this.props.location.state.oldConnMTU);
         return (
             <Row>
                 <Col md={3} sm={3}>
-                    <ConnectionControls />
+                    <ConnectionControls cloneConnMTU={this.props.location.state.oldConnMTU} />
                     <br />
                     <ScheduleControls />
                 </Col>
