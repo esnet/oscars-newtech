@@ -96,6 +96,17 @@ class DetailsButtons extends Component {
             );
     };
 
+    doCloneConnection = () => {
+        let conn = this.props.connsStore.store.current; 
+        console.log("this.props detailsButtons ", this.props);
+        this.props.history.push({
+            pathname: '/pages/newDesign',
+            state: {
+                oldConnID : conn.connectionId
+            }
+        });
+    }
+
     doRelease = () => {
         const controls = this.props.connsStore.controls;
         let current = this.props.connsStore.store.current;
@@ -476,6 +487,27 @@ class DetailsButtons extends Component {
             specialHeader = <ListGroupItem color="warning">Special Controls</ListGroupItem>;
         }
 
+        let cloneButton = (
+            <ListGroup>
+                <ListGroupItem color="info">Clone Connection</ListGroupItem>
+                <ListGroupItem>
+                    <ConfirmModal
+                        body="This will clone the connection"
+                        header="Clone Connection"
+                        uiElement={
+                            <Button
+                                className="pull-right"
+                                color="primary"
+                            >
+                                Clone this connection
+                            </Button>
+                        }
+                        onConfirm={this.doCloneConnection}
+                    />{" "}
+                </ListGroupItem>
+            </ListGroup>
+        );
+
         return (
             <ListGroup>
                 {controlsHeader}
@@ -486,6 +518,8 @@ class DetailsButtons extends Component {
                 <br />
                 {specialHeader}
                 {regenerate}
+                <br />
+                {cloneButton}
                 <br />
                 {recoverSelect}
             </ListGroup>

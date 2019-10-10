@@ -50,6 +50,7 @@ class DesignApp extends Component {
     };
 
     render() {
+        console.log("After navigation ", this.props, this.props.location.state.oldConnID);
         return (
             <Row>
                 <Col md={3} sm={3}>
