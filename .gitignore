@@ -8,3 +8,4 @@
 **/*logs*/
 backend/*.log*
 backend/src/main/resources
+backend/log/

@@ -66,7 +66,7 @@ class DetailsStatus extends Component {
                 <CardBody>
                     <FormGroup>
                         <Input
-                            type="text"
+                            type="textarea"
                             disabled
                             value={store.pssStatus}
                         />

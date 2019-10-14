@@ -14,9 +14,10 @@ import {
 } from "reactstrap";
 import classnames from "classnames";
 
-import DetailsButtons from "./detailsButtons";
+// import DetailsButtons from "./detailsButtons";
 import DetailsDrawing from "./detailsDrawing";
 import DetailsEditForm from "./detailsEditForm";
+import DetailsHistory from "./detailsHistory";
 import DetailsTags from "./detailsTags";
 import HelpPopover from "../helpPopover";
 
@@ -133,6 +134,17 @@ class DetailsGeneral extends Component {
                                     Drawing
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    href="#"
+                                    className={classnames({ active: this.state.tab === "history" })}
+                                    onClick={() => {
+                                        this.setTab("history");
+                                    }}
+                                >
+                                    History
+                                </NavLink>
+                            </NavItem>
                         </Nav>
                         <TabContent activeTab={this.state.tab}>
                             <TabPane tabId="info" title="Info">
@@ -143,11 +155,14 @@ class DetailsGeneral extends Component {
                                 {/* <br /> */}
                                 {/* <DetailsButtons /> */}
                             </TabPane>
+                            <TabPane tabId="tags" title="Tags">
+                                <DetailsTags />
+                            </TabPane>
                             <TabPane tabId="drawing" title="Drawing">
                                 <DetailsDrawing />
                             </TabPane>
-                            <TabPane tabId="tags" title="Tags">
-                                <DetailsTags />
+                            <TabPane tabId="history" title="History">
+                                <DetailsHistory />
                             </TabPane>
                         </TabContent>
                     </CardBody>
@@ -232,7 +247,7 @@ class DetailsGeneral extends Component {
         );
         return (
             <span className="float-right">
-                <HelpPopover header={header} body={body} placement="right" popoverId="state-help" />
+                <HelpPopover header={header} body={body} placement="right" popoverId="build-help" />
             </span>
         );
     }

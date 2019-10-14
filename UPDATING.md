@@ -2,6 +2,10 @@
 This file contains instructions for updating an existing installation of OSCARS from a previous version to a newer version. 
 
 Instructions include config file changes, database schema changes, etc.
+
+## 1.0.35 to 1.0.36
+No further changes needed
+
 ## 1.0.34 to 1.0.35
 
 ### Config file changes

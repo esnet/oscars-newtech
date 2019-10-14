@@ -13,5 +13,4 @@ public interface LogRepository extends CrudRepository<EventLog, Long> {
     List<EventLog> findAll();
     Optional<EventLog> findByConnectionId(String connectionId);
 
-
 }

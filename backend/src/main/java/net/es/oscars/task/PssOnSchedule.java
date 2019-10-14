@@ -58,87 +58,92 @@ public class PssOnSchedule {
         }
 
         ReentrantLock connLock = dbAccess.getConnLock();
+        boolean gotLock = connLock.tryLock();
+        if (gotLock) {
 
-        List<Connection> conns = connRepo.findByPhase(Phase.RESERVED);
+            List<Connection> conns = connRepo.findByPhase(Phase.RESERVED);
 
-        List<Connection> needConfigs = new ArrayList<>();
-        for (Connection c : conns) {
-            if (rcRepo.findByConnectionId(c.getConnectionId()).isEmpty()) {
-                log.info("connection " + c.getConnectionId() + " needs router configs to be generated");
-                needConfigs.add(c);
+            List<Connection> needConfigs = new ArrayList<>();
+            for (Connection c : conns) {
+                if (rcRepo.findByConnectionId(c.getConnectionId()).isEmpty()) {
+                    log.info("connection " + c.getConnectionId() + " needs router configs to be generated");
+                    needConfigs.add(c);
+                }
             }
-        }
 
-        for (Connection c : needConfigs) {
-            Integer tried = 0;
-            Integer maxTries = 3;
-            if (attempts.containsKey(c.getConnectionId())) {
-                tried = attempts.get(c.getConnectionId());
-            }
-            if (tried < maxTries) {
-                tried = tried + 1;
-                try {
-                    cgs.generateConfig(c);
-                    attempts.remove(c.getConnectionId());
-                } catch (PSSException e) {
-                    attempts.put(c.getConnectionId(), tried);
-                    e.printStackTrace();
+            for (Connection c : needConfigs) {
+                Integer tried = 0;
+                Integer maxTries = 3;
+                if (attempts.containsKey(c.getConnectionId())) {
+                    tried = attempts.get(c.getConnectionId());
+                }
+                if (tried < maxTries) {
+                    tried = tried + 1;
+                    try {
+                        cgs.generateConfig(c);
+                        attempts.remove(c.getConnectionId());
+                    } catch (PSSException e) {
+                        attempts.put(c.getConnectionId(), tried);
+                        log.error(e.getMessage(), e);
+                    }
+
+                } else if (tried.equals(maxTries)) {
+                    log.error(" stopping trying to generate config for " + c.getConnectionId());
+                    attempts.put(c.getConnectionId(), maxTries + 1);
                 }
 
-            } else if (tried.equals(maxTries)) {
-                log.error(" stopping trying to generate config for " + c.getConnectionId());
-                attempts.put(c.getConnectionId(), maxTries + 1);
             }
 
-        }
+
+            Set<Connection> shouldBeBuilt = new HashSet<>();
+            Set<Connection> shouldBeDismantled = new HashSet<>();
+            // log.debug("got connection lock");
+
+            for (Connection c : conns) {
+                Schedule s = c.getReserved().getSchedule();
+                // this has already ended, so if active it needs to be added to the dismantle list
+                if (s.getEnding().isBefore(Instant.now())) {
+                    if (c.getState().equals(State.ACTIVE)) {
+                        shouldBeDismantled.add(c);
+                    }
+
+                } else if (s.getBeginning().isBefore(Instant.now())) {
+                    // we are past the beginning, so we need to set it up if
+                    // a. it is not in manual mode
+                    // b. AND it is not already set up or failed
+                    if (c.getMode().equals(BuildMode.AUTOMATIC)) {
+                        if (c.getState().equals(State.WAITING)) {
+                            boolean shouldBuild = true;
+                            if (attempts.containsKey(c.getConnectionId())) {
+                                if (attempts.get(c.getConnectionId()) >= 3) {
+                                    shouldBuild = false;
+                                }
 
 
-        Set<Connection> shouldBeBuilt = new HashSet<>();
-        Set<Connection> shouldBeDismantled = new HashSet<>();
-        // log.debug("got connection lock");
-
-        for (Connection c : conns) {
-            Schedule s = c.getReserved().getSchedule();
-            // this has already ended, so if active it needs to be added to the dismantle list
-            if (s.getEnding().isBefore(Instant.now())) {
-                if (c.getState().equals(State.ACTIVE)) {
-                    shouldBeDismantled.add(c);
-                }
-
-            } else if (s.getBeginning().isBefore(Instant.now())) {
-                // we are past the beginning, so we need to set it up if
-                // a. it is not in manual mode
-                // b. AND it is not already set up or failed
-                if (c.getMode().equals(BuildMode.AUTOMATIC)) {
-                    if (c.getState().equals(State.WAITING)) {
-                        boolean shouldBuild = true;
-                        if (attempts.containsKey(c.getConnectionId()) ) {
-                            if (attempts.get(c.getConnectionId()) >= 3)  {
-                                shouldBuild = false;
                             }
-
-
-                        }
-                        if (shouldBuild) {
-                            shouldBeBuilt.add(c);
+                            if (shouldBuild) {
+                                shouldBeBuilt.add(c);
+                            }
                         }
                     }
                 }
             }
-        }
-        pssQueuer.clear(QueueName.DONE);
+            pssQueuer.clear(QueueName.DONE);
 
-        // do the PSS work
-        for (Connection c : shouldBeBuilt) {
-            pssQueuer.add(CommandType.BUILD, c.getConnectionId(), State.ACTIVE);
-        }
-        for (Connection c : shouldBeDismantled) {
-            pssQueuer.add(CommandType.DISMANTLE, c.getConnectionId(), State.FINISHED);
-        }
+            // do the PSS work
+            for (Connection c : shouldBeBuilt) {
+                pssQueuer.add(CommandType.BUILD, c.getConnectionId(), State.ACTIVE);
+            }
+            for (Connection c : shouldBeDismantled) {
+                pssQueuer.add(CommandType.DISMANTLE, c.getConnectionId(), State.FINISHED);
+            }
 
-        // run the PSS queue
-        pssQueuer.process();
+            // run the PSS queue
+            pssQueuer.process();
+            connLock.unlock();
 
+        }
     }
+
 
 }
