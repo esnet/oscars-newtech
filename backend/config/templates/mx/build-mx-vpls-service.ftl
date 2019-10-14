@@ -11,7 +11,7 @@ set no-tunnel-services
 set mtu ${vpls.mtu}
 edit site CE
 <#list ifces as ifce>
-set interface ${ifce.port}.${ifce.vlan}
+set interface ${ifce.port}.${ifce.vlan} mac-pinning
 </#list>
 
 <#if vpls.loopback??>
