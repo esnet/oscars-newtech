@@ -1,6 +1,7 @@
 <#-- @ftlvariable name="sdps" type="java.util.List" -->
 <#-- @ftlvariable name="sdp" type="net.es.oscars.pss.params.alu.AluSdp" -->
 <#-- @ftlvariable name="protect" type="java.lang.Boolean" -->
+@version: 1.0.37
 
 <#list sdps as sdp>
 <#assign sdpId = sdp.sdpId>

@@ -1,4 +1,4 @@
-@unit @wip
+@unit
 Feature: PSS task queueing
 
   I want to verify that my task queueing logic is correct

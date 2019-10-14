@@ -106,11 +106,14 @@ public class PSSAdapter {
 
         State result = State.ACTIVE;
         for (CommandStatus st : stable) {
+            RouterCommands rc = this.existing(conn.getConnectionId(), st.getDevice(), CommandType.BUILD);
+
             RouterCommandHistory rch = RouterCommandHistory.builder()
                     .connectionId(conn.getConnectionId())
                     .date(now)
                     .deviceUrn(st.getDevice())
                     .commands(st.getCommands())
+                    .templateVersion(rc.getTemplateVersion())
                     .output(st.getOutput())
                     .configStatus(st.getConfigStatus())
                     .type(CommandType.BUILD)
@@ -159,15 +162,19 @@ public class PSSAdapter {
         Instant now = Instant.now();
         State result = State.WAITING;
         for (CommandStatus st : stable) {
+            RouterCommands rc = this.existing(conn.getConnectionId(), st.getDevice(), CommandType.DISMANTLE);
+
             RouterCommandHistory rch = RouterCommandHistory.builder()
                     .connectionId(conn.getConnectionId())
                     .date(now)
                     .deviceUrn(st.getDevice())
                     .commands(st.getCommands())
+                    .templateVersion(rc.getTemplateVersion())
                     .output(st.getOutput())
                     .configStatus(st.getConfigStatus())
                     .type(CommandType.DISMANTLE)
                     .build();
+
             historyRepo.save(rch);
             if (st.getConfigStatus().equals(ConfigStatus.ERROR)) {
                 result = State.FAILED;

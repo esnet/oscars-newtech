@@ -29,6 +29,29 @@ public class AluCommandGenerator {
         this.validator = validator;
     }
 
+
+    public List<String> getTemplateFilenames() {
+        List<String> result = new ArrayList<>();
+
+        result.add("alu/alu-top.ftl");
+        result.add("alu/build-alu-mpls-lsp.ftl");
+        result.add("alu/build-alu-qos.ftl");
+        result.add("alu/build-alu-sdp.ftl");
+        result.add("alu/build-alu-mpls-path.ftl");
+        result.add("alu/build-alu-vpls-service.ftl");
+        result.add("alu/build-alu-vpls-loopback.ftl");
+
+        result.add("alu/dismantle-alu-mpls-lsp.ftl");
+        result.add("alu/dismantle-alu-qos.ftl");
+        result.add("alu/dismantle-alu-sdp.ftl");
+        result.add("alu/dismantle-aly-mpls-path.ftl");
+        result.add("alu/dismantle-alu-vpls-service.ftl");
+        result.add("alu/dismantle-alu-vpls-loopback.ftl");
+
+        return result;
+    }
+
+
     public void validate(AluParams params) throws PSSException {
         if (params == null) {
             throw new PSSException("null ALU params!");
@@ -51,7 +74,7 @@ public class AluCommandGenerator {
         root.put("sdps", params.getSdps());
         root.put("vpls", params.getAluVpls());
         try {
-            return stringifier.stringify(root, top);
+            return stringifier.stringify(root, top).getProcessed();
         } catch (IOException | TemplateException ex) {
             log.error("templating error", ex);
             throw new PSSException("template system error");
@@ -104,11 +127,11 @@ public class AluCommandGenerator {
             } else {
                 root.put("qosList", params.getQoses());
                 root.put("apply", params.getApplyQos());
-                String qosConfig = stringifier.stringify(root, atp.getQos());
+                TemplateOutput qosConfig = stringifier.stringify(root, atp.getQos());
                 if (reverse) {
-                    fragments.add(0, qosConfig);
+                    fragments.add(0, qosConfig.getProcessed());
                 } else {
-                    fragments.add(qosConfig);
+                    fragments.add(qosConfig.getProcessed());
                 }
             }
 
@@ -118,11 +141,11 @@ public class AluCommandGenerator {
             } else {
                 root = new HashMap<>();
                 root.put("paths", params.getPaths());
-                String pathConfig = stringifier.stringify(root, atp.getPath());
+                TemplateOutput pathConfig = stringifier.stringify(root, atp.getPath());
                 if (reverse) {
-                    fragments.add(0, pathConfig);
+                    fragments.add(0, pathConfig.getProcessed());
                 } else {
-                    fragments.add(pathConfig);
+                    fragments.add(pathConfig.getProcessed());
                 }
             }
 
@@ -131,11 +154,11 @@ public class AluCommandGenerator {
             } else {
                 root = new HashMap<>();
                 root.put("lsps", params.getLsps());
-                String lspConfig = stringifier.stringify(root, atp.getLsp());
+                TemplateOutput lspConfig = stringifier.stringify(root, atp.getLsp());
                 if (reverse) {
-                    fragments.add(0, lspConfig);
+                    fragments.add(0, lspConfig.getProcessed());
                 } else {
-                    fragments.add(lspConfig);
+                    fragments.add(lspConfig.getProcessed());
                 }
             }
 
@@ -144,11 +167,11 @@ public class AluCommandGenerator {
             } else {
                 root = new HashMap<>();
                 root.put("sdps", params.getSdps());
-                String sdpConfig = stringifier.stringify(root, atp.getSdp());
+                TemplateOutput sdpConfig = stringifier.stringify(root, atp.getSdp());
                 if (reverse) {
-                    fragments.add(0, sdpConfig);
+                    fragments.add(0, sdpConfig.getProcessed());
                 } else {
-                    fragments.add(sdpConfig);
+                    fragments.add(sdpConfig.getProcessed());
                 }
             }
 
@@ -158,22 +181,22 @@ public class AluCommandGenerator {
                 root = new HashMap<>();
                 root.put("loopback_ifce_name", params.getLoopbackInterface());
                 root.put("loopback_address", params.getLoopbackAddress());
-                String loopbackCfg = stringifier.stringify(root, atp.getLoopback());
+                TemplateOutput loopbackCfg = stringifier.stringify(root, atp.getLoopback());
                 if (reverse) {
-                    fragments.add(0, loopbackCfg);
+                    fragments.add(0, loopbackCfg.getProcessed());
                 } else {
-                    fragments.add(loopbackCfg);
+                    fragments.add(loopbackCfg.getProcessed());
                 }
             }
 
 
             root = new HashMap<>();
             root.put("vpls", params.getAluVpls());
-            String vplsServiceConfig = stringifier.stringify(root, atp.getVpls());
+            TemplateOutput vplsServiceConfig = stringifier.stringify(root, atp.getVpls());
             if (reverse) {
-                fragments.add(0, vplsServiceConfig);
+                fragments.add(0, vplsServiceConfig.getProcessed());
             } else {
-                fragments.add(vplsServiceConfig);
+                fragments.add(vplsServiceConfig.getProcessed());
             }
             return assembler.assemble(fragments, top);
         } catch (IOException | TemplateException ex) {
@@ -307,7 +330,7 @@ public class AluCommandGenerator {
     }
     private void verifyKeywords(AluParams params) throws PSSException {
         StringBuilder errorStr = new StringBuilder("");
-        Boolean hasError = false;
+        boolean hasError = false;
 
         Map<KeywordWithContext, KeywordValidationCriteria> keywordMap = new HashMap<>();
         KeywordValidationCriteria alphanum_criteria = KeywordValidationCriteria.builder()
@@ -385,7 +408,6 @@ public class AluCommandGenerator {
                 }
             }
         }
-
 
         Map<KeywordWithContext, KeywordValidationResult> results = validator.validate(keywordMap);
         KeywordValidationResult overall = validator.gatherErrors(results);

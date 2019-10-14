@@ -56,7 +56,7 @@ public class ExCommandGenerator {
         try {
             Map<String, Object> root = new HashMap<>();
             root.put("vlans", params.getVlans());
-            String vlanConfig = stringifier.stringify(root, etp.getVlan());
+            String vlanConfig = stringifier.stringify(root, etp.getVlan()).getProcessed();
             fragments.add(vlanConfig);
             return assembler.assemble(fragments, top);
         } catch (IOException | TemplateException ex) {

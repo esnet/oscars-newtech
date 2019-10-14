@@ -31,6 +31,27 @@ public class MxCommandGenerator {
         this.validator = validator;
     }
 
+    public List<String> getTemplateFilenames() {
+        List<String> result = new ArrayList<>();
+        result.add("mx/mx-top.ftl");
+        result.add("mx/build-mx-mpls-lsp.ftl");
+        result.add("mx/build-mx-qos.ftl");
+        result.add("mx/build-mx-sdp.ftl");
+        result.add("mx/build-mx-ifces.ftl");
+        result.add("mx/build-mx-mpls-path.ftl");
+        result.add("mx/build-mx-vpls-service.ftl");
+
+        result.add("mx/dismantle-mx-mpls-lsp.ftl");
+        result.add("mx/dismantle-mx-qos.ftl");
+        result.add("mx/dismantle-mx-sdp.ftl");
+        result.add("mx/dismantle-mx-ifces.ftl");
+        result.add("mx/dismantle-mx-mpls-path.ftl");
+        result.add("mx/dismantle-mx-vpls-service.ftl");
+
+        return result;
+    }
+
+
     public String dismantle(MxParams params) throws PSSException {
         this.protectVsNulls(params);
         this.verifyParams(params);
@@ -70,7 +91,7 @@ public class MxCommandGenerator {
         root.put("ifces", params.getIfces());
         root.put("vpls", params.getMxVpls());
         try {
-            return stringifier.stringify(root, top);
+            return stringifier.stringify(root, top).getProcessed();
         } catch (IOException | TemplateException ex) {
             log.error("templating error", ex);
             throw new PSSException("template system error");
@@ -86,35 +107,35 @@ public class MxCommandGenerator {
         try {
             root = new HashMap<>();
             root.put("paths", params.getPaths());
-            String pathConfig = stringifier.stringify(root, tp.getPath());
+            String pathConfig = stringifier.stringify(root, tp.getPath()).getProcessed();
             fragments.add(pathConfig);
 
             root = new HashMap<>();
             root.put("lsps", params.getLsps());
-            String lspConfig = stringifier.stringify(root, tp.getLsp());
+            String lspConfig = stringifier.stringify(root, tp.getLsp()).getProcessed();
             fragments.add(lspConfig);
 
             root = new HashMap<>();
             root.put("ifces", params.getIfces());
             root.put("vpls", params.getMxVpls());
-            String ifcesConfig = stringifier.stringify(root, tp.getIfces());
+            String ifcesConfig = stringifier.stringify(root, tp.getIfces()).getProcessed();
             fragments.add(ifcesConfig);
 
             root = new HashMap<>();
             root.put("qoses", params.getQos());
-            String qosConfig = stringifier.stringify(root, tp.getQos());
+            String qosConfig = stringifier.stringify(root, tp.getQos()).getProcessed();
             fragments.add(qosConfig);
 
             root = new HashMap<>();
             root.put("mxLsps", params.getLsps());
             root.put("vpls", params.getMxVpls());
-            String sdpConfig = stringifier.stringify(root, tp.getSdp());
+            String sdpConfig = stringifier.stringify(root, tp.getSdp()).getProcessed();
             fragments.add(sdpConfig);
 
             root = new HashMap<>();
             root.put("vpls", params.getMxVpls());
             root.put("ifces", params.getIfces());
-            String vplsServiceConfig = stringifier.stringify(root, tp.getVpls());
+            String vplsServiceConfig = stringifier.stringify(root, tp.getVpls()).getProcessed();
             fragments.add(vplsServiceConfig);
 
 

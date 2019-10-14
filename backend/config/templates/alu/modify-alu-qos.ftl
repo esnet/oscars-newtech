@@ -1,5 +1,7 @@
 <#-- @ftlvariable name="qos" type="net.es.oscars.pss.params.alu.AluQos" -->
 <#-- @ftlvariable name="qosList" type="java.util.List" -->
+@version: 1.0.37
+
 <#list qosList as qos>
 
 <#if qos.mbps gt 0>
