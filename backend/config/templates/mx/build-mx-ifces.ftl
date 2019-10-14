@@ -1,6 +1,6 @@
 <#-- @ftlvariable name="ifces" type="java.util.List<net.es.oscars.pss.params.mx.TaggedIfce>" -->
 <#-- @ftlvariable name="vpls" type="net.es.oscars.pss.params.mx.MxVpls" -->
-@version: 1.0.35
+@version: 1.0.37
 
 <#list ifces as ifce>
 edit interfaces ${ifce.port}

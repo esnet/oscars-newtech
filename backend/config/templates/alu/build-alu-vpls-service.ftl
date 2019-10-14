@@ -1,7 +1,7 @@
 <#-- @ftlvariable name="vpls" type="net.es.oscars.pss.params.alu.AluVpls" -->
 <#-- @ftlvariable name="sap" type="net.es.oscars.pss.params.alu.AluSap" -->
 <#-- @ftlvariable name="sdpToVcId" type="net.es.oscars.pss.params.alu.AluSdpToVcId" -->
-@version: 1.0.35
+@version: 1.0.37
 
 <#assign endpointSnippet = "">
 <#if vpls.endpointName??>
