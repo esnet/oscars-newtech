@@ -6,6 +6,7 @@ import net.es.oscars.app.exc.NotReadyException;
 import net.es.oscars.app.exc.NsiException;
 import net.es.oscars.app.exc.PSSException;
 import net.es.oscars.app.props.PssProperties;
+import net.es.oscars.app.syslog.Syslogger;
 import net.es.oscars.dto.pss.cmd.*;
 import net.es.oscars.dto.pss.st.ConfigStatus;
 import net.es.oscars.dto.pss.st.LifecycleStatus;
@@ -35,7 +36,6 @@ import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-
 @Component
 @Slf4j
 public class PSSAdapter {
@@ -47,8 +47,8 @@ public class PSSAdapter {
     private LogService logService;
     private ConnService connService;
     private PSSQueuer queuer;
-
     private TopoService topoService;
+    private Syslogger syslogger;
 
     @Autowired
     public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr, CommandHistoryRepository historyRepo,
@@ -63,6 +63,7 @@ public class PSSAdapter {
         this.nsiService = nsiService;
         this.logService = logService;
         this.properties = properties;
+        this.syslogger = syslogger;
     }
 
     public State processTask(Connection conn, CommandType commandType, State intent) {
@@ -97,6 +98,8 @@ public class PSSAdapter {
 
     public State build(Connection conn) throws PSSException, NotReadyException {
         log.info("building " + conn.getConnectionId());
+        syslogger.sendSyslog( "OSCARS BUILD STARTED : " + conn.getConnectionId());
+
         List<Command> commands = this.configCommands(conn, CommandType.BUILD);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
@@ -124,6 +127,9 @@ public class PSSAdapter {
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
+
+                // Send Syslog Message
+                syslogger.sendSyslog( "OSCARS BUILD FAILED : " + conn.getConnectionId());
             } else {
                 Event ev = Event.builder()
                         .connectionId(conn.getConnectionId())
@@ -133,6 +139,9 @@ public class PSSAdapter {
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
+
+                // Send Syslog Message
+                syslogger.sendSyslog( "OSCARS BUILD ENDED SUCCESSFULLY : " + conn.getConnectionId());
             }
 
 
@@ -143,6 +152,8 @@ public class PSSAdapter {
 
     public State dismantle(Connection conn) throws PSSException, NotReadyException {
         log.info("dismantling " + conn.getConnectionId());
+        syslogger.sendSyslog( "OSCARS DISMANTLE STARTED : " + conn.getConnectionId());
+
         List<Command> commands = this.configCommands(conn, CommandType.DISMANTLE);
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
@@ -168,6 +179,7 @@ public class PSSAdapter {
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
+                syslogger.sendSyslog( "OSCARS DISMANTLE FAILED : " + conn.getConnectionId());
             } else {
                 Event ev = Event.builder()
                         .connectionId(conn.getConnectionId())
@@ -177,6 +189,9 @@ public class PSSAdapter {
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
+
+                // Send Syslog Message
+                syslogger.sendSyslog( "OSCARS DISMANTLE ENDED SUCCESSFULLY : " + conn.getConnectionId());
             }
         }
         this.triggerNsi(conn, result);
@@ -195,12 +210,6 @@ public class PSSAdapter {
 
     }
 
-
-
-
-
-
-
     public List<CommandStatus> getStableStatusesSerial(List<Command> commands) throws PSSException {
         List<CommandResponse> responses = serialSubmit(commands);
         List<String> commandIds = responses.stream()
@@ -208,7 +217,6 @@ public class PSSAdapter {
                 .collect(Collectors.toList());
         return pollUntilStable(commandIds);
     }
-
 
     public List<CommandStatus> getStableStatuses(List<Command> commands) throws PSSException {
         try {
@@ -222,8 +230,6 @@ public class PSSAdapter {
             throw new PSSException("interrupted");
         }
     }
-
-
 
     public List<CommandStatus> pollUntilStable(List<String> commandIds)
             throws PSSException {
@@ -310,7 +316,6 @@ public class PSSAdapter {
         return responses;
     }
 
-
     public List<CommandStatus> pollStatuses(List<String> commandIds)
             throws InterruptedException, ExecutionException {
         List<CommandStatus> statuses = new ArrayList<>();
@@ -334,8 +339,7 @@ public class PSSAdapter {
         return statuses;
     }
 
-
-    public List<Command> configCommands(Connection conn, CommandType ct) throws PSSException, NotReadyException {
+   public List<Command> configCommands(Connection conn, CommandType ct) throws PSSException, NotReadyException {
         log.info("gathering "+ct+" commands for " + conn.getConnectionId());
         List<Command> commands = new ArrayList<>();
 
@@ -362,7 +366,6 @@ public class PSSAdapter {
 
         return commands;
     }
-
 
     public RouterCommands existing(String connId, String deviceUrn, CommandType commandType) {
         List<RouterCommands> existing = rcr.findByConnectionIdAndDeviceUrn(connId, deviceUrn);
