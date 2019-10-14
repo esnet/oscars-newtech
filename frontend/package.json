@@ -35,7 +35,7 @@
     "react-router-dom": "^5.0.1",
     "react-select-plus": "^1.2.0",
     "react-table": "^6.10.0",
-    "react-tag-input": "^6.4.0",
+    "react-tag-input": "^6.4.1",
     "react-toggle-display": "^2.2.0",
     "reactstrap": "^8.0.1",
     "visjs-network": "^4.24.10"
@@ -76,7 +76,7 @@
     "babel-plugin-transform-es3-property-literals": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "css-loader": "^2.1.1",
-    "eslint": "^5.16.0",
+    "eslint": "^6.5.1",
     "eslint-config-prettier": "^4.3.0",
     "eslint-config-react-app": "^3.0.8",
     "eslint-plugin-babel": "^5.3.0",
