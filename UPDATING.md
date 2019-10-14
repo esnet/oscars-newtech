@@ -3,6 +3,23 @@ This file contains instructions for updating an existing installation of OSCARS 
 
 Instructions include config file changes, database schema changes, etc.
 
+## 1.0.36 to 1.0.37
+
+### Config file changes
+Router config templates have changed; they now include a `@version` tag. 
+They will need to be deployed from source dir:
+
+`backend/config/templates/` to
+
+`/usr/local/esnet/oscars-backend/config/templates/`
+
+### Database schema changes:
+- For the `oscars_backend` database:
+
+```
+psql -d oscars_backend < backend/sql/1_0_36_to_1_0_37.sql
+```
+
 ## 1.0.35 to 1.0.36
 No further changes needed
 
