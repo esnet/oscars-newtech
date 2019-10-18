@@ -52,7 +52,7 @@ public class PSSAdapter {
 
     @Autowired
     public PSSAdapter(PSSProxy pssProxy, RouterCommandsRepository rcr, CommandHistoryRepository historyRepo,
-                      NsiService nsiService, ConnService connService, PSSQueuer queuer,
+                      NsiService nsiService, ConnService connService, PSSQueuer queuer, Syslogger syslogger,
                       TopoService topoService, LogService logService, PssProperties properties) {
         this.pssProxy = pssProxy;
         this.rcr = rcr;

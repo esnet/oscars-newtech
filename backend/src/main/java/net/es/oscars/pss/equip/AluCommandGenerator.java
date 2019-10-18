@@ -44,7 +44,7 @@ public class AluCommandGenerator {
         result.add("alu/dismantle-alu-mpls-lsp.ftl");
         result.add("alu/dismantle-alu-qos.ftl");
         result.add("alu/dismantle-alu-sdp.ftl");
-        result.add("alu/dismantle-aly-mpls-path.ftl");
+        result.add("alu/dismantle-alu-mpls-path.ftl");
         result.add("alu/dismantle-alu-vpls-service.ftl");
         result.add("alu/dismantle-alu-vpls-loopback.ftl");
 

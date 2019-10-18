@@ -58,25 +58,30 @@ public class TemplateVersionSteps extends CucumberSteps {
             String cv = cgs.consistentVersion(templateFilenames);
             encounteredException = false;
         } catch (PSSException ex) {
+            log.info("encountered exception "+ex.getMessage());
             encounteredException = true;
         }
+        this.logTemplateVersionReport();
         if (maybe.equals("is")) {
             if (encounteredException) {
-                this.logTemplateVersionReport();
                 throw new PSSException("should not have encountered exception but did");
             }
         } else {
             if (!encounteredException) {
-                this.logTemplateVersionReport();
                 throw new PSSException("should have encountered exception but did not");
             }
         }
     }
 
     public void logTemplateVersionReport() throws PSSException {
-        List<TemplateVersionReport> tvrs = cgs.versionReport(templateFilenames);
-        for (TemplateVersionReport tvr : tvrs) {
-            log.error(tvr.getTemplateFilename()+ " "+tvr.getTemplateVersion());
+        try {
+            List<TemplateVersionReport> tvrs = cgs.versionReport(templateFilenames);
+            for (TemplateVersionReport tvr : tvrs) {
+                log.error(tvr.getTemplateFilename()+ " "+tvr.getTemplateVersion());
+            }
+        } catch (PSSException ex) {
+            log.info(ex.getMessage());
+
         }
     }
 
@@ -98,7 +103,11 @@ public class TemplateVersionSteps extends CucumberSteps {
         this.templateFilenames = new ArrayList<>();
         Files.list(Paths.get(templateDir))
                 .filter(Files::isRegularFile)
-                .forEach(p -> this.templateFilenames.add(p.getFileName().toString()));
+                .forEach(p -> {
+                    log.info("   loading template "+p.getFileName().toString());
+                    this.templateFilenames.add(p.getFileName().toString());
+
+                });
     }
 
     @Then("^I \"([^\"]*)\" the template directory property$")

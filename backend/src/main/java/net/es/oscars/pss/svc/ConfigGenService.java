@@ -141,22 +141,24 @@ public class ConfigGenService {
     }
 
     public List<TemplateVersionReport> versionReport(List<String> templateFilenames) throws PSSException {
+        this.stringifier.configureTemplates(true);
         List<TemplateVersionReport> result = new ArrayList<>();
         for (String tfn : templateFilenames) {
+            TemplateVersionReport tvr = TemplateVersionReport.builder()
+                    .templateFilename(tfn)
+                    .build();
             try {
-                TemplateOutput to = this.stringifier.stringify(null, tfn);
-                TemplateVersionReport tvr = TemplateVersionReport.builder()
-                        .hasVersion(to.getHasVersion())
-                        .templateFilename(tfn)
-                        .templateVersion(to.getTemplateVersion())
-                        .build();
-                result.add(tvr);
-
+                TemplateOutput to = this.stringifier.stringify(new HashMap<>(), tfn);
+                tvr.setHasVersion(to.getHasVersion());
+                tvr.setTemplateVersion(to.getTemplateVersion());
             } catch (IOException | TemplateException ex) {
-                log.error(ex.getMessage(), ex);
-                throw new PSSException("template handling exception!");
+                tvr.setHasVersion(false);
+                tvr.setTemplateVersion("");
+                throw new PSSException("template handling exception: "+ex.getMessage());
             }
+            result.add(tvr);
         }
+        this.stringifier.configureTemplates(false);
         return result;
     }
 
