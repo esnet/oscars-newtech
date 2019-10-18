@@ -1,5 +1,10 @@
 # OSCARS Release Notes
 
+## v1.0.38 
+> Oct 18, 2019
+- Frontend:
+    - Bugfixes
+
 ## v1.0.37
 > Oct 14, 2019
 - Backend:
