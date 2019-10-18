@@ -9,7 +9,6 @@ import validator from "../../lib/validation";
 import VisUtils from "../../lib/vis";
 import myClient from "../../agents/client";
 import HelpPopover from "../helpPopover";
-import Octicon from "react-octicon";
 import PropTypes from "prop-types";
 
 require("visjs-network/dist/vis-network.min.css");
@@ -23,6 +22,9 @@ class DesignDrawing extends Component {
 
         let nodeDataset = new DataSet();
         let edgeDataset = new DataSet();
+        this.network = {
+            loaded: false
+        };
         this.datasource = {
             nodes: nodeDataset,
             edges: edgeDataset
@@ -252,8 +254,13 @@ class DesignDrawing extends Component {
 
                     this.datasource.edges.clear();
                     this.datasource.edges.add(edges);
-                    this.network.stabilize(1000);
-                    this.network.fit({ animation: false });
+                    if (!this.network.loaded) {
+
+                    } else {
+                        this.network.stabilize(1000);
+                        this.network.fit({ animation: false });
+
+                    }
                 })
             );
         },
