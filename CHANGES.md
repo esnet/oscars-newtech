@@ -1,5 +1,11 @@
 # OSCARS Release Notes
 
+## v1.0.39
+> Oct 22, 2019
+- Frontend:
+    - Display config template version 
+    - Bugfixes
+
 ## v1.0.38 
 > Oct 18, 2019
 - Frontend:
