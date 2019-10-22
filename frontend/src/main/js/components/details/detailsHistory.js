@@ -23,7 +23,7 @@ class DetailsHistory extends Component {
     }
 
     componentWillUnmount() {
-        this.props.connsStore.clearCurrent();
+        // this.props.connsStore.clearCurrent();
     }
 
     refresh = () => {
@@ -68,24 +68,27 @@ class DetailsHistory extends Component {
 
     render() {
         let cs = this.props.connsStore;
-        const log = cs.store.eventLog;
+        const eventlog = cs.store.eventLog;
 
-        if (log === undefined || log.length === 0) {
+        if (typeof eventlog === 'undefined') {
+            console.log('undefined event log');
             return (
                 <div>
-                    Loading...
+                    Waiting for event log.
                 </div>
             )
         } else {
             let rows = [];
-            log.events.reverse().map(c => {
-                let row = {
-                    at: Moment(c.at).format('Y/MM/DD HH:mm:ss'),
-                    type: c.type,
-                    description: c.description
-                };
-                rows.push(row);
-            });
+            if (typeof eventlog.events !== 'undefined') {
+                eventlog.events.slice().reverse().map(c => {
+                    let row = {
+                        at: Moment(c.at).format('Y/MM/DD HH:mm:ss'),
+                        type: c.type,
+                        description: c.description
+                    };
+                    rows.push(row);
+                });
+            }
 
             return (
                 <ReactTable

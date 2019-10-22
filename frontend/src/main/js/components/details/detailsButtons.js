@@ -229,6 +229,7 @@ class DetailsButtons extends Component {
         } else {
             this.props.connsStore.setControl("release", {
                 show: false,
+                text: "",
                 ok: false
             });
             this.props.connsStore.setControl("buildmode", {
@@ -368,14 +369,6 @@ class DetailsButtons extends Component {
 
         let release = null;
         if (controls.release.show) {
-            release = (
-                <ListGroupItem>
-                    <Button color="info" disabled={true} className="float-left">
-                        {releaseText}
-                    </Button>{" "}
-                    {this.help("release")}
-                </ListGroupItem>
-            );
             if (canRelease) {
                 release = (
                     <ListGroupItem>
@@ -385,6 +378,15 @@ class DetailsButtons extends Component {
                             uiElement={<Button color="primary">{releaseText}</Button>}
                             onConfirm={this.doRelease}
                         />{" "}
+                        {this.help("release")}
+                    </ListGroupItem>
+                );
+            } else {
+                release = (
+                    <ListGroupItem>
+                        <Button color="info" disabled={true} className="float-left">
+                            {releaseText}
+                        </Button>{" "}
                         {this.help("release")}
                     </ListGroupItem>
                 );
