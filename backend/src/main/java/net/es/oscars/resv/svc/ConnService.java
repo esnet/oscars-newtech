@@ -142,17 +142,17 @@ public class ConnService {
 
         // first we don't take into account anything that doesn't have any archived
         // i.e. we discount any temporarily held
-        for (Connection c: connRepo.findByPhaseIn(phases)) {
+        for (Connection c : connRepo.findByPhaseIn(phases)) {
             try {
                 if (c.getArchived() != null) {
                     reservedAndArchived.add(c);
                 } else {
-                    log.error("no archived components for "+c.getConnectionId());
+                    log.error("no archived components for " + c.getConnectionId());
 
                 }
 
             } catch (EntityNotFoundException ex) {
-                log.error("missed a connection somehow "+c.getConnectionId());
+                log.error("missed a connection somehow " + c.getConnectionId());
 
             }
         }
@@ -391,7 +391,7 @@ public class ConnService {
             connRepo.saveAndFlush(c);
 
             Instant instant = Instant.now();
-            c.setLast_modified((int)instant.getEpochSecond());
+            c.setLast_modified((int) instant.getEpochSecond());
 
         } finally {
             // log.debug("unlocked connections");
@@ -521,7 +521,7 @@ public class ConnService {
             c.setReserved(null);
 
             Instant instant = Instant.now();
-            c.setLast_modified((int)instant.getEpochSecond());
+            c.setLast_modified((int) instant.getEpochSecond());
 
             connRepo.saveAndFlush(c);
 
@@ -541,7 +541,7 @@ public class ConnService {
         c.setState(newState);
 
         Instant instant = Instant.now();
-        c.setLast_modified((int)instant.getEpochSecond());
+        c.setLast_modified((int) instant.getEpochSecond());
 
         connRepo.save(c);
     }
@@ -970,7 +970,7 @@ public class ConnService {
                 PortBwVlan avail = availBwVlanMap.get(f.getPort());
                 Set<Integer> vlans = inVlanMap.get(f.getPort());
                 if (avail == null) {
-                    log.error("Could not retrieve available bw, vlans for "+f.getPort());
+                    log.error("Could not retrieve available bw, vlans for " + f.getPort());
                     avail = PortBwVlan.builder()
                             .egressBandwidth(-1)
                             .ingressBandwidth(-1)
@@ -1160,13 +1160,22 @@ public class ConnService {
                     .contents(t.getContents())
                     .build()));
         }
-        Schedule s = Schedule.builder()
-                .connectionId(in.getConnectionId())
-                .refId(in.getConnectionId() + "-sched")
-                .phase(Phase.HELD)
-                .beginning(Instant.ofEpochSecond(in.getBegin()))
-                .ending(Instant.ofEpochSecond(in.getEnd()))
-                .build();
+
+        Schedule s;
+        if (c.getHeld() != null) {
+            s = c.getHeld().getSchedule();
+            s.setBeginning(Instant.ofEpochSecond(in.getBegin()));
+            s.setEnding(Instant.ofEpochSecond(in.getEnd()));
+        } else {
+            s = Schedule.builder()
+                    .connectionId(in.getConnectionId())
+                    .refId(in.getConnectionId() + "-sched")
+                    .phase(Phase.HELD)
+                    .beginning(Instant.ofEpochSecond(in.getBegin()))
+                    .ending(Instant.ofEpochSecond(in.getEnd()))
+                    .build();
+        }
+
         Components cmp = Components.builder()
                 .fixtures(new ArrayList<>())
                 .junctions(new ArrayList<>())
@@ -1265,12 +1274,6 @@ public class ConnService {
             }
         }
         Instant expiration = Instant.ofEpochSecond(in.getHeldUntil());
-        Held h = Held.builder()
-                .connectionId(in.getConnectionId())
-                .cmp(cmp)
-                .schedule(s)
-                .expiration(expiration)
-                .build();
 
         if (c.getHeld() != null) {
             Held oldHeld = c.getHeld();
@@ -1278,15 +1281,13 @@ public class ConnService {
             oldHeld.setExpiration(expiration);
             oldHeld.setCmp(cmp);
 
-
-            Schedule oldSchedule = oldHeld.getSchedule();
-
-            oldHeld.setSchedule(s);
-            oldHeld.setExpiration(expiration);
-            oldHeld.setCmp(cmp);
-
-            schRepo.delete(oldSchedule);
         } else {
+            Held h = Held.builder()
+                    .connectionId(in.getConnectionId())
+                    .cmp(cmp)
+                    .schedule(s)
+                    .expiration(expiration)
+                    .build();
             c.setHeld(h);
         }
     }
@@ -1311,7 +1312,7 @@ public class ConnService {
                 .phase(Phase.HELD)
                 .description("")
                 .username("")
-                .last_modified((int)Instant.now().getEpochSecond())
+                .last_modified((int) Instant.now().getEpochSecond())
                 .connectionId(in.getConnectionId())
                 .state(State.WAITING)
                 .connection_mtu(in.getConnection_mtu())
