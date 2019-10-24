@@ -98,9 +98,15 @@ public class PSSAdapter {
 
     public State build(Connection conn) throws PSSException, NotReadyException {
         log.info("building " + conn.getConnectionId());
-        syslogger.sendSyslog( "OSCARS BUILD STARTED : " + conn.getConnectionId());
 
         List<Command> commands = this.configCommands(conn, CommandType.BUILD);
+        List<String> devices = new ArrayList<>();
+        for (Command c: commands) {
+            devices.add(c.getDevice());
+        }
+        String dStr = String.join(", ", devices);
+        syslogger.sendSyslog( "OSCARS BUILD STARTED : " + conn.getConnectionId()+ " : ( "+dStr+") : '"+ conn.getDescription()+"'");
+
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
 
@@ -144,7 +150,7 @@ public class PSSAdapter {
                 logService.logEvent(conn.getConnectionId(), ev);
 
                 // Send Syslog Message
-                syslogger.sendSyslog( "OSCARS BUILD ENDED SUCCESSFULLY : " + conn.getConnectionId());
+                syslogger.sendSyslog( "OSCARS BUILD COMPLETED : " + conn.getConnectionId());
             }
 
 
@@ -155,9 +161,15 @@ public class PSSAdapter {
 
     public State dismantle(Connection conn) throws PSSException, NotReadyException {
         log.info("dismantling " + conn.getConnectionId());
-        syslogger.sendSyslog( "OSCARS DISMANTLE STARTED : " + conn.getConnectionId());
-
         List<Command> commands = this.configCommands(conn, CommandType.DISMANTLE);
+
+        List<String> devices = new ArrayList<>();
+        for (Command c: commands) {
+            devices.add(c.getDevice());
+        }
+        String dStr = String.join(", ", devices);
+        syslogger.sendSyslog( "OSCARS DISMANTLE STARTED : " + conn.getConnectionId()+ " : ( "+dStr+" ) : '"+ conn.getDescription()+"'");
+
         List<CommandStatus> stable = this.getStableStatuses(commands);
         Instant now = Instant.now();
         State result = State.WAITING;
@@ -198,7 +210,7 @@ public class PSSAdapter {
                 logService.logEvent(conn.getConnectionId(), ev);
 
                 // Send Syslog Message
-                syslogger.sendSyslog( "OSCARS DISMANTLE ENDED SUCCESSFULLY : " + conn.getConnectionId());
+                syslogger.sendSyslog( "OSCARS DISMANTLE COMPLETED : " + conn.getConnectionId());
             }
         }
         this.triggerNsi(conn, result);
