@@ -4,7 +4,7 @@ import { observer, inject } from "mobx-react";
 import { action } from "mobx";
 
 import { Label, FormGroup, Input } from "reactstrap";
-import { WithContext as ReactTags } from 'react-tag-input';
+// import { WithContext as ReactTags } from 'react-tag-input';
 
 import myClient from "../../agents/client";
 import validator from "../../lib/validation";
@@ -29,7 +29,7 @@ class TagControls extends Component {
     handleAddition = (e, category) => {
         let value = [e.text];
         this.props.controlsStore.setCategory(category, value, "TEXT");
-    }
+    };
 
     handleDelete = (i, category) => {
         const tags = this.props.controlsStore.getTags(category);
@@ -41,7 +41,7 @@ class TagControls extends Component {
         }
 
         this.props.controlsStore.setCategory(category, value);
-    }
+    };
 
     onCategoryChange = (e, category, multivalue) => {
         let options = e.target.options;
@@ -196,6 +196,7 @@ class TagControls extends Component {
 
                 } else {
 
+                    /*
                     // For multivalue text inputs
                     const KeyCodes = {
                         comma: 188,
@@ -205,31 +206,36 @@ class TagControls extends Component {
                     const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
                     // Get Tags for a particular category
-                    const tags = this.props.controlsStore.getTags(category);
-                    
+                    let tags = this.props.controlsStore.getTags(category);
+                    let reactTags = <ReactTags
+                        tags={tags}
+                        placeholder={"Enter value(s) separated by a comma"}
+                        handleDelete={e => this.handleDelete(e, category)}
+                        handleAddition={e => this.handleAddition(e, category)}
+                        allowDragDrop={false}
+                        delimiters={delimiters}
+                        classNames={{
+                            tagInputField: (validator.tagsControl(conn.categories, category, mandatory) === "success") ? 'form-control is-valid' : 'form-control is-invalid',
+                            tag: 'btn btn-primary',
+                        }}
+                    />;
+
                     let inputTag = (
                         <FormGroup key={category}>
                             <Label>{description}</Label>
-                            <ReactTags
-                                tags={tags}
-                                placeholder={"Enter value(s) separated by a comma"}
-                                handleDelete={e => this.handleDelete(e, category)}
-                                handleAddition={e => this.handleAddition(e, category, multivalue)}
-                                allowDragDrop={false}
-                                delimiters={delimiters}
-                                classNames={{
-                                    tagInputField: (validator.tagsControl(conn.categories, category, mandatory) === "success") ? 'form-control is-valid' : 'form-control is-invalid',
-                                    tag: 'btn btn-primary',
-                                }}
-                            />
+                            {reactTags}
                         </FormGroup>
                     );
 
-                    inputs.push(inputTag);     
+
+
+                    // inputs.push(inputTag);
+                    */
+
                 }
             }
         }
-        return inputs;
+        return <div>{inputs}</div>;
     }
 }
 

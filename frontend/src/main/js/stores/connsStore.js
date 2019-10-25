@@ -1,5 +1,5 @@
 import { observable, action } from "mobx";
-import { isArray, mergeWith } from "lodash-es";
+import { isArray, mergeWith, size } from "lodash-es";
 
 import myClient from "../agents/client";
 import transformer from "../lib/transform";
@@ -185,6 +185,7 @@ class ConnectionsStore {
     }
 
     @action clearCurrent() {
+        console.trace();
         this.store.current = {};
         this.store.foundCurrent = false;
     }
@@ -199,18 +200,20 @@ class ConnectionsStore {
     }
 
     @action refreshCommands() {
-        myClient
-            .submitWithToken("GET", "/protected/pss/commands/" + this.store.current.connectionId)
-            .then(
-                action(response => {
-                    let commands = JSON.parse(response);
-                    if (commands.length !== 0) {
-                        this.setCommands(commands);
-                    } else {
-                        this.setCommands({});
-                    }
-                })
-            );
+        if (size(this.store.current.connectionId) > 0) {
+            myClient
+                .submitWithToken("GET", "/protected/pss/commands/" + this.store.current.connectionId)
+                .then(
+                    action(response => {
+                        let commands = JSON.parse(response);
+                        if (commands.length !== 0) {
+                            this.setCommands(commands);
+                        } else {
+                            this.setCommands({});
+                        }
+                    })
+                );
+        }
     }
 
     @action refreshCurrent() {

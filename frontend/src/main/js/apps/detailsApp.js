@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer, inject } from "mobx-react";
-import { action } from "mobx";
+import { action, toJS } from "mobx";
 import { Row, Col } from "reactstrap";
 import DetailsControls from "../components/details/detailsControls";
 import DetailsComponents from "../components/details/detailsComponents";
@@ -105,11 +105,12 @@ class DetailsApp extends Component {
                 </Row>
             );
         } else if (
-            conn === null ||
-            typeof conn === "undefined" ||
-            typeof conn.archived === "undefined"
-        ) {
-            return <div>Loading...</div>;
+                conn === null ||
+                typeof conn === "undefined" ||
+                typeof conn.archived === "undefined"
+            ) {
+            console.log(toJS(conn));
+            return <div>Loading connection..</div>;
         } else {
             return (
                 <Row>

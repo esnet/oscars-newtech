@@ -1,5 +1,28 @@
 # OSCARS Release Notes
 
+## v1.0.39
+> Oct 22, 2019
+- Frontend:
+    - Display config template version 
+    - Bugfixes
+
+## v1.0.38 
+> Oct 18, 2019
+- Frontend:
+    - Bugfixes
+
+## v1.0.37
+> Oct 14, 2019
+- Backend:
+    - Versioned templates feature
+    - Juniper fixes
+    - Logging to remote syslogd
+    
+- Frontend:
+    - Cosmetic fixes
+    - Security vulnerability updates
+
+
 ## v1.0.36
 > Aug 6, 2019
 - Backend:

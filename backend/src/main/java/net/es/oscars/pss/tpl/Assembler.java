@@ -23,7 +23,7 @@ public class Assembler {
         Map<String, Object> root = new HashMap<>();
         root.put("fragments", fragments);
 
-        return stringifier.stringify(root, templateFilename);
+        return stringifier.stringify(root, templateFilename).getProcessed();
 
     }
 }

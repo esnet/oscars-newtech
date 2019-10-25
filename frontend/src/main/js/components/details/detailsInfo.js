@@ -308,6 +308,7 @@ class DetailsInfo extends Component {
                                     const format = "Y/MM/DD HH:mm";
                                     if (h.deviceUrn === selected.data.deviceUrn) {
                                         let isOpen = this.state.historyId === h.id;
+                                        let tmpVersion = h.templateVersion;
                                         const when = Moment(h.date * 1000);
 
                                         const humanWhen =
@@ -320,7 +321,8 @@ class DetailsInfo extends Component {
                                                     onClick={() => this.toggleHistoryCollapse(h.id)}
                                                 >
                                                     <NavLink href="#">
-                                                        {h.type} - {humanWhen}
+                                                        {h.type} - {humanWhen} - (v. {tmpVersion})
+
                                                     </NavLink>
                                                 </CardHeader>
                                                 <CardBody>

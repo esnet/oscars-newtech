@@ -3,6 +3,7 @@ package net.es.oscars.app;
 import lombok.extern.slf4j.Slf4j;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.props.StartupProperties;
+import net.es.oscars.app.syslog.Syslogger;
 import net.es.oscars.app.util.DbAccess;
 import net.es.oscars.app.util.GitRepositoryState;
 import net.es.oscars.app.util.GitRepositoryStatePopulator;
@@ -33,6 +34,7 @@ public class Startup {
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
     private PssHealthChecker pssHealthChecker;
     private SlackConnector slackConnector;
+    private Syslogger syslogger;
 
     private TopoPopulator topoPopulator;
     private DbAccess dbAccess;
@@ -57,7 +59,6 @@ public class Startup {
     }
 
 
-
     @Bean
     public Executor taskExecutor() {
         return new SimpleAsyncTaskExecutor();
@@ -65,6 +66,7 @@ public class Startup {
 
     @Autowired
     public Startup(StartupProperties startupProperties,
+                   Syslogger syslogger,
                    TopoPopulator topoPopulator,
                    UserPopulator userPopulator,
                    SlackConnector slackConnector,
@@ -78,6 +80,7 @@ public class Startup {
         this.pssHealthChecker = pssHealthChecker;
         this.dbAccess = dbAccess;
         this.gitRepositoryStatePopulator = gitRepositoryStatePopulator;
+        this.syslogger = syslogger;
 
         components = new ArrayList<>();
         components.add(userPopulator);
@@ -92,8 +95,10 @@ public class Startup {
 
         this.setInStartup(true);
         if (startupProperties.getExit()) {
+            log.info("In Shutdown");
             this.setInStartup(false);
             this.setInShutdown(true);
+            syslogger.sendSyslog("OSCARS STOPPED SUCCESSFULLY");
             System.out.println("Exiting (startup.exit is true)");
             System.exit(0);
         }
@@ -117,9 +122,10 @@ public class Startup {
         GitRepositoryState gitRepositoryState = this.gitRepositoryStatePopulator.getGitRepositoryState();
         log.info("OSCARS backend (" + gitRepositoryState.getDescribe() + " on " + gitRepositoryState.getBranch() + ")");
         log.info("Built by " + gitRepositoryState.getBuildUserEmail() + " on " + gitRepositoryState.getBuildHost() + " at " + gitRepositoryState.getBuildTime());
-
-
         log.info("OSCARS startup successful.");
+
+        syslogger.sendSyslog("OSCARS STARTED SUCCESSFULLY");
+
         this.setInStartup(false);
 
     }

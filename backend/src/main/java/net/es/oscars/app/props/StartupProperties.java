@@ -4,10 +4,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
+@EnableConfigurationProperties(StartupProperties.class)
 @ConfigurationProperties(prefix = "startup")
 @NoArgsConstructor
 public class StartupProperties {

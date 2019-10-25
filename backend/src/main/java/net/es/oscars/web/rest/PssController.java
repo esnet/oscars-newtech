@@ -101,48 +101,37 @@ public class PssController {
     public PssWorkStatus working(@PathVariable String connectionId) throws StartupException, PSSException {
         this.checkStartup();
 
-        this.checkStartup();
         Optional<Connection> maybeC = connRepo.findByConnectionId(connectionId);
         if (!maybeC.isPresent()) {
             throw new NoSuchElementException("connection not found");
 
         } else {
-            Connection c = maybeC.get();
             PssWorkStatus pwt = PssWorkStatus.builder()
                     .connectionId(connectionId)
                     .build();
-            if (!c.getPhase().equals(Phase.RESERVED)) {
 
-                pwt.setNext(null);
-                pwt.setWork(null);
-                pwt.setExplanation("No tasks; connection is not RESERVED");
-                return pwt;
-            }
-
+            // first check if there are running tasks for this connection id; if so, return that
             for (PssTask t : pssQueuer.entries(QueueName.RUNNING)) {
                 if (t.getConnectionId().equals(connectionId)) {
                     pwt.setNext(t.getIntent());
                     pwt.setWork(QueueName.RUNNING);
-                    if (t.getIntent().equals(State.ACTIVE)) {
-                        pwt.setExplanation("Currently working to configure devices for BUILD");
-                    } else if (t.getIntent().equals(State.WAITING)) {
-                        pwt.setExplanation("Currently working to deconfigure devices and DISMANTLE");
-                    }
+                    pwt.setExplanation("Currently working to "+t.getCommandType().toString());
                     return pwt;
                 }
             }
+
+            // otherwise check if waiting, then return that
             for (PssTask t : pssQueuer.entries(QueueName.WAITING)) {
                 if (t.getConnectionId().equals(connectionId)) {
                     pwt.setNext(t.getIntent());
                     pwt.setWork(QueueName.WAITING);
-                    if (t.getIntent().equals(State.ACTIVE)) {
-                        pwt.setExplanation("Waiting in line; next action is to configure devices for BUILD");
-                    } else if (t.getIntent().equals(State.WAITING)) {
-                        pwt.setExplanation("Waiting in line; next action is to deconfigure devices and DISMANTLE");
-                    }
+                    pwt.setExplanation("Waiting in line; next action will be to "+t.getCommandType().toString());
                     return pwt;
                 }
             }
+            // otherwise return idle
+
+            pwt.setExplanation("PSS is idle");
             pwt.setNext(null);
             pwt.setWork(null);
             return pwt;

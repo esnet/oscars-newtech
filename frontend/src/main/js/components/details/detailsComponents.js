@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { inject, observer } from "mobx-react";
+import {toJS } from "mobx";
 import {
     Card,
     CardHeader,
@@ -51,7 +52,7 @@ class DetailsComponents extends Component {
     render() {
         const cmp = this.props.connsStore.store.current.archived.cmp;
         if (size(cmp.junctions) === 0) {
-            return <p>Loading..</p>;
+            return <p>Loading connection..</p>;
         }
         const connId = this.props.connsStore.store.current.connectionId;
 

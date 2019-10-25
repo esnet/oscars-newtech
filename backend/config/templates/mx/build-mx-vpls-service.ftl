@@ -1,5 +1,6 @@
 <#-- @ftlvariable name="vpls" type="net.es.oscars.pss.params.mx.MxVpls" -->
 <#-- @ftlvariable name="ifces" type="java.util.List<net.es.oscars.pss.params.mx.TaggedIfce>" -->
+@version: 1.0.37
 
 edit routing-instances "${vpls.serviceName}"
 <#list ifces as ifce>
@@ -11,7 +12,7 @@ set no-tunnel-services
 set mtu ${vpls.mtu}
 edit site CE
 <#list ifces as ifce>
-set interface ${ifce.port}.${ifce.vlan}
+set interface ${ifce.port}.${ifce.vlan} mac-pinning
 </#list>
 
 <#if vpls.loopback??>

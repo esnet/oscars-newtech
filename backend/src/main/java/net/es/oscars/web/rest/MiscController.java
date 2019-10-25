@@ -23,7 +23,7 @@ public class MiscController {
     @Autowired
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
 
-    @Value("${logging.file}")
+    @Value("log/backend.log")
     private String logfile;
 
     @ExceptionHandler(StartupException.class)
