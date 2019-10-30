@@ -1,0 +1,92 @@
+module p2p {
+    namespace "http://net.es/p2p";
+    prefix p2p;
+
+    import ietf-inet-types {
+        prefix inet;
+    }
+
+    import tailf-ncs {
+        prefix ncs;
+    }
+
+    import tailf-common {
+        prefix tailf;
+    }
+
+    list p2p {
+        uses ncs:service-data;
+        ncs:servicepoint "p2p";
+
+        key name;
+        leaf name {
+            type string;
+        }
+
+        leaf mtu {
+            type uint32 {
+                range "1500..9800";
+            }
+        }
+
+        leaf base_metric {
+            type uint32 {
+                range "1..max";
+            }
+        }
+
+        leaf mode {
+            mandatory true;
+            type enumeration {
+                enum production;
+                enum maintenance;
+                enum testing;
+                enum disabled;
+            }
+        }
+        leaf a {
+            mandatory true;
+            type leafref {
+                path "/addressed_tagged_ifce/id";
+            }
+        }
+        leaf z {
+            mandatory true;
+            type leafref {
+                path "/addressed_tagged_ifce/id";
+            }
+        }
+
+    }
+
+    list addressed_tagged_ifce {
+        key "id";
+        leaf id {
+            type string;
+        }
+        leaf device {
+            mandatory true;
+            tailf:info "Device";
+            type leafref {
+                path "/ncs:devices/ncs:device/ncs:name";
+            }
+        }
+        leaf port {
+            mandatory true;
+            type string;
+        }
+        leaf vlan-id {
+            mandatory true;
+            type uint32 {
+                range "2..4094";
+            }
+        }
+        list addrs {
+            key "addr";
+            leaf addr {
+                mandatory true;
+                type inet:ip-address;
+            }
+        }
+    }
+}
