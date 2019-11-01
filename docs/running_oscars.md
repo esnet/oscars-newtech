@@ -53,7 +53,7 @@ psql -U oscars -d oscars_backend
 
 OSCARS should now be running on your local machine.
  
-The web UI can be accessed at: ``https://localhost:8201`` . 
+The web UI can be accessed at: ``https://localhost:8181`` . 
 
 You will be presented with a login screen. The default username is **admin** with a default password of **oscars**. 
 
