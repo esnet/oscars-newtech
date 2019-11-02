@@ -11,7 +11,9 @@ import { size } from "lodash-es";
 import HelpPopover from "../helpPopover";
 import { withRouter } from "react-router-dom";
 
-@inject("connsStore")
+const safeJsonStringify = require('safe-json-stringify');
+
+@inject("connsStore", "designStore")
 @observer
 class DetailsButtons extends Component {
     constructor(props) {
@@ -97,14 +99,20 @@ class DetailsButtons extends Component {
     };
 
     doCloneConnection = () => {
-        let conn = this.props.connsStore.store.current; 
-        console.log("this.props detailsButtons ", this.props);
-        console.log("conn ", conn);
+        let conn = this.props.connsStore.store.current;
+        let cmp = conn.archived.cmp;
+        console.log("Details Buttons");
+        console.log("Conn ", conn);
+        console.log("Cmp ", cmp);
+
         this.props.history.push({
             pathname: '/pages/newDesign',
             state: {
-                oldConnID : conn.connectionId,
-                oldConnMTU : conn.connection_mtu
+                // buildMode : safeJsonStringify(conn.mode),
+                // connMTU : safeJsonStringify(conn.connection_mtu),
+                // tagControls : safeJsonStringify(conn.tags),
+                clonedConn : safeJsonStringify(conn),
+                clonedCmp : safeJsonStringify(cmp)
             }
         });
     }
@@ -496,7 +504,7 @@ class DetailsButtons extends Component {
                 <ListGroupItem color="info">Clone Connection</ListGroupItem>
                 <ListGroupItem>
                     <ConfirmModal
-                        body="This will clone the connection"
+                        body="This will clone the connection and redirect you to the New Connection page"
                         header="Clone Connection"
                         uiElement={
                             <Button

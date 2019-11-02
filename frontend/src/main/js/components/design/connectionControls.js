@@ -154,6 +154,13 @@ class ConnectionControls extends Component {
             mtu = conn.connection_mtu
         }
 
+        let defaultMode;
+        if (this.props.cloneDefaultMode) {
+            defaultMode = this.props.cloneDefaultMode;
+        } else {
+            defaultMode = "AUTOMATIC"
+        }
+
         return (
             <Card>
                 <CardBody>
@@ -200,7 +207,7 @@ class ConnectionControls extends Component {
                         <FormGroup>
                             <Label>Build Mode:</Label>
                             {buildHelp}{" "}
-                            <Input type="select" onChange={this.onBuildModeChange}>
+                            <Input type="select" onChange={this.onBuildModeChange} defaultValue={defaultMode}>
                                 <option value="AUTOMATIC">Scheduled</option>
                                 <option value="MANUAL">Manual</option>
                             </Input>

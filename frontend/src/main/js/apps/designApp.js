@@ -50,34 +50,78 @@ class DesignApp extends Component {
     };
 
     render() {
-        console.log("After navigation ", this.props, this.props.location.state.oldConnID, this.props.location.state.oldConnMTU);
-        return (
-            <Row>
-                <Col md={3} sm={3}>
-                    <ConnectionControls cloneConnMTU={this.props.location.state.oldConnMTU} />
-                    <br />
-                    <ScheduleControls />
-                </Col>
-                <Col md={6} sm={6}>
-                    <NetworkMap mapDivId={"mapDiv"} selectDevice={this.selectDevice} />
-                    <br />
-                    <DesignDrawing containerId={"mainDesignDrawing"} />
-                </Col>
-                <Col md={3} sm={3}>
-                    <HoldTimer />
-                    <br />
-                    <SelectPortTypeahead />
-                    <br />
-                    <DesignComponents />
-                </Col>
-                <AddFixtureModal />
-                <EditFixtureModal />
-                <EditJunctionModal />
-                <EditPipeModal />
-                <ConnectionErrorsModal />
-                <DesignHelpModal />
-            </Row>
-        );
+        if (this.props.location.state) {
+            const clonedConn = JSON.parse(this.props.location.state.clonedConn);
+            const clonedCmp = JSON.parse(this.props.location.state.clonedCmp);
+
+            console.log("clonedConnn is ", clonedConn);
+            console.log("clonedCmp is ", clonedCmp);
+
+            return (
+                <Row>
+                    <Col md={3} sm={3}>
+                        <ConnectionControls
+                            buildMode={clonedConn.mode}
+                            tags={clonedConn.tags}
+                            mtu={clonedConn.connection_mtu} 
+                        />
+                        <br />
+                        <ScheduleControls />
+                    </Col>
+                    <Col md={6} sm={6}>
+                        <NetworkMap mapDivId={"mapDiv"} selectDevice={this.selectDevice} />
+                        <br />
+                        <DesignDrawing 
+                            containerId={"mainDesignDrawing"}
+                            cmp={clonedCmp}
+                        />
+                    </Col>
+                    <Col md={3} sm={3}>
+                        <HoldTimer />
+                        <br />
+                        <SelectPortTypeahead />
+                        <br />
+                        <DesignComponents 
+                            cmp={clonedCmp}
+                        />
+                    </Col>
+                    <AddFixtureModal />
+                    <EditFixtureModal />
+                    <EditJunctionModal />
+                    <EditPipeModal />
+                    <ConnectionErrorsModal />
+                    <DesignHelpModal />
+                </Row>
+            );
+        } else {
+            return (
+                <Row>
+                    <Col md={3} sm={3}>
+                        <ConnectionControls />
+                        <br />
+                        <ScheduleControls />
+                    </Col>
+                    <Col md={6} sm={6}>
+                        <NetworkMap mapDivId={"mapDiv"} selectDevice={this.selectDevice} />
+                        <br />
+                        <DesignDrawing containerId={"mainDesignDrawing"} />
+                    </Col>
+                    <Col md={3} sm={3}>
+                        <HoldTimer />
+                        <br />
+                        <SelectPortTypeahead />
+                        <br />
+                        <DesignComponents />
+                    </Col>
+                    <AddFixtureModal />
+                    <EditFixtureModal />
+                    <EditJunctionModal />
+                    <EditPipeModal />
+                    <ConnectionErrorsModal />
+                    <DesignHelpModal />
+                </Row>
+            );
+        }
     }
 }
 
