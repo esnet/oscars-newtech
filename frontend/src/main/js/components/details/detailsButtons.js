@@ -13,7 +13,7 @@ import { withRouter } from "react-router-dom";
 
 const safeJsonStringify = require('safe-json-stringify');
 
-@inject("connsStore", "designStore")
+@inject("connsStore", "designStore", "controlsStore")
 @observer
 class DetailsButtons extends Component {
     constructor(props) {
@@ -100,22 +100,13 @@ class DetailsButtons extends Component {
 
     doCloneConnection = () => {
         let conn = this.props.connsStore.store.current;
-        let cmp = conn.archived.cmp;
-        console.log("Details Buttons");
-        console.log("Conn ", conn);
-        console.log("Cmp ", cmp);
+        this.props.designStore.clone(conn);
+        this.props.controlsStore.clone(conn);
 
         this.props.history.push({
             pathname: '/pages/newDesign',
-            state: {
-                // buildMode : safeJsonStringify(conn.mode),
-                // connMTU : safeJsonStringify(conn.connection_mtu),
-                // tagControls : safeJsonStringify(conn.tags),
-                clonedConn : safeJsonStringify(conn),
-                clonedCmp : safeJsonStringify(cmp)
-            }
         });
-    }
+    };
 
     doRelease = () => {
         const controls = this.props.connsStore.controls;

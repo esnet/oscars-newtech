@@ -10,7 +10,6 @@ import { configure } from "mobx";
 import { Provider } from "mobx-react";
 
 import ListConnectionsApp from "./apps/listConnections";
-import SelectDesignApp from "./apps/selectDesign";
 import NewDesignApp from "./apps/designApp";
 import WelcomeApp from "./apps/welcome";
 import AboutApp from "./apps/about";
@@ -129,7 +128,6 @@ ReactDOM.render(
                         path="/pages/details/:connectionId?"
                         component={ConnectionDetails}
                     />
-                    <PrivateRoute exact path="/pages/selectDesign" component={SelectDesignApp} />
                     <PrivateRoute exact path="/pages/newDesign" component={NewDesignApp} />
                     <PrivateRoute exact path="/pages/timeout" component={TimeoutApp} />
                     <PrivateRoute exact path="/pages/error" component={ErrorApp} />

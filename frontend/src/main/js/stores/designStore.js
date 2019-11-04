@@ -1,4 +1,4 @@
-import { observable, action } from "mobx";
+import { observable, action, toJS } from "mobx";
 
 class DesignStore {
     /*
@@ -416,6 +416,28 @@ class DesignStore {
 
         return true;
     }
+
+    @action clone(cloneThis) {
+        console.log("setting design for cloned connection");
+        console.log(toJS(cloneThis));
+        // clear the errors
+        this.design.errors = [];
+
+        // clone the junctions to the design
+        this.design.junctions = [];
+        for (let cloneJ of cloneThis.archived.cmp.junctions) {
+            this.design.junctions.push({id: cloneJ.deviceUrn});
+        }
+
+        // TODO implement cloning fixtures from the cloneThis.archived.cmp
+        this.design.fixtures = [];
+
+        // TODO implement cloning pipes from the cloneThis.archived.cmp
+        this.design.pipes = [];
+        this.saveToSessionStorage();
+    }
+
+
 }
 
 export default new DesignStore();

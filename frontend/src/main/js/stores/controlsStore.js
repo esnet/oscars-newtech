@@ -1,5 +1,5 @@
 import Moment from "moment";
-import { observable, action } from "mobx";
+import { observable, action, toJS } from "mobx";
 import { merge, isArray, mergeWith, remove } from "lodash-es";
 
 class ControlsStore {
@@ -370,6 +370,21 @@ class ControlsStore {
 
         return true;
     }
+
+    @action clone(cloneThis) {
+        console.log("setting controls for cloned connection");
+        console.log(toJS(cloneThis));
+        /*
+
+        implement something that sets this.connection params from cloneThis
+
+         */
+
+
+        this.saveToSessionStorage();
+    }
+
+
 }
 
 export default new ControlsStore();
