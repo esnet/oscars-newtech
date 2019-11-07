@@ -714,19 +714,64 @@ def validate_oscars_adjacencies(oscars_adjcies=None):
 
 def repair_blank_isis_ports(isis_adjcies=None, netbeam_interfaces=None, settings=None):
     for isis_adjcy in isis_adjcies:
-        if isis_adjcy["a_port"] == "BLANK":
-            for ifce in netbeam_interfaces:
-                if isis_adjcy["a"] == ifce["device"] and ifce["name"] == isis_adjcy["a_ifce"]:
-                    isis_adjcy["a_port"] = ifce["port"]
+        a_needed_repair = False
+        a_repaired = False
+        z_needed_repair = False
+        z_repaired = False
+
+        if "a_port" not in isis_adjcy:
+            a_needed_repair = True
+            a_ifce = isis_adjcy["a_ifce"]
+            if a_ifce.startswith('ge') or a_ifce.startswith('xe') or \
+                    a_ifce.startswith('ae') or a_ifce.startswith('et'):
+                if "." in a_ifce and '32767' not in a_ifce:
+                    parts = a_ifce.split('.')
+                    isis_adjcy["a_port"] = parts[0]
+                    a_repaired = True
                     if settings['VERBOSE']:
                         print("repaired adjcy for {}:{}".format(isis_adjcy["a"], isis_adjcy["a_port"]))
 
+        if isis_adjcy["a_port"] == "BLANK":
+            a_needed_repair = True
+            for ifce in netbeam_interfaces:
+                if isis_adjcy["a"] == ifce["device"] and ifce["name"] == isis_adjcy["a_ifce"]:
+                    isis_adjcy["a_port"] = ifce["port"]
+                    a_repaired = True
+                    if settings['VERBOSE']:
+                        print("repaired adjcy for {}:{}".format(isis_adjcy["a"], isis_adjcy["a_port"]))
+
+        if "z_port" not in isis_adjcy:
+            z_needed_repair = True
+            z_ifce = isis_adjcy["z_ifce"]
+            if z_ifce.startswith('ge') or z_ifce.startswith('xe') or \
+                    z_ifce.startswith('ae') or z_ifce.startswith('et'):
+                if "." in z_ifce and '32767' not in z_ifce:
+                    parts = z_ifce.split('.')
+                    isis_adjcy["z_port"] = parts[0]
+                    z_repaired = True
+                    if settings['VERBOSE']:
+                        print("repaired adjcy for {}:{}".format(isis_adjcy["z"], isis_adjcy["z_port"]))
+
         if isis_adjcy["z_port"] == "BLANK":
+            z_needed_repair = True
             for ifce in netbeam_interfaces:
                 if isis_adjcy["z"] == ifce["device"] and ifce["name"] == isis_adjcy["z_ifce"]:
                     isis_adjcy["z_port"] = ifce["port"]
+                    z_repaired = True
                     if settings['VERBOSE']:
                         print("repaired adjcy for {}:{}".format(isis_adjcy["z"], isis_adjcy["z_port"]))
+
+        if a_needed_repair or z_needed_repair:
+            repaired_all = False
+            if a_needed_repair and z_needed_repair:
+                repaired_all = a_repaired and z_repaired
+            elif a_needed_repair:
+                repaired_all = a_repaired
+            elif z_needed_repair:
+                repaired_all = z_repaired
+            if not repaired_all:
+                print("unrepairable adjacency - see below:")
+                pp.pprint(isis_adjcy)
 
 
 def to_oscars_adjcies(isis_adjcies=None):
