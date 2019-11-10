@@ -11,8 +11,6 @@ import { size } from "lodash-es";
 import HelpPopover from "../helpPopover";
 import { withRouter } from "react-router-dom";
 
-const safeJsonStringify = require('safe-json-stringify');
-
 @inject("connsStore", "designStore", "controlsStore")
 @observer
 class DetailsButtons extends Component {
@@ -102,7 +100,6 @@ class DetailsButtons extends Component {
         let conn = this.props.connsStore.store.current;
         this.props.designStore.clone(conn);
         this.props.controlsStore.clone(conn);
-
         this.props.history.push({
             pathname: '/pages/newDesign',
         });
@@ -490,26 +487,29 @@ class DetailsButtons extends Component {
             specialHeader = <ListGroupItem color="warning">Special Controls</ListGroupItem>;
         }
 
-        let cloneButton = (
-            <ListGroup>
-                <ListGroupItem color="info">Clone Connection</ListGroupItem>
-                <ListGroupItem>
-                    <ConfirmModal
-                        body="This will clone the connection and redirect you to the New Connection page"
-                        header="Clone Connection"
-                        uiElement={
-                            <Button
-                                className="pull-right"
-                                color="primary"
-                            >
-                                Clone this connection
-                            </Button>
-                        }
-                        onConfirm={this.doCloneConnection}
-                    />{" "}
-                </ListGroupItem>
-            </ListGroup>
-        );
+        let cloneButton = null;
+        if (conn.state !== "ACTIVE") {
+            cloneButton = (
+                <ListGroup>
+                    <ListGroupItem color="info">Clone Connection</ListGroupItem>
+                    <ListGroupItem>
+                        <ConfirmModal
+                            body="This will clone the connection and redirect you to the New Connection page"
+                            header="Clone Connection"
+                            uiElement={
+                                <Button
+                                    className="pull-right"
+                                    color="primary"
+                                >
+                                    Clone this connection
+                                </Button>
+                            }
+                            onConfirm={this.doCloneConnection}
+                        />{" "}
+                    </ListGroupItem>
+                </ListGroup>
+            );
+        }
 
         return (
             <ListGroup>

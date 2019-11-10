@@ -426,14 +426,49 @@ class DesignStore {
         // clone the junctions to the design
         this.design.junctions = [];
         for (let cloneJ of cloneThis.archived.cmp.junctions) {
-            this.design.junctions.push({id: cloneJ.deviceUrn});
+            this.design.junctions.push({
+                id: cloneJ.deviceUrn,
+                refId: cloneJ.refId,
+            });
         }
 
-        // TODO implement cloning fixtures from the cloneThis.archived.cmp
+        // clone the fixtures to the design
         this.design.fixtures = [];
+        for (let cloneF of cloneThis.archived.cmp.fixtures) {
+            this.design.fixtures.push({
+                id: cloneF.portUrn,
+                device: cloneF.junction,
+                label: cloneF.portUrn + ":" + cloneF.vlan.vlanId,
+                vlan: cloneF.vlan,
+                locked: true,
+                ingress: cloneF.ingressBandwidth,
+                egress: cloneF.egressBandwidth,
+                strict: cloneF.strict
+            });
+        }
 
-        // TODO implement cloning pipes from the cloneThis.archived.cmp
+        // clone the pipes to the design
         this.design.pipes = [];
+        for (let cloneP of cloneThis.archived.cmp.pipes) {
+            console.log("cloneP is ", cloneP);
+            let ero = []
+            for (let e of cloneP.azERO) {
+                ero.push(e['urn']);
+            }
+            console.log("ero is ", ero);
+            this.design.pipes.push({
+                id: cloneP.a + " " + cloneP.z,
+                ero: ero,
+                a: cloneP.a,
+                z: cloneP.z,
+                azBw: cloneP.azBandwidth,
+                zaBw: cloneP.zaBandwidth,
+                mode: "fits",
+                protect: cloneP.protect,
+                locked: true
+            });
+        }
+
         this.saveToSessionStorage();
     }
 

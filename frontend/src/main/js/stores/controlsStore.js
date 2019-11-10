@@ -374,12 +374,11 @@ class ControlsStore {
     @action clone(cloneThis) {
         console.log("setting controls for cloned connection");
         console.log(toJS(cloneThis));
-        /*
 
-        implement something that sets this.connection params from cloneThis
-
-         */
-
+        // clone the connection params
+        this.connection.connection_mtu = cloneThis.connection_mtu;
+        this.connection.mode = cloneThis.mode;
+        this.connection.tags = cloneThis.tags;
 
         this.saveToSessionStorage();
     }

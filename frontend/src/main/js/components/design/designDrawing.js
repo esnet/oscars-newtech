@@ -114,317 +114,170 @@ class DesignDrawing extends Component {
         this.disposeOfMapUpdate();
     }
 
-    // this automagically updates the map;
+    // this automatically updates the map;
     // TODO: use a reaction and don't clear the whole graph, instead add/remove/update
     disposeOfMapUpdate = autorun(
         () => {
             console.log("disposeOfMapUpdate");
-            if (this.props.cmp) {
-                let design = this.props.cmp;
-                let junctions = toJS(design.junctions);
-                let fixtures = toJS(design.fixtures);
-                let pipes = toJS(design.pipes);
 
-                let nodes = [];
-                let edges = [];
+            let { design } = this.props.designStore;
+            let junctions = toJS(design.junctions);
+            let fixtures = toJS(design.fixtures);
+            let pipes = toJS(design.pipes);
 
-                myClient.loadJSON({ method: "GET", url: "/api/map" }).then(
-                    action(response => {
-                        let positions = {};
-                        let topology = JSON.parse(response);
-                        topology.nodes.map(n => {
-                            // scale everything down
-                            positions[n.id] = {
-                                x: 0.3 * n.x,
-                                y: 0.3 * n.y
-                            };
-                        });
+            let nodes = [];
+            let edges = [];
 
-                        console.log("positions ", positions);
-                        console.log("topology ", topology);
-
-                        junctions.map(j => {
-                            let junctionNode = {
-                                id: j.deviceUrn,
-                                label: j.deviceUrn,
-                                size: 16,
-                                data: j,
-                                x: positions[j.deviceUrn].x,
-                                y: positions[j.deviceUrn].y,
-                                physics: false,
-                                color: {
-                                    inherit: false
-                                },
-                                onClick: this.onJunctionClicked
-                            };
-                            nodes.push(junctionNode);
-                        });
-
-                        fixtures.map(f => {
-                            const label = f.portUrn.replace(f.junction + ":", "") + ":" + f.vlan.vlanId;
-                            console.log("f is ", f);
-                            let fixtureNode = {
-                                id: f.portUrn + ":" + f.vlan.vlanId,
-                                label: label,
-                                x: positions[f.junction].x + 10,
-                                size: 8,
-                                shape: "hexagon",
-                                color: {
-                                    background: validator.fixtureMapColor(f),
-                                    inherit: false
-                                },
-                                data: f,
-                                onClick: this.onFixtureClicked
-                            };
-                            nodes.push(fixtureNode);
-
-                            let edge = {
-                                id: f.portUrn + ":" + f.vlan.vlanId,
-                                from: f.junction,
-                                to: f.portUrn + ":" + f.vlan.vlanId,
-                                length: 2,
-                                width: 1.5,
-                                onClick: null
-                            };
-
-                            // let edge = {
-                            //     id: f.device + " --- " + f.id,
-                            //     from: f.device,
-                            //     to: f.id,
-                            //     onClick: null,
-                            //     width: 1.5,
-                            //     length: 2
-                            // };
-                            edges.push(edge);
-                        });
-
-                        if (typeof pipes !== "undefined") {
-                            const colors = [
-                                "#CC0000",
-                                "#3333FF",
-                                "#00CC00",
-                                "orange",
-                                "cyan",
-                                "brown",
-                                "pink"
-                            ];
-
-                            pipes.map((p, pipe_idx) => {
-                                let i = 0;
-                                while (i < p.azERO.length - 1) {
-                                    let a = p.azERO[i]["urn"];
-                                    let b = p.azERO[i + 1]["urn"];
-                                    let y = p.azERO[i + 2]["urn"];
-                                    let z = p.azERO[i + 3]["urn"];
+            console.log("Junctions are ", junctions);
+            console.log("Fixtures are ", fixtures);
+            console.log("Pipes are ", pipes);
             
-                                    let foundZ = false;
-                                    nodes.map(node => {
-                                        if (node.id === z) {
-                                            foundZ = true;
-                                        }
-                                    });
-                                    if (!foundZ) {
-                                        let zNode = {
-                                            id: z,
-                                            label: z,
-                                            x: positions[z].x,
-                                            y: positions[z].y,
-                                            shape: "diamond",
-                                            size: 12,
-                                            color: colors[pipe_idx],
-                                            onClick: null
-                                        };
-                                        nodes.push(zNode);
+            myClient.loadJSON({ method: "GET", url: "/api/map" }).then(
+                action(response => {
+                    let positions = {};
+                    let topology = JSON.parse(response);
+                    topology.nodes.map(n => {
+                        // scale everything down
+                        positions[n.id] = {
+                            x: 0.3 * n.x,
+                            y: 0.3 * n.y
+                        };
+                    });
+                    
+                    console.log("positions is ", positions);
+
+                    junctions.map(j => {
+                        let junctionNode = {
+                            id: j.id,
+                            label: j.id,
+                            size: 16,
+                            data: j,
+                            x: positions[j.id].x,
+                            y: positions[j.id].y,
+                            physics: false,
+                            color: {
+                                inherit: false
+                            },
+                            onClick: this.onJunctionClicked
+                        };
+                        nodes.push(junctionNode);
+                    });
+
+                    fixtures.map(f => {
+                        let fixtureNode = {
+                            id: f.id,
+                            label: f.label,
+                            x: positions[f.device].x + 10,
+                            size: 8,
+                            shape: "hexagon",
+                            color: {
+                                background: validator.fixtureMapColor(f),
+                                inherit: false
+                            },
+                            data: f,
+                            onClick: this.onFixtureClicked
+                        };
+                        nodes.push(fixtureNode);
+                        let edge = {
+                            id: f.device + " --- " + f.id,
+                            from: f.device,
+                            to: f.id,
+                            onClick: null,
+                            width: 1.5,
+                            length: 2
+                        };
+                        edges.push(edge);
+                    });
+
+                    const colors = [
+                        "#CC0000",
+                        "#3333FF",
+                        "#00CC00",
+                        "orange",
+                        "cyan",
+                        "brown",
+                        "pink"
+                    ];
+
+                    pipes.map((p, pipe_idx) => {
+                        console.log("pipes p is ", p);
+                        if (p.locked) {
+                            let i = 0;
+                            while (i < p.ero.length - 1) {
+                                let a = p.ero[i];
+                                let b = p.ero[i + 1];
+                                let y = p.ero[i + 2];
+                                let z = p.ero[i + 3];
+
+                                let foundZ = false;
+                                nodes.map(node => {
+                                    if (node.id === z) {
+                                        foundZ = true;
                                     }
-                                    let edge = {
-                                        id: pipe_idx + " : " + b + " --- " + y,
-                                        from: a,
-                                        color: {
-                                            color: colors[pipe_idx]
-                                        },
-                                        to: z,
-                                        width: 1.5,
-                                        length: 3,
+                                });
+                                if (!foundZ) {
+                                    let zNode = {
+                                        id: z,
+                                        label: z,
+                                        x: positions[z].x,
+                                        y: positions[z].y,
+                                        size: 12,
+                                        shape: "diamond",
                                         onClick: null
                                     };
-                                    edges.push(edge);
-                                    i = i + 3;
+                                    nodes.push(zNode);
                                 }
-                            });
-                        }
-
-                        topology.nodes.map(n => {});
-
-                        VisUtils.mergeItems(nodes, this.datasource.nodes);
-
-                        this.datasource.edges.clear();
-                        this.datasource.edges.add(edges);
-                        if (!this.network.loaded) {
-
-                        } else {
-                            this.network.stabilize(1000);
-                            this.network.fit({ animation: false });
-
-                        }
-
-                        console.log("disposeOfMapUpdate network " , this.network);
-                        console.log("disposeOfMapUpdate datasource " , this.datasource);                    
-                    })
-                );
-                
-            } else {
-                let { design } = this.props.designStore;
-                let junctions = toJS(design.junctions);
-                let fixtures = toJS(design.fixtures);
-                let pipes = toJS(design.pipes);
-
-                let nodes = [];
-                let edges = [];
-
-                myClient.loadJSON({ method: "GET", url: "/api/map" }).then(
-                    action(response => {
-                        let positions = {};
-                        let topology = JSON.parse(response);
-                        topology.nodes.map(n => {
-                            // scale everything down
-                            positions[n.id] = {
-                                x: 0.3 * n.x,
-                                y: 0.3 * n.y
-                            };
-                        });
-
-                        junctions.map(j => {
-                            let junctionNode = {
-                                id: j.id,
-                                label: j.id,
-                                size: 16,
-                                data: j,
-                                x: positions[j.id].x,
-                                y: positions[j.id].y,
-                                physics: false,
-                                color: {
-                                    inherit: false
-                                },
-                                onClick: this.onJunctionClicked
-                            };
-                            nodes.push(junctionNode);
-                        });
-
-                        fixtures.map(f => {
-                            let fixtureNode = {
-                                id: f.id,
-                                label: f.label,
-                                x: positions[f.device].x + 10,
-                                size: 8,
-                                shape: "hexagon",
-                                color: {
-                                    background: validator.fixtureMapColor(f),
-                                    inherit: false
-                                },
-                                data: f,
-                                onClick: this.onFixtureClicked
-                            };
-                            nodes.push(fixtureNode);
-                            let edge = {
-                                id: f.device + " --- " + f.id,
-                                from: f.device,
-                                to: f.id,
-                                onClick: null,
-                                width: 1.5,
-                                length: 2
-                            };
-                            edges.push(edge);
-                        });
-
-                        const colors = [
-                            "#CC0000",
-                            "#3333FF",
-                            "#00CC00",
-                            "orange",
-                            "cyan",
-                            "brown",
-                            "pink"
-                        ];
-
-                        pipes.map((p, pipe_idx) => {
-                            if (p.locked) {
-                                let i = 0;
-                                while (i < p.ero.length - 1) {
-                                    let a = p.ero[i];
-                                    let b = p.ero[i + 1];
-                                    let y = p.ero[i + 2];
-                                    let z = p.ero[i + 3];
-
-                                    let foundZ = false;
-                                    nodes.map(node => {
-                                        if (node.id === z) {
-                                            foundZ = true;
-                                        }
-                                    });
-                                    if (!foundZ) {
-                                        let zNode = {
-                                            id: z,
-                                            label: z,
-                                            x: positions[z].x,
-                                            y: positions[z].y,
-                                            size: 12,
-                                            shape: "diamond",
-                                            onClick: null
-                                        };
-                                        nodes.push(zNode);
-                                    }
-                                    let edge = {
-                                        id: pipe_idx + " : " + b + " --- " + y,
-                                        from: a,
-                                        color: {
-                                            color: colors[pipe_idx]
-                                        },
-                                        onClick: null,
-                                        to: z,
-                                        length: 3,
-                                        width: 1.5
-                                    };
-                                    edges.push(edge);
-
-                                    i = i + 3;
-                                }
-                            } else {
                                 let edge = {
-                                    id: p.id,
-                                    from: p.a,
-                                    to: p.z,
-                                    dashes: true,
-                                    length: 10,
+                                    id: pipe_idx + " : " + b + " --- " + y,
+                                    from: a,
                                     color: {
                                         color: colors[pipe_idx]
                                     },
-                                    width: 5,
-                                    data: p,
-                                    onClick: this.onPipeClicked
+                                    onClick: null,
+                                    to: z,
+                                    length: 3,
+                                    width: 1.5
                                 };
                                 edges.push(edge);
+
+                                i = i + 3;
                             }
-                        });
-
-                        topology.nodes.map(n => {});
-
-                        VisUtils.mergeItems(nodes, this.datasource.nodes);
-
-                        this.datasource.edges.clear();
-                        this.datasource.edges.add(edges);
-                        if (!this.network.loaded) {
-
                         } else {
-                            this.network.stabilize(1000);
-                            this.network.fit({ animation: false });
-
+                            let edge = {
+                                id: p.id,
+                                from: p.a,
+                                to: p.z,
+                                dashes: true,
+                                length: 10,
+                                color: {
+                                    color: colors[pipe_idx]
+                                },
+                                width: 5,
+                                data: p,
+                                onClick: this.onPipeClicked
+                            };
+                            edges.push(edge);
                         }
+                    });
 
-                        console.log("disposeOfMapUpdate network " , this.network);
-                        console.log("disposeOfMapUpdate datasource " , this.datasource);                    
-                    })
-                );
-            }
+                    topology.nodes.map(n => {});
+
+                    VisUtils.mergeItems(nodes, this.datasource.nodes);
+
+                    this.datasource.edges.clear();
+                    this.datasource.edges.add(edges);
+                    if (!this.network.loaded) {
+
+                    } else {
+                        this.network.stabilize(1000);
+                        this.network.fit({ animation: false });
+
+                    }
+
+                    console.log("disposeOfMapUpdate network " , this.network);
+                    console.log("disposeOfMapUpdate datasource " , this.datasource);                    
+                })
+            );
         },
         { delay: 500 }
     );

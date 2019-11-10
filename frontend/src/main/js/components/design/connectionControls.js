@@ -147,20 +147,6 @@ class ConnectionControls extends Component {
             </span>
         );
 
-        let mtu;
-        if (this.props.cloneConnMTU) {
-            mtu = this.props.cloneConnMTU
-        } else {
-            mtu = conn.connection_mtu
-        }
-
-        let defaultMode;
-        if (this.props.cloneDefaultMode) {
-            defaultMode = this.props.cloneDefaultMode;
-        } else {
-            defaultMode = "AUTOMATIC"
-        }
-
         return (
             <Card>
                 <CardBody>
@@ -207,7 +193,7 @@ class ConnectionControls extends Component {
                         <FormGroup>
                             <Label>Build Mode:</Label>
                             {buildHelp}{" "}
-                            <Input type="select" onChange={this.onBuildModeChange} defaultValue={defaultMode}>
+                            <Input type="select" onChange={this.onBuildModeChange}>
                                 <option value="AUTOMATIC">Scheduled</option>
                                 <option value="MANUAL">Manual</option>
                             </Input>
@@ -218,9 +204,9 @@ class ConnectionControls extends Component {
                             <Input
                                 type="number"
                                 placeholder="Desired data MTU size"
-                                valid={validator.mtuControl(mtu) === "success"}
-                                invalid={validator.mtuControl(mtu) !== "success"}
-                                defaultValue={mtu}
+                                valid={validator.mtuControl(conn.connection_mtu) === "success"}
+                                invalid={validator.mtuControl(conn.connection_mtu) !== "success"}
+                                defaultValue={conn.connection_mtu}
                                 onChange={this.onMTUChange}
                             />
                         </FormGroup>
@@ -234,7 +220,7 @@ class ConnectionControls extends Component {
                         <Collapse isOpen={this.state.collapse}>
                             <TagControls />
                         </Collapse>
-                        <FormGroup className="float-right">
+                        <FormGroup className="float-left">
                             <ToggleDisplay show={!conn.validation.acceptable}>
                                 <Button
                                     color="warning"
