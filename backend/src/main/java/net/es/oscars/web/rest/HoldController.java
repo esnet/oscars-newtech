@@ -5,6 +5,7 @@ import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.ConnectionMode;
 import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ConnService;
@@ -137,7 +138,7 @@ public class HoldController {
     @RequestMapping(value = "/protected/cloneable", method = RequestMethod.POST)
     @ResponseBody
     @Transactional
-    public SimpleConnection cloneable(SimpleConnection connection) {
+    public SimpleConnection cloneable(SimpleConnection connection) throws ConnException {
 
         int duration = connection.getEnd() - connection.getBegin();
         // try to get starting now()  w same duration
@@ -148,21 +149,11 @@ public class HoldController {
 
         connection.setBegin(new Long(now.getEpochSecond()).intValue());
         connection.setEnd(connection.getBegin()+duration);
+        Validity v = connSvc.validate(connection, ConnectionMode.CLONE);
+        connection.setValidity(v);
 
-        Random r = new Random();
-        if (r.nextBoolean()) {
-            connection.setValidity(Validity.builder()
-                    .valid(true)
-                    .message("Can be cloned!")
-                    .build());
-        } else {
-            connection.setValidity(Validity.builder()
-                    .valid(false)
-                    .message("Can't be cloned!")
-                    .build());
-
-        }
         return connection;
+
     }
 
     @RequestMapping(value = "/protected/hold", method = RequestMethod.POST)
@@ -179,7 +170,7 @@ public class HoldController {
         }
 
         // TODO: Don't throw exception; populate all the Validity entries instead
-        Validity v = connSvc.validateHold(in);
+        Validity v = connSvc.validate(in, ConnectionMode.NEW);
         if (!v.isValid()) {
             in.setValidity(v);
             log.info("did not update invalid connection "+in.getConnectionId());

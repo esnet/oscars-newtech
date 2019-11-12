@@ -30,6 +30,7 @@ import net.es.oscars.pss.svc.PSSQueuer;
 import net.es.oscars.resv.db.ConnectionRepository;
 import net.es.oscars.resv.ent.*;
 import net.es.oscars.resv.enums.BuildMode;
+import net.es.oscars.resv.enums.ConnectionMode;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.enums.State;
 import net.es.oscars.resv.svc.ConnService;
@@ -717,7 +718,7 @@ public class NsiService {
             }
             // add a validity check
             try {
-                Validity v = connSvc.validateHold(simpleConnection);
+                Validity v = connSvc.validate(simpleConnection, ConnectionMode.NEW);
 
                 if (!v.isValid()) {
                     throw new NsiException("Invalid input: " + v.getMessage(), NsiErrors.MSG_ERROR);

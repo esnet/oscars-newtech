@@ -14,10 +14,7 @@ import net.es.oscars.pss.svc.PSSQueuer;
 import net.es.oscars.pss.svc.PssResourceService;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.ent.*;
-import net.es.oscars.resv.enums.BuildMode;
-import net.es.oscars.resv.enums.EventType;
-import net.es.oscars.resv.enums.Phase;
-import net.es.oscars.resv.enums.State;
+import net.es.oscars.resv.enums.*;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
 import net.es.oscars.topo.enums.CommandParamType;
@@ -704,7 +701,7 @@ public class ConnService {
 
     public Validity validateCommit(Connection in) throws ConnException {
 
-        Validity v = this.validateHold(this.fromConnection(in, false));
+        Validity v = this.validate(this.fromConnection(in, false), ConnectionMode.NEW);
 
         StringBuilder error = new StringBuilder(v.getMessage());
         boolean valid = v.isValid();
@@ -779,7 +776,7 @@ public class ConnService {
     }
 
 
-    public Validity validateHold(SimpleConnection in)
+    public Validity validate(SimpleConnection in, ConnectionMode mode)
             throws ConnException {
 
         StringBuilder error = new StringBuilder();
@@ -793,34 +790,34 @@ public class ConnService {
 
         // validate global connection params
 
-
-        // check the connection ID:
-        String connectionId = in.getConnectionId();
-        if (connectionId == null) {
-            error.append("null connection id\n");
-            valid = false;
-        } else {
-            if (!connectionId.matches("^[a-zA-Z][a-zA-Z0-9_\\-]+$")) {
-                error.append("connection id invalid format \n");
+        if (mode.equals(ConnectionMode.NEW)) {
+            // check the connection ID:
+            String connectionId = in.getConnectionId();
+            if (connectionId == null) {
+                error.append("null connection id\n");
                 valid = false;
+            } else {
+                if (!connectionId.matches("^[a-zA-Z][a-zA-Z0-9_\\-]+$")) {
+                    error.append("connection id invalid format \n");
+                    valid = false;
+                }
+                if (connectionId.length() > 12) {
+                    error.append("connection id too long\n");
+                    valid = false;
+                } else if (connectionId.length() < 4) {
+                    error.append("connection id too short\n");
+                    valid = false;
+                }
             }
-            if (connectionId.length() > 12) {
-                error.append("connection id too long\n");
-                valid = false;
-            } else if (connectionId.length() < 4) {
-                error.append("connection id too short\n");
-                valid = false;
+            // check the connection MTU
+            if (in.getConnection_mtu() != null) {
+                if (in.getConnection_mtu() < minMtu || in.getConnection_mtu() > maxMtu) {
+                    error.append("MTU must be between ").append(minMtu).append(" and ").append(maxMtu).append(" (inclusive)\n");
+                    valid = false;
+                }
+            } else {
+                in.setConnection_mtu(defaultMtu);
             }
-        }
-
-        // check the connection MTU
-        if (in.getConnection_mtu() != null) {
-            if (in.getConnection_mtu() < minMtu || in.getConnection_mtu() > maxMtu) {
-                error.append("MTU must be between ").append(minMtu).append(" and ").append(maxMtu).append(" (inclusive)\n");
-                valid = false;
-            }
-        } else {
-            in.setConnection_mtu(defaultMtu);
         }
 
         // check the schedule, begin time first:
