@@ -207,7 +207,7 @@ class HoldTimer extends Component {
             console.log("heldUpdateDispose");
 
             let conn = this.props.controlsStore.connection;
-            console.log("conn is ", connection);
+            console.log("conn is ", conn);
             
             if (!conn.schedule.locked) {
                 return;

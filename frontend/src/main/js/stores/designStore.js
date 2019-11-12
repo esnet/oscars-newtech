@@ -426,39 +426,40 @@ class DesignStore {
         // clone the junctions to the design
         this.design.junctions = [];
         for (let cloneJ of cloneThis.archived.cmp.junctions) {
-            this.design.junctions.push({
+            let junction = {
                 id: cloneJ.deviceUrn,
                 refId: cloneJ.refId,
-            });
+            }
+            this.design.junctions.push(junction);
         }
 
         // clone the fixtures to the design
         this.design.fixtures = [];
         for (let cloneF of cloneThis.archived.cmp.fixtures) {
             let port = cloneF.portUrn.split(":")[1];
-            console.log("designStore fixture label ", cloneF.portUrn, cloneF.vlan.vlanId, port);
-            this.design.fixtures.push({
+            let fixture = {
                 id: cloneF.portUrn,
                 device: cloneF.junction,
                 label: port + ":" + cloneF.vlan.vlanId,
-                vlan: cloneF.vlan,
+                port: cloneF.portUrn,
+                vlan: cloneF.vlan.vlanId,
                 locked: true,
                 ingress: cloneF.ingressBandwidth,
                 egress: cloneF.egressBandwidth,
                 strict: cloneF.strict
-            });
+            };
+            console.log("fixture ", fixture);
+            this.design.fixtures.push(fixture);
         }
 
         // clone the pipes to the design
         this.design.pipes = [];
         for (let cloneP of cloneThis.archived.cmp.pipes) {
-            console.log("cloneP is ", cloneP);
             let ero = []
             for (let e of cloneP.azERO) {
                 ero.push(e['urn']);
             }
-            console.log("ero is ", ero);
-            this.design.pipes.push({
+            let pipe = {
                 id: cloneP.a + " " + cloneP.z,
                 ero: ero,
                 a: cloneP.a,
@@ -468,7 +469,8 @@ class DesignStore {
                 mode: "fits",
                 protect: cloneP.protect,
                 locked: true
-            });
+            };
+            this.design.pipes.push(pipe);
         }
 
         this.saveToSessionStorage();
