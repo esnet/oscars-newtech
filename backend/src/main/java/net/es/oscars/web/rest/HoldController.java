@@ -12,6 +12,7 @@ import net.es.oscars.resv.svc.LogService;
 import net.es.oscars.web.beans.ConnException;
 import net.es.oscars.web.beans.CurrentlyHeldEntry;
 import net.es.oscars.web.beans.HoldException;
+import net.es.oscars.web.beans.Interval;
 import net.es.oscars.web.simple.SimpleConnection;
 import net.es.oscars.web.simple.Validity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,6 +130,39 @@ public class HoldController {
             connRepo.delete(c.get());
         }
 
+    }
+
+
+
+    @RequestMapping(value = "/protected/cloneable", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public SimpleConnection cloneable(SimpleConnection connection) {
+
+        int duration = connection.getEnd() - connection.getBegin();
+        // try to get starting now()  w same duration
+
+        // list of connections that stop us from starting now()
+
+        Instant now = Instant.now();
+
+        connection.setBegin(new Long(now.getEpochSecond()).intValue());
+        connection.setEnd(connection.getBegin()+duration);
+
+        Random r = new Random();
+        if (r.nextBoolean()) {
+            connection.setValidity(Validity.builder()
+                    .valid(true)
+                    .message("Can be cloned!")
+                    .build());
+        } else {
+            connection.setValidity(Validity.builder()
+                    .valid(false)
+                    .message("Can't be cloned!")
+                    .build());
+
+        }
+        return connection;
     }
 
     @RequestMapping(value = "/protected/hold", method = RequestMethod.POST)
