@@ -435,10 +435,12 @@ class DesignStore {
         // clone the fixtures to the design
         this.design.fixtures = [];
         for (let cloneF of cloneThis.archived.cmp.fixtures) {
+            let port = cloneF.portUrn.split(":")[1];
+            console.log("designStore fixture label ", cloneF.portUrn, cloneF.vlan.vlanId, port);
             this.design.fixtures.push({
                 id: cloneF.portUrn,
                 device: cloneF.junction,
-                label: cloneF.portUrn + ":" + cloneF.vlan.vlanId,
+                label: port + ":" + cloneF.vlan.vlanId,
                 vlan: cloneF.vlan,
                 locked: true,
                 ingress: cloneF.ingressBandwidth,

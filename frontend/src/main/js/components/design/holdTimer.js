@@ -17,10 +17,15 @@ class HoldTimer extends Component {
     }
 
     componentWillMount() {
+        console.log("componentWillMount");
         this.setToFifteenMins();
+        console.log("setToFifteenMins done");
         this.refreshTimer();
+        console.log("refreshTimer done");
         this.extendHold();
+        console.log("extendHold done");
         this.refreshAvailable();
+        console.log("refreshAvailable done");
     }
 
     componentWillUnmount() {
@@ -199,8 +204,11 @@ class HoldTimer extends Component {
     // when there's a change in the data
     heldUpdateDispose = autorun(
         () => {
-            let conn = this.props.controlsStore.connection;
+            console.log("heldUpdateDispose");
 
+            let conn = this.props.controlsStore.connection;
+            console.log("conn is ", connection);
+            
             if (!conn.schedule.locked) {
                 return;
             }
@@ -214,11 +222,13 @@ class HoldTimer extends Component {
             }
 
             let cmp = Transformer.toBackend(this.props.designStore.design);
+            console.log("cmp is ", cmp);
 
             let beginms = conn.schedule.start.at.getTime() / 1000;
             if (conn.schedule.start.choice.toUpperCase() === "ASAP") {
                 beginms = new Date().getTime() / 1000;
             }
+            console.log("beginms is ", beginms);
 
             // TODO: handle tags
             let connection = {
@@ -236,6 +246,8 @@ class HoldTimer extends Component {
                 junctions: cmp.junctions,
                 fixtures: cmp.fixtures
             };
+
+            console.log("connection is ", connection);
 
             myClient.submitWithToken("POST", "/protected/hold", connection).then(
                 action(response => {
