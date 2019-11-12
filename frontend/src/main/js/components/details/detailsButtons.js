@@ -488,7 +488,7 @@ class DetailsButtons extends Component {
         }
 
         let cloneButton = null;
-        if (conn.state !== "ACTIVE") {
+        if (conn.phase === "ARCHIVED") {
             cloneButton = (
                 <ListGroup>
                     <ListGroupItem color="info">Clone Connection</ListGroupItem>
