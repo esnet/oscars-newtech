@@ -247,11 +247,12 @@ class HoldTimer extends Component {
                 fixtures: cmp.fixtures
             };
 
-            console.log("connection is ", connection);
+            console.log("holdTimer connection is ", connection);
 
             myClient.submitWithToken("POST", "/protected/hold", connection).then(
                 action(response => {
                     let parsed = JSON.parse(response);
+                    console.log("protected hold parsed is ", parsed);
                     if (parsed.validity != null) {
                         if (parsed.validity.valid === false) {
                             console.log("not valid hold");

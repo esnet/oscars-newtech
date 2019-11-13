@@ -138,12 +138,17 @@ public class HoldController {
     @RequestMapping(value = "/protected/cloneable", method = RequestMethod.POST)
     @ResponseBody
     @Transactional
-    public SimpleConnection cloneable(SimpleConnection connection) throws ConnException {
+    public SimpleConnection cloneable(Authentication authentication,
+                                      @RequestBody SimpleConnection connection)
+            throws ConnException {
 
         int duration = connection.getEnd() - connection.getBegin();
         // try to get starting now()  w same duration
 
         // list of connections that stop us from starting now()
+
+        String username = authentication.getName();
+        connection.setUsername(username);
 
         Instant now = Instant.now();
 
