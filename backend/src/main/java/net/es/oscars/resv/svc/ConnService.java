@@ -781,12 +781,9 @@ public class ConnService {
 
         StringBuilder error = new StringBuilder();
         boolean valid = true;
-        boolean validInterval = true;
         if (in == null) {
             throw new ConnException("null connection");
         }
-        Instant begin = Instant.now();
-        Instant end;
 
         // validate global connection params
 
@@ -818,62 +815,79 @@ public class ConnService {
             } else {
                 in.setConnection_mtu(defaultMtu);
             }
-        }
 
-        // check the schedule, begin time first:
-        if (in.getBegin() == null) {
-            error.append("null begin field\n");
-            valid = false;
-            validInterval = false;
-        } else {
-            // we will silently modify the start time and have it start 30 secs from now() if set to sooner than that
-            begin = Instant.ofEpochSecond(in.getBegin());
-            Instant earliestPossible = Instant.now().plus(30, ChronoUnit.SECONDS);
-            if (!begin.isAfter(earliestPossible)) {
-                begin = earliestPossible;
-                in.setBegin(new Long(begin.getEpochSecond()).intValue());
+            // description:
+            if (in.getDescription() == null) {
+                error.append("null description\n");
+                valid = false;
             }
         }
 
+
+        // validate schedule
+        Instant begin;
+        boolean beginValid;
+        // check the schedule, begin time first:
+        if (in.getBegin() == null) {
+            beginValid = false;
+            begin = Instant.MAX;
+            error.append("null begin field\n");
+        } else {
+            begin = Instant.ofEpochSecond(in.getBegin());
+            Instant rejectBefore = Instant.now().minus(5, ChronoUnit.MINUTES);
+            if (begin.isBefore(rejectBefore)) {
+                beginValid = false;
+                error.append("Begin time is more than 5 minutes in the past\n");
+            } else {
+                // if we are set to start to up to +30 sec from now,
+                // we will (silently) modify the begin timestamp and
+                // set it to +30 secs from now()
+                beginValid = true;
+                Instant earliestPossible = Instant.now().plus(30, ChronoUnit.SECONDS);
+                if (!begin.isAfter(earliestPossible)) {
+                    begin = earliestPossible;
+                    in.setBegin(new Long(begin.getEpochSecond()).intValue());
+                }
+            }
+
+        }
+
+        Instant end;
+        boolean endValid;
         // check the schedule, end time:
         if (in.getEnd() == null) {
+            endValid = false;
+            end = Instant.MIN;
             error.append("null end field\n");
-            valid = false;
-            validInterval = false;
         } else {
             end = Instant.ofEpochSecond(in.getEnd());
             if (!end.isAfter(Instant.now())) {
-                error.append("end date not past now()\n");
-                valid = false;
-                validInterval = false;
-            }
-            if (!end.isAfter(begin)) {
+                endValid = false;
+                error.append("end date is in the past\n");
+            } else if (!end.isAfter(begin)) {
+                endValid = false;
                 error.append("end date not past begin()\n");
-                valid = false;
-                validInterval = false;
+            } else {
+                if (begin.plus(this.minDuration, ChronoUnit.MINUTES).isAfter(end)) {
+                    endValid = false;
+                    error.append("duration is too short (less than ").append(this.minDuration).append(" min)\n");
+                } else {
+                    endValid = true;
+                }
             }
         }
-        if (validInterval) {
-            begin = Instant.ofEpochSecond(in.getBegin());
-            end = Instant.ofEpochSecond(in.getEnd());
-            if (begin.plus(Duration.ofMinutes(this.minDuration)).isAfter(end)) {
-                valid = false;
-                error.append("interval is too short (less than ").append(minDuration).append(" min)\n");
-            }
 
-        }
-
-        // description:
-        if (in.getDescription() == null) {
-            error.append("null description\n");
+        boolean validInterval = beginValid && endValid;
+        if (!validInterval) {
             valid = false;
         }
+
 
         // we can only check resource availability if the schedule makes sense..
         if (validInterval) {
             Interval interval = Interval.builder()
                     .beginning(begin)
-                    .ending(Instant.ofEpochSecond(in.getEnd()))
+                    .ending(end)
                     .build();
 
             if (in.getFixtures() == null) {
@@ -916,7 +930,7 @@ public class ConnService {
                     vlans = inVlanMap.get(f.getPort());
                 }
                 if (vlans.contains(f.getVlan())) {
-                    error.append("duplicate VLAN for ").append(f.getPort());
+                    error.append("VLAN ").append(f.getVlan()).append(" requested twice on ").append(f.getPort());
                     valid = false;
                 } else {
                     vlans.add(f.getVlan());
@@ -964,41 +978,42 @@ public class ConnService {
 
             // compare VLAN maps to what is available
             for (Fixture f : in.getFixtures()) {
-                PortBwVlan avail = availBwVlanMap.get(f.getPort());
-                Set<Integer> vlans = inVlanMap.get(f.getPort());
-                if (avail == null) {
-                    log.error("Could not retrieve available bw, vlans for " + f.getPort());
-                    avail = PortBwVlan.builder()
-                            .egressBandwidth(-1)
-                            .ingressBandwidth(-1)
-                            .vlanExpression("")
-                            .vlanRanges(new HashSet<>())
-                            .build();
-                }
-                if (vlans == null) {
-                    vlans = new HashSet<>();
-                }
-                StringBuilder ferror = new StringBuilder();
                 Validity fv = Validity.builder()
                         .valid(true)
                         .message("")
                         .build();
 
-                Set<IntRange> availVlanRanges = avail.getVlanRanges();
-                for (Integer vlan : vlans) {
-                    boolean atLeastOneContains = false;
-                    for (IntRange r : availVlanRanges) {
-                        if (r.contains(vlan)) {
-                            atLeastOneContains = true;
+                StringBuilder ferror = new StringBuilder();
+
+                if (availBwVlanMap.containsKey(f.getPort())) {
+                    PortBwVlan avail = availBwVlanMap.get(f.getPort());
+                    Set<Integer> vlans = inVlanMap.get(f.getPort());
+                    if (vlans == null) {
+                        vlans = new HashSet<>();
+                    }
+
+                    Set<IntRange> availVlanRanges = avail.getVlanRanges();
+                    for (Integer vlan : vlans) {
+                        boolean atLeastOneContains = false;
+                        for (IntRange r : availVlanRanges) {
+                            if (r.contains(vlan)) {
+                                atLeastOneContains = true;
+                            }
                         }
+                        if (!atLeastOneContains) {
+                            ferror.append(f.getPort()).append(" : vlan ").append(f.getVlan()).append(" not available\n");
+                            error.append(ferror);
+                            fv.setMessage(ferror.toString());
+                            fv.setValid(false);
+                            valid = false;
+                        }
+                        log.debug(f.getPort()+" vlan "+vlan+" contained in "+IntRange.asString(availVlanRanges)+" ? "+atLeastOneContains);
                     }
-                    if (!atLeastOneContains) {
-                        ferror.append("vlan not available: ").append(f.getJunction()).append(":").append(f.getPort()).append(".").append(f.getVlan()).append("\n");
-                        error.append(ferror);
-                        fv.setMessage(ferror.toString());
-                        fv.setValid(false);
-                        valid = false;
-                    }
+                } else {
+                    fv.setValid(false);
+                    fv.setMessage(f.getPort()+" not in topology\n");
+                    error.append(fv.getMessage());
+                    valid = false;
                 }
                 f.setValidity(fv);
             }

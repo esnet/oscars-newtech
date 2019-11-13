@@ -6,7 +6,7 @@ import ConfirmModal from "../confirmModal";
 import { Alert, Button, ListGroup, ListGroupItem, Input, Form, FormGroup } from "reactstrap";
 import myClient from "../../agents/client";
 import Moment from "moment/moment";
-import { autorun, action } from "mobx";
+import { autorun, action, toJS} from "mobx";
 import { size } from "lodash-es";
 import HelpPopover from "../helpPopover";
 import { withRouter } from "react-router-dom";
@@ -99,90 +99,120 @@ class DetailsButtons extends Component {
 
     doCloneConnection = () => {
         let conn = this.props.connsStore.store.current;
-        this.props.designStore.clone(conn);
-        this.props.controlsStore.clone(conn);
 
-        // console.log("doCloneConnection start");
-        // console.log("conn is ", conn);
-        // console.log("this.props is ", this.props);
-        // console.log("this.props.designStore is ", this.props.designStore);
-        // console.log("this.props.controlsStore is ", this.props.controlsStore);
-        // console.log("doCloneConnection stop");
-
-        let clonedConnection = this.props.controlsStore.connection;
-
-        // if (!clonedConnection.schedule.locked) {
-        //     console.log("here inside");
-        //     return;
-        // }
-
-        if (
-            typeof clonedConnection.connectionId === "undefined" ||
-            clonedConnection.connectionId === null ||
-            clonedConnection.connectionId === ""
-        ) {
-            console.log("no connectionId; will try again later");
-            return;
-        }
-
-        let cmp = Transformer.toBackend(this.props.designStore.design);
-        
-        console.log("clonedConnection is ", clonedConnection);
-        console.log("cmp is ", cmp);
-
-        let clonedTags = []
-        for (let tag of clonedConnection.tags) {
-            const t = {
-                "category" : tag.category,
-                "contents" : tag.contents
-            };
-            clonedTags.push(t);
-        }
-
-        let connection = {
-            connectionId: clonedConnection.connectionId,
-            connection_mtu: clonedConnection.connection_mtu,
-            mode: clonedConnection.mode,
-            description: clonedConnection.description,
-            username: "",
-            phase: "HELD",
-            state: "WAITING",
-            begin: Math.floor(new Date().getTime() / 1000),
-            end: Math.floor(new Date().setFullYear(new Date().getFullYear() + 1) / 1000),
-            tags: clonedTags,
-            pipes: cmp.pipes,
-            junctions: cmp.junctions,
-            fixtures: cmp.fixtures
-        };
-
-        console.log("detailsButtons connection is ", connection);
-
-        myClient.submitWithToken("POST", "/protected/cloneable", connection).then(
+        myClient.submitWithToken("GET", "/protected/conn/generateId").then(
             action(response => {
-                let parsed = JSON.parse(response);
-                console.log("protected cloneable parsed is ", parsed);
-                if (parsed.validity != null) {
-                    if (parsed.validity.valid === false) {
-                        const message = parsed.validity.message;
-                        // Do something
-                    } else {
-                        this.props.history.push({
-                            pathname: '/pages/newDesign',
-                        });
-                    }
+                this.props.designStore.clone(conn);
+                this.props.controlsStore.clone(conn, response);
+
+
+                // console.log("doCloneConnection start");
+                // console.log("conn is ", conn);
+                // console.log("this.props is ", this.props);
+                // console.log("this.props.designStore is ", this.props.designStore);
+                // console.log("this.props.controlsStore is ", this.props.controlsStore);
+                // console.log("doCloneConnection stop");
+
+                let clonedConnection = this.props.controlsStore.connection;
+
+                // if (!clonedConnection.schedule.locked) {
+                //     console.log("here inside");
+                //     return;
+                // }
+
+                if (
+                    typeof clonedConnection.connectionId === "undefined" ||
+                    clonedConnection.connectionId === null ||
+                    clonedConnection.connectionId === ""
+                ) {
+                    console.log("no connectionId; will try again later");
+                    return;
                 }
+
+                let cmp = Transformer.toBackend(this.props.designStore.design);
+
+
+                let clonedTags = []
+                for (let tag of clonedConnection.tags) {
+                    const t = {
+                        "category" : tag.category,
+                        "contents" : tag.contents
+                    };
+                    clonedTags.push(t);
+                }
+                // set the current begin / end times; they will be cloned to the same duration starting now() by
+                // the cloneable
+                let connection = {
+                    connectionId: clonedConnection.connectionId,
+                    connection_mtu: clonedConnection.connection_mtu,
+                    mode: clonedConnection.mode,
+                    description: clonedConnection.description,
+                    username: "",
+                    phase: "HELD",
+                    state: "WAITING",
+                    begin: conn.archived.schedule.beginning,
+                    end: conn.archived.schedule.ending,
+                    tags: clonedTags,
+                    pipes: cmp.pipes,
+                    junctions: cmp.junctions,
+                    fixtures: cmp.fixtures
+                };
+
+
+                myClient.submitWithToken("POST", "/protected/cloneable", connection).then(
+                    action(response => {
+                        let parsed = JSON.parse(response);
+                        console.log("protected cloneable parsed is ", parsed);
+                        if (parsed.validity != null) {
+                            if (parsed.validity.valid === false) {
+                                const message = parsed.validity.message;
+                                console.log(message);
+                                // Do something
+                            } else {
+
+                                let endAt = new Date(parsed.end * 1000);
+                                const format = "Y/MM/DD HH:mm:ss";
+
+                                // schedule probably needs to be more filled in
+                                // we only need to set the end time; begin time will be ASAP
+                                this.props.controlsStore.setParamsForConnection({
+                                    phase: "HELD",
+                                    schedule: {
+                                        cloned: true,
+                                        locked: true,
+                                        acceptable: true,
+                                        end: {
+                                            at: endAt,
+                                            timestamp: parsed.end,
+                                            readable: Moment(endAt).format(format),
+                                            parsed: true,
+                                            validationState: "success",
+                                            validationText: ""
+                                        }
+                                    }
+                                });
+                                this.props.controlsStore.saveToSessionStorage();
+
+                                this.props.history.push({
+                                    pathname: '/pages/newDesign',
+                                });
+                            }
+                        }
+                    })
+                );
+
+                // if (cloneable === true) {
+                //     this.props.history.push({
+                //         pathname: '/pages/newDesign',
+                //     });
+                // } else {
+                //     return (
+                //         <Alert color="info" isOpen={visible} toggle={onDismiss}>{message}</Alert>
+                //     );
+                // }
             })
         );
 
-        // if (cloneable === true) {
-        //     this.props.history.push({
-        //         pathname: '/pages/newDesign',
-        //     });
-        // } else {
-        //     return (
-        //         <Alert color="info" isOpen={visible} toggle={onDismiss}>{message}</Alert>
-        //     );
-        // }
     };
 
     doRelease = () => {

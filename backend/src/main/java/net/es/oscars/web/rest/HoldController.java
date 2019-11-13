@@ -144,9 +144,6 @@ public class HoldController {
 
         int duration = connection.getEnd() - connection.getBegin();
         // try to get starting now()  w same duration
-
-        // list of connections that stop us from starting now()
-
         String username = authentication.getName();
         connection.setUsername(username);
 

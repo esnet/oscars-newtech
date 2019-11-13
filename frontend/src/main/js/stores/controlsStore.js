@@ -10,6 +10,7 @@ class ControlsStore {
         mode: "AUTOMATIC",
         connection_mtu: 9000,
         schedule: {
+            cloned: false,
             locked: false,
             acceptable: false,
             adviceText: "",
@@ -24,6 +25,7 @@ class ControlsStore {
             },
             end: {
                 at: "",
+                timestamp: 0,
                 choice: "",
                 parsed: false,
                 readable: "",
@@ -312,6 +314,7 @@ class ControlsStore {
     @action
     clearEditConnection() {
         this.connection.connectionId = "";
+        this.connection.cloned = false;
         this.connection.description = "";
     }
 
@@ -367,6 +370,7 @@ class ControlsStore {
             return false;
         }
         this.connection = parsed;
+        this.connection.schedule.end.at = new Date(this.connection.schedule.end.timestamp * 1000);
 
         return true;
     }
@@ -376,6 +380,7 @@ class ControlsStore {
         description: "",
         phase: "",
         schedule: {
+            cloned: false,
             locked: false,
             acceptable: false,
             adviceText: "",
@@ -410,14 +415,15 @@ class ControlsStore {
         categories: []
     };
     */
-    @action clone(cloneThis) {
+    @action clone(cloneThis, newConnectionId) {
         console.log("setting controls for cloned connection");
         console.log(toJS(cloneThis));
 
         // clone the connection params
-        this.connection.connectionId = cloneThis.connectionId;
+        this.connection.connectionId = newConnectionId;
         this.connection.connection_mtu = cloneThis.connection_mtu;
-        this.connection.mode = cloneThis.mode;
+        this.connection.mode = "AUTOMATIC";
+        this.connection.phase = "HELD";
         this.connection.tags = cloneThis.tags;
 
         this.saveToSessionStorage();

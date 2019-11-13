@@ -38,13 +38,10 @@ class ScheduleControls extends Component {
     }
 
     componentWillMount() {
+        let conn = this.props.controlsStore.connection;
+        let sch = conn.schedule;
         let startAt = new Date();
         startAt.setTime(startAt.getTime());
-
-        let endAt = new Date();
-        endAt.setDate(endAt.getDate() + 365);
-        endAt.setTime(endAt.getTime());
-
         let params = {
             schedule: {
                 acceptable: true,
@@ -57,19 +54,35 @@ class ScheduleControls extends Component {
                     validationState: "success",
                     validationText: ""
                 },
-                end: {
-                    at: endAt,
-                    choice: "in 1 year",
-                    parsed: true,
-                    readable: Moment(endAt).format(format),
-                    validationState: "success",
-                    validationText: ""
-                }
             }
         };
+        this.props.controlsStore.setParamsForConnection(params);
+
+        // FIXME: this does not quite work
+        if (!sch.cloned) {
+            let endAt = new Date();
+            endAt.setDate(endAt.getDate() + 365);
+            endAt.setTime(endAt.getTime());
+            let params = {
+                schedule: {
+                    acceptable: true,
+                    locked: true,
+                    end: {
+                        at: endAt,
+                        choice: "in 1 year",
+                        parsed: true,
+                        readable: Moment(endAt).format(format),
+                        validationState: "success",
+                        validationText: ""
+                    }
+                }
+            };
+            this.props.controlsStore.setParamsForConnection(params);
+        }
+
+
 
         this.setState({ parser: this.createCustomParser() });
-        this.props.controlsStore.setParamsForConnection(params);
         this.periodicCheck();
     }
 
@@ -253,8 +266,8 @@ class ScheduleControls extends Component {
         if (startAt > endAt) {
             params.schedule.start.validationState = "error";
             params.schedule.end.validationState = "error";
-            params.schedule.end.validationText = "Start time before end time.";
-            params.schedule.start.validationText = "Start time before end time.";
+            params.schedule.end.validationText = "Start time after end time.";
+            params.schedule.start.validationText = "Start time after end time.";
             startError = true;
             endError = true;
         }
@@ -380,6 +393,10 @@ class ScheduleControls extends Component {
                 </Button>
             );
         }
+        let endText = "in 1 year";
+        if (sched.cloned) {
+            endText = sched.end.readable;
+        }
 
         return (
             <Card className="p-1">
@@ -408,7 +425,7 @@ class ScheduleControls extends Component {
                                 valid={sched.end.validationState === "success"}
                                 invalid={sched.end.validationState === "error"}
                                 disabled={sched.locked}
-                                defaultValue="in 1 year"
+                                defaultValue={endText}
                                 onChange={this.onEndDateChange}
                             />
                             <FormFeedback className="p-1">{sched.end.validationText}</FormFeedback>

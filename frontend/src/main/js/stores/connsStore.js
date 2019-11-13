@@ -185,7 +185,6 @@ class ConnectionsStore {
     }
 
     @action clearCurrent() {
-        console.trace();
         this.store.current = {};
         this.store.foundCurrent = false;
     }
