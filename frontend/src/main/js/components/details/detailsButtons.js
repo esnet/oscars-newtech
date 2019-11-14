@@ -251,7 +251,7 @@ class DetailsButtons extends Component {
                                 // Connection can't be cloned
                                 // Set the state
 
-                                console.log("validity false ", message);
+                                // console.log("validity false ", message);
                                 this.setState({
                                     cloneable: false,
                                     message: message
@@ -285,8 +285,8 @@ class DetailsButtons extends Component {
 
                                 this.props.controlsStore.saveToSessionStorage();
 
-                                console.log("validity true");
-                                console.log("cloned connection is ", this.props.controlsStore.connection);
+                                // console.log("validity true");
+                                // console.log("cloned connection is ", this.props.controlsStore.connection);
                                 this.setState({
                                     cloneable: true
                                 });
@@ -696,7 +696,7 @@ class DetailsButtons extends Component {
         const message = this.state.message;
         let cloneButton = null;
 
-        console.log(canClone, message);
+        // console.log(canClone, message);
         if (conn.phase === "ARCHIVED") {
             if (canClone) {
                 cloneButton = (

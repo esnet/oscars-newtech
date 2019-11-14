@@ -26,11 +26,12 @@ class DesignComponents extends Component {
     }
 
     clear = () => {
+        this.props.controlsStore.clearClonedConnection();
         this.props.designStore.clear();
     };
 
     render() {
-        console.log("Render ", this.props);
+        // console.log("Render designComponents", this.props);
         const design = this.props.designStore.design;
 
         const helpHeader = <span>Component list</span>;

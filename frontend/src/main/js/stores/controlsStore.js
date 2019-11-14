@@ -318,6 +318,11 @@ class ControlsStore {
         this.connection.description = "";
     }
 
+    @action
+    clearClonedConnection() {
+        this.connection.cloned = false;
+    }
+
     // adding a fixture by selecting a device (through the map)
 
     @observable

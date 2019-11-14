@@ -38,7 +38,6 @@ class ScheduleControls extends Component {
     }
 
     componentWillMount() {
-        // console.log("schedule controls");
         let conn = this.props.controlsStore.connection;
         let sch = conn.schedule;
         let startAt = new Date();
@@ -61,8 +60,7 @@ class ScheduleControls extends Component {
 
         // FIXME: this does not quite work
         // console.log("scheduleControls conn", conn);
-        // console.log("scheduleControls sch", sch, sch.cloned);
-        
+        // console.log("scheduleControls sch", sch, sch.cloned);        
         if (!sch.cloned) {
             let endAt = new Date();
             endAt.setDate(endAt.getDate() + 365);
