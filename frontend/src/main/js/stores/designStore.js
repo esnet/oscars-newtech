@@ -448,7 +448,6 @@ class DesignStore {
                 egress: cloneF.egressBandwidth,
                 strict: cloneF.strict
             };
-            console.log("fixture ", fixture);
             this.design.fixtures.push(fixture);
         }
 

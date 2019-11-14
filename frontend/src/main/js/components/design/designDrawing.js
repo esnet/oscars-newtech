@@ -106,9 +106,6 @@ class DesignDrawing extends Component {
                 }
             }
         });
-
-        console.log("this.network is ", this.network);
-        console.log("this.datasource is ", this.datasource);
     }
 
     componentWillUnmount() {
@@ -119,8 +116,6 @@ class DesignDrawing extends Component {
     // TODO: use a reaction and don't clear the whole graph, instead add/remove/update
     disposeOfMapUpdate = autorun(
         () => {
-            console.log("disposeOfMapUpdate");
-
             let { design } = this.props.designStore;
             let junctions = toJS(design.junctions);
             let fixtures = toJS(design.fixtures);
@@ -128,10 +123,6 @@ class DesignDrawing extends Component {
 
             let nodes = [];
             let edges = [];
-
-            console.log("Junctions are ", junctions);
-            console.log("Fixtures are ", fixtures);
-            console.log("Pipes are ", pipes);
             
             myClient.loadJSON({ method: "GET", url: "/api/map" }).then(
                 action(response => {
@@ -145,8 +136,6 @@ class DesignDrawing extends Component {
                         };
                     });
                     
-                    console.log("positions is ", positions);
-
                     junctions.map(j => {
                         let junctionNode = {
                             id: j.id,
@@ -201,7 +190,6 @@ class DesignDrawing extends Component {
                     ];
 
                     pipes.map((p, pipe_idx) => {
-                        console.log("pipes p is ", p);
                         if (p.locked) {
                             let i = 0;
                             while (i < p.ero.length - 1) {
@@ -274,9 +262,6 @@ class DesignDrawing extends Component {
                         this.network.fit({ animation: false });
 
                     }
-
-                    console.log("disposeOfMapUpdate network " , this.network);
-                    console.log("disposeOfMapUpdate datasource " , this.datasource);                    
                 })
             );
         },

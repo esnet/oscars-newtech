@@ -387,7 +387,11 @@ class DetailsEditForm extends Component {
                     </Col>
                     <Col sm={1.5}>
                         <ToggleDisplay show={es.ending.buttons.buttonText === "Edit"}>
-                            <Button color="primary" onClick={this.handleEndingEdit}>
+                            <Button 
+                                color="primary" 
+                                disabled={conn.phase === "ARCHIVED" ? true : false} 
+                                onClick={this.handleEndingEdit}
+                            >
                                 Edit
                             </Button>
                         </ToggleDisplay>

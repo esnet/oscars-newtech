@@ -415,6 +415,7 @@ class ControlsStore {
         categories: []
     };
     */
+
     @action clone(cloneThis, newConnectionId) {
         console.log("setting controls for cloned connection");
         console.log(toJS(cloneThis));

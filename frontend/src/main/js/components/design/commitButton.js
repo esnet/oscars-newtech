@@ -48,14 +48,12 @@ class CommitButton extends Component {
 
     render() {
         return (
-            <div>
-                <ConfirmModal
-                    body="Are you ready to commit this connection?"
-                    header="Commit connection"
-                    uiElement={<Button color="success">{"Commit"}</Button>}
-                    onConfirm={this.commit}
-                />
-            </div>
+            <ConfirmModal
+                body="Are you ready to commit this connection?"
+                header="Commit connection"
+                uiElement={<Button color="success">{"Commit"}</Button>}
+                onConfirm={this.commit}
+            />
         );
     }
 }
