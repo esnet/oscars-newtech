@@ -438,7 +438,7 @@ class DesignStore {
         for (let cloneF of cloneThis.archived.cmp.fixtures) {
             let port = cloneF.portUrn.split(":")[1];
             let fixture = {
-                id: cloneF.portUrn,
+                id: this.makeFixtureId(cloneF.portUrn).id,
                 device: cloneF.junction,
                 label: port + ":" + cloneF.vlan.vlanId,
                 port: cloneF.portUrn,
