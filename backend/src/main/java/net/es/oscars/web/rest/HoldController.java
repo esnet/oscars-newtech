@@ -143,7 +143,8 @@ public class HoldController {
             throws ConnException {
 
         int duration = connection.getEnd() - connection.getBegin();
-        // try to get starting now()  w same duration
+
+        // try to get starting now() with same duration
         String username = authentication.getName();
         connection.setUsername(username);
 

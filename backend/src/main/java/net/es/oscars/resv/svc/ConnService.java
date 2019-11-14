@@ -786,6 +786,7 @@ public class ConnService {
         }
 
         // validate global connection params
+        // log.info("Validate SimpleConnection " + in);
 
         if (mode.equals(ConnectionMode.NEW)) {
             // check the connection ID:
@@ -882,6 +883,8 @@ public class ConnService {
             valid = false;
         }
 
+        // log.info("validInterval was checked and valid is " + valid);
+        // log.info("validInterval was checked and validInterval is " + validInterval);
 
         // we can only check resource availability if the schedule makes sense..
         if (validInterval) {
@@ -907,6 +910,7 @@ public class ConnService {
             Map<String, ImmutablePair<Integer, Integer>> inBwMap = new HashMap<>();
             Map<String, Set<Integer>> inVlanMap = new HashMap<>();
 
+//            log.info("availBwVlanMap is " + availBwVlanMap);
 
             // populate the maps with what we request thru fixtures
             for (Fixture f : in.getFixtures()) {
@@ -937,6 +941,8 @@ public class ConnService {
                 }
                 inVlanMap.put(f.getPort(), vlans);
             }
+
+            log.info("inVlanMap is " + inVlanMap);
 
 
             // populate the maps with what we request thru pipes (bw only)
@@ -975,6 +981,8 @@ public class ConnService {
                 }
 
             }
+
+            log.info("inBwMap is " + inBwMap);
 
             // compare VLAN maps to what is available
             for (Fixture f : in.getFixtures()) {
@@ -1016,55 +1024,80 @@ public class ConnService {
                     valid = false;
                 }
                 f.setValidity(fv);
+
+                log.info("f validity is " + f);
             }
 
+            log.info("fixture loop done");
 
             Map<String, Validity> urnInBwValid = new HashMap<>();
             Map<String, Validity> urnEgBwValid = new HashMap<>();
             // compare map to what is available for BW
 
             for (String urn : inBwMap.keySet()) {
+                log.info("urn is " + urn);
                 PortBwVlan avail = availBwVlanMap.get(urn);
+                log.info("avail is " + avail);
 
-                Validity inBwValid = Validity.builder()
-                        .valid(true)
-                        .message("")
-                        .build();
-                ImmutablePair<Integer, Integer> inBw = inBwMap.get(urn);
-                if (avail.getIngressBandwidth() < inBw.getLeft()) {
-                    StringBuilder inErr = new StringBuilder("total port ingress bw exceeds available: ")
-                            .append(urn).append(" ").append(inBw.getLeft()).append("(req) / ")
-                            .append(avail.getIngressBandwidth()).append(" (avail)\n");
+                if (avail == null) {
+                    StringBuilder err = new StringBuilder(urn).append(" is not present anymore");
+                    Validity bwValid = Validity.builder()
+                            .valid(false)
+                            .message(err.toString())
+                            .build();
+                    // error.append(err);
+                    urnInBwValid.put(urn, bwValid);
+                    urnEgBwValid.put(urn, bwValid);
+                } else {
+                    Validity inBwValid = Validity.builder()
+                            .valid(true)
+                            .message("")
+                            .build();
+                    ImmutablePair<Integer, Integer> inBw = inBwMap.get(urn);
+                    if (avail.getIngressBandwidth() < inBw.getLeft()) {
+                        StringBuilder inErr = new StringBuilder("total port ingress bw exceeds available: ")
+                                .append(urn).append(" ").append(inBw.getLeft()).append("(req) / ")
+                                .append(avail.getIngressBandwidth()).append(" (avail)\n");
 
-                    valid = false;
-                    error.append(inErr);
+                        valid = false;
+                        error.append(inErr);
 
-                    inBwValid.setMessage(inErr.toString());
-                    inBwValid.setValid(false);
+                        inBwValid.setMessage(inErr.toString());
+                        inBwValid.setValid(false);
+                    }
+                    urnInBwValid.put(urn, inBwValid);
+
+                    Validity egBwValid = Validity.builder()
+                            .valid(true)
+                            .message("")
+                            .build();
+                    if (avail.getEgressBandwidth() < inBw.getRight()) {
+                        StringBuilder egErr = new StringBuilder("total port egress bw exceeds available: ")
+                                .append(urn).append(" ").append(inBw.getLeft()).append("(req) / ")
+                                .append(avail.getIngressBandwidth()).append(" (avail)\n");
+
+                        valid = false;
+                        error.append(egErr);
+
+                        egBwValid.setMessage(egErr.toString());
+                        egBwValid.setValid(false);
+                    }
+                    urnEgBwValid.put(urn, egBwValid);
                 }
-                urnInBwValid.put(urn, inBwValid);
 
-                Validity egBwValid = Validity.builder()
-                        .valid(true)
-                        .message("")
-                        .build();
-                if (avail.getEgressBandwidth() < inBw.getRight()) {
-                    StringBuilder egErr = new StringBuilder("total port egress bw exceeds available: ")
-                            .append(urn).append(" ").append(inBw.getLeft()).append("(req) / ")
-                            .append(avail.getIngressBandwidth()).append(" (avail)\n");
-
-                    valid = false;
-                    error.append(egErr);
-
-                    egBwValid.setMessage(egErr.toString());
-                    egBwValid.setValid(false);
-                }
-                urnEgBwValid.put(urn, egBwValid);
+                log.info("urnInBwValid " + urnInBwValid);
+                log.info("urnEgBwValid " + urnEgBwValid);
             }
+
+            log.info("urn loop done");
 
             // populate Validity for fixtures
             for (Fixture f : in.getFixtures()) {
+                log.info("f is " + f);
                 Validity inBwValid = urnInBwValid.get(f.getPort());
+                log.info("inBwValid is " + inBwValid);
+                log.info(String.valueOf(inBwValid.isValid()));
+
                 if (!inBwValid.isValid()) {
                     f.getValidity().setMessage(f.getValidity().getMessage() + inBwValid.getMessage());
                     f.getValidity().setValid(false);
@@ -1078,6 +1111,8 @@ public class ConnService {
                     valid = false;
                 }
             }
+
+            log.info("populate Validity for fixtures done");
 
             // populate Validity for pipes & EROs
             for (Pipe p : in.getPipes()) {
@@ -1124,6 +1159,9 @@ public class ConnService {
                 p.setEroValidity(eroValidity);
             }
 
+            log.info("populate Validity for pipes & EROs done");
+
+            log.info("end of validInterval if loop");
 
         } else {
             error.append("invalid interval! VLANs and bandwidths not checked\n");
@@ -1134,6 +1172,8 @@ public class ConnService {
                 .message(error.toString())
                 .valid(valid)
                 .build();
+
+        // log.info("validity v is " + v);
 
         try {
             String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(v);
