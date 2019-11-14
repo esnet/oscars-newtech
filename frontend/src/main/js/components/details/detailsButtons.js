@@ -193,7 +193,7 @@ class DetailsButtons extends Component {
     checkClone() {
         const conn = this.props.connsStore.store.current;
 
-        if (typeof conn.connectionId === "undefined") {
+        if (typeof conn.connectionId === "undefined" || conn.phase !== "ARCHIVED") {
             return;
         }
 
