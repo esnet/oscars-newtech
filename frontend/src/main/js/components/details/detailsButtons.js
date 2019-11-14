@@ -273,6 +273,7 @@ class DetailsButtons extends Component {
                                         acceptable: true,
                                         end: {
                                             at: endAt,
+                                            choice: endAt,
                                             timestamp: parsed.end,
                                             readable: Moment(endAt).format(format),
                                             parsed: true,
