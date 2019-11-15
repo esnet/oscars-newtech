@@ -786,8 +786,6 @@ public class ConnService {
         }
 
         // validate global connection params
-        // log.info("Validate SimpleConnection " + in);
-
         if (mode.equals(ConnectionMode.NEW)) {
             // check the connection ID:
             String connectionId = in.getConnectionId();
@@ -883,9 +881,6 @@ public class ConnService {
             valid = false;
         }
 
-        // log.info("validInterval was checked and valid is " + valid);
-        // log.info("validInterval was checked and validInterval is " + validInterval);
-
         // we can only check resource availability if the schedule makes sense..
         if (validInterval) {
             Interval interval = Interval.builder()
@@ -909,8 +904,6 @@ public class ConnService {
             // make maps: urn -> total of what we are requesting to reserve for VLANs and BW
             Map<String, ImmutablePair<Integer, Integer>> inBwMap = new HashMap<>();
             Map<String, Set<Integer>> inVlanMap = new HashMap<>();
-
-//            log.info("availBwVlanMap is " + availBwVlanMap);
 
             // populate the maps with what we request thru fixtures
             for (Fixture f : in.getFixtures()) {
@@ -941,9 +934,6 @@ public class ConnService {
                 }
                 inVlanMap.put(f.getPort(), vlans);
             }
-
-            log.info("inVlanMap is " + inVlanMap);
-
 
             // populate the maps with what we request thru pipes (bw only)
             for (Pipe p : in.getPipes()) {
@@ -981,8 +971,6 @@ public class ConnService {
                 }
 
             }
-
-            log.info("inBwMap is " + inBwMap);
 
             // compare VLAN maps to what is available
             for (Fixture f : in.getFixtures()) {
@@ -1024,20 +1012,14 @@ public class ConnService {
                     valid = false;
                 }
                 f.setValidity(fv);
-
-                log.info("f validity is " + f);
             }
-
-            log.info("fixture loop done");
 
             Map<String, Validity> urnInBwValid = new HashMap<>();
             Map<String, Validity> urnEgBwValid = new HashMap<>();
             // compare map to what is available for BW
 
             for (String urn : inBwMap.keySet()) {
-                log.info("urn is " + urn);
                 PortBwVlan avail = availBwVlanMap.get(urn);
-                log.info("avail is " + avail);
 
                 if (avail == null) {
                     StringBuilder err = new StringBuilder(urn).append(" is not present anymore");
@@ -1084,19 +1066,11 @@ public class ConnService {
                     }
                     urnEgBwValid.put(urn, egBwValid);
                 }
-
-                log.info("urnInBwValid " + urnInBwValid);
-                log.info("urnEgBwValid " + urnEgBwValid);
             }
-
-            log.info("urn loop done");
 
             // populate Validity for fixtures
             for (Fixture f : in.getFixtures()) {
-                log.info("f is " + f);
                 Validity inBwValid = urnInBwValid.get(f.getPort());
-                log.info("inBwValid is " + inBwValid);
-                log.info(String.valueOf(inBwValid.isValid()));
 
                 if (!inBwValid.isValid()) {
                     f.getValidity().setMessage(f.getValidity().getMessage() + inBwValid.getMessage());
@@ -1111,8 +1085,6 @@ public class ConnService {
                     valid = false;
                 }
             }
-
-            log.info("populate Validity for fixtures done");
 
             // populate Validity for pipes & EROs
             for (Pipe p : in.getPipes()) {
@@ -1158,11 +1130,6 @@ public class ConnService {
                 p.setValidity(pv);
                 p.setEroValidity(eroValidity);
             }
-
-            log.info("populate Validity for pipes & EROs done");
-
-            log.info("end of validInterval if loop");
-
         } else {
             error.append("invalid interval! VLANs and bandwidths not checked\n");
             valid = false;
@@ -1172,9 +1139,7 @@ public class ConnService {
                 .message(error.toString())
                 .valid(valid)
                 .build();
-
-        // log.info("validity v is " + v);
-
+        
         try {
             String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(v);
             // log.info(pretty);
