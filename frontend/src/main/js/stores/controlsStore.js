@@ -380,62 +380,16 @@ class ControlsStore {
         return true;
     }
 
-    /*
-    @observable connection = {
-        description: "",
-        phase: "",
-        schedule: {
-            cloned: false,
-            locked: false,
-            acceptable: false,
-            adviceText: "",
-            start: {
-                at: "",
-                secsAfterNow: -1,
-                choice: "",
-                parsed: false,
-                readable: "",
-                validationState: "success",
-                validationText: ""
-            },
-            end: {
-                at: "",
-                choice: "",
-                parsed: false,
-                readable: "",
-                validationState: "success",
-                validationText: ""
-            }
-        },
-        held: {
-            until: "",
-            remaining: "",
-            idle: false,
-            cmp: {}
-        },
-        validation: {
-            errors: [],
-            acceptable: false
-        },
-        categories: []
-    };
-    */
-
     @action clone(cloneThis, newConnectionId) {
-        console.log("setting controls for cloned connection");
-        console.log(toJS(cloneThis));
-
-        // clone the connection params
         this.connection.connectionId = newConnectionId;
         this.connection.connection_mtu = cloneThis.connection_mtu;
+        this.connection.description = cloneThis.description;
         this.connection.mode = "AUTOMATIC";
         this.connection.phase = "HELD";
         this.connection.tags = cloneThis.tags;
 
         this.saveToSessionStorage();
     }
-
-
 }
 
 export default new ControlsStore();

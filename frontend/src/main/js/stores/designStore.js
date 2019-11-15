@@ -418,8 +418,6 @@ class DesignStore {
     }
 
     @action clone(cloneThis) {
-        console.log("setting design for cloned connection");
-        console.log(toJS(cloneThis));
         // clear the errors
         this.design.errors = [];
 
@@ -471,11 +469,8 @@ class DesignStore {
             };
             this.design.pipes.push(pipe);
         }
-
         this.saveToSessionStorage();
     }
-
-
 }
 
 export default new DesignStore();

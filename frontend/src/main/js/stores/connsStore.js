@@ -24,7 +24,11 @@ class ConnectionsStore {
         commands: new Map(),
         statuses: new Map(),
         history: new Map(),
-        eventLog: []
+        eventLog: [],
+        cloned: {
+            cloneable: false,
+            message: ""
+        }
     };
 
     @observable editSchedule = {
@@ -137,6 +141,10 @@ class ConnectionsStore {
 
     @action setParamsForEditSchedule(params) {
         mergeWith(this.editSchedule, params);
+    }
+
+    @action setCloned(value) {
+        this.store.cloned = value;
     }
 
     @action setRedraw(value) {

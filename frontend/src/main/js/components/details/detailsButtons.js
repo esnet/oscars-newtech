@@ -17,10 +17,6 @@ import Transformer from "../../lib/transform";
 class DetailsButtons extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            cloneable: false,
-            message: ""
-        };
     }
 
     componentWillMount() {
@@ -170,7 +166,6 @@ class DetailsButtons extends Component {
                 this.props.connsStore.refreshCommands();
             })
         );
-
         return false;
     };
 
@@ -185,7 +180,6 @@ class DetailsButtons extends Component {
                     this.props.connsStore.refreshCurrent();
                 })
             );
-
         return false;
     };
 
@@ -248,22 +242,14 @@ class DetailsButtons extends Component {
                         if (parsed.validity != null) {
                             const message = parsed.validity.message;
                             if (parsed.validity.valid === false) {
-                                // Connection can't be cloned
-                                // Set the state
-
-                                // console.log("validity false ", message);
-                                this.setState({
+                                this.props.connsStore.setCloned({
                                     cloneable: false,
                                     message: message
                                 });
                             } else {
-                                // Connection can be cloned
-                                // Set the state
-
                                 let endAt = new Date(parsed.end * 1000);
                                 const format = "Y/MM/DD HH:mm:ss";
 
-                                // schedule probably needs to be more filled in
                                 // we only need to set the end time; begin time will be ASAP
                                 this.props.controlsStore.setParamsForConnection({
                                     phase: "HELD",
@@ -284,11 +270,9 @@ class DetailsButtons extends Component {
                                 });
 
                                 this.props.controlsStore.saveToSessionStorage();
-
-                                // console.log("validity true");
-                                // console.log("cloned connection is ", this.props.controlsStore.connection);
-                                this.setState({
-                                    cloneable: true
+                                this.props.connsStore.setCloned({
+                                    cloneable: true,
+                                    message: ""
                                 });
                             }
                         }
@@ -481,7 +465,13 @@ class DetailsButtons extends Component {
     }
 
     setBuildDismantleHelp(canPerform, key) {
-        const helpHeader = <span>Build mode help</span>;
+        let helpHeader = null;
+        if (key === "build") {
+            helpHeader = <span>Build mode help</span>;
+        } else {
+            helpHeader = <span>Dismantle mode help</span>;
+        }
+
         let helpBody = <div>Click this button to perform the build / dismantle action.</div>;
         if (!canPerform) {
             helpBody = <div>This action is not available.</div>;
@@ -633,7 +623,6 @@ class DetailsButtons extends Component {
         }
 
         let showSpecialHeader = false;
-
         let recoverSelect = null;
         if (conn.state === "FAILED") {
             showSpecialHeader = true;
@@ -692,11 +681,10 @@ class DetailsButtons extends Component {
             specialHeader = <ListGroupItem color="warning">Special Controls</ListGroupItem>;
         }
 
-        const canClone = this.state.cloneable;
-        const message = this.state.message;
+        const canClone = this.props.connsStore.store.cloned.cloneable;
+        const message = this.props.connsStore.store.cloned.message;        
         let cloneButton = null;
 
-        // console.log(canClone, message);
         if (conn.phase === "ARCHIVED") {
             if (canClone) {
                 cloneButton = (
