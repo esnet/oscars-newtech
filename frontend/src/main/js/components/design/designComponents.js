@@ -31,7 +31,6 @@ class DesignComponents extends Component {
     };
 
     render() {
-        // console.log("Render designComponents", this.props);
         const design = this.props.designStore.design;
 
         const helpHeader = <span>Component list</span>;

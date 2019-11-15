@@ -90,7 +90,6 @@ class ConnectionControls extends Component {
     }
 
     render() {
-        // console.log("connectionControls props ", this.props);
         const conn = this.props.controlsStore.connection;
         let connectionId = conn.connectionId;
 

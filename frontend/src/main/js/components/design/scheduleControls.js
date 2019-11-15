@@ -58,9 +58,6 @@ class ScheduleControls extends Component {
         };
         this.props.controlsStore.setParamsForConnection(params);
 
-        // FIXME: this does not quite work
-        // console.log("scheduleControls conn", conn);
-        // console.log("scheduleControls sch", sch, sch.cloned);        
         if (!sch.cloned) {
             let endAt = new Date();
             endAt.setDate(endAt.getDate() + 365);
