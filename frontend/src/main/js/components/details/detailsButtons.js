@@ -3,15 +3,16 @@ import React, { Component } from "react";
 import { observer, inject } from "mobx-react";
 
 import ConfirmModal from "../confirmModal";
-import { Button, ListGroup, ListGroupItem, Input, Form, FormGroup } from "reactstrap";
+import { Alert, Button, ListGroup, ListGroupItem, Input, Form, FormGroup } from "reactstrap";
 import myClient from "../../agents/client";
 import Moment from "moment/moment";
-import { autorun, action } from "mobx";
+import { autorun, action, toJS} from "mobx";
 import { size } from "lodash-es";
 import HelpPopover from "../helpPopover";
 import { withRouter } from "react-router-dom";
+import Transformer from "../../lib/transform";
 
-@inject("connsStore")
+@inject("connsStore", "designStore", "controlsStore")
 @observer
 class DetailsButtons extends Component {
     constructor(props) {
@@ -20,10 +21,12 @@ class DetailsButtons extends Component {
 
     componentWillMount() {
         this.updateControls();
+        this.checkClone();
     }
 
     componentWillUnmount() {
         this.controlsUpdateDispose();
+        this.cloneCheckDispose();
     }
 
     build = () => {
@@ -96,6 +99,12 @@ class DetailsButtons extends Component {
             );
     };
 
+    doCloneConnection = () => {
+        this.props.history.push({
+            pathname: '/pages/newDesign',
+        });
+    };
+
     doRelease = () => {
         const controls = this.props.connsStore.controls;
         let current = this.props.connsStore.store.current;
@@ -139,6 +148,10 @@ class DetailsButtons extends Component {
         this.updateControls();
     });
 
+    cloneCheckDispose = autorun(() => {
+        this.checkClone();
+    });
+
     overrideState = e => {
         const newState = e.target.value;
         this.props.connsStore.setControl("overrideState", {
@@ -153,7 +166,6 @@ class DetailsButtons extends Component {
                 this.props.connsStore.refreshCommands();
             })
         );
-
         return false;
     };
 
@@ -168,9 +180,107 @@ class DetailsButtons extends Component {
                     this.props.connsStore.refreshCurrent();
                 })
             );
-
         return false;
     };
+
+    // Checks if the connection can be cloned or not
+    checkClone() {
+        const conn = this.props.connsStore.store.current;
+
+        if (typeof conn.connectionId === "undefined" || conn.phase !== "ARCHIVED") {
+            return;
+        }
+
+        myClient.submitWithToken("GET", "/protected/conn/generateId").then(
+            action(response => {
+                this.props.designStore.clone(conn);
+                this.props.controlsStore.clone(conn, response);
+
+                let clonedConnection = this.props.controlsStore.connection;
+                let cmp = Transformer.toBackend(this.props.designStore.design);
+
+                if (
+                    typeof clonedConnection.connectionId === "undefined" ||
+                    clonedConnection.connectionId === null ||
+                    clonedConnection.connectionId === ""
+                ) {
+                    console.log("no connectionId; will try again later");
+                    return;
+                }
+
+                // Set tags
+                let clonedTags = []
+                for (let tag of clonedConnection.tags) {
+                    const t = {
+                        "category" : tag.category,
+                        "contents" : tag.contents
+                    };
+                    clonedTags.push(t);
+                }
+
+                // Set the current begin / end times; 
+                // they will be cloned to the same duration starting now() by the cloneable API call
+                let connection = {
+                    connectionId: clonedConnection.connectionId,
+                    connection_mtu: clonedConnection.connection_mtu,
+                    mode: clonedConnection.mode,
+                    description: clonedConnection.description,
+                    username: "",
+                    phase: "HELD",
+                    state: "WAITING",
+                    begin: conn.archived.schedule.beginning,
+                    end: conn.archived.schedule.ending,
+                    tags: clonedTags,
+                    pipes: cmp.pipes,
+                    junctions: cmp.junctions,
+                    fixtures: cmp.fixtures
+                };
+
+                myClient.submitWithToken("POST", "/protected/cloneable", connection).then(
+                    action(response => {
+                        let parsed = JSON.parse(response);
+                        if (parsed.validity != null) {
+                            const message = parsed.validity.message;
+                            if (parsed.validity.valid === false) {
+                                this.props.connsStore.setCloned({
+                                    cloneable: false,
+                                    message: message
+                                });
+                            } else {
+                                let endAt = new Date(parsed.end * 1000);
+                                const format = "Y/MM/DD HH:mm:ss";
+
+                                // we only need to set the end time; begin time will be ASAP
+                                this.props.controlsStore.setParamsForConnection({
+                                    phase: "HELD",
+                                    schedule: {
+                                        cloned: true,
+                                        locked: true,
+                                        acceptable: true,
+                                        end: {
+                                            at: endAt,
+                                            choice: endAt,
+                                            timestamp: parsed.end,
+                                            readable: Moment(endAt).format(format),
+                                            parsed: true,
+                                            validationState: "success",
+                                            validationText: ""
+                                        }
+                                    }
+                                });
+
+                                this.props.controlsStore.saveToSessionStorage();
+                                this.props.connsStore.setCloned({
+                                    cloneable: true,
+                                    message: ""
+                                });
+                            }
+                        }
+                    })
+                );
+            })
+        );
+    }
 
     updateControls() {
         const conn = this.props.connsStore.store.current;
@@ -276,6 +386,100 @@ class DetailsButtons extends Component {
 
         this.setBuildDismantleHelp(canBuild, "build");
         this.setBuildDismantleHelp(canDismantle, "dismantle");
+    }
+
+    help(key) {
+        const controls = this.props.connsStore.controls;
+        const header = controls.help[key].header;
+        const body = controls.help[key].body;
+        const id = "details-controls-" + key + "-help";
+        return (
+            <span className="float-right">
+                <HelpPopover header={header} body={body} placement="right" popoverId={id} />
+            </span>
+        );
+    }
+
+    setRegenHelp() {
+        const helpHeader = <span>Release help</span>;
+        const helpBody = (
+            <div>
+                <p>
+                    Click this button to regenerate router configurations for this connection.
+                    Typically used to pull in changes to router config templates.
+                </p>
+                <p>Use with caution.</p>
+                <p>Should not be used (and is normally deactivated) for migrated connections.</p>
+            </div>
+        );
+
+        this.props.connsStore.setControlHelp("regenerate", {
+            header: helpHeader,
+            body: helpBody
+        });
+    }
+
+    setReleaseHelp() {
+        const helpHeader = <span>Release help</span>;
+        const helpBody = (
+            <div>
+                <p>
+                    Click this button to release this reservation. This will dismantle it if already
+                    built, and set it to ARCHIVED phase.
+                </p>
+            </div>
+        );
+
+        this.props.connsStore.setControlHelp("release", {
+            header: helpHeader,
+            body: helpBody
+        });
+    }
+
+    setBmHelp() {
+        const helpHeader = <span>Build mode help</span>;
+        const helpBody = (
+            <div>
+                <p>
+                    Auto: The connection will be configured on network devices ("built") at start
+                    time. No further action needed.{" "}
+                </p>
+                <p>
+                    Manual: The connection will <b>not</b> be configured automatically. Use the
+                    build / dismantle controls to set it up or bring it down.
+                </p>
+                <p>
+                    Build mode selection is not final. You can switch between modes, as long as the
+                    end time has not been reached.
+                </p>
+                <p>
+                    In either mode, once end time is reached the connection will be automatically
+                    dismantled (i.e. removed from network device configuration).
+                </p>
+            </div>
+        );
+        this.props.connsStore.setControlHelp("buildmode", {
+            header: helpHeader,
+            body: helpBody
+        });
+    }
+
+    setBuildDismantleHelp(canPerform, key) {
+        let helpHeader = null;
+        if (key === "build") {
+            helpHeader = <span>Build mode help</span>;
+        } else {
+            helpHeader = <span>Dismantle mode help</span>;
+        }
+
+        let helpBody = <div>Click this button to perform the build / dismantle action.</div>;
+        if (!canPerform) {
+            helpBody = <div>This action is not available.</div>;
+        }
+        this.props.connsStore.setControlHelp(key, {
+            header: helpHeader,
+            body: helpBody
+        });
     }
 
     render() {
@@ -419,7 +623,6 @@ class DetailsButtons extends Component {
         }
 
         let showSpecialHeader = false;
-
         let recoverSelect = null;
         if (conn.state === "FAILED") {
             showSpecialHeader = true;
@@ -478,6 +681,44 @@ class DetailsButtons extends Component {
             specialHeader = <ListGroupItem color="warning">Special Controls</ListGroupItem>;
         }
 
+        const canClone = this.props.connsStore.store.cloned.cloneable;
+        const message = this.props.connsStore.store.cloned.message;        
+        let cloneButton = null;
+
+        if (conn.phase === "ARCHIVED") {
+            if (canClone) {
+                cloneButton = (
+                    <ListGroup>
+                        <ListGroupItem color="info">Clone Connection</ListGroupItem>
+                        <ListGroupItem>
+                            <ConfirmModal
+                                body="This will clone the connection and redirect you to the New Connection page"
+                                header="Clone Connection"
+                                uiElement={
+                                    <Button
+                                        className="pull-right"
+                                        color="primary"
+                                    >
+                                        Clone this connection
+                                    </Button>
+                                }
+                                onConfirm={this.doCloneConnection}
+                            />{" "}
+                        </ListGroupItem>
+                    </ListGroup>
+                );
+            } else {
+                cloneButton = (
+                    <ListGroup>
+                        <ListGroupItem color="info">Clone Connection</ListGroupItem>
+                        <ListGroupItem>
+                            {"This connection can not be cloned because of the following reason(s):"}{" "}{message}
+                        </ListGroupItem>
+                    </ListGroup>
+                );
+            }
+        }
+
         return (
             <ListGroup>
                 {controlsHeader}
@@ -489,97 +730,11 @@ class DetailsButtons extends Component {
                 {specialHeader}
                 {regenerate}
                 <br />
+                {cloneButton}
+                <br />
                 {recoverSelect}
             </ListGroup>
         );
-    }
-
-    help(key) {
-        const controls = this.props.connsStore.controls;
-        const header = controls.help[key].header;
-        const body = controls.help[key].body;
-        const id = "details-controls-" + key + "-help";
-        return (
-            <span className="float-right">
-                <HelpPopover header={header} body={body} placement="right" popoverId={id} />
-            </span>
-        );
-    }
-
-    setRegenHelp() {
-        const helpHeader = <span>Release help</span>;
-        const helpBody = (
-            <div>
-                <p>
-                    Click this button to regenerate router configurations for this connection.
-                    Typically used to pull in changes to router config templates.
-                </p>
-                <p>Use with caution.</p>
-                <p>Should not be used (and is normally deactivated) for migrated connections.</p>
-            </div>
-        );
-
-        this.props.connsStore.setControlHelp("regenerate", {
-            header: helpHeader,
-            body: helpBody
-        });
-    }
-
-    setReleaseHelp() {
-        const helpHeader = <span>Release help</span>;
-        const helpBody = (
-            <div>
-                <p>
-                    Click this button to release this reservation. This will dismantle it if already
-                    built, and set it to ARCHIVED phase.
-                </p>
-            </div>
-        );
-
-        this.props.connsStore.setControlHelp("release", {
-            header: helpHeader,
-            body: helpBody
-        });
-    }
-
-    setBmHelp() {
-        const helpHeader = <span>Build mode help</span>;
-        const helpBody = (
-            <div>
-                <p>
-                    Auto: The connection will be configured on network devices ("built") at start
-                    time. No further action needed.{" "}
-                </p>
-                <p>
-                    Manual: The connection will <b>not</b> be configured automatically. Use the
-                    build / dismantle controls to set it up or bring it down.
-                </p>
-                <p>
-                    Build mode selection is not final. You can switch between modes, as long as the
-                    end time has not been reached.
-                </p>
-                <p>
-                    In either mode, once end time is reached the connection will be automatically
-                    dismantled (i.e. removed from network device configuration).
-                </p>
-            </div>
-        );
-        this.props.connsStore.setControlHelp("buildmode", {
-            header: helpHeader,
-            body: helpBody
-        });
-    }
-
-    setBuildDismantleHelp(canPerform, key) {
-        const helpHeader = <span>Build mode help</span>;
-        let helpBody = <div>Click this button to perform the build / dismantle action.</div>;
-        if (!canPerform) {
-            helpBody = <div>This action is not available.</div>;
-        }
-        this.props.connsStore.setControlHelp(key, {
-            header: helpHeader,
-            body: helpBody
-        });
     }
 }
 export default withRouter(DetailsButtons);

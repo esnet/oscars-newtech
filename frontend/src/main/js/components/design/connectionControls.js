@@ -209,27 +209,29 @@ class ConnectionControls extends Component {
                                 onChange={this.onMTUChange}
                             />
                         </FormGroup>
-                        <Button
-                            color="secondary"
-                            onClick={this.toggle}
-                            style={{ marginBottom: "1rem" }}
-                        >
-                            Click to fill project details
-                        </Button>
-                        <Collapse isOpen={this.state.collapse}>
-                            <TagControls />
-                        </Collapse>
-                        <FormGroup className="float-right">
+                        <FormGroup>
+                            <Button
+                                color="secondary"
+                                onClick={this.toggle}
+                                style={{ marginBottom: "0.5rem" }}
+                            >
+                                Click to fill project details
+                            </Button>
+                            <Collapse isOpen={this.state.collapse}>
+                                <TagControls />
+                            </Collapse>
+                        </FormGroup>
+                        <FormGroup>
                             <ToggleDisplay show={!conn.validation.acceptable}>
                                 <Button
                                     color="warning"
-                                    className="float-right"
+                                    className="float-left"
                                     onClick={() => {
                                         this.props.modalStore.openModal("connectionErrors");
                                     }}
                                 >
                                     Display errors
-                                </Button>{" "}
+                                </Button>
                             </ToggleDisplay>
                             {/*
                             <ToggleDisplay show={conn.phase === 'RESERVED' && conn.schedule.start.at > new Date()}>

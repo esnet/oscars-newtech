@@ -88,6 +88,7 @@ class DesignDrawing extends Component {
                 this.datasource.nodes.update({ id: nodeId, fixed: { x: false, y: false } });
             }
         });
+        
         this.network.on("click", params => {
             if (params.nodes.length > 0) {
                 let nodeId = params.nodes[0];
@@ -111,7 +112,7 @@ class DesignDrawing extends Component {
         this.disposeOfMapUpdate();
     }
 
-    // this automagically updates the map;
+    // this automatically updates the map;
     // TODO: use a reaction and don't clear the whole graph, instead add/remove/update
     disposeOfMapUpdate = autorun(
         () => {
@@ -122,7 +123,7 @@ class DesignDrawing extends Component {
 
             let nodes = [];
             let edges = [];
-
+            
             myClient.loadJSON({ method: "GET", url: "/api/map" }).then(
                 action(response => {
                     let positions = {};
@@ -134,7 +135,7 @@ class DesignDrawing extends Component {
                             y: 0.3 * n.y
                         };
                     });
-
+                    
                     junctions.map(j => {
                         let junctionNode = {
                             id: j.id,

@@ -98,6 +98,7 @@ class DetailsDrawing extends Component {
                 this.datasource.nodes.update({ id: nodeId, fixed: { x: false, y: false } });
             }
         });
+
         this.network.on("click", params => {
             if (params.nodes.length > 0) {
                 let nodeId = params.nodes[0];

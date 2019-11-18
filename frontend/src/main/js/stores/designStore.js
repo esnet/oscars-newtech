@@ -1,4 +1,4 @@
-import { observable, action } from "mobx";
+import { observable, action, toJS } from "mobx";
 
 class DesignStore {
     /*
@@ -415,6 +415,61 @@ class DesignStore {
         this.design = JSON.parse(maybeSaved);
 
         return true;
+    }
+
+    @action clone(cloneThis) {
+        // clear the errors
+        this.design.errors = [];
+
+        // clone the junctions to the design
+        this.design.junctions = [];
+        for (let cloneJ of cloneThis.archived.cmp.junctions) {
+            let junction = {
+                id: cloneJ.deviceUrn,
+                refId: cloneJ.refId,
+            }
+            this.design.junctions.push(junction);
+        }
+
+        // clone the fixtures to the design
+        this.design.fixtures = [];
+        for (let cloneF of cloneThis.archived.cmp.fixtures) {
+            let port = cloneF.portUrn.split(":")[1];
+            let fixture = {
+                id: this.makeFixtureId(cloneF.portUrn).id,
+                device: cloneF.junction,
+                label: port + ":" + cloneF.vlan.vlanId,
+                port: cloneF.portUrn,
+                vlan: cloneF.vlan.vlanId,
+                locked: true,
+                ingress: cloneF.ingressBandwidth,
+                egress: cloneF.egressBandwidth,
+                strict: cloneF.strict
+            };
+            this.design.fixtures.push(fixture);
+        }
+
+        // clone the pipes to the design
+        this.design.pipes = [];
+        for (let cloneP of cloneThis.archived.cmp.pipes) {
+            let ero = []
+            for (let e of cloneP.azERO) {
+                ero.push(e['urn']);
+            }
+            let pipe = {
+                id: cloneP.a + " " + cloneP.z,
+                ero: ero,
+                a: cloneP.a,
+                z: cloneP.z,
+                azBw: cloneP.azBandwidth,
+                zaBw: cloneP.zaBandwidth,
+                mode: "fits",
+                protect: cloneP.protect,
+                locked: true
+            };
+            this.design.pipes.push(pipe);
+        }
+        this.saveToSessionStorage();
     }
 }
 

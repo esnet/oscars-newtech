@@ -14,10 +14,7 @@ import net.es.oscars.pss.svc.PSSQueuer;
 import net.es.oscars.pss.svc.PssResourceService;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.ent.*;
-import net.es.oscars.resv.enums.BuildMode;
-import net.es.oscars.resv.enums.EventType;
-import net.es.oscars.resv.enums.Phase;
-import net.es.oscars.resv.enums.State;
+import net.es.oscars.resv.enums.*;
 import net.es.oscars.topo.beans.IntRange;
 import net.es.oscars.topo.beans.PortBwVlan;
 import net.es.oscars.topo.enums.CommandParamType;
@@ -704,7 +701,7 @@ public class ConnService {
 
     public Validity validateCommit(Connection in) throws ConnException {
 
-        Validity v = this.validateHold(this.fromConnection(in, false));
+        Validity v = this.validate(this.fromConnection(in, false), ConnectionMode.NEW);
 
         StringBuilder error = new StringBuilder(v.getMessage());
         boolean valid = v.isValid();
@@ -779,96 +776,108 @@ public class ConnService {
     }
 
 
-    public Validity validateHold(SimpleConnection in)
+    public Validity validate(SimpleConnection in, ConnectionMode mode)
             throws ConnException {
 
         StringBuilder error = new StringBuilder();
         boolean valid = true;
-        boolean validInterval = true;
         if (in == null) {
             throw new ConnException("null connection");
         }
-        Instant begin = Instant.now();
-        Instant end;
 
         // validate global connection params
-
-
-        // check the connection ID:
-        String connectionId = in.getConnectionId();
-        if (connectionId == null) {
-            error.append("null connection id\n");
-            valid = false;
-        } else {
-            if (!connectionId.matches("^[a-zA-Z][a-zA-Z0-9_\\-]+$")) {
-                error.append("connection id invalid format \n");
+        if (mode.equals(ConnectionMode.NEW)) {
+            // check the connection ID:
+            String connectionId = in.getConnectionId();
+            if (connectionId == null) {
+                error.append("null connection id\n");
                 valid = false;
+            } else {
+                if (!connectionId.matches("^[a-zA-Z][a-zA-Z0-9_\\-]+$")) {
+                    error.append("connection id invalid format \n");
+                    valid = false;
+                }
+                if (connectionId.length() > 12) {
+                    error.append("connection id too long\n");
+                    valid = false;
+                } else if (connectionId.length() < 4) {
+                    error.append("connection id too short\n");
+                    valid = false;
+                }
             }
-            if (connectionId.length() > 12) {
-                error.append("connection id too long\n");
-                valid = false;
-            } else if (connectionId.length() < 4) {
-                error.append("connection id too short\n");
+            // check the connection MTU
+            if (in.getConnection_mtu() != null) {
+                if (in.getConnection_mtu() < minMtu || in.getConnection_mtu() > maxMtu) {
+                    error.append("MTU must be between ").append(minMtu).append(" and ").append(maxMtu).append(" (inclusive)\n");
+                    valid = false;
+                }
+            } else {
+                in.setConnection_mtu(defaultMtu);
+            }
+
+            // description:
+            if (in.getDescription() == null) {
+                error.append("null description\n");
                 valid = false;
             }
         }
 
-        // check the connection MTU
-        if (in.getConnection_mtu() != null) {
-            if (in.getConnection_mtu() < minMtu || in.getConnection_mtu() > maxMtu) {
-                error.append("MTU must be between ").append(minMtu).append(" and ").append(maxMtu).append(" (inclusive)\n");
-                valid = false;
-            }
-        } else {
-            in.setConnection_mtu(defaultMtu);
-        }
 
+        // validate schedule
+        Instant begin;
+        boolean beginValid;
         // check the schedule, begin time first:
         if (in.getBegin() == null) {
+            beginValid = false;
+            begin = Instant.MAX;
             error.append("null begin field\n");
-            valid = false;
-            validInterval = false;
         } else {
-            // we will silently modify the start time and have it start 30 secs from now() if set to sooner than that
             begin = Instant.ofEpochSecond(in.getBegin());
-            Instant earliestPossible = Instant.now().plus(30, ChronoUnit.SECONDS);
-            if (!begin.isAfter(earliestPossible)) {
-                begin = earliestPossible;
-                in.setBegin(new Long(begin.getEpochSecond()).intValue());
+            Instant rejectBefore = Instant.now().minus(5, ChronoUnit.MINUTES);
+            if (begin.isBefore(rejectBefore)) {
+                beginValid = false;
+                error.append("Begin time is more than 5 minutes in the past\n");
+            } else {
+                // if we are set to start to up to +30 sec from now,
+                // we will (silently) modify the begin timestamp and
+                // set it to +30 secs from now()
+                beginValid = true;
+                Instant earliestPossible = Instant.now().plus(30, ChronoUnit.SECONDS);
+                if (!begin.isAfter(earliestPossible)) {
+                    begin = earliestPossible;
+                    in.setBegin(new Long(begin.getEpochSecond()).intValue());
+                }
             }
+
         }
 
+        Instant end;
+        boolean endValid;
         // check the schedule, end time:
         if (in.getEnd() == null) {
+            endValid = false;
+            end = Instant.MIN;
             error.append("null end field\n");
-            valid = false;
-            validInterval = false;
         } else {
             end = Instant.ofEpochSecond(in.getEnd());
             if (!end.isAfter(Instant.now())) {
-                error.append("end date not past now()\n");
-                valid = false;
-                validInterval = false;
-            }
-            if (!end.isAfter(begin)) {
+                endValid = false;
+                error.append("end date is in the past\n");
+            } else if (!end.isAfter(begin)) {
+                endValid = false;
                 error.append("end date not past begin()\n");
-                valid = false;
-                validInterval = false;
+            } else {
+                if (begin.plus(this.minDuration, ChronoUnit.MINUTES).isAfter(end)) {
+                    endValid = false;
+                    error.append("duration is too short (less than ").append(this.minDuration).append(" min)\n");
+                } else {
+                    endValid = true;
+                }
             }
         }
-        if (validInterval) {
-            begin = Instant.ofEpochSecond(in.getBegin());
-            end = Instant.ofEpochSecond(in.getEnd());
-            if (begin.plus(Duration.ofMinutes(this.minDuration)).isAfter(end)) {
-                valid = false;
-                error.append("interval is too short (less than ").append(minDuration).append(" min)\n");
-            }
 
-        }
-
-        // description:
-        if (in.getDescription() == null) {
-            error.append("null description\n");
+        boolean validInterval = beginValid && endValid;
+        if (!validInterval) {
             valid = false;
         }
 
@@ -876,7 +885,7 @@ public class ConnService {
         if (validInterval) {
             Interval interval = Interval.builder()
                     .beginning(begin)
-                    .ending(Instant.ofEpochSecond(in.getEnd()))
+                    .ending(end)
                     .build();
 
             if (in.getFixtures() == null) {
@@ -895,7 +904,6 @@ public class ConnService {
             // make maps: urn -> total of what we are requesting to reserve for VLANs and BW
             Map<String, ImmutablePair<Integer, Integer>> inBwMap = new HashMap<>();
             Map<String, Set<Integer>> inVlanMap = new HashMap<>();
-
 
             // populate the maps with what we request thru fixtures
             for (Fixture f : in.getFixtures()) {
@@ -919,14 +927,13 @@ public class ConnService {
                     vlans = inVlanMap.get(f.getPort());
                 }
                 if (vlans.contains(f.getVlan())) {
-                    error.append("duplicate VLAN for ").append(f.getPort());
+                    error.append("VLAN ").append(f.getVlan()).append(" requested twice on ").append(f.getPort());
                     valid = false;
                 } else {
                     vlans.add(f.getVlan());
                 }
                 inVlanMap.put(f.getPort(), vlans);
             }
-
 
             // populate the maps with what we request thru pipes (bw only)
             for (Pipe p : in.getPipes()) {
@@ -967,45 +974,45 @@ public class ConnService {
 
             // compare VLAN maps to what is available
             for (Fixture f : in.getFixtures()) {
-                PortBwVlan avail = availBwVlanMap.get(f.getPort());
-                Set<Integer> vlans = inVlanMap.get(f.getPort());
-                if (avail == null) {
-                    log.error("Could not retrieve available bw, vlans for " + f.getPort());
-                    avail = PortBwVlan.builder()
-                            .egressBandwidth(-1)
-                            .ingressBandwidth(-1)
-                            .vlanExpression("")
-                            .vlanRanges(new HashSet<>())
-                            .build();
-                }
-                if (vlans == null) {
-                    vlans = new HashSet<>();
-                }
-                StringBuilder ferror = new StringBuilder();
                 Validity fv = Validity.builder()
                         .valid(true)
                         .message("")
                         .build();
 
-                Set<IntRange> availVlanRanges = avail.getVlanRanges();
-                for (Integer vlan : vlans) {
-                    boolean atLeastOneContains = false;
-                    for (IntRange r : availVlanRanges) {
-                        if (r.contains(vlan)) {
-                            atLeastOneContains = true;
+                StringBuilder ferror = new StringBuilder();
+
+                if (availBwVlanMap.containsKey(f.getPort())) {
+                    PortBwVlan avail = availBwVlanMap.get(f.getPort());
+                    Set<Integer> vlans = inVlanMap.get(f.getPort());
+                    if (vlans == null) {
+                        vlans = new HashSet<>();
+                    }
+
+                    Set<IntRange> availVlanRanges = avail.getVlanRanges();
+                    for (Integer vlan : vlans) {
+                        boolean atLeastOneContains = false;
+                        for (IntRange r : availVlanRanges) {
+                            if (r.contains(vlan)) {
+                                atLeastOneContains = true;
+                            }
                         }
+                        if (!atLeastOneContains) {
+                            ferror.append(f.getPort()).append(" : vlan ").append(f.getVlan()).append(" not available\n");
+                            error.append(ferror);
+                            fv.setMessage(ferror.toString());
+                            fv.setValid(false);
+                            valid = false;
+                        }
+                        log.debug(f.getPort()+" vlan "+vlan+" contained in "+IntRange.asString(availVlanRanges)+" ? "+atLeastOneContains);
                     }
-                    if (!atLeastOneContains) {
-                        ferror.append("vlan not available: ").append(f.getJunction()).append(":").append(f.getPort()).append(".").append(f.getVlan()).append("\n");
-                        error.append(ferror);
-                        fv.setMessage(ferror.toString());
-                        fv.setValid(false);
-                        valid = false;
-                    }
+                } else {
+                    fv.setValid(false);
+                    fv.setMessage(f.getPort()+" not in topology\n");
+                    error.append(fv.getMessage());
+                    valid = false;
                 }
                 f.setValidity(fv);
             }
-
 
             Map<String, Validity> urnInBwValid = new HashMap<>();
             Map<String, Validity> urnEgBwValid = new HashMap<>();
@@ -1014,45 +1021,57 @@ public class ConnService {
             for (String urn : inBwMap.keySet()) {
                 PortBwVlan avail = availBwVlanMap.get(urn);
 
-                Validity inBwValid = Validity.builder()
-                        .valid(true)
-                        .message("")
-                        .build();
-                ImmutablePair<Integer, Integer> inBw = inBwMap.get(urn);
-                if (avail.getIngressBandwidth() < inBw.getLeft()) {
-                    StringBuilder inErr = new StringBuilder("total port ingress bw exceeds available: ")
-                            .append(urn).append(" ").append(inBw.getLeft()).append("(req) / ")
-                            .append(avail.getIngressBandwidth()).append(" (avail)\n");
+                if (avail == null) {
+                    StringBuilder err = new StringBuilder(urn).append(" is not present anymore");
+                    Validity bwValid = Validity.builder()
+                            .valid(false)
+                            .message(err.toString())
+                            .build();
+                    // error.append(err);
+                    urnInBwValid.put(urn, bwValid);
+                    urnEgBwValid.put(urn, bwValid);
+                } else {
+                    Validity inBwValid = Validity.builder()
+                            .valid(true)
+                            .message("")
+                            .build();
+                    ImmutablePair<Integer, Integer> inBw = inBwMap.get(urn);
+                    if (avail.getIngressBandwidth() < inBw.getLeft()) {
+                        StringBuilder inErr = new StringBuilder("total port ingress bw exceeds available: ")
+                                .append(urn).append(" ").append(inBw.getLeft()).append("(req) / ")
+                                .append(avail.getIngressBandwidth()).append(" (avail)\n");
 
-                    valid = false;
-                    error.append(inErr);
+                        valid = false;
+                        error.append(inErr);
 
-                    inBwValid.setMessage(inErr.toString());
-                    inBwValid.setValid(false);
+                        inBwValid.setMessage(inErr.toString());
+                        inBwValid.setValid(false);
+                    }
+                    urnInBwValid.put(urn, inBwValid);
+
+                    Validity egBwValid = Validity.builder()
+                            .valid(true)
+                            .message("")
+                            .build();
+                    if (avail.getEgressBandwidth() < inBw.getRight()) {
+                        StringBuilder egErr = new StringBuilder("total port egress bw exceeds available: ")
+                                .append(urn).append(" ").append(inBw.getLeft()).append("(req) / ")
+                                .append(avail.getIngressBandwidth()).append(" (avail)\n");
+
+                        valid = false;
+                        error.append(egErr);
+
+                        egBwValid.setMessage(egErr.toString());
+                        egBwValid.setValid(false);
+                    }
+                    urnEgBwValid.put(urn, egBwValid);
                 }
-                urnInBwValid.put(urn, inBwValid);
-
-                Validity egBwValid = Validity.builder()
-                        .valid(true)
-                        .message("")
-                        .build();
-                if (avail.getEgressBandwidth() < inBw.getRight()) {
-                    StringBuilder egErr = new StringBuilder("total port egress bw exceeds available: ")
-                            .append(urn).append(" ").append(inBw.getLeft()).append("(req) / ")
-                            .append(avail.getIngressBandwidth()).append(" (avail)\n");
-
-                    valid = false;
-                    error.append(egErr);
-
-                    egBwValid.setMessage(egErr.toString());
-                    egBwValid.setValid(false);
-                }
-                urnEgBwValid.put(urn, egBwValid);
             }
 
             // populate Validity for fixtures
             for (Fixture f : in.getFixtures()) {
                 Validity inBwValid = urnInBwValid.get(f.getPort());
+
                 if (!inBwValid.isValid()) {
                     f.getValidity().setMessage(f.getValidity().getMessage() + inBwValid.getMessage());
                     f.getValidity().setValid(false);
@@ -1111,8 +1130,6 @@ public class ConnService {
                 p.setValidity(pv);
                 p.setEroValidity(eroValidity);
             }
-
-
         } else {
             error.append("invalid interval! VLANs and bandwidths not checked\n");
             valid = false;
@@ -1122,7 +1139,7 @@ public class ConnService {
                 .message(error.toString())
                 .valid(valid)
                 .build();
-
+        
         try {
             String pretty = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(v);
             // log.info(pretty);

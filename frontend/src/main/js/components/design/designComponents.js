@@ -18,7 +18,7 @@ import transformer from "../../lib/transform";
 import ConfirmModal from "../confirmModal";
 import HelpPopover from "../helpPopover";
 
-@inject("designStore", "controlsStore", "modalStore")
+@inject("designStore", "controlsStore", "modalStore", "connsStore")
 @observer
 class DesignComponents extends Component {
     constructor(props) {
@@ -26,6 +26,7 @@ class DesignComponents extends Component {
     }
 
     clear = () => {
+        this.props.controlsStore.clearClonedConnection();
         this.props.designStore.clear();
     };
 

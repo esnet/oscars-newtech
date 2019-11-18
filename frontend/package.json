@@ -20,7 +20,6 @@
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
-    "react-jss": "^10.0.0",
     "react-bootstrap-table-next": "^3.1.7",
     "react-bootstrap-table2-filter": "^1.1.10",
     "react-bootstrap-table2-paginator": "^2.0.7",
@@ -30,6 +29,7 @@
     "react-dnd-html5-backend": "3.0.2",
     "react-dom": "^16.8.6",
     "react-idle-timer": "^4.2.8",
+    "react-jss": "^10.0.0",
     "react-lazylog": "^3.3.1",
     "react-nestable": "^1.2.0",
     "react-octicon": "^3.0.1",
@@ -39,6 +39,7 @@
     "react-tag-input": "^6.4.1",
     "react-toggle-display": "^2.2.0",
     "reactstrap": "^8.0.1",
+    "safe-json-stringify": "^1.2.0",
     "visjs-network": "^4.24.10"
   },
   "license": "MIT",

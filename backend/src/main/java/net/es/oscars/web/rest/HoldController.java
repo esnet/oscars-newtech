@@ -5,6 +5,7 @@ import net.es.oscars.app.Startup;
 import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.resv.db.*;
 import net.es.oscars.resv.ent.*;
+import net.es.oscars.resv.enums.ConnectionMode;
 import net.es.oscars.resv.enums.EventType;
 import net.es.oscars.resv.enums.Phase;
 import net.es.oscars.resv.svc.ConnService;
@@ -12,6 +13,7 @@ import net.es.oscars.resv.svc.LogService;
 import net.es.oscars.web.beans.ConnException;
 import net.es.oscars.web.beans.CurrentlyHeldEntry;
 import net.es.oscars.web.beans.HoldException;
+import net.es.oscars.web.beans.Interval;
 import net.es.oscars.web.simple.SimpleConnection;
 import net.es.oscars.web.simple.Validity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,6 +133,32 @@ public class HoldController {
 
     }
 
+
+
+    @RequestMapping(value = "/protected/cloneable", method = RequestMethod.POST)
+    @ResponseBody
+    @Transactional
+    public SimpleConnection cloneable(Authentication authentication,
+                                      @RequestBody SimpleConnection connection)
+            throws ConnException {
+
+        int duration = connection.getEnd() - connection.getBegin();
+
+        // try to get starting now() with same duration
+        String username = authentication.getName();
+        connection.setUsername(username);
+
+        Instant now = Instant.now();
+
+        connection.setBegin(new Long(now.getEpochSecond()).intValue());
+        connection.setEnd(connection.getBegin()+duration);
+        Validity v = connSvc.validate(connection, ConnectionMode.CLONE);
+        connection.setValidity(v);
+
+        return connection;
+
+    }
+
     @RequestMapping(value = "/protected/hold", method = RequestMethod.POST)
     @ResponseBody
     @Transactional
@@ -145,7 +173,7 @@ public class HoldController {
         }
 
         // TODO: Don't throw exception; populate all the Validity entries instead
-        Validity v = connSvc.validateHold(in);
+        Validity v = connSvc.validate(in, ConnectionMode.NEW);
         if (!v.isValid()) {
             in.setValidity(v);
             log.info("did not update invalid connection "+in.getConnectionId());

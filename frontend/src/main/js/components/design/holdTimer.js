@@ -242,7 +242,6 @@ class HoldTimer extends Component {
                     let parsed = JSON.parse(response);
                     if (parsed.validity != null) {
                         if (parsed.validity.valid === false) {
-                            console.log("not valid hold");
                             this.props.controlsStore.clearEditConnection();
                             this.props.controlsStore.clearEditDesign();
                             this.props.designStore.clear();

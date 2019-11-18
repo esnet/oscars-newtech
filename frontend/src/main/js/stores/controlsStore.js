@@ -1,5 +1,5 @@
 import Moment from "moment";
-import { observable, action } from "mobx";
+import { observable, action, toJS } from "mobx";
 import { merge, isArray, mergeWith, remove } from "lodash-es";
 
 class ControlsStore {
@@ -10,6 +10,7 @@ class ControlsStore {
         mode: "AUTOMATIC",
         connection_mtu: 9000,
         schedule: {
+            cloned: false,
             locked: false,
             acceptable: false,
             adviceText: "",
@@ -24,6 +25,7 @@ class ControlsStore {
             },
             end: {
                 at: "",
+                timestamp: 0,
                 choice: "",
                 parsed: false,
                 readable: "",
@@ -312,7 +314,13 @@ class ControlsStore {
     @action
     clearEditConnection() {
         this.connection.connectionId = "";
+        this.connection.cloned = false;
         this.connection.description = "";
+    }
+
+    @action
+    clearClonedConnection() {
+        this.connection.cloned = false;
     }
 
     // adding a fixture by selecting a device (through the map)
@@ -367,8 +375,20 @@ class ControlsStore {
             return false;
         }
         this.connection = parsed;
+        this.connection.schedule.end.at = new Date(this.connection.schedule.end.timestamp * 1000);
 
         return true;
+    }
+
+    @action clone(cloneThis, newConnectionId) {
+        this.connection.connectionId = newConnectionId;
+        this.connection.connection_mtu = cloneThis.connection_mtu;
+        this.connection.description = cloneThis.description;
+        this.connection.mode = "AUTOMATIC";
+        this.connection.phase = "HELD";
+        this.connection.tags = cloneThis.tags;
+
+        this.saveToSessionStorage();
     }
 }
 
