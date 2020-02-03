@@ -29,72 +29,91 @@ class DetailsButtons extends Component {
         this.cloneCheckDispose();
     }
 
+    currentRefresher = () => {
+        this.props.connsStore.refreshCurrent();
+    };
+
     build = () => {
         const conn = this.props.connsStore.store.current;
-        const controls = this.props.connsStore.controls;
         this.props.connsStore.setControl("build", {
-            text: "Working..",
-            ok: false
+            text: "In progress..",
+            working: true
         });
         this.props.connsStore.setControl("dismantle", {
-            text: controls.dismantle.text,
-            show: true,
-            ok: false
+            working: true
         });
+        let preparing = {
+            explanation: 'Preparing to submit',
+            work: "PREPARING"
+        };
+        this.props.connsStore.setPss(preparing);
         myClient.submitWithToken("GET", "/protected/pss/build/" + conn.connectionId, "").then(
             action(response => {
-                this.props.connsStore.refreshCurrent();
+
+                setTimeout(this.currentRefresher, 5000);
+
             })
         );
     };
 
     dismantle = () => {
         const conn = this.props.connsStore.store.current;
-        const controls = this.props.connsStore.controls;
         this.props.connsStore.setControl("build", {
-            text: controls.build.text,
-            show: true,
-            ok: false
+            working: true
         });
         this.props.connsStore.setControl("dismantle", {
-            text: "Working..",
-            show: true,
-            ok: false
+            text: "In progress..",
+            working: true
         });
+        let preparing = {
+            explanation: 'Preparing to submit',
+            work: "PREPARING"
+        };
+        this.props.connsStore.setPss(preparing);
+        setTimeout(this.currentRefresher, 5000);
+
         myClient.submitWithToken("GET", "/protected/pss/dismantle/" + conn.connectionId, "").then(
             action(response => {
-                this.props.connsStore.refreshCurrent();
+
+                setTimeout(this.currentRefresher, 5000);
+
             })
         );
     };
 
     changeBuildMode = () => {
-        const controls = this.props.connsStore.controls;
         let conn = this.props.connsStore.store.current;
         let otherMode = "MANUAL";
         if (conn.mode === "MANUAL") {
             otherMode = "AUTOMATIC";
         }
+        let showBuildDismantle = true;
+        if (otherMode === "AUTOMATIC") {
+            showBuildDismantle = false;
+        }
+
         this.props.connsStore.setControl("buildmode", {
             text: "Working...",
-            show: true,
-            ok: false
+            working: true,
         });
         this.props.connsStore.setControl("build", {
-            text: controls.build.text,
-            show: true,
-            ok: false
+            show: showBuildDismantle,
+            working: true
         });
         this.props.connsStore.setControl("dismantle", {
-            text: controls.dismantle.text,
-            show: true,
-            ok: false
+            show: showBuildDismantle,
+            working: true
         });
         myClient
             .submitWithToken("POST", "/protected/conn/mode/" + conn.connectionId, otherMode)
             .then(
                 action(response => {
-                    this.props.connsStore.refreshCurrent();
+
+                    setTimeout(this.currentRefresher, 5000);
+
+                    this.props.connsStore.setControl("buildmode", {
+                        working: false,
+                    });
                 })
             );
     };
@@ -110,33 +129,34 @@ class DetailsButtons extends Component {
         let current = this.props.connsStore.store.current;
         this.props.connsStore.setControl("release", {
             text: "Releasing",
-            show: true,
-            ok: false
+            working: true
         });
         this.props.connsStore.setControl("buildmode", {
-            text: controls.buildmode.text,
-            show: true,
-            ok: false
+            working: true
         });
         this.props.connsStore.setControl("build", {
-            text: controls.build.text,
-            show: true,
-            ok: false
+            working: true
         });
         this.props.connsStore.setControl("dismantle", {
-            text: controls.dismantle.text,
-            show: true,
-            ok: false
+            working: true
         });
 
         myClient.submitWithToken("POST", "/protected/conn/release", current.connectionId).then(
             action(response => {
                 let result = JSON.parse(response);
                 if (result.what === "DELETED") {
-                    console.log("redirecting to list");
                     this.props.history.push("/pages/list");
                 } else {
                     this.props.connsStore.refreshCurrent();
+                    this.props.connsStore.setControl("buildmode", {
+                        working: false
+                    });
+                    this.props.connsStore.setControl("build", {
+                        working: false
+                    });
+                    this.props.connsStore.setControl("dismantle", {
+                        working: false
+                    });
                 }
             })
         );
@@ -302,7 +322,7 @@ class DetailsButtons extends Component {
             this.props.connsStore.setControl("release", {
                 text: "Release",
                 show: true,
-                ok: true
+                allowed: true
             });
 
             let buildmodeText = "Set build mode to manual";
@@ -313,7 +333,7 @@ class DetailsButtons extends Component {
             this.props.connsStore.setControl("buildmode", {
                 text: buildmodeText,
                 show: true,
-                ok: true
+                allowed: true
             });
 
             let canRegenerate = true;
@@ -330,8 +350,10 @@ class DetailsButtons extends Component {
             this.props.connsStore.setControl("regenerate", {
                 text: "Regenerate router configs",
                 show: true,
-                ok: canRegenerate
+                allowed: canRegenerate
             });
+
+
 
             this.setRegenHelp();
             this.setReleaseHelp();
@@ -340,43 +362,55 @@ class DetailsButtons extends Component {
             this.props.connsStore.setControl("release", {
                 show: false,
                 text: "",
-                ok: false
+                allowed: false
             });
             this.props.connsStore.setControl("buildmode", {
                 show: false,
-                ok: false
+                allowed: false
             });
             this.props.connsStore.setControl("build", {
                 show: false,
-                ok: false
+                allowed: false
             });
             this.props.connsStore.setControl("dismantle", {
                 show: false,
-                ok: false
+                allowed: false
             });
             this.props.connsStore.setControl("regenerate", {
                 text: "Regenerate router configs",
                 show: false,
-                ok: false
+                allowed: false
             });
         }
         const canBuild =
             inInterval && isReserved && conn.mode === "MANUAL" && conn.state === "WAITING";
+
         const canDismantle =
             inInterval && isReserved && conn.mode === "MANUAL" && conn.state === "ACTIVE";
+
         let buildText = "Build";
         let dismantleText = "Dismantle";
+
+        let pssWork = this.props.connsStore.store.pss.work;
+        let pssWorking = false;
+        if (pssWork !== 'IDLE' && pssWork !== null) {
+            pssWorking = true;
+
+        }
+
 
         this.props.connsStore.setControl("build", {
             show: isReserved && inInterval,
             text: buildText,
-            ok: canBuild
+            working: pssWorking,
+            allowed: canBuild
         });
 
         this.props.connsStore.setControl("dismantle", {
             show: isReserved && inInterval,
             text: dismantleText,
-            ok: canDismantle
+            working: pssWorking,
+            allowed: canDismantle
         });
         if (conn.state === "FAILED") {
             this.props.connsStore.setControl("overrideState", {
@@ -486,7 +520,7 @@ class DetailsButtons extends Component {
         const controls = this.props.connsStore.controls;
         const conn = this.props.connsStore.store.current;
 
-        const canChangeBuildMode = controls.buildmode.ok;
+        const canChangeBuildMode = controls.buildmode.allowed && !controls.buildmode.working;
         const buildModeChangeText = controls.buildmode.text;
         let confirmChangeText =
             "This will set the connection build mode to Manual. This means that it " +
@@ -524,7 +558,7 @@ class DetailsButtons extends Component {
             );
         }
 
-        const canBuild = controls.build.ok;
+        const canBuild = controls.build.allowed && !controls.build.working;
         const buildText = controls.build.text;
         let build = null;
         if (controls.build.show) {
@@ -546,7 +580,7 @@ class DetailsButtons extends Component {
             );
         }
 
-        const canDismantle = controls.dismantle.ok;
+        const canDismantle = controls.dismantle.allowed && !controls.dismantle.working;
         const dismantleText = controls.dismantle.text;
         let dismantle = null;
         if (controls.dismantle.show) {
@@ -568,7 +602,7 @@ class DetailsButtons extends Component {
             );
         }
 
-        const canRelease = controls.release.ok;
+        const canRelease = controls.release.allowed && !controls.release.working;
         const releaseText = controls.release.text;
 
         let release = null;
@@ -648,7 +682,7 @@ class DetailsButtons extends Component {
         }
 
         let regenerate = null;
-        let canRegenerate = controls.regenerate.ok;
+        const canRegenerate = controls.regenerate.allowed && !controls.regenerate.working;
         if (controls.regenerate.show) {
             showSpecialHeader = true;
             regenerate = (

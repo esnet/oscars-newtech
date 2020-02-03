@@ -37,7 +37,7 @@ class Ping extends Component {
                 console.log("caught an exception");
             }
             this.ping();
-        }, 5000);
+        }, 15000);
     }
 
     componentWillUnmount() {

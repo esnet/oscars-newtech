@@ -34,8 +34,8 @@ class DetailsStatus extends Component {
                 if (cur.isAfter(beg)) {
                     myClient.submitWithToken("GET", "/protected/pss/work_status/" + connectionId, "").then(
                         action(response => {
-                            let explanation = JSON.parse(response)['explanation']
-                            this.handleStatusChange(explanation);
+                            let parsed = JSON.parse(response);
+                            this.handleStatusChange(parsed);
                         })
                     );
                     this.refreshTimeout = setTimeout(this.refreshStatus, 3000); // update per 3 seconds
@@ -46,16 +46,18 @@ class DetailsStatus extends Component {
         } else {
             this.refreshTimeout = setTimeout(this.refreshStatus, 3000); // update per 3 seconds
         }
-    }
+    };
 
     handleStatusChange(result) {
-        let explanation = '';
-        if (result === null) {
-            explanation = 'PSS is IDLE';
-        } else {
-            explanation = result;
+        let noResult = {
+            explanation: 'PSS is IDLE',
+            work: "IDLE"
+        };
+        if (result == null) {
+            result = noResult;
         }
-        this.props.connsStore.setPssStatus(explanation);
+        this.props.connsStore.setPss(result);
+
     }
 
     render() {
@@ -68,7 +70,7 @@ class DetailsStatus extends Component {
                         <Input
                             type="textarea"
                             disabled
-                            value={store.pssStatus}
+                            value={store.pss.explanation}
                         />
                     </FormGroup>
                 </CardBody>
