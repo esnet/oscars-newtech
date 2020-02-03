@@ -1,5 +1,10 @@
 ## OSCARS Backend Release Notes
 
+### 1.0.40
+> Feb 3, 2020
+- Add clone validation API
+- Integrate logging / syslog config 
+
 ### v1.0.36
 > Aug 2, 2019
 - PSS race condition hotfix

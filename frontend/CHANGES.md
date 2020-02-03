@@ -1,5 +1,11 @@
 # OSCARS Frontend Release Notes
 
+## v1.0.40
+> Feb 3, 2020
+- Add clone feature
+- Build / dismantle button fixes
+- Library updates & other misc maintenance
+
 ## v1.0.36
 > Aug 6, 2019
 - Minor cosmetic fix in details page

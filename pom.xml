@@ -7,7 +7,7 @@
     <groupId>net.es.oscars</groupId>
     <artifactId>oscars</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.39</version>
+    <version>1.0.40</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,7 +17,7 @@
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
         <jackson.version>2.9.5</jackson.version>
-        <spring.boot.version>2.1.4.RELEASE</spring.boot.version>
+        <spring.boot.version>2.2.4.RELEASE</spring.boot.version>
 
         <rpm.prefix/>
         <rpm.organization.name>ESnet</rpm.organization.name>
@@ -75,11 +75,31 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>2.3.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>2.3.2</version>
+            </dependency>
+            <dependency>
                 <groupId>org.webjars</groupId>
                 <artifactId>webjars-locator-core</artifactId>
                 <version>0.37</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-ri</artifactId>
+                <version>2.3.0</version>
+                <type>pom</type>
+            </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-parameter-names</artifactId>

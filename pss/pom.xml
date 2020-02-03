@@ -6,7 +6,7 @@
     <parent>
         <artifactId>oscars</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>1.0.39</version>
+        <version>1.0.40</version>
     </parent>
 
     <organization>
@@ -247,6 +247,9 @@
                                 </source>
                                 <source>
                                     <location>${project.basedir}/config/cloginrc.txt</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/config/logback.xml</location>
                                 </source>
                             </sources>
                         </mapping>

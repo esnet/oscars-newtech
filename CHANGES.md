@@ -1,5 +1,16 @@
 # OSCARS Release Notes
 
+## v1.0.40
+> Feb 3, 2020
+- Frontend:
+    - Add clone feature
+    - Build / dismantle buttons fixes
+    - Library updates & other misc maintenance
+- Backend
+    - Add clone validation API
+    - Integrate logging / syslog config 
+
+
 ## v1.0.39
 > Oct 22, 2019
 - Frontend:

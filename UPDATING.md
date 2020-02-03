@@ -3,6 +3,40 @@ This file contains instructions for updating an existing installation of OSCARS 
 
 Instructions include config file changes, database schema changes, etc.
 
+
+## 1.0.39 to 1.0.40
+### Config file changes
+Logging configuration has been changed. 
+
+#### For backend:
+Ensure the RPM has deployed the `config/logback.xml` file.
+
+Then, at the `application.properties` file, remove all `logging.xxxx` and `syslog.xxxx` statements.
+
+Replace those with the following stanza:
+```$xslt
+logging.config=config/logback.xml
+logging.file=/usr/local/esnet/oscars-backend/logs/backend.log
+syslog.enable=false
+```
+
+To actually enable the syslog logging, set the `syslog.enable` property to `true` and, at `logback.xml`, configure the `syslogHost` 
+elements with the correct IP addresses. 
+
+#### For PSS:
+Ensure the RPM has deployed the `config/logback.xml` file.
+
+Then, at the `application.properties` file, remove all `logging.xxxx` and `syslog.xxxx` statements.
+
+Replace those with the following stanza:
+
+```$xslt
+logging.config=config/logback.xml
+logging.file=/usr/local/esnet/oscars-pss/logs/pss.log
+```
+
+
+
 ## 1.0.36 to 1.0.37
 
 ### Config file changes

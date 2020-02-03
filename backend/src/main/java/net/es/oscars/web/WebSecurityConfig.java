@@ -100,12 +100,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter  {
                 // allow everyone to pages
                 .antMatchers("/pages/**").permitAll()
 
-                .anyRequest().authenticated()
+
                 // only allow authenticated users to get /protected pages or API endpoints
                 .antMatchers("/protected/**").authenticated()
 
                 // only allow admins to anything under /admin
                 .antMatchers("/admin/**").hasAuthority("ADMIN")
+                .anyRequest().authenticated()
                 .and()
 
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);

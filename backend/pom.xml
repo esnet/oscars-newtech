@@ -5,7 +5,7 @@
     <parent>
         <artifactId>oscars</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>1.0.39</version>
+        <version>1.0.40</version>
     </parent>
 
     <organization>
@@ -377,6 +377,9 @@
                             <sources>
                                 <source>
                                     <location>${project.basedir}/config/application.properties</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/config/logback.xml</location>
                                 </source>
                             </sources>
                         </mapping>
