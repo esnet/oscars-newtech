@@ -19,7 +19,10 @@ class ConnectionsStore {
             dirty: false
         },
         foundCurrent: false,
-        pssStatus: "Status not loaded yet...",
+        pss: {
+            work: null,
+            explanation: "Status not loaded yet...",
+        },
         selected: {},
         commands: new Map(),
         statuses: new Map(),
@@ -77,22 +80,26 @@ class ConnectionsStore {
     @observable controls = {
         show: false,
         buildmode: {
-            ok: false,
+            allowed: false,
+            working: false,
             show: false,
             text: ""
         },
         build: {
-            ok: false,
+            allowed: false,
+            working: false,
             show: false,
             text: ""
         },
         dismantle: {
-            ok: false,
+            allowed: false,
+            working: false,
             show: false,
             text: ""
         },
         release: {
-            ok: false,
+            allowed: false,
+            working: false,
             show: false,
             text: ""
         },
@@ -115,7 +122,8 @@ class ConnectionsStore {
             }
         },
         regenerate: {
-            ok: false,
+            allowed: false,
+            working: false,
             show: false,
             text: ""
         },
@@ -163,8 +171,8 @@ class ConnectionsStore {
         this.store.eventLog = eventLog;
     }
 
-    @action setPssStatus(status) {
-        this.store.pssStatus = status;
+    @action setPss(status) {
+        this.store.pss = status;
     }
 
     @action showControls(value) {
