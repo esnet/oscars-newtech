@@ -5,7 +5,6 @@ import net.es.oscars.app.exc.StartupException;
 import net.es.oscars.app.util.GitRepositoryState;
 import net.es.oscars.app.util.GitRepositoryStatePopulator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 
@@ -23,8 +22,6 @@ public class MiscController {
     @Autowired
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
 
-    @Value("log/backend.log")
-    private String logfile;
 
     @ExceptionHandler(StartupException.class)
     @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
@@ -51,10 +48,9 @@ public class MiscController {
 
     @RequestMapping(value = "/api/log", method = RequestMethod.GET)
     public String getLog() {
-
         String out = "";
         try {
-            File file = new File(logfile);
+            File file = new File(System.getProperties().getProperty("LOG_FILE"));
             int n_lines = 1000;
             int counter = 0;
             boolean gotAll = false;
@@ -75,7 +71,7 @@ public class MiscController {
             reader.close();
         } catch (IOException ex) {
             log.error(ex.getMessage(), ex);
-            out = "internal error getting log: "+ex.getMessage();
+            out = "internal error getting log: " + ex.getMessage();
         }
 
         return out;

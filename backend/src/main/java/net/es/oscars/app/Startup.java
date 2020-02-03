@@ -98,7 +98,7 @@ public class Startup {
             log.info("In Shutdown");
             this.setInStartup(false);
             this.setInShutdown(true);
-            syslogger.sendSyslog("OSCARS STOPPED SUCCESSFULLY");
+            syslogger.sendSyslog("OSCARS APPLICATION SHUTDOWN COMPLETED");
             System.out.println("Exiting (startup.exit is true)");
             System.exit(0);
         }
@@ -124,7 +124,7 @@ public class Startup {
         log.info("Built by " + gitRepositoryState.getBuildUserEmail() + " on " + gitRepositoryState.getBuildHost() + " at " + gitRepositoryState.getBuildTime());
         log.info("OSCARS startup successful.");
 
-        syslogger.sendSyslog("OSCARS STARTED SUCCESSFULLY");
+        syslogger.sendSyslog("OSCARS APPLICATION STARTUP COMPLETED");
 
         this.setInStartup(false);
 
