@@ -1,7 +1,7 @@
 # OSCARS Release Notes
 
-## v1.0.40
-> Feb 3, 2020
+## v1.0.41
+> Mar 9, 2020
 - Frontend:
     - Add clone feature
     - Build / dismantle buttons fixes

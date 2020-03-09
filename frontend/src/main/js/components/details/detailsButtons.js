@@ -567,7 +567,7 @@ class DetailsButtons extends Component {
                     <ConfirmModal
                         body="This will build the connection. OSCARS will send all configuration
                                     to network devices, allowing traffic to flow."
-                        header="Dismantle connection"
+                        header="Build connection"
                         uiElement={
                             <Button color="primary" disabled={!canBuild} className="float-left">
                                 {buildText}

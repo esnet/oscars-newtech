@@ -1,7 +1,7 @@
 ## OSCARS Backend Release Notes
 
-### 1.0.40
-> Feb 3, 2020
+### 1.0.41
+> Mar 9, 2020
 - Add clone validation API
 - Integrate logging / syslog config 
 

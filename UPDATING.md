@@ -4,7 +4,7 @@ This file contains instructions for updating an existing installation of OSCARS 
 Instructions include config file changes, database schema changes, etc.
 
 
-## 1.0.39 to 1.0.40
+## v1.0.41
 ### Config file changes
 Logging configuration has been changed. 
 
