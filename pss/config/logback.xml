@@ -46,6 +46,10 @@
     </logger>
 
     <logger name="net.es.oscars" additivity="false" level="INFO">
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <logger name="net.es.oscars" additivity="false" level="INFO">
         <appender-ref ref="STDOUT" />
     </logger>
 
