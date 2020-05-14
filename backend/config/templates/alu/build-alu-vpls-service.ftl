@@ -45,8 +45,6 @@ exit
 
 /configure service vpls ${svcId} split-horizon-group "shg-pri" create
 /configure service vpls ${svcId} split-horizon-group "shg-pri" auto-learn-mac-protect
-/configure service vpls ${svcId} split-horizon-group "shg-sec" create
-/configure service vpls ${svcId} split-horizon-group "shg-sec" auto-learn-mac-protect
 
 
 <#if vpls.sdpToVcIds??>
@@ -57,7 +55,7 @@ exit
 <#if sdpToVcId.primary>
 /configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} vc-type vlan split-horizon-group "shg-pri" ${endpointSnippet} create
 <#else>
-/configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} vc-type vlan split-horizon-group "shg-sec" ${endpointSnippet} create
+/configure service vpls ${svcId} spoke-sdp ${sdpId}:${vcId} vc-type vlan split-horizon-group "shg-pri" ${endpointSnippet} create
 </#if>
 
 exit all

@@ -46,10 +46,13 @@
 /configure qos ${sapType} ${qosId} queue 2 create
 exit
 /configure qos ${sapType} ${qosId} fc "ef" queue 2
+/configure qos ${sapType} ${qosId} fc "ef" broadcast-queue 11
+/configure qos ${sapType} ${qosId} fc "ef" unknown-queue 11
 /configure qos ${sapType} ${qosId} queue 3 create
 exit
 /configure qos ${sapType} ${qosId} fc "l1" queue 3
 /configure qos ${sapType} ${qosId} queue 11 multipoint create
+/configure qos ${sapType} ${qosId} queue 11 rate 100 cir 100
 exit
 
 <#-- ingress, only when we apply QoS-->
