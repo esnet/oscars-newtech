@@ -23,6 +23,7 @@ set if-exceeding burst-size-limit ${burst_limit}
 
     <#if qos.policing == "SOFT">
 set then loss-priority high
+set then forwarding-class best-effort-vc
     <#else>
 set then discard
     </#if>
