@@ -1,5 +1,12 @@
 # OSCARS Release Notes
 
+> Aug 12, 2020
+- Maintenance release
+- Frontend:
+    - Library updates & other misc maintenance
+- Backend
+    - Template changes
+
 ## v1.0.41
 > Mar 9, 2020
 - Frontend:

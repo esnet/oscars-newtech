@@ -12,8 +12,6 @@ import net.es.oscars.resv.svc.ConnService;
 import net.es.oscars.resv.svc.LogService;
 import net.es.oscars.web.beans.ConnException;
 import net.es.oscars.web.beans.CurrentlyHeldEntry;
-import net.es.oscars.web.beans.HoldException;
-import net.es.oscars.web.beans.Interval;
 import net.es.oscars.web.simple.SimpleConnection;
 import net.es.oscars.web.simple.Validity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,7 +148,7 @@ public class HoldController {
 
         Instant now = Instant.now();
 
-        connection.setBegin(new Long(now.getEpochSecond()).intValue());
+        connection.setBegin(Long.valueOf(now.getEpochSecond()).intValue());
         connection.setEnd(connection.getBegin()+duration);
         Validity v = connSvc.validate(connection, ConnectionMode.CLONE);
         connection.setValidity(v);
@@ -185,8 +183,8 @@ public class HoldController {
         in.setUsername(username);
 
         Instant exp = Instant.now().plus(resvTimeout, ChronoUnit.SECONDS);
-        Long secs = exp.toEpochMilli() / 1000L;
-        in.setHeldUntil(secs.intValue());
+        long secs = exp.toEpochMilli() / 1000L;
+        in.setHeldUntil((int) secs);
 
         String connectionId = in.getConnectionId();
 

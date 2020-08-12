@@ -845,7 +845,7 @@ public class ConnService {
                 Instant earliestPossible = Instant.now().plus(30, ChronoUnit.SECONDS);
                 if (!begin.isAfter(earliestPossible)) {
                     begin = earliestPossible;
-                    in.setBegin(new Long(begin.getEpochSecond()).intValue());
+                    in.setBegin(Long.valueOf(begin.getEpochSecond()).intValue());
                 }
             }
 

@@ -1,4 +1,8 @@
 ## OSCARS Backend Release Notes
+### 1.0.42
+> Aug 12, 2020
+- Maintenance release
+- Template changes
 
 ### 1.0.41
 > Mar 9, 2020
