@@ -227,7 +227,7 @@ public class NsiService {
     }
 
     public void abort(CommonHeaderType header, NsiMapping mapping) {
-        log.info("starting abort task for "+mapping.getNsiConnectionId());
+        log.info("starting abort task for " + mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
             try {
@@ -255,7 +255,7 @@ public class NsiService {
     }
 
     public void provision(CommonHeaderType header, NsiMapping mapping) {
-        log.info("starting provision task for "+mapping.getNsiConnectionId());
+        log.info("starting provision task for " + mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
             try {
@@ -292,7 +292,7 @@ public class NsiService {
     }
 
     public void release(CommonHeaderType header, NsiMapping mapping) {
-        log.info("starting release task for "+mapping.getNsiConnectionId());
+        log.info("starting release task for " + mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
             try {
@@ -333,7 +333,7 @@ public class NsiService {
     }
 
     public void terminate(CommonHeaderType header, NsiMapping mapping) {
-        log.info("starting terminate task for "+mapping.getNsiConnectionId());
+        log.info("starting terminate task for " + mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
             try {
@@ -369,7 +369,7 @@ public class NsiService {
     // TODO: trigger this when REST API terminates connection
     // (& possibly other errors)
     public void forcedEnd(NsiMapping mapping) {
-        log.info("starting forcedEnd task for "+mapping.getNsiConnectionId());
+        log.info("starting forcedEnd task for " + mapping.getNsiConnectionId());
 
         Executors.newCachedThreadPool().submit(() -> {
             try {
@@ -624,7 +624,7 @@ public class NsiService {
     /* triggered events from TransitionStates periodic tasks */
 
     public void resvTimedOut(NsiMapping mapping) {
-        log.info("resv timeout for "+mapping.getNsiConnectionId()+" "+mapping.getOscarsConnectionId());
+        log.info("resv timeout for " + mapping.getNsiConnectionId() + " " + mapping.getOscarsConnectionId());
         try {
             nsiStateEngine.resvTimedOut(mapping);
             this.errCallback(NsiEvent.RESV_TIMEOUT, mapping,
@@ -640,7 +640,7 @@ public class NsiService {
 
 
     public void pastEndTime(NsiMapping mapping) {
-        log.info("past end time for "+mapping.getNsiConnectionId()+" "+mapping.getOscarsConnectionId());
+        log.info("past end time for " + mapping.getNsiConnectionId() + " " + mapping.getOscarsConnectionId());
         try {
             nsiStateEngine.pastEndTime(mapping);
         } catch (NsiException ex) {
@@ -965,27 +965,30 @@ public class NsiService {
                 String label = lvParts[0];
                 String value = lvParts[1];
                 if (label.equals("vlan")) {
-                    String[] parts = value.split("-");
+                    String[] ranges = value.split(",");
+                    for (String range : ranges) {
+                        String[] parts = range.split("-");
 
-                    try {
-                        if (parts.length == 1) {
-                            Integer vlan = Integer.valueOf(parts[0]);
-                            vlanRange.setFloor(vlan);
-                            vlanRange.setCeiling(vlan);
-                            log.info("vlan range for " + stp + " : " + vlan);
-                            return vlanRange;
+                        try {
+                            if (parts.length == 1) {
+                                Integer vlan = Integer.valueOf(parts[0]);
+                                vlanRange.setFloor(vlan);
+                                vlanRange.setCeiling(vlan);
+                                log.info("vlan range for " + stp + " : " + vlan);
+                                return vlanRange;
 
-                        } else if (parts.length == 2) {
-                            Integer f = Integer.valueOf(parts[0]);
-                            Integer c = Integer.valueOf(parts[1]);
-                            vlanRange.setFloor(f);
-                            vlanRange.setCeiling(c);
-                            log.info("vlan range for " + stp + " : " + f + " - " + c);
-                            return vlanRange;
+                            } else if (parts.length == 2) {
+                                Integer f = Integer.valueOf(parts[0]);
+                                Integer c = Integer.valueOf(parts[1]);
+                                vlanRange.setFloor(f);
+                                vlanRange.setCeiling(c);
+                                log.info("vlan range for " + stp + " : " + f + " - " + c);
+                                return vlanRange;
 
+                            }
+                        } catch (NumberFormatException ex) {
+                            throw new NsiException("Could not parse vlan id parameter", NsiErrors.MSG_ERROR);
                         }
-                    } catch (NumberFormatException ex) {
-                        throw new NsiException("Could not parse vlan id parameter", NsiErrors.MSG_ERROR);
                     }
                 } else {
                     log.info("label-value: " + lvParts[0] + " = " + lvParts[1]);
