@@ -17,12 +17,12 @@ import java.time.Instant;
 public class Event {
     @JsonCreator
     public Event(@JsonProperty("connectionId") @NonNull String connectionId,
-                 @JsonProperty("at") @NonNull Instant at,
+                 @JsonProperty("occurrence") @NonNull Instant occurrence,
                  @JsonProperty("type") @NonNull EventType type,
                  @JsonProperty("description") @NonNull String description,
                  @JsonProperty("username") @NonNull String username) {
         this.connectionId = connectionId;
-        this.at = at;
+        this.occurrence = occurrence;
         this.type = type;
         this.description = description;
         this.username = username;
@@ -37,7 +37,7 @@ public class Event {
     private String connectionId;
 
     @NonNull
-    private Instant at;
+    private Instant occurrence;
 
     @NonNull
     private EventType type;

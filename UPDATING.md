@@ -3,6 +3,9 @@ This file contains instructions for updating an existing installation of OSCARS 
 
 Instructions include config file changes, database schema changes, etc.
 
+## v1.0.43
+#### For backend:
+`psql -d oscars_backend < backend/sql/1_0_43.sql`
 
 ## v1.0.41
 ### Config file changes

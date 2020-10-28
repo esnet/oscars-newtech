@@ -214,7 +214,7 @@ public class HoldController {
                     .connectionId(connectionId)
                     .description("created")
                     .type(EventType.CREATED)
-                    .at(Instant.now())
+                    .occurrence(Instant.now())
                     .username("")
                     .build();
             logService.logEvent(in.getConnectionId(), ev);
