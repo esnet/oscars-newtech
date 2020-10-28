@@ -72,7 +72,7 @@ public class TimestampExporter {
             out.println(sql);
 
             for (Event event : el.getEvents()) {
-                String evsql = "UPDATE event SET occured = "+i2p(event.getOccured())+" WHERE id = "+event.getId()+";";
+                String evsql = "UPDATE event SET occured = "+i2p(event.getOccurrence())+" WHERE id = "+event.getId()+";";
                 out.println(evsql);
             }
         }
