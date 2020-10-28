@@ -1,5 +1,12 @@
 # OSCARS Release Notes
 
+## 1.0.43
+> Oct 28, 2020
+- Maintenance release
+- NSI fixes
+- Multiple library upgrades
+
+## 1.0.42
 > Aug 12, 2020
 - Maintenance release
 - Frontend:

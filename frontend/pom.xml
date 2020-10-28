@@ -10,7 +10,7 @@
     <parent>
         <artifactId>oscars</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>1.0.42</version>
+        <version>1.0.43</version>
     </parent>
     <properties>
         <frontend.version>${project.version}</frontend.version>
@@ -39,7 +39,7 @@
 
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.6</version>
+                <version>1.10.3</version>
                 <configuration>
                     <installDirectory>target</installDirectory>
                 </configuration>
@@ -50,7 +50,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v10.15.3</nodeVersion>
+                            <nodeVersion>v15.0.1</nodeVersion>
                         </configuration>
                     </execution>
 

@@ -7,7 +7,7 @@
     <groupId>net.es.oscars</groupId>
     <artifactId>oscars</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.42</version>
+    <version>1.0.43</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,7 +17,7 @@
         <unit-tests.skip>false</unit-tests.skip>
         <integration-tests.skip>true</integration-tests.skip>
         <jackson.version>2.11.3</jackson.version>
-        <spring.boot.version>2.2.4.RELEASE</spring.boot.version>
+        <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
 
         <rpm.prefix/>
         <rpm.organization.name>ESnet</rpm.organization.name>
