@@ -329,16 +329,21 @@ public class NmlController {
             pgi.setAttribute("encoding", "http://schemas.ogf.org/nml/2012/10/ethernet");
             hip.appendChild(pgi);
 
-            Element ilg = doc.createElementNS(nsBase, "nml-base:LabelGroup");
-            ilg.setAttribute("labeltype", "http://schemas.ogf.org/nml/2012/10/ethernet#vlan");
-            ilg.setTextContent(vlans);
-            pgi.appendChild(ilg);
-
             String peeringUrn = p.getUrn().replace("/", "_");
             //log.info("checking peering urn "+peeringUrn);
             NsiPeering peering = nsiPopulator.getPlusPorts().get(peeringUrn);
-            if (peering != null) {
 
+
+            Element ilg = doc.createElementNS(nsBase, "nml-base:LabelGroup");
+            ilg.setAttribute("labeltype", "http://schemas.ogf.org/nml/2012/10/ethernet#vlan");
+            if (peering != null) {
+                ilg.setTextContent(peering.getVlan());
+            } else {
+                ilg.setTextContent(vlans);
+            }
+            pgi.appendChild(ilg);
+
+            if (peering != null) {
                 Element isAliasRelation = doc.createElementNS(nsBase, "nml-base:Relation");
                 isAliasRelation.setAttribute("type", isAliasType);
                 Element remote = doc.createElementNS(nsBase, "nml-base:PortGroup");
@@ -369,7 +374,11 @@ public class NmlController {
 
             Element olg = doc.createElementNS(nsBase, "nml-base:LabelGroup");
             olg.setAttribute("labeltype", "http://schemas.ogf.org/nml/2012/10/ethernet#vlan");
-            olg.setTextContent(vlans);
+            if (peering != null) {
+                olg.setTextContent(peering.getVlan());
+            } else {
+                olg.setTextContent(vlans);
+            }
             pgo.appendChild(olg);
             if (peering != null) {
                 Element isAliasRelation = doc.createElementNS(nsBase, "nml-base:Relation");

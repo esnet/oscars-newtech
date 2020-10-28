@@ -6,7 +6,7 @@
     <parent>
         <artifactId>oscars</artifactId>
         <groupId>net.es.oscars</groupId>
-        <version>1.0.42</version>
+        <version>1.0.43</version>
     </parent>
 
     <organization>
@@ -81,6 +81,11 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-properties-migrator</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <artifactId>shared</artifactId>
             <version>${project.version}</version>

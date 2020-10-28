@@ -189,7 +189,7 @@ public class ListController {
                             EventLog log = maybeLog.get();
                             for (Event ev: log.getEvents()) {
                                 if (ev.getType().equals(EventType.CANCELLED)) {
-                                    end = ev.getAt().getEpochSecond();
+                                    end = ev.getOccurrence().getEpochSecond();
                                 }
                             }
                         }

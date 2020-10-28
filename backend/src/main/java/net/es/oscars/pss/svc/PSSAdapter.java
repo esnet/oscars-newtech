@@ -132,7 +132,7 @@ public class PSSAdapter {
                         .connectionId(conn.getConnectionId())
                         .description("PSS build failed")
                         .type(EventType.ERROR)
-                        .at(Instant.now())
+                        .occurrence(Instant.now())
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
@@ -144,7 +144,7 @@ public class PSSAdapter {
                         .connectionId(conn.getConnectionId())
                         .description("built successfully")
                         .type(EventType.BUILT)
-                        .at(Instant.now())
+                        .occurrence(Instant.now())
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
@@ -194,7 +194,7 @@ public class PSSAdapter {
                         .connectionId(conn.getConnectionId())
                         .description("PSS dismantle failed")
                         .type(EventType.ERROR)
-                        .at(Instant.now())
+                        .occurrence(Instant.now())
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);
@@ -204,7 +204,7 @@ public class PSSAdapter {
                         .connectionId(conn.getConnectionId())
                         .description("dismantled successfully")
                         .type(EventType.DISMANTLED)
-                        .at(Instant.now())
+                        .occurrence(Instant.now())
                         .username("system")
                         .build();
                 logService.logEvent(conn.getConnectionId(), ev);

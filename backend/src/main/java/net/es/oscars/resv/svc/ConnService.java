@@ -400,7 +400,7 @@ public class ConnService {
                 .connectionId(c.getConnectionId())
                 .description("committed")
                 .type(EventType.COMMITTED)
-                .at(Instant.now())
+                .occurrence(Instant.now())
                 .username("")
                 .build();
         logService.logEvent(c.getConnectionId(), ev);
@@ -454,7 +454,7 @@ public class ConnService {
                         .connectionId(c.getConnectionId())
                         .description("released (unstarted)")
                         .type(EventType.RELEASED)
-                        .at(Instant.now())
+                        .occurrence(Instant.now())
                         .username("system")
                         .build();
                 logService.logEvent(c.getConnectionId(), ev);
@@ -473,7 +473,7 @@ public class ConnService {
                         .connectionId(c.getConnectionId())
                         .description("released (active)")
                         .type(EventType.RELEASED)
-                        .at(Instant.now())
+                        .occurrence(Instant.now())
                         .username("system")
                         .build();
                 logService.logEvent(c.getConnectionId(), ev);
@@ -486,7 +486,7 @@ public class ConnService {
                         .connectionId(c.getConnectionId())
                         .description("released (inactive)")
                         .type(EventType.RELEASED)
-                        .at(Instant.now())
+                        .occurrence(Instant.now())
                         .username("system")
                         .build();
                 logService.logEvent(c.getConnectionId(), ev);
@@ -500,7 +500,7 @@ public class ConnService {
                 .connectionId(c.getConnectionId())
                 .description("cancelled")
                 .type(EventType.CANCELLED)
-                .at(Instant.now())
+                .occurrence(Instant.now())
                 .username("")
                 .build();
         logService.logEvent(c.getConnectionId(), ev);
