@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,8 @@ import org.apache.commons.io.input.ReversedLinesFileReader;
 public class MiscController {
     @Autowired
     private GitRepositoryStatePopulator gitRepositoryStatePopulator;
-
+    @Value("${logging.file}")
+    private File loggingFile;
 
     @ExceptionHandler(StartupException.class)
     @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
@@ -50,11 +52,10 @@ public class MiscController {
     public String getLog() {
         String out = "";
         try {
-            File file = new File(System.getProperties().getProperty("LOG_FILE"));
             int n_lines = 1000;
             int counter = 0;
             boolean gotAll = false;
-            ReversedLinesFileReader reader = new ReversedLinesFileReader(file);
+            ReversedLinesFileReader reader = new ReversedLinesFileReader(loggingFile);
             while (!gotAll) {
                 String line = reader.readLine();
                 if (line == null) {
