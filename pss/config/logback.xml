@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- magic line: ties to spring logging.file property -->
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
 
@@ -29,8 +31,6 @@
         <suffixPattern>%msg</suffixPattern>
     </appender>
 
-    <!-- magic line: ties to spring logging.file property -->
-    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
 
     <root level="WARN">
         <appender-ref ref="FILE"/>
