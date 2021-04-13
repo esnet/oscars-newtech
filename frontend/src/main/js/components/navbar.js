@@ -136,6 +136,12 @@ class NavBar extends Component {
                         New
                     </NavLink>
                     <NavLink
+                        href="/pages/migrations"
+                        active={this.props.commonStore.nav.active === "migrations"}
+                    >
+                        Migrations
+                    </NavLink>
+                    <NavLink
                         href="/pages/status"
                         active={this.props.commonStore.nav.active === "status"}
                     >

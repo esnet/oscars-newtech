@@ -9,7 +9,6 @@ import "bootstrap/dist/css/bootstrap.css";
 import { configure } from "mobx";
 import { Provider } from "mobx-react";
 
-import ListConnectionsApp from "./apps/listConnections";
 import NewDesignApp from "./apps/designApp";
 import WelcomeApp from "./apps/welcome";
 import AboutApp from "./apps/about";
@@ -39,6 +38,9 @@ import connsStore from "./stores/connsStore";
 import userStore from "./stores/userStore";
 import modalStore from "./stores/modalStore";
 import tagStore from "./stores/tagStore";
+import {QueryClient, QueryClientProvider} from "react-query";
+import MigrationsApp from "./apps/migrationsApp";
+import ListConnectionsApp from "./apps/listConnections";
 
 require("../css/styles.css");
 
@@ -105,8 +107,11 @@ const stores = {
 
 configure({ enforceActions: "observed" });
 
+const queryClient = new QueryClient()
+
 ReactDOM.render(
     <Provider {...stores}>
+        <QueryClientProvider client={queryClient}>
         <BrowserRouter>
             <Container fluid={true}>
                 <Ping />
@@ -130,6 +135,7 @@ ReactDOM.render(
                     />
                     <PrivateRoute exact path="/pages/newDesign" component={NewDesignApp} />
                     <PrivateRoute exact path="/pages/timeout" component={TimeoutApp} />
+                    <PrivateRoute exact path="/pages/migrations" component={MigrationsApp} />
                     <PrivateRoute exact path="/pages/error" component={ErrorApp} />
                     <PrivateRoute exact path="/pages/account" component={AccountApp} />
                     <PrivateRoute exact path="/pages/status" component={StatusApp} />
@@ -139,6 +145,7 @@ ReactDOM.render(
                 </Switch>
             </Container>
         </BrowserRouter>
+        </QueryClientProvider>
     </Provider>,
     document.getElementById("react")
 );

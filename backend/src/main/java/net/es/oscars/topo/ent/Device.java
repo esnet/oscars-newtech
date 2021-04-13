@@ -73,8 +73,7 @@ public class Device {
     private Set<Layer> capabilities = new HashSet<>();
 
     @NonNull
-    @ElementCollection(fetch = FetchType.EAGER)
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Set<Port> ports = new HashSet<>();
 
