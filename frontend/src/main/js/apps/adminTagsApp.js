@@ -27,7 +27,7 @@ class AdminTagsApp extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.refreshTagCategories();
     }
 

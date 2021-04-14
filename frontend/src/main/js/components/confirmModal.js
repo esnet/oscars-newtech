@@ -7,7 +7,7 @@ export default class ConfirmModal extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.hideConfirm();
     }
 

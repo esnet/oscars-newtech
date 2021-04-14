@@ -25,7 +25,7 @@ class StatusApp extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.commonStore.setActiveNav("status");
         this.setState({
             activeTab: "log"

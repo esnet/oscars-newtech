@@ -12,7 +12,7 @@ class AccountApp extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.commonStore.setActiveNav("account");
 
         this.props.userStore.setParamsForEditUser({

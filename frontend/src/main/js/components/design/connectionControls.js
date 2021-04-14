@@ -21,7 +21,7 @@ class ConnectionControls extends Component {
         this.state = { collapse: false };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         if (this.props.controlsStore.connection.connectionId === "") {
             myClient.submitWithToken("GET", "/protected/conn/generateId").then(
                 action(response => {

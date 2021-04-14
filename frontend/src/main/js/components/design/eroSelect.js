@@ -26,7 +26,7 @@ class EroSelect extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.topologyStore.loadAdjacencies();
     }
 

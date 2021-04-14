@@ -35,7 +35,7 @@ class DetailsInfo extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.setState({
             junctionTab: "commands",
             historyId: null,

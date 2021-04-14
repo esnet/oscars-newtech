@@ -8,7 +8,7 @@ export default class HelpPopover extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.setState({
             showPopover: false
         });

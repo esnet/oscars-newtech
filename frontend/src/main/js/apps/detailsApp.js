@@ -17,7 +17,7 @@ class DetailsApp extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.commonStore.setActiveNav("details");
 
         const pathConnectionId = this.props.match.params.connectionId;

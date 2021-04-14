@@ -37,7 +37,7 @@ class ScheduleControls extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         let conn = this.props.controlsStore.connection;
         let sch = conn.schedule;
         let startAt = new Date();

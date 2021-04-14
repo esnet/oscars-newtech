@@ -31,7 +31,7 @@ class DetailsGeneral extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.setState({
             tab: "info"
         });

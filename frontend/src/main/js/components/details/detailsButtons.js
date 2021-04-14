@@ -19,7 +19,7 @@ class DetailsButtons extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.updateControls();
         this.checkClone();
     }

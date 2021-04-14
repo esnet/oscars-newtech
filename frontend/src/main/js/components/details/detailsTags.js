@@ -26,7 +26,7 @@ class DetailsTags extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.refreshTagCategories();
     }
 

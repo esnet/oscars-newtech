@@ -2,12 +2,12 @@ import React from "react";
 
 import ReactDOM from "react-dom";
 
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import { Container, Row, Col } from "reactstrap";
+import {BrowserRouter, Route, Switch, Redirect} from "react-router-dom";
+import {Container, Row, Col} from "reactstrap";
 import "bootstrap/dist/css/bootstrap.css";
 
-import { configure } from "mobx";
-import { Provider } from "mobx-react";
+import {configure} from "mobx";
+import {Provider} from "mobx-react";
 
 import NewDesignApp from "./apps/designApp";
 import WelcomeApp from "./apps/welcome";
@@ -24,7 +24,7 @@ import ConnectionDetails from "./apps/detailsApp";
 import Login from "./apps/login";
 import Logout from "./apps/logout";
 
-import NavBar from "./components/navbar";
+import {OscarsNavBar} from "./components/navbar";
 import Ping from "./components/ping";
 
 import accountStore from "./stores/accountStore";
@@ -38,114 +38,102 @@ import connsStore from "./stores/connsStore";
 import userStore from "./stores/userStore";
 import modalStore from "./stores/modalStore";
 import tagStore from "./stores/tagStore";
-import {QueryClient, QueryClientProvider} from "react-query";
 import MigrationsApp from "./apps/migrationsApp";
 import ListConnectionsApp from "./apps/listConnections";
+import {AdminRoute, PrivateRoute} from "./lib/routes";
+import LoggedIn from "./components/loggedin";
 
 require("../css/styles.css");
+//
+// const stores = {
+//     accountStore,
+//     commonStore,
+//     connsStore,
+//     controlsStore,
+//     mapStore,
+//     designStore,
+//     heldStore,
+//     topologyStore,
+//     userStore,
+//     tagStore,
+//     modalStore
+// };
 
-const PrivateRoute = ({ component: Component, ...rest }) => (
-    <Route
-        {...rest}
-        render={props =>
-            accountStore.isLoggedIn() ? (
-                <Component {...props} />
-            ) : (
-                <Redirect
-                    to={{
-                        pathname: "/login",
-                        state: { from: props.location }
-                    }}
-                />
-            )
-        }
-    />
-);
+configure({enforceActions: "observed"});
 
-const AdminRoute = ({ component: Component, ...rest }) => (
-    <Route
-        {...rest}
-        render={props => {
-            if (accountStore.isLoggedIn() && accountStore.isAdmin()) {
-                return <Component {...props} />;
-            }
-            if (accountStore.isLoggedIn()) {
-                return (
-                    <Redirect
-                        to={{
-                            pathname: "/",
-                            state: { from: props.location }
-                        }}
-                    />
-                );
-            }
-            return (
-                <Redirect
-                    to={{
-                        pathname: "/login",
-                        state: { from: props.location }
-                    }}
-                />
-            );
-        }}
-    />
-);
-
-const stores = {
-    accountStore,
-    commonStore,
-    connsStore,
-    controlsStore,
-    mapStore,
-    designStore,
-    heldStore,
-    topologyStore,
-    userStore,
-    tagStore,
-    modalStore
-};
-
-configure({ enforceActions: "observed" });
-
-const queryClient = new QueryClient()
+export const UserContext = React.createContext(accountStore);
 
 ReactDOM.render(
-    <Provider {...stores}>
-        <QueryClientProvider client={queryClient}>
+
+    <UserContext.Provider value={accountStore}>
         <BrowserRouter>
             <Container fluid={true}>
-                <Ping />
+                <LoggedIn />
                 <Row>
-                    <NavBar />
+                    <OscarsNavBar/>
                 </Row>
+
+                <Switch>
+                    <Route exact path="/" component={WelcomeApp}/>
+                    <Route exact path="/pages/about" component={AboutApp}/>
+                    <Route exact path="/login" component={Login}/>
+
+                    <Route exact path="/pages/logout" component={Logout}/>
+
+                    <PrivateRoute exact path="/pages/migrations"
+                                  component={MigrationsApp}/>
+
+                </Switch>
+            </Container>
+        </BrowserRouter>
+    </UserContext.Provider>,
+    document.getElementById("react")
+);
+
+/*
+ReactDOM.render(
+    <Provider {...stores}>
+        <UserProvider value={accountStore}>
+        <BrowserRouter>
+            <Container fluid={true}>
+                <Ping/>
                 <Row>
                     <Col sm={4}> </Col>
                 </Row>
                 <Switch>
-                    <Route exact path="/" component={WelcomeApp} />
-                    <Route exact path="/pages/about" component={AboutApp} />
-                    <Route exact path="/login" component={Login} />
+                    <Route exact path="/" component={WelcomeApp}/>
+                    <Route exact path="/pages/about" component={AboutApp}/>
+                    <Route exact path="/login" component={Login}/>
 
-                    <Route exact path="/pages/logout" component={Logout} />
+                    <Route exact path="/pages/logout" component={Logout}/>
 
-                    <PrivateRoute exact path="/pages/list" component={ListConnectionsApp} />
-                    <PrivateRoute
-                        path="/pages/details/:connectionId?"
-                        component={ConnectionDetails}
-                    />
-                    <PrivateRoute exact path="/pages/newDesign" component={NewDesignApp} />
-                    <PrivateRoute exact path="/pages/timeout" component={TimeoutApp} />
-                    <PrivateRoute exact path="/pages/migrations" component={MigrationsApp} />
-                    <PrivateRoute exact path="/pages/error" component={ErrorApp} />
-                    <PrivateRoute exact path="/pages/account" component={AccountApp} />
-                    <PrivateRoute exact path="/pages/status" component={StatusApp} />
-                    <PrivateRoute exact path="/pages/map" component={MapApp} />
-                    <AdminRoute exact path="/pages/admin/users" component={AdminUsersApp} />
-                    <AdminRoute exact path="/pages/admin/tags" component={AdminTagsApp} />
+                    <PrivateRoute exact path="/pages/list"
+                                  component={ListConnectionsApp} />
+                    <PrivateRoute path="/pages/details/:connectionId?"
+                                  component={ConnectionDetails} />
+                    <PrivateRoute exact path="/pages/newDesign"
+                                  component={NewDesignApp} />
+                    <PrivateRoute exact path="/pages/timeout"
+                                  component={TimeoutApp}/>
+                    <PrivateRoute exact path="/pages/migrations"
+                                  component={MigrationsApp}/>
+                    <PrivateRoute exact path="/pages/error"
+                                  component={ErrorApp}/>
+                    <PrivateRoute exact path="/pages/account"
+                                  component={AccountApp}/>
+                    <PrivateRoute exact path="/pages/status"
+                                  component={StatusApp}/>
+                    <PrivateRoute exact path="/pages/map"
+                                  component={MapApp}/>
+                    <AdminRoute exact path="/pages/admin/users"
+                                component={AdminUsersApp}/>
+                    <AdminRoute exact path="/pages/admin/tags"
+                                component={AdminTagsApp}/>
                 </Switch>
             </Container>
         </BrowserRouter>
-        </QueryClientProvider>
+        </UserProvider>0
     </Provider>,
     document.getElementById("react")
 );
+*/

@@ -2,6 +2,7 @@ package net.es.oscars.mig.enums;
 
 
 public enum MigrationState {
+    INITIAL("INITIAL"),
     WAITING("WAITING"),
     COMPLETE("COMPLETE"),
     IN_PROGRESS("IN_PROGRESS");

@@ -32,7 +32,7 @@ class Login extends React.Component {
         }
     };
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.accountStore.clearAttempt();
         this.props.commonStore.setActiveNav("login");
     }

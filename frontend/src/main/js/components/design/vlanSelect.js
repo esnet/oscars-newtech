@@ -131,7 +131,7 @@ class VlanSelect extends Component {
         });
     };
 
-    componentWillMount() {
+    componentDidMount() {
         this.updateForm();
     }
 

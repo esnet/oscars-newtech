@@ -1,20 +1,24 @@
 import { size } from "lodash-es";
-import { observable, action } from "mobx";
+import {observable, action, makeAutoObservable} from "mobx";
 
 import myClient from "../agents/client";
 
 class AccountStore {
-    @observable loggedin = {
+    loggedin = {
         username: "",
         token: "",
         admin: false
     };
 
-    @observable attempt = {
+    attempt = {
         username: "",
         password: "",
         error: ""
     };
+    //
+    // constructor() {
+    //     makeAutoObservable(this)
+    // }
 
     isLoggedIn() {
         return size(this.loggedin.username);

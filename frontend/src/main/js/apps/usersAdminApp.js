@@ -27,7 +27,7 @@ class UsersAdminApp extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.commonStore.setActiveNav("admin");
         this.props.userStore.setParamsForEditUser({ user: { username: "" } });
 

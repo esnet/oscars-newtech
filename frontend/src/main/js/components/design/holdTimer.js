@@ -16,7 +16,7 @@ class HoldTimer extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.setToFifteenMins();
         this.refreshTimer();
         this.extendHold();

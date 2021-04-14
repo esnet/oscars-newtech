@@ -22,7 +22,7 @@ class DesignApp extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.commonStore.setActiveNav("design");
 
         let restore =

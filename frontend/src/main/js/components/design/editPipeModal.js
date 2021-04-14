@@ -49,7 +49,7 @@ class EditPipeModal extends Component {
         this.bwCtlRefs = {};
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.setState({
             eroTab: "drawing"
         });

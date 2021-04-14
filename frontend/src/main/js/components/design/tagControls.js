@@ -12,7 +12,7 @@ import validator from "../../lib/validation";
 @inject("controlsStore")
 @observer
 class TagControls extends Component {
-    componentWillMount() {
+    componentDidMount() {
         myClient.submitWithToken("GET", "/api/tag/categories/config").then(
             action(response => {
                 let categories = JSON.parse(response);

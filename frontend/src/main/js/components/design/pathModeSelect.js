@@ -20,7 +20,7 @@ import Octicon from "react-octicon";
 @inject("controlsStore", "designStore")
 @observer
 class PathModeSelect extends Component {
-    componentWillMount() {
+    componentDidMount() {
         this.setState({
             showHelpModal: false
         });

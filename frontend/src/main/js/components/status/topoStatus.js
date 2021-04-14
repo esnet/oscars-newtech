@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { inject, observer } from "mobx-react";
-import Nestable from "react-nestable";
+import Collapsible from 'react-collapsible';
 import { Card, CardBody, CardHeader } from "reactstrap";
 import topologyStore from "../../stores/topologyStore";
 import { toJS } from "mobx";
@@ -15,7 +15,7 @@ class TopoStatus extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.topologyStore.loadReport();
     }
 
@@ -71,7 +71,7 @@ class TopoStatus extends Component {
         if (anyIssues) {
             items.push(byConnId);
             items.push(byUrn);
-            issuesView = <Nestable collapsed={true} items={items} renderItem={this.renderItem} />;
+            issuesView = <Collapsible items={items} renderItem={this.renderItem} />;
         }
 
         return (

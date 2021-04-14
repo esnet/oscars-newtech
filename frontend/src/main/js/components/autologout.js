@@ -8,7 +8,7 @@ class Autologout extends React.Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.ping();
     }
 

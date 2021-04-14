@@ -15,7 +15,7 @@ class AddFixtureModal extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.topologyStore.loadEthernetPorts();
         this.props.topologyStore.loadBaseline();
         this.props.topologyStore.loadAdjacencies();

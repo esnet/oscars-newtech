@@ -2,8 +2,8 @@ import { action } from "mobx";
 import { inject, observer } from "mobx-react";
 import Moment from "moment";
 import React, { Component } from "react";
-import ReactTable from "react-table";
-import "react-table/react-table.css";
+import ReactTable from "react-table-v6";
+import "react-table-v6/react-table.css";
 
 import myClient from "../../agents/client";
 
@@ -17,7 +17,7 @@ class DetailsHistory extends Component {
         };
     }
     
-    componentWillMount() {
+    componentDidMount() {
         const pathConnectionId = this.props.connsStore.store.current.connectionId;
         this.updateList(pathConnectionId);
     }

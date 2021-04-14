@@ -9,8 +9,8 @@ import { ListGroupItem, ListGroup } from "reactstrap";
 import transformer from "../lib/transform";
 import myClient from "../agents/client";
 
-import ReactTable from "react-table";
-import "react-table/react-table.css";
+import ReactTable from "react-table-v6";
+import "react-table-v6/react-table.css";
 
 @observer
 class HrefIdFormatter extends Component {
@@ -112,7 +112,7 @@ class ConnectionsList extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.updateList();
     }
 

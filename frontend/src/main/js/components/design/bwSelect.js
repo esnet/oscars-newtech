@@ -61,7 +61,7 @@ class BwSelect extends Component {
         });
     });
 
-    componentWillMount() {
+    componentDidMount() {
         const ef = this.props.controlsStore.editFixture;
         if (ef.locked) {
             return;

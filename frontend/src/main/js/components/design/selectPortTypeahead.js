@@ -18,7 +18,7 @@ class SelectPortTypeahead extends Component {
         super(props);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.topologyStore.loadEthernetPorts();
     }
 
