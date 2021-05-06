@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "bootstrap": "^4.5.2",
-    "chrono-node": "^1.4.8",
+    "chrono-node": "^2.2.4",
     "classnames": "^2.2.6",
     "graphlib": "^2.1.8",
     "jquery": "^3.5.1",
